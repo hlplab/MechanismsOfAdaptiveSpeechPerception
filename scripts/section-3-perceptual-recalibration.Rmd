@@ -1,0 +1,589 @@
+# Case Study 1: perceptual recalibration
+
+```{r study-PR-setup, message=FALSE}
+# Which categories is this experiment about?
+categories.PR <- c("/d/", "/t/")
+conditions.PR <- paste0(categories.PR, "-shifted")
+colors.category <- colors.condition <- colors.voicing 
+shapes.category <- shapes.condition <- c(15, 17)
+linetypes.condition <- c(1,2)
+
+# Number of subjects
+n.subject <- 1
+
+# Number of exposure tokens for each category, shifted and typical
+n.exposure.token <- 20 
+
+# How strong is the average lexical bias? This can range from 0 (no lexical context effect on perception) to 
+# 1 (the label perfectly determines perception) and will determine the placement of the ambiguous tokens.
+my_experimenter.lexical_bias_strength <- .7
+my_experimenter.variability_reduction <- 8
+
+# Number of test blocks
+n.test_block <- 1
+# Test locations (proportion category 1)
+test_locations <- c(.15, .35, .45, .55, .65, .85) %>% rev()
+
+m.io.VOT_f0.PR <-
+  m.VOT_f0_MVG  %>%
+  filter(category %in% categories.PR) %>%
+  droplevels() %>%
+  make_stop_VOTf0_ideal_observer() %>%
+  arrange(category)
+
+m.ia.VOT_f0.PR <- 
+  crossing(
+    prior_kappa = 4^(1:5),
+    prior_nu = 4^(1:5)) %>%
+  rowwise() %>%
+  mutate(
+    ideal_adaptor = map2(prior_kappa, prior_nu, ~ make_stop_VOTf0_ideal_adaptor(m = m.io.VOT_f0.PR, kappa = .x, nu = .y))) %>%
+  unnest(ideal_adaptor) %>%
+  arrange(category)
+```
+
+In a typical perceptual recalibration experiment, participants are randomly assigned to one of two exposure groups that subsequently perform the same test. During exposure, participants hear stimuli that contain a critical phonetic contrast (here: syllable-intial /d/ vs. /t/, as in _croco*d*ile_ or _cafe*t*eria_, Kraljic & Samuel, 2006), mixed with many fillers that do not contain that phonetic contrast. Between participants, critical exposure stimuli are manipulated with the goal to shift the category boundary along the phonetic contrast into different directions. This is achieved by exposing listeners to *typical* pronunciations from one category and pronunciations of the other category that are acoustically *shifted* towards the point of maximal perceptual ambiguity between the two categories. Which of the two categories is shifted is manipulated between the two exposure groups. To ensure that the shifted stimuli are still recognized as instances of the intended category, stimulus presentation during exposure is typically *labeled* by presenting the critical contrast in lexical or visual contexts that indicate the intended category (e.g., hearing the shifted sound /?dt/ embedded in the lexical context of "croco_ile" would label the shifted sound as a /d/). In a subsequent test phase, both groups of participants then categorize the same test stimuli along an artificially generated acoustic continuum between the two categories. The goal of this test phase is to estimate participants' categorization function for the critical phonetic contrast, and so test stimuli are *unlabeled*. This is achieved by presenting the manipulated continuum in the contexts of a lexical minimal pair (e.g., _dip_-_tip_) or a nonce-word pair (e.g., _idi_-_iti_).
+
+For example, an influential study by @kraljic-samuel2006 exposed participants to either shifted /d/ and typical /t/ or shifted /t/ and typical /d/. Participants saw 20 typical and 20 shifted tokens (mixed with 160 fillers). Following exposure, participants in both conditions categorized non-word tokens (/`r linguisticsdown::cond_cmpl("ɪ")`d`r linguisticsdown::cond_cmpl("ɪ")`/-/`r linguisticsdown::cond_cmpl("ɪ")`t`r linguisticsdown::cond_cmpl("ɪ")`/) tokens along a six-step /d/-/t/ continuum. Figure \@ref(fig:kraljic-samuel-2007-replotted) shows the results obtained by Kraljic and Samuel (2006). Although relatively small, a significant perceptual recalibration effect was observed: participants in the /d/-shifted exposure condition were more likely to give "d"-responses, resulting a categorization function that is shifted rightwards relative to participants in the /t/-shifted condition. This shift in the category boundary is the signature of perceptual recalibration experiments.^[Kraljic and Samuel (2007, p. 6) report only the ranges for the closure and post-burst aspiration combined. The estimates shown here are based on the observation that post-burst aspiration accounts for about $2/3^{rd}$s of that combined duration in the exposure stimuli. We also averaged over the ranges for the two talkers employed in the study, as graphs showing the results by talker were not available.]
+
+<!-- Perceptual recalibration effects have now been reported for a many different phonetic contrasts (REFS) and an increasing number of languages [@REFS; for references and a succinct overview, see @theodore]. -->
+
+(ref:kraljic-samuel-2007-replotted) Categorization functions observed during the test phase of the perceptual recalibration experiment presented in Kraljic and Samuel (2006; replotted from Kraljic & Samuel, 2007, Figure 1). No errorbars were provided in the original, and the original data are no longer available (Samuel, p.c.). The acoustic properties for each test stimulus were not reported but the range of VOTs were described and are shown on the x-axis.
+
+```{r kraljic-samuel-2007-replotted, fig.width = base.width + 2.5, fig.height = base.height, fig.cap="(ref:kraljic-samuel-2007-replotted)"}
+replot_perceptual_recalibration_result <- function(categories, continuum.steps, responses, continuum.label = NULL, conditions = paste0("/", categories, "/-shifted")) {
+  crossing(
+    Condition = conditions,
+    Step = as.character(continuum.steps)) %>%
+    mutate(Proportion = responses) %>%
+    ggplot(aes(x = Step, y = Proportion, color = Condition, linetype = Condition)) +
+    geom_point() +
+    geom_line(aes(group = Condition)) +
+    scale_x_discrete(
+      name = continuum.label, 
+      breaks = continuum.steps, 
+      labels = c(
+        paste0("/", categories[1], "/\nVOT = ", round(((20+34)/2)*2/3), "ms"), 
+        rep("", length(continuum.steps) - 2), 
+        paste0("/", categories[2], "/\nVOT = ", round(((116+140)/2)*2/3), "ms"))) +
+    scale_y_continuous(paste0('Proportion ', categories[1], '-responses'), limits = c(0, 1)) +
+    scale_color_manual("Exposure condition", breaks = conditions, values = colors.condition) +
+    scale_linetype_manual("Exposure condition", breaks = conditions, values = linetypes.condition)
+}
+
+p10 <- replot_perceptual_recalibration_result(
+  categories = c("d", "t"), 
+  continuum.steps = 1:6,
+  responses = c(.93, .785, .31, .095, .05, .035, .895, .68, .28, .07, .025, .025))
+
+p20 <- replot_perceptual_recalibration_result(
+  categories = c("d", "t"), 
+  continuum.steps = 1:6,
+  responses = c(.95, .78, .41, .14, .055, .045, .885, .695, .36, .095, .05, .02))
+
+p20 + theme(legend.position = "right")
+```
+
+Unfortunately, most published experiments on perceptual recalibration do *not* report the acoustic properties of their stimuli. Some studies provide aggregate information [e.g., @kraljic-samuel2006; @kraljic-samuel2007] and very few provide detailed information and visualization [e.g., @drouin2016]. 
+<!-- In our experiences, it is also not uncommon that original recordings are no longer available or only partially available. Phonetic annotations that aid the extraction of acoustic information about these recordings are available for only a very small number of studies. <!-- could later at link to s-sh database here? -->
+We therefore generate data based on the same procedure that experimenters use to create and select the stimuli for perceptual recalibration experiments. The details of our stimulus generation approach, which closely follows the procedure described in @kraljic-samuel2006, are described in the SI (\@ref(sec:SI-PR)). These details do not affect the general results we present below. There are merely meant to provide a sufficiently concrete example. Readers can convince themselves of this claim by downloading the [R markdown document that this article is generated from](https://osf.io/DO-NOT-FORGET-TO-ADD-THE-OSF-URL-HERE-XXX), allowing them to change any of the parameter settings we assume below.
+
+## Data
+
+### Exposure phase
+
+```{r study-PR-exposure-functions"}
+get_experimenter_posterior_of_category1 <- function(x, model) {
+  get_categorization_from_MVG_ideal_observer(x, model, decision_rule = "proportional", noise_treatment = "marginalize", lapse_treatment = "sample") %>%
+    filter(category == categories.PR[1]) %>%
+    pull(response)
+}
+
+# Get acoustic locations that correspond to targeted response proportions.
+get_locations_along_phonetic_contrast <- function(ideal_observer, target_probabilities = .5) {
+  locations <- 
+    map2(
+      seq(ideal_observer$mu[[1]][1], ideal_observer$mu[[2]][1], length.out = 51),
+      seq(ideal_observer$mu[[1]][2], ideal_observer$mu[[2]][2], length.out = 51),
+  ~ c(.x, .y))
+  
+  location_selected <- list()
+  for (t in target_probabilities) {
+   # For each location, get distance from the desired shift for that category
+    probability_of_category1_in_its_lexical_context_at_location <- abs(t - get_experimenter_posterior_of_category1(locations, ideal_observer))
+
+    location_selected[[as.character(t)]] <- locations[[which(probability_of_category1_in_its_lexical_context_at_location ==
+                                                              min(probability_of_category1_in_its_lexical_context_at_location))]]
+  }
+  
+  if (length(target_probabilities) == 1) location_selected <- location_selected[[target_probabilities]]
+  
+  return(location_selected)
+}
+
+# make the design of an exposure phase
+make_perceptual_recalibration_exposure_design = function(
+  # Ideal observer describing the true perceptual system for two categories.
+  experimenter.ideal_observer,
+  experimenter.variability_reduction = my_experimenter.variability_reduction,
+  # How far is the shifted mean shifted towards the other category?
+  exposure.token_shift = .5,  
+  # What's the prior for the category when it's lexically labeled?
+  exposure.category_prior_of_lexical_context = my_experimenter.lexical_bias_strength, 
+  exposure.tokens.typical.n = n.exposure.token,
+  exposure.tokens.shifted.n = n.exposure.token,
+  quiet = F
+) {
+  if (!quiet) message(
+    paste0("Making exposure design with ", exposure.tokens.typical.n, " typical tokens and ", exposure.tokens.shifted.n, " shifted tokens. Experimenters are assumed to have a lapse rate of 0, and the category prior is assumed to reflect a lexical bias of ", exposure.category_prior_of_lexical_context, ". For now, typical tokens are taken to be always the mean of the category, and shifted tokens always fall exactly on the point of maximal ambiguity."))
+ 
+  location.shifted_category1 <- get_locations_along_phonetic_contrast(
+    experimenter.ideal_observer %>% mutate(prior = c(exposure.category_prior_of_lexical_context, 1 - exposure.category_prior_of_lexical_context)),
+    exposure.token_shift)
+  
+  location.shifted_category2 <- get_locations_along_phonetic_contrast(
+    experimenter.ideal_observer %>% mutate(prior = c(1 - exposure.category_prior_of_lexical_context, exposure.category_prior_of_lexical_context)),
+    exposure.token_shift)
+
+  # Create basic tibble
+  tibble(
+    Phase = "exposure",
+    ItemID = as.character(1:(exposure.tokens.typical.n + exposure.tokens.shifted.n)),
+    Item.Type = factor(c(rep("typical", exposure.tokens.typical.n), rep("shifted", exposure.tokens.shifted.n)))
+  ) %>% 
+    # Add all unique design combinations
+    crossing(
+      Item.Category = factor(experimenter.ideal_observer$category)) %>%
+    # Get cue value of item: if shifted then set to shifted location. If not sample from typical distrbibution
+    mutate(
+      Condition = factor(ifelse(
+        (Item.Category ==  experimenter.ideal_observer$category[[1]] & Item.Type == "typical") | (Item.Category ==  experimenter.ideal_observer$category[[2]] & Item.Type == "shifted"),
+        paste0(experimenter.ideal_observer$category[[2]], "-shifted"),
+        paste0(experimenter.ideal_observer$category[[1]], "-shifted"))),
+      x = map2(
+        Item.Type,
+        Item.Category,
+        ~ case_when(
+          .x == "shifted" & .y == experimenter.ideal_observer$category[[1]] ~ 
+            rmvnorm(1, location.shifted_category1, experimenter.ideal_observer$Sigma[[1]] / experimenter.variability_reduction),
+          .x == "shifted" & .y == experimenter.ideal_observer$category[[2]] ~ 
+            rmvnorm(1, location.shifted_category2, experimenter.ideal_observer$Sigma[[2]] / experimenter.variability_reduction),
+          .x == "typical" & .y == experimenter.ideal_observer$category[[1]] ~ 
+            rmvnorm(1, experimenter.ideal_observer$mu[[1]], experimenter.ideal_observer$Sigma[[1]] / experimenter.variability_reduction),
+          .x == "typical" & .y == experimenter.ideal_observer$category[[2]] ~ 
+            rmvnorm(1, experimenter.ideal_observer$mu[[2]], experimenter.ideal_observer$Sigma[[2]] / experimenter.variability_reduction),
+          T ~ NA_real_))) %>%
+  mutate(VOT = map(x, ~ .x[1]) %>% unlist(), f0_Mel = map(x, ~ .x[2]) %>% unlist())
+}
+    
+add_subjects_to_exposure <- function(
+  d, 
+  n.subject, 
+  quiet = F
+) {
+  assert_that(!("Subject" %in% names(d)),
+              msg = "This data frame already seems to contain subjects")
+  if (!quiet) message(paste("Adding", n.subject, "subjects per exposure condition."))
+  
+  d %>%
+    group_by(Condition) %>%
+    crossing(Subject = factor(1:n.subject)) %>%
+    mutate(Subject = paste(Condition, Subject, sep = ".")) %>%
+    select(Condition, Subject, Phase, ItemID, Item.Category, Item.Type, x, everything()) %>%
+    ungroup()
+}
+```
+
+```{r study-PR-exposure-make-data, message=FALSE}
+d.PR.exposure <- make_perceptual_recalibration_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.PR) 
+```
+
+```{r study-PR-test-functions}
+# make the design of an test phase
+make_perceptual_recalibration_test_design = function(
+  d,
+  experimenter.ideal_observer,
+  test.n_block,     # Number of test blocks (total)
+  test.locations
+) {
+  # get test locations under assumption that prior is 50/50, not matter what the ideal observer says.
+  # since this is a reasonable assumption for categorization during test
+  locations <- get_locations_along_phonetic_contrast(
+   ideal_observer = experimenter.ideal_observer %>% mutate(prior = c(.5, .5)),
+    target_probabilities = test.locations)
+  
+  tibble(
+    Phase = "test",
+    ItemID = as.numeric(factor(names(locations), levels = names(locations))),
+    Item.Intended_proportion_category1 = names(locations),
+    Item.Type = "test",
+    Item.Category = NA,
+    x = locations) %>%
+  mutate(VOT = map(x, ~ .x[1]) %>% unlist(), f0_Mel = map(x, ~ .x[2]) %>% unlist()) %>%
+  crossing(  
+    Condition = factor(paste0(experimenter.ideal_observer$category, "-shifted")), 
+    Block = 1:test.n_block)
+} 
+
+add_subjects_to_test <- function(
+  d, 
+  n.subject, 
+  quiet = F
+) {
+  assert_that(!("Subject" %in% names(d)),
+              msg = "This data frame already seems to contain subjects")
+  if (!quiet) message(paste("Adding", n.subject, "subjects per exposure condition."))
+  
+  d %>%
+    group_by(Condition) %>%
+    crossing(Subject = factor(1:n.subject)) %>%
+    mutate(Subject = paste(Condition, Subject, sep = ".")) %>%
+    select(Condition, Subject, Phase, ItemID, Item.Category, Item.Type, x, everything()) %>%
+    ungroup()
+}
+```
+
+```{r study-PR-test-make-data}
+d.PR.test <- make_perceptual_recalibration_test_design(d.PR.exposure, experimenter.ideal_observer = m.io.VOT_f0.PR, test.n_block = n.test_block, test.locations = test_locations) 
+```
+
+Figure \@ref(fig:PR-exposure-test-plot) shows the stimuli for the exposure and test phases of the experiment. During `r conditions.PR[1]` exposure, listeners hear ```r n.exposure.token``` lexically-labeled word recordings containing `r categories.PR[1]` shifted towards `r categories.PR[2]` and ```r n.exposure.token``` lexically-labeled word recordings containing typical `r categories.PR[2]`, mixed in with word and non-word fillers for a total of 200 recordings. As is typical for perceptual recalibration experiments, these fillers are assumed not to contain any information about the VOT distributions of `r paste(categories.PR, collapse = " and ")`, and thus do not affect listeners' beliefs about those distributions. During `r conditions.PR[1]` exposure, participants hear lexically-labeled ```r n.exposure.token``` word recordings containing `r categories.PR[2]` shifted toward `r categories.PR[1]` and ```r n.exposure.token``` lexically-labeled word recordings containing typical `r categories.PR[1]`. Shifted recordings are selected to be perceptually half-way between `r paste(categories.PR, collapse = " and ")`. 
+
+Readers familiar with perceptual recalibration experiments might find Figure \@ref(fig:PR-exposure-test-plot)A puzzling at first glance. It is rare to see the phonetic properties of the stimuli in those experiments summarized or even visualized. And the conventional way of visualizing the results of perceptual recalibration experiments wrongly suggests that the targeted phonetic contrast falls along a single acoustic continuum (see, e.g., Figure \@ref(fig:kraljic-samuel-2007-replotted)). This is, however, rather unlikely to be the case: it is well-known that phonological contrasts tend to vary along multiple phonetic dimensions [e.g., @flege1992; @idemaru-holt2020; for a particular powerful demonstration, see @mcmurray-jongman2011]. For the phonetic contrast at hand, VOT is known to be the primary cue to syllable-initial stop voicing in American English, but f0 and other cues also affect listeners' categorization responses [e.g., @burchill-jaeger2022; @idemaru-holt2011; @schertz2015; @toscano-mcmurray2012].
+<!-- ^[At least as far as as phonetic dimensions that have so far been proposed by researchers are considered.]  -->
+Although not strikingly evident in Figure \@ref(fig:PR-exposure-test-plot)A, this also applies to the `r paste(categories.PR, collapse = "-")` contrast: `r paste(categories.PR, collapse = " and ")` vary along both VOT and f0 among other cues [e.g., @chodroff-wilson2018; @kirby2020; @schertz2015].  
+<!-- TO DO: taken out for now since I don't think it applies anymore, or at least not as saliently: As we will show below, the fact that natural phonological contrasts vary along multiple phonetic dimensions is expected to shape listeners' representations in' categorization behavior in ways that make it even harder to disentangle the three theories of exposure-driven effects on speech perception---at least, as long as this fact is not recognized in the way researchers analyze their data. -->
+
+(ref:PR-exposure-test-plot) Distribution of the exposure and test of the perceptual recalibration experiment. **Panel A - Exposure:** `r n.exposure.token` tokens each of shifted and typical `r paste(categories.PR, collapse = " and ")`, respectively. Arrows indicate how the shifted tokens created by the experimenter differ from typical tokens of the same category (arrows originate from the mean of typical tokens and end at the mean of shifted tokens). As would be expected given the procedures researchers typically employ to generate stimuli for this type of experiment, the exposure distributions for `r paste(categories.PR, collapse = " and ")` in both conditions differ primarily along VOT but, notably, *also* differ along f0. **Panel B - Test (identical for both exposure groups):** Numbers indicate the item ID of the test tokens used in subsequent plots, with IDs in increasing order corresponding to `r paste(paste0(as.numeric(unique(d.PR.test$Item.Intended_proportion_category1)) * 100, "%"), collapse = ", ")` expected `r categories.PR[1]`-responses *prior to exposure* (e.g., in a test-only norming experiment). 
+
+```{r PR-exposure-test-plot, fig.width= base.width * 3 + 1, fig.height= base.height, fig.cap="(ref:PR-exposure-test-plot)"}
+p.PR.exposure <- d.PR.exposure %>%
+  ggplot(aes(x = VOT, y = f0_Mel, color = Item.Category)) +
+  geom_point(aes(shape = Item.Type), alpha = .9) +
+  geom_segment(
+    data = . %>%
+      mutate(
+        Condition = case_when(
+          Item.Type == "typical" & Condition == conditions.PR[1] ~ conditions.PR[2], 
+          Item.Type == "typical" & Condition == conditions.PR[2] ~ conditions.PR[1],
+          T ~ as.character(Condition))) %>%
+      group_by(Condition, Item.Type) %>%
+      summarise(across(c(VOT, f0_Mel), mean)) %>% 
+      pivot_wider(names_from = Item.Type, values_from = c(VOT, f0_Mel)) %>%
+      mutate(Item.Category = ifelse(Condition == conditions.PR[1], categories.PR[1], categories.PR[2])),
+    aes(x = VOT_typical, xend = VOT_shifted, y = f0_Mel_typical, yend = f0_Mel_shifted),
+    arrow = arrow(type = "closed", angle = "24", length = unit(5, "points")),
+    alpha = .4, 
+    show.legend = F) +
+  scale_x_continuous(expression("VOT (ms)"), expand = expansion(mult = .1, add = 0)) +
+  scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0)) +
+  scale_shape_manual("Item type", breaks = c("typical", "shifted"), values = shapes.category) +
+  scale_color_manual("Category", breaks = categories.PR, values = colors.category) +
+  facet_grid(~ paste("Exposure:", Condition))
+
+limits <- get_plot_limits(p.PR.exposure)
+p.PR.test <-
+  d.PR.test %>%
+  filter(Condition == conditions.PR[1]) %>%
+  mutate(Condition = "Test") %>%
+  ggplot(aes(x = VOT, y = f0_Mel, label = as.numeric(factor(ItemID)))) + 
+  geom_line(color = "gray", alpha = .5) +
+  geom_text(aes(color = as.numeric(as.character(Item.Intended_proportion_category1))), size = 3) +
+  scale_x_continuous(expression("VOT (ms)"), expand = expansion(mult = .1, add = 0)) +
+  scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0)) +
+  scale_shape_discrete("Item type") +
+  scale_color_gradient("", low = colors.category[2], high = colors.category[1], guide = NULL) +
+  coord_cartesian(xlim = c(limits$xmin, limits$xmax), ylim = c(limits$ymin, limits$ymax)) +
+  facet_grid(~ Condition)
+
+plot_grid(
+  plotlist = list(p.PR.exposure, p.PR.test),
+  align = "hv",
+  axis = "btlr",
+  labels = c("A)", "B)"),
+  rel_widths = c(.6, .4))
+```
+
+```{r}
+d.PR.exposure %<>%
+  add_subjects_to_exposure(n.subject = n.subject)
+```
+
+### Test phase
+```{r study-PR-test}
+d.PR.test %<>%
+  add_subjects_to_test(n.subject = n.subject)
+```
+
+The test phase consist of the six stimuli shown in Figure \@ref(fig:PR-exposure-test-plot)B, chosen to yield `r paste(paste0(as.numeric(rev(unique(d.PR.test$Item.Intended_proportion_category1))) * 100, "%"), collapse = ", ")` expected `r categories.PR[1]`-responses in a norming experiment without any prior exposure to the talker's speech. This closely resembles the test stimulus placement typical for perceptual recalibration experiments, which tend to examine tokens at the two ends of the continuum as well as those placed near the category boundary. Note that our simulations predict the effects at the *beginning* of the test phase, prior to repeated exposure to the same stimuli over the course of testing. <!--For example, @kraljic-samuel2007 employed XXX such test blocks.--> Recent work found that this repeated testing *reduces* the effects of exposure [@liu-jaeger2018; @liu-jaeger2019; @luthra2020; for review, see @theodore2021]. As a consequence, averaging across all test blocks---as is commonly done---underestimates the effects of exposure [for early mention of this concern, see @norris2003, p. 11].
+
+## Results
+Next, we use the models introduced in Section \@ref(sec:framework) to illustrate to what extent changes in normalization, representations, or response biases can explain the typical behavioral signature of perceptual recalibration experiments: a shift in the category boundary in the same direction as the shifted tokens during exposure (optionally accompanied by a change in slope of the categorization functions). The goal of these computational demonstrations is to illustrate the general type of pattern that the three different hypotheses can account for.
+
+All three change models start from the same prior state. Specifically, we assume that listeners have acquired category representations with expected category means ($\mathbf{E}(\mu_{/d/}), \mathbf{E}(\mu_{/t/})$) and variances ($\mathbf{E}(\sigma_{/d/}), \mathbf{E}(\sigma_{/t/})$) that reflect the talker-normalized distribution in Chodroff and Wilson (2018; see Figure \@ref(fig:show-representations-plots)). Prior to any exposure, decision-making is assumed to employ uniform response biases ($\pi_{/d/}=\pi_{/t/}=.5$) and exhibit zero lapse rates. The findings we present below do not qualitatively depend on these specific assumptions. For example, none of the qualitative patterns would change if listeners had non-uniform response biases or non-zero lapse rates at the start of the experiment.
+
+### Changes in representations
+We begin by modeling exposure-driven changes in the mapping from VOT and f0 to the /d/ and /t/ categories. This is arguably the mechanism that is most commonly assumed to underlie the boundary shift observed in perceptual recalibration experiments. <!-- [@REFS-that-are-explicitly-using-similar-language]--> Specifically, we use the $\mathcal{NW}^{-1}$ ideal adaptor model described in Section \@ref(sec:ideal-adaptor) while varying the $\kappa_{0,c}$ and $\nu_{0,c}$ parameters. We set the other two parameters of the $\mathcal{NW}^{-1}$ ideal adaptor ($\mathrm{m}$ and $\mathrm{S}$) so that they match the expected mean and covariance of the data in @chodroff-wilson2018 (as we did in Section \@ref(sec:ideal-adaptor)). Normalization and responses biases did not change based on exposure ($\kappa_0 = \infty$; $\beta_{\delta_\pi}=0$).
+
+```{r study-PR-models-changes-in-representations}
+d.PR <- d.PR.exposure %>%
+  add_prior_and_get_posterior_beliefs_based_on_exposure(prior = m.ia.VOT_f0.PR) %>%
+  add_test_tokens(d.PR.test) %>%
+  add_categorization_functions() %>%
+  group_by(Condition, Subject, prior_kappa, prior_nu) %>%
+  add_categorization() %>%
+  ungroup() %>%
+  mutate_at(
+    vars(starts_with("prior_")),
+    ~ factor(as.character(.x), levels = as.character(rev(sort(unique(.x))))))
+```
+
+Figure \@ref(fig:PR-result-changes-in-representations) shows the predicted categorization functions after `r paste(conditions.PR, collapse = " and ")` exposure, depending on the strength of the prior beliefs for the category means and variances. We show the results for $\kappa_{0,c}$s and $\nu_{0,c}$s ranging from 1024 (very slow learning) to 4 (very fast learning). These values are best understood in the context of the number of critical exposure stimuli (20 for each category). For example, a $\kappa_{0,c}=20$ would mean that the listeners' beliefs about the distribution about the category mean after exposure is a 50/50 mix of their beliefs prior to exposure and the mean of the exposure stimuli (see Equation \@ref(eq:niw-updating)). For $\kappa_{0,c}=4$, listeners' beliefs about the category mean are thus primarily determined by the mean of the exposure stimuli, whereas a $\kappa_{0,c}=1024$ essentially means that exposure does not affect listeners' belief about the category mean at all (and mutatis mutandis, for $\nu_{0,c}$). As an additional reference, we note the best-fitting $\kappa_{0,/b/}=\kappa_{0,/p/}=243$ (95% CI: 163-495) and $\nu_{0,/b/}=\nu_{0,/p/}=772$ (95% CI: 493-1180) obtained by @kleinschmidt-jaeger2016cogsci based on a series of distributional learning experiments on changes only in VOT within a paradigm similar to @clayards2008. Subsequent improvements to these analyses changed the best-fitting estimates to $\kappa_{0,/b/}=\kappa_{0,/p/}=160$ (95% CI: 75-780) and $\nu_{0,/b/}=\nu_{0,/p/}=510$ [95% CI: 160-1000; @kleinschmidt2019]. 
+
+(ref:PR-result-changes-in-representations) Predictions of a learning model that derives perceptual recalibration as changes in category representations. Predicted categorization responses are shown for the `r length(test_locations)` test tokens after `r paste(categories.PR, collapse = "- and")`-shifted exposure, depending on the strength of the prior beliefs in categories means ($\kappa_{0,c}$) and covariances ($\nu_{0,c}$). Smaller $\kappa_{0,c}$ and $\nu_{0,c}$ indicate *faster* learning, weighting previous long-term experience less during the integration with the observations made during the exposure phase of the experiment (see Equation \@ref(eq:niw-updating)). The highlighted panel corresponds to the best-fitting $\kappa_{0,c}$ and $\nu_{0,c}$ observed in previous work within other types of paradigms [@kleinschmidt-jaeger2016cogsci; @kleinschmidt2020].
+
+```{r PR-result-changes-in-representations, fig.width= base.width * 5, fig.height= base.height * 5 +.5, fig.cap="(ref:PR-result-changes-in-representations)"}
+p.PR.results <-
+  d.PR %>%
+  filter(category == categories.PR[1]) %>%
+  ggplot(aes(x = observationID, y = response, color = Condition, l = Condition)) +
+  geom_line(aes(group = Condition), alpha = .75) +
+  # , breaks = 1:length(unique(d.PR$observationID)), labels = c(categories.PR[1], rep("", length(unique(d.PR$observationID)) - 2), categories.PR[2])
+  scale_x_continuous(name = "Test token") + 
+  scale_y_continuous(paste0('Proportion ', categories.PR[1], '-responses'), limits = c(0, 1)) +
+  scale_linetype_manual("Exposure condition", breaks = conditions.PR, values = linetypes.condition) +
+  scale_color_manual("Exposure condition", breaks = conditions.PR, values = colors.condition) +
+  facet_grid(
+    prior_nu ~ prior_kappa, 
+    labeller = label_bquote(
+      cols = {kappa[0~","~ .(categories.PR[1])] == kappa[0~","~ .(categories.PR[2])]} == .(as.character(prior_kappa)), 
+      rows = {nu[0~","~ .(categories.PR[1])] == nu[0~","~ .(categories.PR[2])]} == .(as.character(prior_nu)))) + # as.table = T doesn't seem to work
+  theme(legend.position = "top") +
+  myGplot.defaults(base_size = 14, set_theme = F)
+
+p.PR.results +
+  insert_layers(
+    geom_rect(
+      data = . %>%
+        distinct(prior_kappa, prior_nu) %>%
+        mutate(highlight = case_when(
+          between(as.numeric(as.character(prior_kappa)), 163, 495) & between(as.numeric(as.character(prior_nu)), 493, 1180) ~ T,
+          T ~ F)), 
+      aes(fill = highlight), alpha = .2, inherit.aes = F,
+      xmin = -Inf,xmax = Inf, ymin = -Inf,ymax = Inf)) +
+  scale_fill_manual(breaks = c(T, F), values = c("darkgray", "white")) +
+  guides(fill = "none")
+```
+
+Figure \@ref(fig:PR-result-changes-in-representations) demonstrates that distributional learning can account for the typical result of perceptual recalibration experiments. Indeed, the parameterization of the $\mathcal{NW}^{-1}$ ideal adaptor that best fit human responses in a series of distributional learning experiments on /b/ and /p/ [@kleinschmidt-jaeger2016cogsci; @kleinschmidt2020] also provides a good qualitative fit against the /d/-/t/ perceptual recalibration results by Kraljic and Samuel [-@kraljic-samuel2007, gray panel in Figure \@ref(fig:PR-result-changes-in-representations)]. 
+
+We further see that boundary shifts can be the results of either changes in the beliefs about category means (e.g., right column of Figure \@ref(fig:PR-result-changes-in-representations)) or changes in the beliefs about category covariances (e.g., bottom row in Figure \@ref(fig:PR-result-changes-in-representations)). This is further illustrated by Figure \@ref(fig:PR-result-changes-in-representations-categories), which shows the expected category likelihoods for a subset of the panels of Figure \@ref(fig:PR-result-changes-in-representations). In fact, for the specific experiment simulated here, the latter leads to comparatively larger boundary shifts. This is the result of the experimenter selecting 'typical' stimuli as the starting point for the phonetic manipulations. In our simulation, we emulated this by reducing the variance of the stimuli by a constant factor, simulating a process by which the experimenter discards 'atypical' recordings. Leaving these specifics aside, this demonstrates that terms like "category expansion" and "boundary shifts" are best understood as *descriptions* of results, rather than hypotheses about the underlying *mechanisms*. <!--[for related discussion, see @schertz-clare2020-ORNOT].--> The ideal adaptor and similar learning mechanisms can explain either type of result [for additional support and discussion, see also @kleinschmidt-jaeger2015, p. 168; @bent-baeseberk2021; @hitczenko-feldman2016; @theodore-monto2019].
+
+(ref:PR-result-changes-in-representations-categories) Expected category likelihoods (based on expected category mean and covariance matrices), depending on the exposure condition and the strength of the prior beliefs in categories means ($\kappa_{0,c}$) and covariances ($\nu_{0,c}$). Only a illustrative subset of the $\kappa_{0,c}$ and $\nu_{0,c}$ values from Figure Figure \@ref(fig:PR-result-changes-in-representations) are shown. 
+
+```{r PR-result-changes-in-representations-categories, fig.width= base.width * 4, fig.height= base.height * 2 +.5, fig.cap="(ref:PR-result-changes-in-representations-categories)"}
+levels <- c(.68, .95)
+
+plot_expected_categories_contour2D(
+  x = d.PR %>% 
+    distinct(Condition, Subject, prior_kappa, prior_nu, posterior) %>%
+    filter(prior_kappa %in% c(4, 1024), prior_nu %in% c(4, 1024)) %>%
+    unnest(posterior), 
+  levels = levels, 
+  facet_rows_by = prior_nu, facet_cols_by = prior_kappa) +
+  scale_x_continuous("VOT (msec)") +
+  scale_y_continuous("f0 (Mel)") +
+  scale_fill_manual("Exposure condition", breaks = categories.PR, values = colors.category) +
+  scale_alpha_continuous("Cumulative probability", range = c(.1, .5), breaks = 1 - levels, labels = round(levels, 2)) +
+  facet_grid(
+    Condition ~ prior_nu + prior_kappa, 
+    labeller = label_bquote(
+      cols = atop({kappa[0~","~ .(categories.PR[1])] == kappa[0~","~ .(categories.PR[2])]} == .(as.character(prior_kappa)), 
+                  {nu[0~","~ .(categories.PR[1])] == nu[0~","~ .(categories.PR[2])]} == .(as.character(prior_nu))))) +
+  theme(legend.position = "top", panel.spacing = unit(1, "lines"))
+
+# plot_expected_categories_contour2D(
+#   x = d.PR %>% 
+#     distinct(Condition, Subject, prior_kappa, prior_nu, posterior) %>%
+#     filter(Condition == conditions.PR[2]) %>%
+#     unnest(posterior), 
+#   levels = levels, 
+#   facet_rows_by = prior_nu, facet_cols_by = prior_kappa) +
+#   scale_fill_manual("Exposure condition", breaks = categories.PR, values = colors.category) +
+#   scale_alpha_continuous("Cumulative probability", range = c(0, .3), breaks = round(levels, 2)) +
+#   facet_grid(
+#     prior_nu ~ prior_kappa, 
+#     labeller = label_bquote(
+#       cols = {kappa[0~","~ .(categories.PR[1])] == kappa[0~","~ .(categories.PR[2])]} == .(as.character(prior_kappa)), 
+#       rows = {nu[0~","~ .(categories.PR[1])] == nu[0~","~ .(categories.PR[2])]} == .(as.character(prior_nu)))) +
+#   theme(legend.position = "top")
+```
+
+Finally, Figure \@ref(fig:PR-result-changes-in-representations) shows that distributional learning does not only predict shifts in the category boundary but can also predict changes in the slope of those boundaries. This is evident, for example, in the top-right panel.^[This is still true if the predicted log-odds, rather than proportions, of /d/ are plotted.] Although such changes in slopes are often not discussed, they are present in many perceptual recalibration experiments [see @drouin2016; @liu-jaeger2018; @liu-jaeger2019; @myers-mesite2014].
+
+### Changes in decision-making
+Next, we model the effects of changes in decision-making. In addition to varying the rate at which response biases change $\beta_{\delta_\epsilon}$, we also vary the lapse rate parameter $\lambda$. Normalization and representations did not change based on exposure ($\kappa_0 = \kappa_{0,c} = \nu_{0,c} = \infty$). To the best of our knowledge, changes in responses biases are *not* commonly considered as an explanation for the boundary shift. 
+
+(ref:PR-result-changes-in-decision-making) Predictions of a model that derives perceptual recalibration as changes in decision-making. Predicted categorization responses are shown for the `r length(test_locations)` test locations after `r paste(categories.PR, collapse = "- and")`-shifted exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda_{posterior}$). The response biases towards `r categories.PR[1]` that results from $\beta_{\pi}$ are shown in the bottom row for each of the two exposure conditions, and are identical within each column (when all trials are lapses, as in the bottom row, the response distribution is identical to the response biases). 
+
+```{r PR-result-changes-in-decision-making, fig.width= base.width * 5, fig.height= base.height * 5 +.5, fig.cap="(ref:PR-result-changes-in-decision-making)"}
+d.PR <- d.PR.exposure %>%
+  add_prior_and_posterior_with_changed_response_biases_based_on_exposure(prior = m.ia.VOT_f0.PR) %>%
+  add_test_tokens(d.PR.test) %>%
+  add_categorization_functions() %>%
+  group_by(Condition, Subject, posterior.lapse_rate, beta_delta_epsilon) %>%
+  add_categorization()
+
+p.PR.results %+% 
+  (d.PR %>%
+     filter(category == categories.PR[1]) %>%
+     mutate(
+       posterior.lapse_bias1 = map(posterior, ~ .x %>% filter(category == categories.PR[1]) %>% pull(lapse_bias)),
+       posterior.lapse_bias2 = map(posterior, ~ .x %>% filter(category == categories.PR[2]) %>% pull(lapse_bias)))) +
+  geom_text(
+    data = . %>%
+      group_by(Condition, posterior.lapse_rate, beta_delta_epsilon) %>%
+      summarise(
+        minObservationID = min(observationID),
+        maxObservationID = max(observationID),
+        lapse_bias_expression = list(bquote(pi[.(categories.PR[1])] == .(first(posterior.lapse_bias1))))) %>%
+      ungroup() %>%
+      filter(posterior.lapse_rate == max(posterior.lapse_rate)),
+    mapping = aes(
+      x = ifelse(Condition == conditions.PR[2], minObservationID, maxObservationID),
+      y = ifelse(Condition == conditions.PR[2], 0, 1),
+      hjust = ifelse(Condition == conditions.PR[2], 0, 1),
+      vjust = ifelse(Condition == conditions.PR[2], 0, 1),
+      label = unlist(lapse_bias_expression)),
+    size = 4,
+    parse = T,
+    show.legend = F) +
+  facet_grid(
+    posterior.lapse_rate ~ beta_delta_epsilon, 
+    labeller = label_bquote(
+      cols = beta[pi] == .(beta_delta_epsilon),
+      rows = lambda[posterior] == ~.(posterior.lapse_rate))) +
+  myGplot.defaults(base_size = 14, set_theme = F)
+
+# p.PR.results %+% 
+#     (d.PR %>% 
+#        filter(category == categories.PR[1]) %>%
+#        mutate(
+#          posterior.lapse_bias1 = map(posterior, ~ .x %>% filter(category == categories.PR[1]) %>% pull(lapse_bias)),
+#          posterior.lapse_bias2 = map(posterior, ~ .x %>% filter(category == categories.PR[2]) %>% pull(lapse_bias))) %>%
+#        group_by(Condition, beta_delta_epsilon) %>%
+#        mutate(
+#          lapse_bias_expression = list(
+#            bquote(
+#              atop(
+#                beta[delta[pi]] == .(beta_delta_epsilon),
+#                atop(
+#                  bquote(pi[.(categories.PR[1])] == .(first(posterior.lapse_bias1))),
+#                  bquote(pi[.(categories.PR[2])] == .(first(posterior.lapse_bias2))))))))) +
+#   facet_grid(
+#     posterior.lapse_rate ~ beta_delta_epsilon, 
+#     labeller = label_bquote(
+#       cols = .(unlist(lapse_bias_expression)),
+#       rows = lambda[posterior] == ~.(posterior.lapse_rate)))
+```
+
+Figure \@ref(fig:PR-result-changes-in-decision-making) shows the effects of changes in response biases for lapse rates ranging from negligible lapse rates ($\lambda = .0005$, top row) to a scenario in which listeners always lapse ($\lambda = 1$). In the latter---rather implausible---edge case, listeners' responses only reflect response biases and are completely stimulus-independent (bottom row). For reference, lapse rates in an experiment that is sufficiently engaging are typically assumed to fall between 1-10%, with the latter being on the high end (e.g., Clayards et al., 2008 constrained lapse rates to be $<5$%). Kleinschmidt and Jaeger (2016) report a best-fitting value of 5%.
+
+The primary insight from Figure \@ref(fig:PR-result-changes-in-decision-making) is that changes in response biases can account for the type of boundary shift that is observed in perceptual recalibration experiments. This highlights the fact that the signature result of perceptual recalibration experiments is ambiguous between two explanations that evoke very different cognitive architectures. For the case study, perhaps the closest match to the findings from Kraljic and Samuel (2006) is observed for plausible lapse rates up to 5% and small changes in response bias (second column, top rows). 
+
+Figure \@ref(fig:PR-result-changes-in-decision-making) further shows that changes in response biases do not necessarily lead to changes that are symmetric around the uniform response biases we assumed as a starting point prior to the experiment ($\pi_{/d/}=\pi_{/t/}=.5$). For example for $\beta_{\pi} = .8$, the /d/-shifted condition results in a /d/-bias of $\pi_{/d/}=.93$, whereas /t/-shifted condition results in $\pi_{/d/}=.17$ ($\neq 1 - .93$). This type of asymmetry in the degree of change in the response bias is a consequence of the type of change model we assumed in Equation \@ref(eq:bias-updating)---specifically, the assumption that listeners change their responses biases only when their categorization is in conflict with the category label indicated in the input (e.g., when the listener hears a /t/ but the lexical context is *lemona_e*). This means that the degree to which listeners change their response biases depends on the degree to which the acoustic properties of the exposure stimuli are in conflict with the lexical contexts they appear in. 
+
+<!-- There is, however, a notable limitation in the types of results that can be explained through changes in responses biases: by itself, changes in response biases can only explain boundary shifts, but not changes in the *slope* of the categorization function. This is of relevance since---as already mentioned---some perceptual recalibration experiments *do* find such changes. To see how this limitation arises, let's consider the simple case when the lapse rate $\lambda=0$. In this case, Equation \@ref(eq:posterior-probability-lapse) applied to the response distribution of /d/ simplifies to: -->
+
+<!-- \begin{equation}\label{eq:posterior-probability-lapse-PR} -->
+<!-- \begin{split} -->
+<!-- p(/d/ | VOT, f0) & = \frac{\mathcal{N}\!\left( VOT, f0 | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/}}{\Sigma_i \mathcal{N}\!\left( VOT, f0 | \mu_{c_i}, \Sigma_{c_i}\right) \pi_i} \Rightarrow \\ -->
+<!-- \mathrm{logit}\left( p(/d/ | VOT, f0)\right) & =  \\ -->
+<!-- \log \frac{p(/d/ | VOT, f0)}{1 - p(/d/ | VOT, f0)} & =  \\ -->
+<!-- \log \frac{p(/d/ | VOT, f0)}{p(/t/ | VOT, f0)} & =  \log \frac{\mathcal{N}\!\left( VOT, f0 | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/}}{\mathcal{N}\!\left( VOT, f0 | \mu_{/t/}, \Sigma_{/t/} \right) \pi_{/t/}} \\ -->
+<!--  & = \log \frac{\mathcal{N}\!\left( VOT, f0 | \mu_{/d/}, \Sigma_{/d/} \right)}{\mathcal{N}\!\left( VOT, f0 | \mu_{/t/}, \Sigma_{/t/} \right)} + \log\frac{\pi_{/d/}}{\pi_{/t/}} -->
+<!-- \end{split} -->
+<!-- \end{equation} -->
+
+<!-- In other words, changes in the response bias have additive effects on the overall log-odds of responding /d/ (this is still the case when $\lambda \neq 0$). Put differently, changes in the response bias lift the entire categorization function up or down by a constant amount, independent of the stimulus (i.e., independent of VOT and f0). And this property does not depend on the specific change model we assume for response biases. Whatever the change in response biases is, it should have an effect that is additive in the log-odds of the response. This highlights how the specification of linking hypotheses can guide how we ought to analyze our data. It also means that one of the most frequently ignored aspects of perceptual recalibration experiments---changes in the slope of the categorization function---might actually be more informative about the underlying mechanism than the signature result pattern associated with this paradigm. If researchers were to routinely analyze the result of perceptual recalibration experiments with (lapse-corrected) logistic regression, the data from already existing experiments might decisively reject on explanation of perceptual recalibration effects.^[Note, however, that moving to (lapse-corrected) logistic regression analyses is not *sufficient*: it is also critical that the analysis does not make wrong assumptions about the functional relation between the continuous cues and participants' categorization responses, as this can result in wrongly identifying non-additive effects when in reality there are only additive effects.  Under the categorization model described in Section \@ref(sec:framework), for example, even binary phonetic contrasts along a single cue dimension are predicted to have both linear and quadratic effects on the log-odds of the categorization response (except for the special case when both categories have equal variance). One way to sidestep this problem is to treat stimulus identity as a categorical, rather than continuous, predictor when analyzing the effects of exposure conditions on categorization responses during test.] Such analyses do, however, remain the exception in research on speech perception [but see @clayards2008], and even logistic regression (not corrected for lapsing) continues to be eschewed in good number of published articles. As a consequence, it is difficult to tell whether published results from perceptual recalibration experiments rule out changes in response biases as an explanation. -->
+
+<!-- TO DO: make plots in log-odds to check whether the above is true -->
+
+Finally, Figure \@ref(fig:PR-result-changes-in-decision-making) llustrates the effects of lapse rates. The higher the rate of lapsing trials, the more the overall response pattern is determined by the response biases, rather than by stimulus-dependent aspects. This also means that it can be important to keep lapse rates in mind when analyzing the data. Consider, for example, a scenario in which listeners' lapse rates differ after `r paste(conditions.PR, collapse = " and ")` exposure---e.g., because one exposure condition resulted in a more difficult or less engaging task, or in less plausible stimuli. Compare, say, the blue line for $\beta_{\pi} = .05$, $\lambda = .005$ against the red line for $\beta_{\pi} = .05$, $\lambda = .5$. Analyses that fail to take into account the difference in lapse rates would wrongly conclude that the category representations have changed since the slopes of the categorization functions resulting from the two exposure conditions seem to differ.
+
+### Changes in normalization
+Finally, we compare a model that normalizes test tokens based on the phonetic inputs experienced during exposure to a model that continues to apply normalization based on previous longterm experience. The model that changes normalization based on the exposure tokens essentially subtracts the cue means experienced during exposure---which varies based on the exposure condition---from that of each of the test tokens. We implement this by adjusting the cue values of the test tokens by the difference between the prior mean of cues based on previously experienced input [estimated in Section \@ref(sec:framework) based on data from @chodroff-wilson2018] and the mean of cues experienced during exposure. All other parameters have the same setting as in the previous section's, except that no changes in representations or response biases were considered. <!--Figure--> 
+
+To illustrate the consequences of normalization, we vary the only parameter of our change model for normalization, $\kappa_0$. Figure \@ref(fig:PR-test-normalization) illustrates the effect of this centering on the perception of test locations, so that normalization *only* depends on the mean of the exposure data (i.e., when listeners have correctly inferred the mean of the test data). Figure \@ref(fig:PR-test-normalization) shows the results of different degrees of normalization. Paralleling the results for changes in representations and response biases, changes in normalization can account for the signature boundary shift of perceptual recalibration experiments.
+
+(ref:PR-test-normalization) Effects of changes in normalization on the perception of test locations, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure. Normalization based on exposure results in a shift in the perception of the test stimuli. The magnitude of that shift depends on $\kappa_0$, with larger shifts (more learning) for smaller $\kappa_0$ (see Equation \@ref(eq:normalization-change)). 
+
+```{r PR-test-normalization, fig.width= base.width * 2, fig.height= base.height * (if (animate) 1 else 3) + (if (animate) .5 else 0), fig.cap="(ref:PR-test-normalization)", fig.show= if (animate) 'animate' else 'asis'}
+d.PR <- d.PR.exposure %>%
+  add_prior_and_normalize_test_tokens_based_on_exposure(data.test = d.PR.test, prior.normalization = prior_marginal_VOT_f0_stats, prior.categories = m.ia.VOT_f0.PR) %>%
+  group_by(Condition, Subject, prior_kappa.normalization) %>%
+  add_categorization_functions() %>%
+  add_categorization() %>%
+  mutate(Prior_proportion_category1 = map(x, ~ get_experimenter_posterior_of_category1(matrix(.x, ncol = 2), m.io.VOT_f0.PR)) %>% unlist()) %>%
+  ungroup() %>%
+  mutate(
+    prior_kappa.normalization = factor(as.character(prior_kappa.normalization), levels = as.character(rev(sort(unique(prior_kappa.normalization))))))
+
+limits <- get_plot_limits(p.PR.exposure)
+if (animate) {
+  d.PR %>%
+    mutate(VOT = map(x, ~ .x[1]) %>% unlist(), f0_Mel = map(x, ~ .x[2]) %>% unlist()) %>%
+    group_by(Condition, Subject, prior_kappa.normalization) %>%
+    ggplot(aes(x = VOT, y = f0_Mel, label = as.numeric(factor(observationID)))) + 
+    geom_line(color = "gray", alpha = .5) +
+    geom_text(aes(color = Prior_proportion_category1), size = 3) +
+    scale_x_continuous(expression("VOT (msec)"), expand = expansion(mult = .1, add = 0)) +
+    scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0)) +
+    scale_shape_discrete("Item type") +
+    scale_color_gradient("", low = colors.category[2], high = colors.category[1], guide = NULL) +
+    coord_cartesian(xlim = c(limits$xmin, limits$xmax), ylim = c(limits$ymin, limits$ymax)) +
+    facet_grid(. ~ Condition) +
+    # ease_aes('linear') +
+    # enter_fade() + exit_fade() +
+    transition_states(prior_kappa.normalization) +
+    ggtitle(label = expression(kappa[0]), subtitle = "{closest_state}")
+} else {
+  d.PR %>%
+    filter(prior_kappa.normalization %in% c(4, 64, 1024)) %>%
+    mutate(VOT = map(x, ~ .x[1]) %>% unlist(), f0_Mel = map(x, ~ .x[2]) %>% unlist()) %>%
+    group_by(Condition, Subject, prior_kappa.normalization) %>%
+    ggplot(aes(x = VOT, y = f0_Mel, label = as.numeric(factor(observationID)))) +
+    geom_line(color = "gray", alpha = .5) +
+    geom_text(aes(color = Prior_proportion_category1), size = 3) +
+    scale_x_continuous(expression("VOT (msec)"), expand = expansion(mult = .1, add = 0)) +
+    scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0)) +
+    scale_shape_discrete("Item type") +
+    scale_color_gradient("", low = colors.category[2], high = colors.category[1], guide = NULL) +
+    coord_cartesian(xlim = c(limits$xmin, limits$xmax), ylim = c(limits$ymin, limits$ymax)) +
+    facet_grid(
+      prior_kappa.normalization ~ Condition,
+      labeller = label_bquote(
+        rows = ~kappa[0] == .(as.character(prior_kappa.normalization))))
+}
+```
+
+(ref:PR-result-changes-in-normalization) Predictions of a model that derives perceptual recalibration from changes in normalization. Predicted categorization responses are shown for the `r length(test_locations)` test locations after `r paste(categories.PR, collapse = "- and")`-shifted exposure, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure. Smaller $\kappa_0$ indicate faster learning. 
+
+```{r study-PR-models-normalization-results, fig.width= base.width * 5, fig.height= base.height + 1, fig.cap="(ref:PR-result-changes-in-normalization)"}
+p.PR.results %+%
+  (d.PR %>%
+     filter(category == categories.PR[1])) +
+  facet_grid(
+    . ~ prior_kappa.normalization,
+    labeller = label_bquote(
+      cols = ~kappa[0] == .(as.character(prior_kappa.normalization)))) +
+  myGplot.defaults(base_size = 14, set_theme = F)
+```
+
+## Discussion
+We applied the three change models developed in Section \@ref(sec:framework) to a hypothetical experiment within the perceptual recalibration paradigm. All three models predict the characteristic boundary shift observed in perceptual recalibration experiments. At least at the level of analysis that is typically applied in these experiments, the results of perceptual recalibration experiments therefore do *not* provide decisive evidence for changes in representations [contrary to what is often assumed in previous studies since @norris2003]. Rather, boundary shifts can be the result of changes at *any* of the three mechanistic levels we have explored here. 
+
+This does not mean that perceptual recalibration experiments are *necessarily* uninformative about the mechanisms underlying the effects of recent exposure. If adequate approaches to data analysis are chosen, these experiment do, in principle, provide information that can be used to distinguish between the three different explanations (cf. the fact that changes in biases are additive in the log-odds of the categorization response). Additionally, specific linking hypotheses---like the ones we have introduced here---can be compared in terms of their *quantitative* fit against the data, while appropriately taking into account their functional flexibility [e.g., through model comparison measures like the Bayesian leave-one-out information criterion, @vehtari2017]. Before we discuss this and other ways towards studies that more decisively distinguish between the three explanations, we present a second case study using another very common paradigm.
+
+ <!-- * discuss whether e.g., norris et al's (ambiguous nonce-word) condition rules out normalization -->
+ <!-- * discuss role of multi-dimensional inputs. -->

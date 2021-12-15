@@ -1,0 +1,11 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+*.log
+.DS_Store
+scripts/TESTING/
+*_cache/
+*_files/
+figures/knitted/*

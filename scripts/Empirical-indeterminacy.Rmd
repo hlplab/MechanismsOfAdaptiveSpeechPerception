@@ -1,0 +1,195 @@
+---
+title             : "What we do (not) know about the mechanisms underlying adaptive speech perception: A computational review"
+shorttitle        : "Exposure effects in speech perception"
+date              : "`r format(Sys.time(), '%B %d, %Y')`"
+
+author: 
+  - name          : "Xin Xie"
+    affiliation   : "1,2"
+    corresponding : yes    # Define only one corresponding author
+    address       : "3151 Social Science Plaza B, University of California, Irvine CA 92697–5100"
+    email         : "xie14@uci.edu"
+    # role: 
+    #   - Conceptualization
+    #   - Writing - Original Draft Preparation
+    #   - Writing - Review & Editing
+    #   - Coding of analyses and visualization
+  - name          : "T. Florian Jaeger"
+    affiliation   : "2,3"
+    # role:
+    #   - Conceptualization
+    #   - Writing - Original Draft Preparation
+    #   - Writing - Review & Editing
+    #   - Coding of analyses and visualization
+  - name          : "Chigusa Kurumada"
+    affiliation   : "2"
+    # role:
+    #   - Conceptualization & Framing
+    #   - Writing - Original Draft Preparation
+    #   - Writing - Review & Editing
+    #   - Visualization
+
+affiliation:
+  - id            : "1"
+    institution   : "Language Science, University of California, Irvine"
+  - id            : "2"
+    institution   : "Brain and Cognitive Sciences, University of Rochester"
+  - id            : "3"
+    institution   : "Computer Science, University of Rochester"
+
+authornote: |
+  We are grateful to ### ommitted for review ###
+# Meghan Clayards and Eleanor Chodroff for sharing their data in an accessible format, and for helping prepare their data for this study. We thank the participants in the 2021 summer 'mega-lab' meetings for many insightful discussions that shaped the perspectives discussed here (all mistakes remain our own). This includes, in particular, Ann Bradlow, Melissa Baese-Berk, Eleanor Chodroff, Jennifer Cole, Shawn Cummings, Laura Dilley, James McQueen, Arty Samuel, Maryann Tan, and Rachel Theodore. We also owe thanks for early feedback on this project to Marc Allassonnière-Tang, Jing Liu, Gerda Melnik, and Anna Persson.
+
+abstract: |
+  Speech input from a talker with unfamiliar pronunciations can be difficult to comprehend initially. This difficulty tends to dissipate with exposure, sometimes rapidly. While these adaptive abilities are most apparent under adverse conditions, they are now assumed to operate continuously during speech perception, facilitating robust comprehension. Research over the past two decades has made substantial progress in characterizing the types of changes that occur as a function of exposure to unfamiliar talkers. The mechanisms underlying this ability do, however, remain unclear. We describe a general computational framework that links the phonetic properties of speech input to predictions about changes in perception. The framework implements three mechanisms through which recent exposure can come to affect subsequent perception: (1) low-level, pre-linguistic, signal normalization, (2) changes in/selection of linguistic representations, or (3) changes in decision-making. Although the facilitatory effects of exposure on subsequent speech perception are often attributed to the second of these mechanisms (learning of talker- or group-specific representations), we find that the signature results of common experimental paradigms can also be explained without reference to linguistic representations. We recommend specific changes to experimental paradigms, data analysis, and data sharing to overcome this empirical indeterminacy. All data and code for this study are shared via OSF, including the R markdown document that this article is generated from, and an R library that implements the models we present.
+  
+keywords          : "speech perception; computational model; accent adaptation; perceptual recalibration"
+wordcount         : "X"
+
+bibliography      : ["latex-stuff/library.bib", "latex-stuff/r-references.bib"]
+link-citations    : yes
+csl               : latex-stuff/apa-6th-edition.csl
+
+floatsintext      : yes
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+linenumbers       : yes
+numbersections    : true
+mask              : no
+draft             : no
+
+header-includes: 
+ - \usepackage{animate}
+ - \usepackage{amsmath}
+ - \usepackage{tikz}
+ - \usetikzlibrary{bayesnet}
+ - \usepackage{booktabs}
+ - \usepackage{siunitx}
+ - \usepackage{soul}
+ - \usepackage{tabto}
+ - \usepackage{xcolor}
+ - \usepackage{placeins}
+ - \setstcolor{red}
+ - \usepackage{sectsty}
+ - \sectionfont{\color{black}}
+ - \subsectionfont{\color{black}}
+ - \subsubsectionfont{\color{black}}
+ - \usepackage{setspace}\doublespacing
+ - \usepackage{subfig}
+ 
+documentclass     : "apa6"
+classoption       : "man"
+fontsize          : 11pt
+output: 
+  papaja::apa6_pdf:
+    latex_engine: xelatex
+    extra_dependencies: "subfig" 
+    includes:
+      in_header: latex-stuff/header.tex
+always_allow_html: true
+---
+
+```{r libraries, include=FALSE, message=FALSE}
+library(papaja)             # APA formatted ms
+
+library(tidyverse)
+library(magrittr)           # pipes
+library(rlang)              # quosures (in functions)
+library(assertthat)         # asserts (in functions)
+library(data.table)
+
+library(linguisticsdown)    # IPA symbols
+library(cowplot)            # combining plots
+library(plotly)             # 3D plots
+library(processx)           # interface to orca (fot plotly)
+library(gganimate)          # animations
+
+library(lme4)               # for C-CuRE normalization through regression
+library(modelr)
+library(diptest)            # test for bimodality
+
+# devtools::install_github("hlplab/MVBeliefUpdatr")
+library(MVBeliefUpdatr)     # for ideal observers and adaptors 
+library(LaplacesDemon)      # for additional density distributions (W^-1)
+```
+
+```{r constants-general, include=FALSE}
+colors.voicing = c("blue", "red")
+```
+
+```{r functions-general, include=FALSE}
+source("functions.R")
+source("functions_plot_3D.R")
+get_path <- function(filename) return(paste0("", filename))
+
+# For plotting
+myGplot.defaults("paper")
+
+# Get citation information
+r_refs(file = "latex-stuff/r-references.bib")
+```
+
+```{r knitr-setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE, message = FALSE, warning = TRUE, 
+  results = "markup", cache = TRUE,
+  interval = .2,
+  fig.path = get_path("../figures/knitted/"), fig.align = "center", fig.height = 2.5, fig.width = 2.5)
+
+knitr::knit_hooks$set(inline = function(x) {
+  prettyNum(x, big.mark=",")
+})
+
+knitr::knit_hooks$set(document = function(x) {sub('\\usepackage[]{color}', '\\usepackage{xcolor}', x, fixed = TRUE)})
+color_block = function(color) { function(x, options) sprintf('\\color{%s}\\begin{verbatim}%s\\end{verbatim}\\color{black}', color, x) }
+knitr::knit_hooks$set(error = color_block('red'))
+knitr::knit_hooks$set(warning = color_block('orange'))
+
+options(width = 200, digits = 2, OutDec = ".", tinytex.verbose = TRUE)
+base.width = 2.15
+base.height = 2.15
+
+animate = T         # switch on/off to replace animations with facets (not yet implemented for all instances)
+TODO = F            # switch on/off to get to do list.
+RESET_FIGURES = T   # switch on/off whether figures that exist as files are regenerated
+```
+
+```{r analysis-preferences}
+# Seed for random number generation
+set.seed(42007)
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+```
+
+```{r, child="section-0-TO-DO.Rmd", eval= if (TODO) TRUE else FALSE}
+```
+
+<!-- Using inline R markdown child definition since only the quiet = T option oppresses both the latex *and* the R output of a child -->
+
+
+```{r, child="section-1-introduction.Rmd"}
+```
+
+```{r, child="section-2-framework.Rmd"}
+```
+
+```{r, child="section-3-perceptual-recalibration.Rmd", eval=TRUE}
+```
+
+```{r, child="section-4-accent-adaptation.Rmd"}
+```
+
+```{r, child="section-5-distributional-learning.Rmd", eval=FALSE}
+```
+
+```{r, child="section-6-general-discussion.Rmd"}
+```
+
+```{r, child="section-7-references.Rmd", eval=TRUE}
+```
+
+```{r, child="supplementary-information.Rmd", eval=TRUE}
+```
+
+

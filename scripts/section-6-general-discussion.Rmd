@@ -123,15 +123,15 @@ for (j in 1:length(model_names)){
 filename = c()
 
 for (p in 1:length(model_names)) {
-  filename[p] = file.path('../../figures/plotly/', paste0('p.3d.categorization.model_', model_names[p], '_L1-accented.png'))
+  filename[p] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L1-accented.png'))
 }
 
 for (p in 1:length(model_names)) {
-  filename[p + length(model_names)] = file.path('../../figures/plotly/', paste0('p.3d.categorization.model_', model_names[p], '_L2-accented.png'))
+  filename[p + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L2-accented.png'))
 }
 
 for (p in 1:length(model_names)) {
-  filename[p + 3 + length(model_names)] = file.path('../../figures/plotly/', paste0('p.3d.categorization.difference.model_', model_names[p], '.png'))
+  filename[p + 3 + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.difference.model_', model_names[p], '.png'))
 }
 
 knitr::include_graphics(filename)

@@ -1,8 +1,8 @@
 save_figure_or_not <- function(figure, filename, override = RESET_FIGURES) {
   require(processx)
   
-  if (override || !file.exists(file.path('../../figures/plotly/', filename))) {
-    orca(figure, file = file.path('../../figures/plotly/', filename))
+  if (override || !file.exists(file.path(get_path('../figures/plotly/'), filename))) {
+    orca(figure, file = file.path(get_path('../figures/plotly/'), filename))
   }
 }
 

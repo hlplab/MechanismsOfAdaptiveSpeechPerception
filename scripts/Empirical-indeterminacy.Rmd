@@ -110,7 +110,7 @@ library(lme4)               # for C-CuRE normalization through regression
 library(modelr)
 library(diptest)            # test for bimodality
 
-# devtools::install_github("hlplab/MVBeliefUpdatr")
+devtools::install_github("hlplab/MVBeliefUpdatr")
 library(MVBeliefUpdatr)     # for ideal observers and adaptors 
 library(LaplacesDemon)      # for additional density distributions (W^-1)
 ```

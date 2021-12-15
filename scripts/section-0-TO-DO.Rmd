@@ -1,16 +1,11 @@
 # THINGS TO DO LATER:
   * Xin:
     * We probably need to spell out in the SI how you generated the data for the AA section. Have a look what I did for the PR section (in the SI)?
-    * Can the sub titles to fig 7 mention both lambda and pi? also pi should be subindexed with the category that it is the pi of.
-    * THIS WHOLE PART IN THE REPRESENTATIONAL RESULT IN AA COULD GO IF WE FIND A SETTING FOR WHICH /D/ ACCURACY IS ABOVE 50%. IT IS KIND OF ORTHOGONAL TO OUR POINT. For L1-accented exposure, the accuracy is always predicted to be much higher high for /t/ than for /d/, indicating that /d/ is often misheard as /t/. This matches the first of the two signature results that is typically observed in studies of this type. Two additional findings for the L1-accented condition are of note. First, recognition accuracy for /d/ is predicted to be below 50% for all parameter settings considered here. This seems to differ from experiments on human listeners in which even the affected category tends to be recognized at above 50% accuracy [e.g., @xie2016; @others]. One possible interpretation of this mismatch is that representational changes are not sufficient to explain the results of experiments on accent adaptation. It is, however, important to keep in mind that it has not been shown that *these* particular stimuli would be recognized above 50% accuracy by human listeners. Another possible explanation for the mismatch between the ideal adaptor model and human listeners might be the specific artificially generated stimuli employed in this case study. This possibility is in line with another study in which we used the same model to make predictions for natural stimuli from two experiments on human listeners. The predicted categorization accuracy for control (here L1-accented) exposure varied between 50% to over 90%, depending on the specific stimuli [@tan2021]. This highlights one advantage of computational models like the one employed here: they can be used to derive predictions for specific sets of stimuli.  
 
   * Chigusa:
-   * Use [] or // more consistently for phonetic [] or phonological // descriptions.
    * GO THROUGH ALL THE COMMENTS THAT START WITH "TO DO" OR "TO-DO". THIS INCLUDES CHECKING SOME CLAIMS WE MAKE CAREFULLY AND LEAVING COMMENTS THAT CONFIRM THEM (OR CHANGE THE CONTENT).
-   * Add to general discussion a paragraph on READINGS we recommend? BENT AND BAESEBERK, SCHERTZ & CLARE, APFELBAUM &MCMURRAY MASSARO /FRIEDMAN
-   
+
   * Florian: 
-    * change animations to be faster and have number of frames closer to number of states
     * CHECK OUT WHETHER CHANGES IN NORMALIZATION CAN LEAD TO NON-LINEAR CHANGES *DESPITE THE FACT THAT WE'RE USING SIMPLE LINEAR INTERPOLATION*
     * CHANGE TEST RESPONSES TO OVERALL CATEGORIZATION FUNCTIONS AND THEN POINT OUT THAT THIS *UNDER*ESTIMATES THE AMBIGUITY OF EXISTING RESULTS. LINK TO DISCUSSION ABOUT MORE ACCURATE ESTIMATION OF THE PARAMETER
 
@@ -18,8 +13,6 @@
   * changed beliefs for case studies? 
   * make a wrapper for categorization function (through optional argument) that makes the functions monotonic. do the math.
   
-  
-ADD discussion of  CLAYARDS ET AL 2018, KIM AND CLAYARDS 2019?
 
 Somewhere list all the factors that can determine power during test:
 

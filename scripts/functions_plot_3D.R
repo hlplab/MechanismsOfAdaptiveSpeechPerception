@@ -194,7 +194,7 @@ plot_3D.categorization <- function(df.resp){
           eye = list(x = -0.5, y = -2.5, z = 0.5), # perspective good for showing categorization curve
           up =  list(x = 0, y = 0, z = 1)),
         #   zaxis = list(range = VO, autotick = F, tickmode = "array", tickvals = c(0.15,0.10,0.05)),
-        zaxis = list(title = "Posterior probability of /d/", titlefont = list(size = 22), range = c(0,1), tickvals = c(0,0.2,0.4,0.6,0.8,1)),
+        zaxis = list(title = paste0('Posterior probability\nof ', category.contrasts[1]), titlefont = list(size = 22), range = c(0,1), tickvals = c(0,0.2,0.4,0.6,0.8,1)),
         yaxis = list(title = "f0 (Mel)",titlefont = list(size = 22)),
         xaxis = list(title = "VOT (ms)", titlefont = list(size = 22))
         )
@@ -225,7 +225,7 @@ plot_3D.categorization.diff <- function(df.resp){
           eye = list(x = -0.5, y = -2.5, z = 0.5), # perspective good for showing categorization curve
           up =  list(x = 0, y = 0, z = 1)),
         #   zaxis = list(range = VO, autotick = F, tickmode = "array", tickvals = c(0.15,0.10,0.05)),
-        zaxis = list(title = "Diff. in posterior<br>log-odds of /d/", titlefont = list(size = 22), range = c(-5,15)),
+        zaxis = list(title = paste0("Diff. in posterior<br>log-odds of ", category.contrasts[1]), titlefont = list(size = 22), range = c(-5,15)),
         yaxis = list(title = "f0 (Mel)",titlefont = list(size = 22)),
         xaxis = list(title = "VOT (ms)", titlefont = list(size = 22))
       )

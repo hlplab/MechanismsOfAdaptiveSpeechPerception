@@ -393,7 +393,7 @@ plot_expected_categories_contour2D(
   facet_rows_by = prior_nu, facet_cols_by = prior_kappa) +
   scale_x_continuous("VOT (msec)") +
   scale_y_continuous("f0 (Mel)") +
-  scale_fill_manual("Exposure condition", breaks = categories.PR, values = colors.category) +
+  scale_fill_manual("Category", breaks = categories.PR, values = colors.category) +
   scale_alpha_continuous("Cumulative probability", range = c(.1, .5), breaks = 1 - levels, labels = round(levels, 2)) +
   facet_grid(
     Condition ~ prior_nu + prior_kappa, 

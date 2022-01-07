@@ -169,7 +169,7 @@ margin <- list(
 
 for(j in 1:length(levels(factor(d.chodroff_wilson$poa)))){
   category.contrasts <- unlist(strsplit(levels(factor(d.chodroff_wilson$poa))[j], "-"))
-  print(category.contrasts)
+
   
   model <- 
     make_MVG_from_data(data = d.chodroff_wilson, cues = c("VOT_centered", "f0_Mel_centered")) %>%
@@ -290,7 +290,7 @@ for(p in 1:length(pi)){
 }
 ```
 
-```{r show-lapse-bias-demonstration-plots, fig.ncol = 2, out.width="49%", out.height="49%", fig.show='hold',fig.align='center', fig.cap="(ref:show-lapse-bias-demonstration-plots)", fig.subcap=c('$\\lambda$ = 0, $\\pi_{/d/}=.5$', '$\\lambda$ = .2, , $\\pi_{/d/}=.5$', '$\\lambda$ = .2, $\\pi_{/d/}=.1$', '$\\lambda$ = .2, $\\pi_{/d/}=.9$') }
+```{r show-lapse-bias-demonstration-plots, fig.ncol = 2, out.width="49%", out.height="49%", fig.show='hold',fig.align='center', fig.cap="(ref:show-lapse-bias-demonstration-plots)", fig.subcap=c('$\\lambda$ = 0, $\\pi_{/d/}=.5$', '$\\lambda$ = .2,  $\\pi_{/d/}=.5$', '$\\lambda$ = .2, $\\pi_{/d/}=.1$', '$\\lambda$ = .2, $\\pi_{/d/}=.9$') }
 filename = c()
 for (p in 1:length(lambda)) {
   filename[p] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.panel_lambda=',p,'.png'))

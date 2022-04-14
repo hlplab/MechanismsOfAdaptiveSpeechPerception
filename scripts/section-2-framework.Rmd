@@ -350,7 +350,7 @@ category_shift.demo <- 25
 n.demo <- 20
 
 d.exposure.demo <- 
-  make_MVG_data(
+  sample_MVG_data(
     Ns = rep(n.demo, 2), 
     mus = c(m.io.VOT$mu[[1]] + category_shift.demo, m.io.VOT$mu[[2]] + category_shift.demo), 
     Sigmas = map2(m.io.VOT$Sigma, list(1, 2), ~ .x / .y), 

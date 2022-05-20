@@ -1,3 +1,9 @@
+# NOTES FROM FIRST READING AFTER REVIEWS
+  
+  * IDEAS FOR CUTS:
+   * Why do we need the PR/AA experiments to be introduced so early? Couldn't that come much later? I recall that we felt it remained too abstract without these examples but is that really true? Couldn't we just talk about improvements in perception and what explains them? We would anticipate that we focus on these two paradigms later (for readers who know them) but wouldn't necessarily have to introduce them at that point? THIS COULD SAVE TWO LONG, RATHER COMPLEX, PARAGRAPHS FROM THE INTRO.
+
+
 # THINGS TO DO LATER:
   * Xin:
     * We probably need to spell out in the SI how you generated the data for the AA section. Have a look what I did for the PR section (in the SI)?

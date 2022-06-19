@@ -762,7 +762,7 @@ p %+%
   mutate(use_logit = factor(ifelse(use_logit, "log-odds", "probability"), levels = c("probability", "log-odds"))))
 ```
 
-Next, we present two case studies that illustrate the predictions of the three change models for perceptual recalibration (Case Study 1) and accent adaptation (Case Study 2).
+Next, we present two case studies that illustrate the predictions of the three change models for two types of paradigms that have been particularly influential: perceptual recalibration (Case Study 1) and accent adaptation (Case Study 2).
 
 ```{r MVG-make-models}
 cues <- c("VOT_centered", "f0_Mel_centered")

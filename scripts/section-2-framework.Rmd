@@ -762,13 +762,28 @@ p %+%
   mutate(use_logit = factor(ifelse(use_logit, "log-odds", "probability"), levels = c("probability", "log-odds"))))
 ```
 
-Next, we present two case studies that illustrate the predictions of the three change models for two types of paradigms that have been particularly influential: perceptual recalibration (Case Study 1) and accent adaptation (Case Study 2).
+Next, we present two case studies that illustrate the predictions of the three change models for two types of paradigms that have been particularly influential: perceptual recalibration (Case Study 1) and accent adaptation (Case Study 2). <!--add some text about the fact that /d/ and /t/ tokens were unbalanced in the Chodroff data. We subsampled from the original dataset to achieve a balanced stimuli set for further analysis.-->
 
 ```{r MVG-make-models}
 cues <- c("VOT_centered", "f0_Mel_centered")
 
+n_token_talker <- d.chodroff_wilson %>%
+#  mutate(voicing = ifelse(category %in% c("/b/","/d/", "/g/"), "voiced", "voiceless")) %>%
+  mutate(place = case_when(
+    category %in% c("/b/", "/p/") ~ "labial",
+    category %in% c("/d/", "/t/") ~ "alveolar",
+    category %in% c("/g/", "/k/") ~ "velar"
+  )) %>%
+  group_by(Talker, category, place) %>%
+  summarise(n = n()) %>%
+  group_by(Talker, place) %>%
+  mutate(n_min = min(n))
+
 prior_marginal_VOT_f0_stats <- 
   d.chodroff_wilson %>%
+  left_join(., n_token_talker %>% select(-n), by = c("Talker", "category")) %>%
+  group_by(Talker, category) %>%
+  sample_n(n_min) %>% # sample a balanced set of voiced and voiceless tokens for each place of articulation; the specific number is determined by the min number of tokens per category for that contrast 
   group_by(Talker) %>%
   summarise(across(c(VOT, f0_Mel), mean)) %>%
   ungroup() %>%

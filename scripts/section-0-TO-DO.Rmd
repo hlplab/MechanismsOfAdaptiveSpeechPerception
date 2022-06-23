@@ -16,6 +16,7 @@
     * CHANGE TEST RESPONSES TO OVERALL CATEGORIZATION FUNCTIONS AND THEN POINT OUT THAT THIS *UNDER*ESTIMATES THE AMBIGUITY OF EXISTING RESULTS. LINK TO DISCUSSION ABOUT MORE ACCURATE ESTIMATION OF THE PARAMETER
 
  * Things to add later:
+  * discuss the impact of unbalanced data on different normalization methods
   * changed beliefs for case studies? 
   * make a wrapper for categorization function (through optional argument) that makes the functions monotonic. do the math.
   

@@ -13,7 +13,7 @@ The document was compiled using \texttt{knitr} [@xie2021] in RStudio with R:
 version
 ```
 
-You will also need to download the IPA font [SIL Doulos](https://software.sil.org/doulos/download/) and a Latex environment like (e.g., [MacTex](https://tug.org/mactex/mactex-download.html) or the R library \texttt{tinytex}). The 3D figures require [\texttt{orca}](https://github.com/plotly/orca#installation).
+You will also need to download the IPA font [SIL Doulos](https://software.sil.org/doulos/download/) and a Latex environment like (e.g., [MacTex](https://tug.org/mactex/mactex-download.html) or the R library \texttt{tinytex}). The 3D figures require the [\texttt{orca} commandline tool](https://github.com/plotly/orca#installation). It is recommended that you use "Method 4" to install the standalone binaries.
 
 We used the following R packages to create this document: `r cite_r("latex-stuff/r-references.bib", withhold = T, pkgs = c("MVBeliefUpdatr"))`. If opened in RStudio, the top of the R markdown document should alert you to any libraries you will need to download, if you have not already installed them. This includes the \texttt{MVBeliefUpdatr} library that supports working with multivariate Gaussian ideal observers and adaptors (see also Dave Kleinschmidt's \texttt{beliefupdatr} library that this library is based on). The full session information is provided at the end of this document.
 

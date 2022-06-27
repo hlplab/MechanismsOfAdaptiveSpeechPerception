@@ -101,6 +101,7 @@ library(assertthat)         # asserts (in functions)
 library(data.table)
 
 library(linguisticsdown)    # IPA symbols
+library(latexdiffr)         # trackchanges
 library(cowplot)            # combining plots
 library(plotly)             # 3D plots
 library(processx)           # interface to orca (fot plotly)
@@ -168,7 +169,7 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 <!-- Using inline R markdown child definition since only the quiet = T option oppresses both the latex *and* the R output of a child -->
 
 
-```{r, child="section-1-introduction.Rmd"}
+```{r, child="section-1-introduction-CK.Rmd"}
 ```
 
 ```{r, child="section-2-framework.Rmd"}

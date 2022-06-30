@@ -779,6 +779,23 @@ n_token_talker <- d.chodroff_wilson %>%
   group_by(Talker, place) %>%
   mutate(n_min = min(n))
 
+n_token_talker.summary <- n_token_talker %>%
+  select(-n_min) %>%
+  group_by(category) %>%
+  summarise(n_mean = mean(n),
+            n_sd = sd(n),
+            n_max = max(n),
+            n_min = min(n),
+            n_sum = sum(n))
+
+n_items <- d.chodroff_wilson %>%
+  group_by(Talker, category) %>%
+  distinct(Word) %>%
+  tally() %>%
+  group_by(category) %>%
+  summarise(n_min = min(n),
+            n_max = max(n))
+
 prior_marginal_VOT_f0_stats <- 
   d.chodroff_wilson %>%
   left_join(., n_token_talker %>% select(-n), by = c("Talker", "category")) %>%

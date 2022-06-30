@@ -574,6 +574,8 @@ Critically, for plausible lapse rates ($\lambda < .1$), changes in response bias
 ### Changes in normalization
 
 ```{r study-AA-models-normalization-functions}
+
+# this section is different from section-4-accent-adaptation.Rmd
 add_prior_and_normalize_test_tokens_based_on_exposure.AA <- function(data.exposure, data.test, prior.normalization, prior.categories) {
   # Get prior mean
  # mu_0 <- prior.normalization$x_mean[[1]]

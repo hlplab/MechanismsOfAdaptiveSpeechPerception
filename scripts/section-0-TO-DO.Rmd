@@ -1,17 +1,15 @@
-# NOTES FROM FIRST READING AFTER REVIEWS
-  
-  * IDEAS FOR CUTS:
-   * Why do we need the PR/AA experiments to be introduced so early? Couldn't that come much later? I recall that we felt it remained too abstract without these examples but is that really true? Couldn't we just talk about improvements in perception and what explains them? We would anticipate that we focus on these two paradigms later (for readers who know them) but wouldn't necessarily have to introduce them at that point? THIS COULD SAVE TWO LONG, RATHER COMPLEX, PARAGRAPHS FROM THE INTRO.
-
-
 # THINGS TO DO LATER:
   * Xin:
+    * REMOVE duplicate references!
+    * CHECK ALL REMAINING TO-DO comments in the text.
     * We probably need to spell out in the SI how you generated the data for the AA section. Have a look what I did for the PR section (in the SI)?
-
-  * Chigusa:
-   * GO THROUGH ALL THE COMMENTS THAT START WITH "TO DO" OR "TO-DO". THIS INCLUDES CHECKING SOME CLAIMS WE MAKE CAREFULLY AND LEAVING COMMENTS THAT CONFIRM THEM (OR CHANGE THE CONTENT).
+    
+  * Xin and Chigusa:
+    * I cut some passages. There are linked in this section below. Please check whether they ought to go somewhere else
+    * ADD ADDITIONAL REFERENCES?
 
   * Florian: 
+    * **Find a way to signal more clearly that we are also entertaining that combinations of mechanisms matter.**
     * CHECK OUT WHETHER CHANGES IN NORMALIZATION CAN LEAD TO NON-LINEAR CHANGES *DESPITE THE FACT THAT WE'RE USING SIMPLE LINEAR INTERPOLATION*
     * CHANGE TEST RESPONSES TO OVERALL CATEGORIZATION FUNCTIONS AND THEN POINT OUT THAT THIS *UNDER*ESTIMATES THE AMBIGUITY OF EXISTING RESULTS. LINK TO DISCUSSION ABOUT MORE ACCURATE ESTIMATION OF THE PARAMETER
 
@@ -19,9 +17,40 @@
   * discuss the impact of unbalanced data on different normalization methods
   * changed beliefs for case studies? 
   * make a wrapper for categorization function (through optional argument) that makes the functions monotonic. do the math.
-  
 
-Somewhere list all the factors that can determine power during test:
+## Notes for revision
+
+Revisions to intro:
+  
+1) be clearer about our contributions (indeed, the review we provide in the intro is in itself a contribution). as part of this, we are now more critical of the status quo of the field. This makes it clearer where we are coming from. But we would like to hear reviewers' thoughts on these issues.'
+2) be clearer about our goals, incl. what we do and do not aim to achieve in this paper. 
+3) remove unnecessary details
+
+
+Revisions to Sec 2:
+
+not many because we want to keep the paper tutorial-like. However, if this is an issue, we could extract that entire section and either move it into a separate paper or make it part of the SI.
+
+
+## CUTS---PLEASE CHECK CAREFULLY AND DELETE THOSE THAT YOU THINK CAN GO
+
+  *These separate lines of research (our own work included) seem to have drawn theoretical conclusions through convention, rather than through strong empirical evidence in favor of a particular mechanism. 
+
+  * And while distinct normalization procedures have been compared to each other [e.g., @adank2004; @hoffmanbion-escudero2007; @kiefte-nearey2019] or against the absence of normalization [@mcmurray-jongman2011], they are rarely compared to the competing hypothesis that changes in representations underlie the effects of recent exposure [for notable exceptions, see @apfelbaum-mcmurray2015; @lehet-holt2020; @xie2021cognition]. ^[It is, however, worth pointing out that the exact nature of normalization remains unclear. This includes questions about the specific transformations that are applied [@REFS] but also questions about whether normalization is best viewed as an autonomous, encapsulated process, or as part of a larger hierarchical inference process that includes inferences at both levels traditionally considered linguistic and levels traditionally considered pre-linguistic. Research on automatic speech recognition, for example, has found that deep neural network models can to some extent remove the need for specialized signal transformations [@deng2016]. Under this view, normalization is itself the result of a hierarchical predictive process that seeks to efficiently predict the incoming signal [for related discussion, see @clark2013; @kell2018; @kleinschmidt-jaeger2015; @kuperberg-jaeger2016].] 
+
+  * It is often assumed, for example, that response biases can only change the relative proportion of answers but cannot explain overall improvements in accuracy. Under this assumption, overall improvements in the perception of an accent would seem to rule out explanations in terms of response biases, at least if the experimenter carefully balanced how often each category occurs during test. This is, however, a common misconception (one that we shared, for what it is worth). As we demonstrate below, changes in response biases can explain findings that are often attributed to changes in representations. The same applies to pre-linguistic normalization: contrary to common intuitions, simple normalization mechanisms can explain seemingly complex changes in listeners' categorization following exposure to L2-accented or otherwise shifted speech (as, e.g., in perceptual recalibration paradigms).
+
+  * <!--leave it here for now, but potentially can be integrated into GD-->An explicit mechanistic account delineating how adaptive changes also strengthens our ability to probe its neural substrates. To date, multiple neurobiological systems have been proposed to support these rapid changes [e.g., @adank2015]. They range from the primary auditory cortex  [e.g., Heschl’s gyrus, @Perrachione2007] to those that respond to acoustic-phonetic features in speech [e.g., superior temporal gyrus, @Yi2019]. Even wider heterogeneous networks have been implicated in studies assessing brain responses to novel speech input, including those responsible for recognizing a voice/talker [@luthra2020b], attending selectively to a given talker's speech [@wong2004], and correcting prediction errors when there is a discrepancy between a predicted vs. an actual input [e.g., @guediche2015evidence], to name a few. Identifying the roles these brain regions play during adaptive speech perception is not straightforward, as these regions often play multiple roles in cognitive processing. Therefore, the exact interpretation of the findings still depends on the researchers’ hypothesis of the underlying mechanism. For instance, changes in inferior frontal gyri activation in response to accented speech has been interpreted as reflecting greater computational demand [@yi2014neural] or decision related phonetic categorization of ambiguous stimuli [@myers-mesite2014]. A proper theoretical framework that specifies how the alternative mechanisms can account for adaptive changes in speech perception, either in isolation or jointly, will facilitate the design and interpretations of neural investigations.
+
+  * Even if one were to take for granted that the three mechanisms in Figure \@ref(fig:overview) *jointly* underlie the effects of recent exposure, it remains unclear which of those mechanisms any given results sheds light on. For example, can we conclude from experiments like @clarke-garrett2004 that listeners can learn new representations (or at least select some mixture of existing representations) within two minutes of exposure? Or are those results due to normalization, and if so, where should we draw the line between processing and learning? Also, do the results of perceptual recalibration and accent adaptation stem from the same mechanism(s), or do they reflect different mechanisms [@baeseberk2018; @samuel-kraljic2009; @zheng-samuel2020]? Our comprehensive framework will make it possible to empirically test whether two paradigms that differ substantially in their design, tasks, and ecological validity of the speech stimuli would in fact engage the same mechanism(s). 
+  
+  * ^[Additional lines of work have investigated exposure to synthesized, vocoded, or otherwise distorted speech [e.g., @adank2009; @davis2005; @fenn2003; @mattys2012] or have used distributional learning paradigms [e.g., @clare2019; @clayards2008; @idemaru-holt2011; @maye2008; @schertz2013; @theodore-monto2019; @wade2007]. In the general discussion, we return to distributional learning paradigms, which we believe to hold particular promise in addressing the issues we identify below.] <!--TO_DO:this footnote should perhaps be moved elsehwere now that we do not talk about the two paradigms here--> 
+  
+  * This doesn actually seem to be what we do:  Results of our simulations illuminate when---to what stimuli and under what circumstances---the three mechanisms would provide diverging predictions about adaptive changes of perception. We also learn about how much data will be needed to draw reliable statistical inferences from behavioral data. 
+
+<!-- By developing a computational framework that at least acknowledges, and integrates these aspects of speech perception, we take on (small) step towards addressing the challenge identified by @guediche2014: "there is no formal speech perception model that relates activity in the cortical regions identified via neuroimaging to the computational demands of adaptive plasticity in speech perception. Conversely, the classic computational models of speech perception that have attempted to differentiate how the system may meet the computational demands of adaptive plasticity have not made specific predictions of the underlying neural mechanisms".  -->
+
+## Somewhere list all the factors that can determine power during test:
 
 1. the expected change in the categorization function during exposure (describe elsewhere what this is a fucntion of)
 

@@ -92,6 +92,7 @@ always_allow_html: true
 ---
 
 ```{r libraries, include=FALSE, message=FALSE}
+devtools::install_github("crsh/papaja")
 library(papaja)             # APA formatted ms
 
 library(tidyverse)
@@ -155,7 +156,7 @@ base.width = 2.15
 base.height = 2.15
 
 animate = T         # switch on/off to replace animations with facets (not yet implemented for all instances)
-TODO = F            # switch on/off to get to do list.
+TODO = T            # switch on/off to get to do list.
 RESET_FIGURES = T   # switch on/off whether figures that exist as files are regenerated
 ```
 
@@ -174,10 +175,10 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```{r, child="section-1-introduction.Rmd"}
 ```
 
-```{r, child="section-2-framework.Rmd", eval=FALSE}
+```{r, child="section-2-framework.Rmd", eval=TRUE}
 ```
 
-```{r, child="section-3-perceptual-recalibration.Rmd", eval=FALSE}
+```{r, child="section-3-perceptual-recalibration.Rmd", eval=TRUE}
 ```
 
 ```{r, child="section-4-accent-adaptation.Rmd", eval=FALSE}
@@ -186,13 +187,13 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```{r, child="section-5-distributional-learning.Rmd", eval=FALSE}
 ```
 
-```{r, child="section-6-general-discussion.Rmd"}
+```{r, child="section-6-general-discussion.Rmd", eval=FALSE}
 ```
 
 ```{r, child="section-7-references.Rmd", eval=TRUE}
 ```
 
-```{r, child="supplementary-information.Rmd", eval=FALSE}
+```{r, child="supplementary-information.Rmd", eval=TRUE}
 ```
 
 

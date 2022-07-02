@@ -92,6 +92,7 @@ always_allow_html: true
 ---
 
 ```{r libraries, include=FALSE, message=FALSE}
+devtools::install_github("crsh/papaja")
 library(papaja)             # APA formatted ms
 
 library(tidyverse)

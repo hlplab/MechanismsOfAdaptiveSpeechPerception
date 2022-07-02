@@ -1,0 +1,186 @@
+---
+title: "Most experiments on exposure effects in speech perception do not distinguish between underlying mechanisms"
+subtitle: "A computational review"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+thanks: "We are grateful to Meghan Clayards and Eleanor Chodroff for sharing their data, doing so in an accessible format, and for helping prepare their data for this study. We thank the participants in the 2021 summer 'mega-lab' meetings for many insightful discussions that shaped the perspectives discussed here (all mistakes remain our own). This includes, in particular, Ann Bradlow, Melissa Baese-Berk, Eleanor Chodroff, Jennifer Cole, Shawn Cummings, Laura Dilley, James McQueen, Arty Samuel, Maryann Tan, and Rachel Theodore. We also owe thanks for early feedback on this project to Marc Allassonnière-Tang, Jing Liu, Gerda Melnik, and Anna Persson."
+author:
+  - name: Xin Xie^[Department of Language Science, UC Irvine]
+  - name: T. Florian Jaeger^[Department of Brain & Cognitive Sciences, University of Rochester]
+  - name: Chigusa Kurumada^[Department of Brain & Cognitive Sciences, University of Rochester]
+keywords:
+  - speech perception
+  - accent adaptation
+  - perceptual recalibration
+  - computational modeling
+header-includes: 
+ - \usepackage{animate}
+ - \usepackage{amsmath}
+ - \usepackage{tikz}
+ - \usetikzlibrary{bayesnet}
+ - \usepackage{booktabs}
+ - \usepackage{siunitx}
+ - \usepackage{soul}
+ - \usepackage{tabto}
+ - \usepackage{xcolor}
+ - \usepackage{placeins}
+ - \setstcolor{red}
+ - \usepackage{sectsty}
+ - \sectionfont{\color{red}}
+ - \subsectionfont{\color{red}}
+ - \subsubsectionfont{\color{red}}
+ - \usepackage{setspace}\doublespacing
+output: 
+  papaja::apa6_pdf:
+    citation_package: biblatex
+    extra_dependencies: "subfig" 
+    latex_engine: xelatex
+    includes:
+      in_header: header.tex
+    fig_caption: yes
+    fig_width: 2.5
+    number_sections: yes
+    toc: no
+    toc_depth: 3
+  word_document:
+    toc: yes
+always_allow_html: true
+fontsize: 11pt
+bibliography: [library.bib]
+link-citations: yes
+csl: apa-6th-edition.csl
+---
+
+```{r}
+# For brms
+priors.weakly_regularizing <- c(
+  # weakly regularizing prior for fixed effect coefficients.
+  prior(student_t(3, 0, 2.), class = b), 
+  # weakly regularizing prior for random effect SDs.
+  prior(cauchy(0, 2), class = sd),
+  # weakly regularizing prior for random effect correlations.
+  prior(lkj(1), class = cor))
+```
+
+### Estimating the typical (population-level) category-specific distribution of VOT {#sec:estimating-expected-category-statistics}
+We use Bayesian hierarchical (mixed-effects) *distributional* linear regression to infer the population-level mean and standard deviation of each stop category in the database. Together, these population-level estimates are taken to describe the `typical' likelihood function of each category. This approach is an extension of linear mixed-effects models (LMMs). In addition to predicting the mean of an outcome that is assumed to be normally distributed, we predict both the mean and the standard deviation of that outcome. The use of hierarchical distributional regression has a number of advantages of standard approaches to estimating typical category likelihoods (such as simply aggregating the data by-talker to calculate by-talker means and standard deviations):
+
+ * It recognizes the hierarchical structure of the data (see also REF-nalborczyk2019), estimating population-level effects while taking into account uncertainty about individual differences between talkers and between lexical contexts:
+    * it efficiently accounts for variability in category likelihoods across talkers.
+    * it efficiently accounts for variability in category likelihoods across lexical (and phonological) contexts.
+    * it is more suitable of imbalanced data, with different amounts of information per talker and/or lexical contexts. Estimates of by-talker or by-lexical context differences are subject to `shrinkage' that is stronger for talkers/lexical contexts with fewer observations. This ameliorates the risk of over-fitting.
+  * It estimates the mean and standard deviation of each category *jointly*. This also allows us to take into account correlations between these two parameters.
+  * While we make the simplifying assumption of Gaussian categories, the approach taken here can be applied to outcomes that are assumed to follow non-Gaussian distributions (e.g., lognormal or skew normal distributions).
+  * While we focus on just one cue here (VOT), the approach taken here extends to multiple phonetic cues (multivariate distributional mixed-effects regression), allowing us to model within- and cross-category correlations between different cues.
+
+Specifically, we predict the mean VOT of each of the six stop categories (5 population-level DFs), while allowing random (normal) variation in these means by talkers (intercepts, slopes and their correlations, $\frac{1}{2}(6^2-6) = 15$ group-level DFs) and lexical contexts (intercepts only since stop vary *between* lexical context, 1 group-level DF). Simultaneously, we predict the (log-transformed) standard deviation of each of the six stop categories, using the exact same formula. Finally, the model predicts the group-level correlations between means and standard deviations across both talkers () and lexical contexts (1 group-level DF).
+
+We fit this model using the function \texttt{brm} from library \texttt{brms} [@burkner2019] in \texttt{R} [version 3.5.2 @R]. \texttt{brms} provides an interface to \texttt{Stan} for Bayesian generalized mixed-effects models, including distributional regression [@burkner2017]. \texttt{Stan} [@carpenter2017] allows the efficient implementation of Bayesian data analysis through No-U-Turn Hamiltonian Monte Carlo sampling. We follow common practice and use weakly regularizing priors to facilitate model convergence. For fixed effect parameters, we use Student priors centered around zero with a scale of 2.5 units [following @gelman2008] and 3 degrees of freedom. For random effect standard deviations, we use a Cauchy prior with location 0 and scale 2, and for random effect correlations, we use an uninformative LKJ-Correlation prior with its only parameter set to 1 [@lewandowski2009], describing a uniform prior over correlation matrices. The model was fit using four chains with 1,000 post-warmup samples per chain, for a total of 4,000 posterior samples. Each chain used 1,000 warmup samples to calibrate Stan's No U-Turn Sampler. All analyses reported here converged (e.g., all $1 \leq \hat{R}{\rm s} \ll 1.01$).
+
+```{r}
+# If one was to run this as one model for all stops, the following code would work. However, this would assume
+# that the correlation between VOT and f0 is constant across all stops. We therefore fit separate models to
+# each stop.
+#
+# bf_vot =
+#   bf(vot ~ -1 + poa : voicing + (-1 + poa : voicing | p1 | subj) + (-1 + poa : voicing | p2 | word)) +
+#   lf(sigma ~ -1 + poa : voicing + (-1 + poa : voicing | q1 | subj) + (-1 + poa : voicing | q2 | word)) + gaussian()
+#
+# bf_f0 =
+#   bf(f0_Mel ~ -1 + poa : voicing + (-1 + poa : voicing | p1 | subj) + (-1 + poa : voicing | p2 | word)) +
+#   lf(sigma ~ -1 + poa : voicing + (-1 + poa : voicing | q1 | subj) + (-1 + poa : voicing | q2 | word)) + gaussian()
+
+bf_vot =
+  bf(vot ~ 1 + (1 | p1 | subj) + (1 | p2 | word)) +
+  lf(sigma ~ 1 + (1 | q1 | subj) + (1 | q2 | word)) + gaussian()
+
+bf_f0 =
+  bf(f0_Mel ~ 1 + (1 | p1 | subj) + (1 | p2 | word)) +
+  lf(sigma ~ 1 + (1 | q1 | subj) + (1 | q2 | word)) + gaussian()
+
+
+# Helpful to get general structure of priors for this type of model:
+#
+# get_prior(
+#   formula = bf_vot + bf_f0,
+#   data = d.chodroff_wilson)
+
+my.priors.bivariate = c(
+  # No intercept priors since model is reparameterized to have no intercepts
+#  set_prior("student_t(3, 0, 2.5)", class = "Intercept", resp = c("vot","f0Mel")),
+  # weakly regularizing prior for fixed effect coefficiencts for sigma.
+  set_prior("student_t(3, 0, 2.5)", class = "Intercept", resp = c("vot","f0Mel"), dpar = "sigma"),
+  # weakly regularizing prior for fixed effect coefficiencts for mu.
+#  set_prior("student_t(3, 0, 2.5)", class = "b", resp = c("vot","f0Mel")),
+  # weakly regularizing prior for fixed effect coefficiencts for sigma.
+#  set_prior("student_t(3, 0, 2.5)", class = "b", resp = c("vot","f0Mel"), dpar = "sigma"),
+  set_prior("cauchy(0, 5)", class = "sd", resp = c("vot", "f0Mel")),
+  set_prior("cauchy(0, 5)", class = "sd", resp = c("vot", "f0Mel"), dpar = "sigma"),
+  set_prior("cauchy(0, 5)", class = "sd", resp = c("vot", "f0Mel"), group = c("subj", "word")),
+  set_prior("cauchy(0, 5)", class = "sd", resp = c("vot", "f0Mel"), group = c("subj", "word"), dpar = "sigma")
+)
+
+# for (s in c("P", "B")) { # unique(d.chodroff_wilson$stop)) {
+#   m <- brm(
+#     formula = bf_vot + bf_f0,
+#     data = d.chodroff_wilson %>%
+#       filter(category == s),
+#     prior = my.priors.bivariate,
+#     chains = 4, cores = 4,
+#     warmup = 3000,
+#     iter = 4500,
+#     control = list(adapt_delta = .995, max_treedepth = 20),
+#     backend = "cmdstanr",
+#     file = get_path(paste0("../models/production-syllable_initial_stop-VOT_f0Mel-bivariate_normal-simple_effects-", s)))
+# }
+```
+
+<!-- (ref:chodroff-stop-VOT-mu-sigma) Estimated by-talker voice onset time (VOT) means $\hat\mu$ and standard deviations $\hat\sigma$ of word-initial stops in connected American English. The number of observations that went into the estimates ($n$) differ between talkers due to missing values [e.g., because of measurement errors or outliers; for details, see @chodroff-wilson2018]. Lines connect data from the same talker. Note that the y-axis is log-stepped. -->
+
+<!-- (ref:chodroff-stop-f0ST-mu-sigma) Same as \@ref(fig:chodroff-stop-VOT-mu-sigma) but for the fundamental frequency (f0) at the onset of the vowel following the stop. -->
+
+<!-- ```{r chodroff-means-sds, fig.width=10, fig.height = 3.5, fig.cap=c("(ref:chodroff-stop-VOT-mu-sigma)", "(ref:chodroff-stop-f0ST-mu-sigma)")} -->
+<!-- # plot correlation between by-talker mean and sd for each cue -->
+<!-- d.chodroff_wilson %>%  -->
+<!--   group_by(Talker, gender, category, voicing, poa) %>% -->
+<!--   summarise_at( -->
+<!--     vars(VOT, f0_Mel, f0_semitones), -->
+<!--     list("mean" = function(x) mean(x, na.rm = T), "sd" = function(x) sd(x, na.rm = T), "n" = length)) %>% -->
+<!--   ggplot(aes(x = VOT_mean, y = VOT_sd, color = voicing, shape = gender, size = VOT_n)) + -->
+<!--   geom_line(alpha = .1, size = .3, color = "gray", aes(group = Talker)) + -->
+<!--   geom_point(alpha = .3) + -->
+<!--   scale_x_continuous(expression("VOT" ~ hat(mu) ~ "(ms)")) + -->
+<!--   scale_y_continuous(expression("VOT" ~ hat(sigma) ~ "(ms)"), trans = "log10") + -->
+<!--   scale_color_manual("Voiced", breaks = c("yes", "no"), values = colors.voicing) + -->
+<!--   scale_shape_discrete("Gender") + -->
+<!--   scale_size_continuous("n", range = c(.1, 3)) + -->
+<!--   facet_grid(. ~ poa)  -->
+
+<!-- ggplot2::last_plot() +  -->
+<!--   aes(x = f0_Mel_mean, y = f0_Mel_sd, size = f0_Mel_n) + -->
+<!--   scale_x_continuous(expression("f0" ~ hat(mu) ~ "(Mel)")) + -->
+<!--   scale_y_continuous(expression("f0" ~ hat(sigma) ~ "(Mel)"), trans = "log10") -->
+
+<!-- # plot correlation between by-talker means of different cues -->
+<!-- # last_plot() + aes(x = vot_mean, y = usef0_mean) -->
+<!-- # last_plot() + aes(x = usef0_mean, y = cog_mean) -->
+<!-- # last_plot() + aes(x = cog_mean, y = vot_mean) -->
+
+<!-- # d.chodroff_wilson %>%  -->
+<!-- #   group_by(Talker, stop, voicing, poa) %>% -->
+<!-- #   summarise_at( -->
+<!-- #     vars(vot, usef0), -->
+<!-- #     list("mean" = mean, "sd" = sd), -->
+<!-- #     na.rm = T) %>% -->
+<!-- #   group_by(stop, voicing, poa) %>% -->
+<!-- #   summarise_at( -->
+<!-- #     vars(ends_with("mean"), ends_with("sd")), -->
+<!-- #     list("mean" = mean, "median" = median, "sd" = sd), -->
+<!-- #     na.rm = T) -->
+<!-- #  -->
+<!-- # d.chodroff_wilson.byTalker <- d.chodroff_wilson %>%  -->
+<!-- #   group_by(Talker, stop, voicing, poa) %>% -->
+<!-- #   summarise_at( -->
+<!-- #     vars(vot, usef0, cog), -->
+<!-- #     list("mean" = mean, "sd" = sd), -->
+<!-- #     na.rm = T) -->
+<!-- ``` -->

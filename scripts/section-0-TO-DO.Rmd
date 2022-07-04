@@ -47,6 +47,9 @@ not many because we want to keep the paper tutorial-like. However, if this is an
   * ^[Additional lines of work have investigated exposure to synthesized, vocoded, or otherwise distorted speech [e.g., @adank2009; @davis2005; @fenn2003; @mattys2012] or have used distributional learning paradigms [e.g., @clare2019; @clayards2008; @idemaru-holt2011; @maye2008; @schertz2013; @theodore-monto2019; @wade2007]. In the general discussion, we return to distributional learning paradigms, which we believe to hold particular promise in addressing the issues we identify below.] <!--TO_DO:this footnote should perhaps be moved elsehwere now that we do not talk about the two paradigms here--> 
   
   * This doesn actually seem to be what we do:  Results of our simulations illuminate when---to what stimuli and under what circumstances---the three mechanisms would provide diverging predictions about adaptive changes of perception. We also learn about how much data will be needed to draw reliable statistical inferences from behavioral data. 
+  
+  * Perhaps better for discussion: Frameworks like ASP that encompasses (A)-(C) thus hold the potential to meaningfully link across multiple lines of behavioral and neuroimaging research [for a related discussion, see @guediche2014, p. 8]. 
+
 
 <!-- By developing a computational framework that at least acknowledges, and integrates these aspects of speech perception, we take on (small) step towards addressing the challenge identified by @guediche2014: "there is no formal speech perception model that relates activity in the cortical regions identified via neuroimaging to the computational demands of adaptive plasticity in speech perception. Conversely, the classic computational models of speech perception that have attempted to differentiate how the system may meet the computational demands of adaptive plasticity have not made specific predictions of the underlying neural mechanisms".  -->
 

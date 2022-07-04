@@ -29,7 +29,9 @@ Revisions to intro:
 
 Revisions to Sec 2:
 
-not many because we want to keep the paper tutorial-like. However, if this is an issue, we could extract that entire section and either move it into a separate paper or make it part of the SI.
+ * not many because we want to keep the paper tutorial-like. However, if this is an issue, we could extract that entire section and either move it into a separate paper or make it part of the SI.
+ 
+ * We made the structure of this section clearer---dividing it into two main sections (categorization and change models), and highlighted in the introduction to the section what is new in this model and what is not. 
 
 
 ## CUTS---PLEASE CHECK CAREFULLY AND DELETE THOSE THAT YOU THINK CAN GO

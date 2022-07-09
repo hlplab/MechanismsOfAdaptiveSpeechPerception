@@ -252,7 +252,7 @@ colnames(population_var) = c("category", "cue", "prior_variance")
 ```
 
 ### Test phase
-During test, listeners from both exposure conditions heard the same set of L2-accented speech. 60 test tokens are randomly sampled from the distribution of each L2-accented category (Figure \@ref(fig:study-AA-exposure-test-plot)B). 
+During test, listeners from both exposure conditions hear the same set of L2-accented speech. 60 test tokens are randomly sampled from the distribution of each L2-accented category (Figure \@ref(fig:study-AA-exposure-test-plot)B). 
 
 ```{r study-AA-test-functions}
 # make the design of an test phase
@@ -381,7 +381,7 @@ Previous work has often interpreted such patterns as evidence for *representatio
 
 <!-- We predict that the L2-accented /d/ test tokens, as compared to /t/ tokens, are *a priori* more difficult for L1-English listeners to recognize. A signature result that is often taken as evidence of underlying represenational change is a significant increase of recognition accuracy for the /d/ category after L2-accented exposure, especially when it does not come at the cost of accuracy for /t/. When the accuracies trade off (e.g., increased accuracy for /d/, decreased accuracy for /t/), that can be attributed to a response-bias shift such that listeners simply provided more /d/ responses after L2-exposure irrespective of the perceptual properties of the input. Given this trading relationship, it is generally believed that a response-bias shift alone would not yield an overall increase of recognition accuracies for both categories. In the current simulation, we directly test this assumption: does a response-bias shift in the decision-making process lead to a data pattern similar to what is expected under the representational change hypothesis?   -->
 
-Similarly, pre-linguistic normalization---which is frequently discussed in the context of accommodating inter-talker variability in L1-accented speech---does not seem to be considered a plausible mechanism for accent adaptation. In our review of the literature, we did not find any proposals that attribute accent adaptation solely to pre-linguistic normalization. This is perhaps due to the complex ways in which L2-accented speech tends to differ from L1-accented speech. This makes it appear unlikely that, for example, simple centering would be sufficient to explain the adaptive improvements listeners exhibit with exposure. As in Case Study 1, we first model changes in representations, and then compare them against decision-making and normalization.
+Similarly, pre-linguistic normalization---which is frequently discussed in the context of accommodating cross-talker variability in L1-accented speech---does not seem to be considered a plausible mechanism for accent adaptation. In our review of the literature, we did not find any proposals that attribute accent adaptation solely to pre-linguistic normalization. This is perhaps due to the complex ways in which L2-accented speech tends to differ from L1-accented speech. This makes it appear unlikely that, for example, simple centering would be sufficient to explain the adaptive improvements listeners exhibit with exposure. As in Case Study 1, we first model changes in representations, and then compare them against decision-making and normalization.
 
 ### Changes in representations
 
@@ -467,7 +467,7 @@ Turning to the critical comparison of the two exposure conditions, Figure \@ref(
 
 Looking across the distinct $\kappa_{0,c}$s and $\nu_{0,c}$ values, we make two observations. On the one hand, faster learning of category means is generally beneficial under the current scenario. When listeners' beliefs about category covariances are held constant (i.e., looking within each row), smaller $\kappa_{0,c}$ values yield higher categorization accuracy. This is a straightforward consequence of the fact that the mean of the /d/ category is shifted in the L2 accents, as shown in Figure \@ref(fig:study-AA-exposure-test-plot). Adapting to the L2 accent thus hinges primarily on learning the new category mean for the /d/ category. On the other hand, updating beliefs about the _variance_ too rapidly is not necessarily desirable, as seen by comparing panels within each column. In the current scenario, the _true_ underlying variance of /d/ is unchanged between the L1 and the L2 accents. Weaker beliefs about the category covariance thus can run the risk of expanding the categories to a degree that causes miscategorization of relatively ambiguous tokens.
 
-Taken together, these results show that changes in representation---modeled here through the ideal adaptor model---can generally explain the type of result that is taken to be the signature of representational changes---in line with proposals that accent adaptation is driven by representational changes [e.g., @bradlow-bent2008; @clarke-garrett2004; @sidaras2009; @xie2016]. 
+Taken together, these results show that changes in representation---modeled here through the ideal adaptor model---can generally explain the type of result that is taken to be the signature of accent adaptation [e.g., @bradlow-bent2008; @clarke-garrett2004; @sidaras2009; @xie2016]. 
 
 ### Changes in decision-making
 
@@ -513,7 +513,7 @@ As in Case Study 1, we again vary two parameters: the rate at which response bia
 
 Paralleling Figure \@ref(fig:PR-result-changes-in-decision-making) for perceptual recalibration, the bottom row shows the edge case where $\lambda=1$, meaning that listeners are always lapsing and thus never responding based on the stimulus. Although highly implausible, this extreme case provides a useful, hypothetical, reference against which the rest of the results can be interpreted. When listeners' categorization is entirely dependent on their response biases, and when the biases do not change from the initial uniform distributions (bottom left panel in Figure \@ref(fig:AA-result-changes-in-decision-making)), the accuracy is at chance. _If_ the biases change, they change according to perceptual errors that are experienced during exposure (Section \@ref(sec:change-bias)). Errors are naturally more frequent in the L2-accented than in the L1-accented exposure conditions, and most commonly involve mishearing /d/ as /t/. As a result, the changes of response biases are more likely to affect categorization accuracy in the L2-accented exposure condition than in the L1-accented exposure condition. The faster the response biases change (larger $\beta_{\pi}$), the greater the differences between the L1- and L2-accented exposure conditions are. 
 
-(ref:AA-result-changes-in-decision-making) Predictions of a model that derives accent adaptation as changes in decision-making. Predicted categorization responses are shown for the test tokens after `r conditions.AA[2]` and `r conditions.AA[2]` exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda_{posterior}$). 
+(ref:AA-result-changes-in-decision-making) Predictions of a model that derives accent adaptation as changes in decision-making. Predicted categorization responses are shown for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda_{posterior}$). 
 
 ```{r AA-result-changes-in-decision-making, fig.width=base.width*5, fig.height=base.height*5+.5, fig.cap="(ref:AA-result-changes-in-decision-making)", warning=FALSE}
 d.AA.bias <- d.AA.exposure %>%
@@ -688,7 +688,7 @@ d.AA.normalization %>%
 (ref:AA-result-changes-in-normalization) Predictions of a model that derives accent adaptation from changes in normalization, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure.
 
 ```{r AA-result-changes-in-normalization, fig.width=base.width*5, fig.height=base.height + 0.5, fig.cap="(ref:AA-result-changes-in-normalization)", warning=FALSE}
-d.AA.normalization %>%
+p.AA.results.normalization <- d.AA.normalization %>%
   filter(category == Item.Intended_category) %>% # show the response for intended category
   filter(normalization == "centered based\non exposure") %>%
   ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
@@ -711,10 +711,26 @@ d.AA.normalization %>%
     labeller = label_bquote(
       cols = ~kappa[0] == .(as.character(prior_kappa.normalization)))) + 
   theme(legend.position = "top", panel.grid.major.x = element_blank())
+
+
+p.AA.results.normalization +
+  ggnewscale::new_scale_fill() +
+  insert_layers(
+      geom_rect(data = d.AA.normalization %>%
+    filter(category == Item.Intended_category) %>%
+                  distinct(prior_kappa.normalization) %>%
+                  mutate(highlight = case_when(
+                    posterior.lapse_rate == min(d.AA.normalization$prior_kappa.normalization) ~ T,
+                    T ~ F)), 
+                aes(fill = highlight), alpha = .1, inherit.aes = F,
+                xmin = -Inf,xmax = Inf, ymin = -Inf,ymax = Inf)
+      ) +
+     scale_fill_manual(breaks = c(T, F), values = c("darkgray", "white")) +
+  guides(fill = "none")
 ```
 <!--TO-DO: add a section that directly contrasts all three results-->
 
 
 ## Discussion
-Paralleling Case Study 1 on perceptual recalibration, we find that any of the three mechanisms of change can in theory explain the signature results of experiments on accent adaptation. In particular, non-representational mechanisms---normalization and decision-making---can result in complex patterns of changes in categorization accuracies. Contrary to the common assumption, these mechanisms can lead to an _overall_ (i.e., across category) improvements in recognition accuracies. Overall improvements in accuracy are thus _not_ diagnostic of representational changes.^[Likewise, an absence of overall improvements should not be taken as evidence to reject representational changes, either [cf., @zheng-samuel2020]. This conclusion is only valid *if successful learning of the exposure statistics* does predict improvements during test. But whether this is the case depends on the exposure and test stimuli---a fact that is sometimes forgotten when interpreting experiments.] This supports the conclusion of Case Study 1: at the level of analysis that is commonly applied in previous work (and thus here), the standard paradigms employed in research on accent adaptation do not directly inform what mechanisms cause the facilitatory effects of exposure. Next, we discuss the consequences of these findings in the broader context of other research. This includes research on accent adaptation and related topics that has pioneered analyses beyond changes in accuracy or processing speed, towards a more in-depth understanding of the link between the acoustic input and perception [e.g., @clare2019; @idemaru-holt2020; @kartushina2015; @kim2020; @schertz2015; @wade2007].
+Paralleling Case Study 1 on perceptual recalibration, we find that any of the three mechanisms of change can in theory explain the signature results of experiments on accent adaptation. In particular, non-representational mechanisms---normalization and decision-making---can result in complex patterns of changes in categorization accuracies. Contrary to the common assumption, these mechanisms can lead to an _overall_ (i.e., across categories) improvements in recognition accuracies. Overall improvements in accuracy are thus _not_ diagnostic of representational changes.^[Likewise, an absence of overall improvements should not be taken as evidence to reject representational changes, either [cf., @zheng-samuel2020]. This conclusion is only valid *if successful learning of the exposure statistics* does predict improvements during test. But whether this is the case depends on the exposure and test stimuli---a fact that is sometimes forgotten when interpreting experiments.] This supports the conclusion of Case Study 1: at the level of analysis that is commonly applied in previous work (and thus here), the standard paradigms employed in research on accent adaptation do not directly inform what mechanisms cause the facilitatory effects of exposure. Next, we discuss the consequences of these findings in the broader context of other research. This includes research on accent adaptation and related topics that has pioneered analyses beyond changes in accuracy or processing speed, towards a more in-depth understanding of the link between the acoustic input and perception [e.g., @clare2019; @idemaru-holt2020; @kartushina2015; @kim2020; @schertz2015; @wade2007].
 

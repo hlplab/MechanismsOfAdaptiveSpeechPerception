@@ -3,6 +3,7 @@
     * REMOVE duplicate references!
     * CHECK ALL REMAINING TO-DO comments in the text.
     * We probably need to spell out in the SI how you generated the data for the AA section. Have a look what I did for the PR section (in the SI)?
+    * Amend the SI to describe the procedure and rationale for the pre-processing done on the Chodroff data to gain a balanced set of voiced and voiceless tokens.
     
   * Xin and Chigusa:
     * I cut some passages. There are linked in this section below. Please check whether they ought to go somewhere else

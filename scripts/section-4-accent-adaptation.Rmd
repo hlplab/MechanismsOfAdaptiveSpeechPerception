@@ -412,16 +412,17 @@ For L1-accented exposure, the accuracy is always predicted to be much higher for
 (ref:AA-result-changes-in-representations) Predictions of a learning model that derives accent adaptation as changes in category representations. Predicted categorization accuracies are shown for the L2-accented test tokens after L1-accented and L2-accented exposure, as a function of the strength of the prior beliefs in category means ($\kappa_0$) and covariances ($\nu_0$). The average accuracy across all test tokens for each condition is shown above the bars. Error bars show 95% bootstrapped confidence intervals. The panel with gray highlighting corresponds to the combination of $\kappa_{0,c}$ and $\nu_{0,c}$ resulting in the best overall accuracy.
 
 ```{r AA-result-changes-in-representations, fig.width=base.width*5, fig.height=base.height*5+.5, fig.cap="(ref:AA-result-changes-in-representations)", warning=FALSE}
+pos <- position_dodge(.7)
 p.AA.results <-
   d.AA %>%
   filter(category == Item.Intended_category) %>% # show the response for intended category
   ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
   stat_summary(fun = mean, 
-               geom="bar", position = position_dodge(0.6), width = 0.6) +
+               geom = "bar", position = pos, width = 0.6) +
   stat_summary(aes(color = Item.Intended_category),
                fun.data = mean_cl_boot, 
                geom = "uperrorbar", 
-               position = position_dodge(0.6), width = 0.2) +
+               position = pos, width = 0.2) +
   coord_cartesian(ylim =  c(0,1)) + 
   scale_color_manual("Category", values = colors.category) + 
   scale_fill_manual("Category", values = colors.category) + 

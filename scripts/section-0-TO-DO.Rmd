@@ -1,17 +1,20 @@
-# THINGS TO DO LATER:
+# THINGS TO DO
+Let's delete to-dos after they have been addressed, and post in Slack what we've done. Thanks.
+
   * Xin:
-    * REMOVE duplicate references!
+    * In the bar plots for case study 2, you seem to be using a geom "uperrorbar". I don't think I know it. But I had assumed it would only show the top part of an error bar. That's what we want (both for statistical reasons and because it will make the transparent bars look the same as the opaque ones). But that's NOT what we're getting atm.
     * CHECK ALL REMAINING TO-DO comments in the text.
     * We probably need to spell out in the SI how you generated the data for the AA section. Have a look what I did for the PR section (in the SI)?
     * Amend the SI to describe the procedure and rationale for the pre-processing done on the Chodroff data to gain a balanced set of voiced and voiceless tokens.
     
   * Xin and Chigusa:
-    * I cut some passages. There are linked in this section below. Please check whether they ought to go somewhere else
-    * ADD ADDITIONAL REFERENCES?
+    * I cut some passages. There are linked in this section below. Please check whether they ought to go somewhere else. If you're ok cutting them, please move them into Cutout-stuff.Rmd.
+    * REMOVE duplicate references from the *bibliography*! Last I checked there were some instances of the same reference being listed twice in the bib. Perhaps those have already been removed, and you just forgot to remove this bullet point?
 
   * Florian: 
+    * Make clear that changes in decision bias can be more than a zero-sum game (cf. case study 2)
     * **Find a way to signal more clearly that we are also entertaining that combinations of mechanisms matter.**
-    * Change decision-bias change model to include surprisal of observation.
+    * Be clear in case studies that we marginalize over noise, lapse rates, and subjects, **simulating what is expected in the limit across subjects, rather than a specific instance of the experiment with a specific number of participants.**
     * CHECK OUT WHETHER CHANGES IN NORMALIZATION CAN LEAD TO NON-LINEAR CHANGES *DESPITE THE FACT THAT WE'RE USING SIMPLE LINEAR INTERPOLATION*
     * CHANGE TEST RESPONSES TO OVERALL CATEGORIZATION FUNCTIONS AND THEN POINT OUT THAT THIS *UNDER*ESTIMATES THE AMBIGUITY OF EXISTING RESULTS. LINK TO DISCUSSION ABOUT MORE ACCURATE ESTIMATION OF THE PARAMETER
 

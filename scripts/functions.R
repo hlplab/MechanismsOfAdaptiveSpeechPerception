@@ -517,15 +517,27 @@ update_NIW_response_bias_by_one_observation <- function(
   prior %>%
     left_join(
       # The response variable that is returned by the get_categorization function tells us *how often* each category response is
-      # observed. The x_category argument tells what the (supervising) category label is. 
+      # observed. The x_category argument tells what the (supervising) category label is. If the decision rule is "proportional"
+      # each category will have a probability / expected proportion of occurrence (response) between 0 and 1, summing to 1. If 
+      # the decision rule is "sample" or "criterion" only one category will have response = 1 and all others will have 0. For 
+      # details, see help(get_categorization_from_NIW_ideal_adaptor).
       get_categorization_from_NIW_ideal_adaptor(x = x, model = prior, decision_rule = decision_rule, noise_treatment = noise_treatment, lapse_treatment = lapse_treatment) %>%
-        # Currently, the error signal is either 0 or 1 (rather than the prediction error)
-        # delta_logodds is the sum of all error signals multiplied by beta
-        mutate(delta_logodds = beta * sum(ifelse(category == x_category, 0, 1 * response))),
+        # Calculate the amount of change (in log-odds) that the observed category label (x_category) causes. 
+        # Here we are assuming that each observation leads to change proportional to its surprisal (the 
+        # surprisal experienced when seeing the category label, x_category):
+        mutate(delta_logodds = beta * sum(ifelse(category == x_category, -log2(response) * response, 0))),
+        # If one wants to use an error signal that is either 0 or 1 (rather than the prediction error) then 
+        # delta_logodds would simply be the sum of all error signals multiplied by beta: 
+        # mutate(delta_logodds = beta * sum(ifelse(category == x_category, 0 * response, 1 * response))),
       by = "category") %>%
+    # For the category that was actually observed (x_category) increase the response bias by delta_logodds.
+    # Subtract that same *total* amount from the response bias of all other categories (which were not observed),
+    # by decreasing the response bias of each of those categories by delta_logodds divided by the number of those 
+    # categories. Prior to rounding errors, this keeps the sum of the response bias across all categories at 1.
+    # (finally, set prior to lapse bias since the model we're assuming here holds that the two biases are identical)
     mutate(
       lapse_bias = logit2probability(probability2logit(lapse_bias) + ifelse(category == x_category, +delta_logodds, -delta_logodds / (length(category) - 1))),
-      # correct for rounding errors by renormalizing
+      # correct for rounding errors by re-normalizing
       lapse_bias = lapse_bias / sum(lapse_bias),
       prior = lapse_bias) %>%
     select(-c(observationID, x, response, delta_logodds)) %>%

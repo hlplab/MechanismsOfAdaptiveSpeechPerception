@@ -613,13 +613,13 @@ p(/d/ | input) & = \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \ri
 In other words, changes in response biases have additive effects on the log-odds of /d/ when $\lambda = 0$: adding some arbitrary amount to $\pi_{/d/}$ in Equation \@ref(eq:posterior-probability-lapse-PR) and subtracting same amount from $\pi_{/t/}$ (since $\Sigma_i \pi_i = 1$) will lift/lower the entire categorization function up or down by a constant amount, independent of the stimulus. This property does not depend on the specific change model assumed in Equation \@ref(eq:bias-probability). <!-- Regardless of the specific way in which response biases change as a function of the input, these changes should have additive effects on the posterior log-odds. We have heard this constraint informally summarized as "differences in response biases can only explain boundary shifts, but not changes in the slope of the categorization function". -->
 Critically, however, this constraint on changes in decision-making only follows if $\lambda = 0$. For $\lambda \neq 0$, changes in response biases can lead to non-additive changes in the posterior log-odds.^[Specifically: $\log \frac{p(/d/ | input)}{p(/t/ | input)} = \log \frac{(1-\lambda)\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) + \lambda \left(\Sigma_i \mathcal{N}\!\left( input | \mu_{i}, \Sigma_{i} \right)\pi(c_i)\right)}{(1-\lambda)\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right) + \lambda \left(\Sigma_i \mathcal{N}\!\left( input | \mu_{i}, \Sigma_{i} \right)\pi(c_i)\right)} + \log\frac{\pi_{/d/}}{\pi_{/t/}}$.] This is illustrated in Figure \@ref(fig:demonstrate-lapse-bias-change-nonzero-lapse). Changes in the slope of the categorization function (even in log-odds) therefore do *not* rule out explanations in terms of changing response biases (unless it is also shown that the lapse rate is 0).
 
-(ref:demonstrate-lapse-bias-change) Illustrating the effects of $\beta_{\pi}$ on changes in the categorization function (**Left:** posterior probability, **Right:** posterior log-odds). The model has the same uncertain prior beliefs about category mean and variances as the model in Figure \@ref(fig:demonstrate-niw-prior-mu-sigma)D ($\kappa_{0,c} = \nu_{0,c}=0$). Neither normalization nor prior beliefs about the categories changes as a function of exposure. We set the lapse rate $\lambda = 0$, the prior lapse biases to uniform ($\pi_{0,c}=.5$). The input to this change model is identical to what was used in Figures \@ref(fig:demonstrate-changes-in-representations) and \@ref(fig:demonstrate-changes-in-representations-b). Orange arrows indicate the distance between the posterior log-odds resulting from the two most extreme $\beta_{\pi}$s. This highlights the fact that changes to response biases have additive effects on the log-odds of `r categories.demo[1]` responses when $\lambda = 0$. Animation controls require Acrobat PDF reader.
+(ref:demonstrate-lapse-bias-change) Illustrating the effects of $\beta_{\pi}$ on changes in the categorization function (**Left:** posterior probability, **Right:** posterior log-odds). The model has the same uncertain prior beliefs about category mean and variances as the model in Figure \@ref(fig:demonstrate-niw-prior-mu-sigma)D ($\kappa_{0,c} = \nu_{0,c}=0$). Neither normalization nor prior beliefs about the categories changes as a function of exposure. We set the lapse rate $\lambda = 0$, the prior lapse biases to uniform ($\pi_{0,c}=.5$). The input to this change model is identical to what was used in Figures \@ref(fig:demonstrate-changes-in-representations) and \@ref(fig:demonstrate-changes-in-representations-b). In the left panel, orange arrows indicate changes in the category boundary (point of subjective equality) for $\beta_{\pi} = 1$. In the right panel, orange arrows indicate the distance between the posterior log-odds resulting from the two most extreme $\beta_{\pi}$s. This highlights the fact that changes to response biases have additive effects on the log-odds of `r categories.demo[1]` responses when $\lambda = 0$. Animation controls require Acrobat PDF reader.
 
 ```{r demonstrate-lapse-bias-change, fig.width=base.width*2.5 + 1.5, fig.height=base.height + .5, fig.cap="(ref:demonstrate-lapse-bias-change)", fig.show='animate', warning=FALSE, message=FALSE}
 d.exposure <- 
   d.exposure.demo %>%
   crossing(
-    beta = c(0.1, 0.5, 1),
+    beta = c(0.1, 1, 10),
     prior = list(m.ia.VOT %>% filter(lambda == 0, prior_kappa == strong, prior_nu == strong))) %>%
   mutate(
     posterior = pmap(
@@ -630,6 +630,8 @@ d.exposure <-
           beta = .beta,
           exposure = .data, 
           exposure.cues = cue.demo, 
+          # We are using the decision rule "proportional" since we want to simulate the behavior that is expected when averaging 
+          # across lots of listeners. For the same reason, we are marginalizing over the consequences of attentional lapses and noise.
           decision_rule = "proportional",
           noise_treatment = "marginalize",
           lapse_treatment = "marginalize",
@@ -649,6 +651,7 @@ d.exposure %<>%
 
 p <- 
   d.exposure %>%
+  select(-c(data, posterior)) %>%
   filter(!is.na(observation.category)) %>%
   mutate(use_logit = factor(ifelse(use_logit, "log-odds", "probability"), levels = c("probability", "log-odds"))) %>%
   ggplot(aes(x = !! sym(cue.demo))) +
@@ -710,6 +713,36 @@ p <-
       label = ifelse(use_logit == "log-odds", round(y, ifelse(use_logit == "log-odds", 1, 2)), ""), 
       hjust = ifelse(!! sym(cue.demo) == max(!! sym(cue.demo)), 0, 1)),
     color = "orange", show.legend = F) +
+  geom_segment(
+    data = . %>%
+      filter(
+        use_logit == "probability", 
+        beta == median(beta)) %>%
+      droplevels() %>%
+      crossing(!! sym(cue.demo) := seq(VOT_range[1], VOT_range[2])) %>%
+      mutate(y = map2(posterior.categorization_function, !! sym(cue.demo), .f = mycall) %>% unlist()) %>%
+      group_by(observation.n) %>%
+      filter(abs(y - .5) == min(abs(y - .5))) %>%
+      distinct(use_logit, observation.n, !! sym(cue.demo)),
+    aes(xend = !! sym(cue.demo)),
+    x = VOT_range[1], y = .5, yend = .5, color = "orange") +
+  geom_segment(
+    data = . %>%
+      filter(
+        use_logit == "probability", 
+        beta == median(beta)) %>%
+      droplevels() %>%
+      crossing(!! sym(cue.demo) := seq(VOT_range[1], VOT_range[2])) %>%
+      mutate(y = map2(posterior.categorization_function, !! sym(cue.demo), .f = mycall) %>% unlist()) %>%
+      mutate(yend = min(y)) %>%
+      group_by(observation.n) %>%
+      filter(abs(y - .5) == min(abs(y - .5))) %>%
+      distinct(use_logit, observation.n, yend, !! sym(cue.demo)),
+    aes(
+      x = !! sym(cue.demo),
+      xend = !! sym(cue.demo),
+      yend = yend),
+    y = .5, color = "orange", arrow = arrow(type = "closed", angle = 15)) +
   scale_x_continuous("VOT (msec)") +
   scale_y_continuous("Posterior of /d/") +
   scale_color_manual("Category", values = colors.voicing) +
@@ -722,13 +755,13 @@ p <-
 p
 ```
 
-(ref:demonstrate-lapse-bias-change-nonzero-lapse) Same as Figure \@ref(fig:demonstrate-lapse-bias-change) but for a lapse rate $\lambda=$ `r lambdas.demo[2]`. For such non-zero lapse rates, changes to the response bias have *non*-additive effects on the posterior log-odds. This means that, even in log-odds, changes in response biases can have effects that go beyond *shifts* in category boundaries. Animation controls require Acrobat PDF reader.
+(ref:demonstrate-lapse-bias-change-nonzero-lapse) Same as Figure \@ref(fig:demonstrate-lapse-bias-change) but for a lapse rate $\lambda=$ `r lambdas.demo[2]`. For such non-zero lapse rates, changes to the response bias have *non*-additive effects on the posterior log-odds. This means that, even in log-odds, changes in response biases can have effects that go beyond purely additive changes in the categorization functions ('shifts in category boundaries'). Animation controls require Acrobat PDF reader.
 
 ```{r demonstrate-lapse-bias-change-nonzero-lapse, fig.width=base.width*2.5 + 1.5, fig.height=base.height +.5, fig.cap="(ref:demonstrate-lapse-bias-change-nonzero-lapse)", fig.show='animate', warning=FALSE, message=FALSE}
 d.exposure <- 
   d.exposure.demo %>%
   crossing(
-    beta = c(0.1, 0.5, 1),
+    beta = c(0.1, 1, 10),
     prior = list(m.ia.VOT %>% filter(lambda == lambdas.demo[2], prior_kappa == strong, prior_nu == strong))) %>%
   mutate(
     posterior = pmap(

@@ -13,7 +13,8 @@ Let's delete to-dos after they have been addressed, and post in Slack what we've
     
   * Xin and Chigusa:
     * I cut some passages. There are linked in this section below. Please check whether they ought to go somewhere else. If you're ok cutting them, please move them into Cutout-stuff.Rmd.
-    * REMOVE duplicate references from the *bibliography*. Last I checked there were some instances of the same reference being listed twice in the bib. Perhaps those have already been removed, and you just forgot to remove this bullet point?
+    ** Xin, I am ok with cutting these parts out. If you want me to, I can move them to Cutout-stuff.Rmd. (07/10/22)
+    * ~~REMOVE duplicate references from the *bibliography*. Last I checked there were some instances of the same reference being listed twice in the bib. Perhaps those have already been removed, and you just forgot to remove this bullet point?~~ (07/10/22)
 
   * Florian: 
     * **Find a way to signal more clearly that we are also entertaining that combinations of mechanisms matter.**

@@ -576,9 +576,9 @@ d.exposure %>%
 ```
   
 ### Modeling *changes* in decision-making {#sec:change-bias}
-Finally, we specify a linking hypothesis for changes in response biases. To the best of our knowledge, this problem has not previously been formalized, or at least not for speech perception. The change model we propose is essentially a form of error-based learning, as implemented for other learning problems in connectionist [@rumelhart-mcclelland1986; @mcclelland-elman1986; @chang2006], Bayesian [@jaeger-snider2013; @jaeger2019], and predictive coding models [@sohoglu2012; @rao-ballard1999; for review, see @clark2013]. Specifically, we propose that listeners adapt their response biases based on the prediction errors they experience during categorization. Consider a typical experiment on accent adaptation. A listener unfamiliar with the L2 accent will initially miscategorize the L2-accented inputs. Typically, these errors will not be random but rather exhibit directionality. For example, in experiments on Mandarin-accented English, L1-English participants initially mishear voiced syllable-final stops as voiceless [e.g., hearing *lid* as *lit*, @flege1992; @xie2016jep]. Since experiments of this type tend to employ exposure stimuli that effectively label the stimulus with the intended category (e.g., *lemona_e*), participants receive a clear error signal, making it apparent that they made a mistake. Participants can thus increase the bias for the category that they failed to hear (/d/ in this example), thereby improving their recognition accuracy for the L2-accented speech.^[We thank Zach Burchill for bringing this possibility to our attention. We also briefly considered another simple change model for decision-making but never implemented it since it could not possibly explain the findings we present in Sections \@ref(sec:PR) and \@ref(sec:AA). This alternative model holds that listeners aim to infer the relative probability of each category based on recent input, and that response biases reflect these estimates. For example, listeners might enter an experiment with expectations about the relative probability of each category based on their relative frequency in previously experienced input, and then update their expectations based on the relative frequency of the categories within the experiment [similar to belief-updating models of syntactic adaptation, @fine-jaeger2013; @jaeger2019; @prasad2021]. However, such a model could not possibly explain exposure effects in, for example, a typical perceptual recalibration experiment since the relative frequency of the two categories does not differ between exposure conditions.] 
+Finally, we specify a linking hypothesis for changes in response biases. To the best of our knowledge, this problem has not previously been formalized, or at least not for speech perception. The change model we propose is essentially a form of error-based learning, as implemented for other learning problems in connectionist [@rumelhart-mcclelland1986; @mcclelland-elman1986; @chang2006], Bayesian [@jaeger2019], information theoretic [@jaeger-snider2013], and predictive coding models [@sohoglu2012; @rao-ballard1999; for review, see @clark2013]. Specifically, the change model we implement assumes that listeners adapt their response biases based on the prediction error experienced when a category label is encountered. 
 
-Here, we model the prediction error as the surprisal $I$ experienced when observing a category label. This surprisal is a log-inverse function of the posterior probability of the category label given the beliefs held by the listener prior to observing the category label:
+Consider a typical experiment on accent adaptation. A listener unfamiliar with the L2 accent will initially miscategorize the L2-accented inputs. Typically, these errors will not be random but rather exhibit directionality. For example, in experiments on Mandarin-accented English, L1-English participants initially mishear voiced syllable-final stops as voiceless [e.g., hearing *lid* as *lit*, @flege1992; @xie2016jep]. Since experiments of this type tend to employ exposure stimuli that effectively label the stimulus with the intended category (e.g., *lemona_e*), participants receive a clear error signal, indicating to what extent their expectations based on the acoustic input mismatched the intended category. Participants can use this information to adapt the biases for all categories---increasing the bias for the labeled category (/d/ in this example) and decreasing the bias for all other categories, thereby improving their recognition accuracy for the L2-accented speech.^[We thank Zach Burchill for bringing this possibility to our attention. We also briefly considered another simple change model for decision-making but never implemented it since it could not possibly explain the findings we present in Sections \@ref(sec:PR) and \@ref(sec:AA). This alternative model holds that listeners aim to infer the relative probability of each category based on recent input, and that response biases reflect these estimates. For example, listeners might enter an experiment with expectations about the relative probability of each category based on their relative frequency in previously experienced input, and then update their expectations based on the relative frequency of the categories within the experiment [similar to belief-updating models of syntactic adaptation, @fine-jaeger2013; @jaeger2019; @prasad2021]. However, such a model could not possibly explain exposure effects in, for example, a typical perceptual recalibration experiment since the relative frequency of the two categories does not differ between exposure conditions.] Here, we model the prediction error as the surprisal $I$ experienced when observing the category label. This surprisal is a log-inverse function of the posterior probability of the category label given the beliefs held by the listener prior to observing the category label:
 
 \begin{equation}\label{eq:bias-updating}
 \begin{split}
@@ -587,7 +587,7 @@ Here, we model the prediction error as the surprisal $I$ experienced when observ
 \end{split}
 \end{equation}
 
-The same amount that is added to the bias of the observed (labeled) category is also subtracted from the response biases for all other categories (uniformly distributed across those categories). <!-- For the simple case of a 2AFC task, which involves only two categories, changes in the bias after $n$ observations are thus described by a logistic regression with intercept $\mathrm{logit}(\pi_{n-1,c})$ and surprisal slope $\beta_{\pi}$:
+The same amount that is added to the bias of the observed (labeled) category is subtracted from the response biases for all other categories (uniformly distributed across those categories). <!-- For the simple case of a 2AFC task, which involves only two categories, changes in the bias after $n$ observations are thus described by a logistic regression with intercept $\mathrm{logit}(\pi_{n-1,c})$ and surprisal slope $\beta_{\pi}$:
 
 \begin{equation}\label{eq:bias-probability}
 \begin{split}
@@ -596,21 +596,9 @@ The same amount that is added to the bias of the observed (labeled) category is 
 \end{equation}
 
 -->
-While this change model is *indirectly* sensitive to the stimulus (the probability of miscategorizing a stimulus is a function of its acoustic properties), the quantity that changes with exposure is the response bias, which is *in*dependent of the stimulus (unlike for representational change models).
+Like the representational change model, the change model for response biases is sensitive to the prediction error experienced when listeners expectations based on the input are compared to labeling information provided by the context [@davis-sohoglu-2020 discuss the former]. Unlike the representational change model, however, the change model for response biases uses this prediction error to update response biases rather than beliefs about category likelihoods. Unlike the representational change model, the change for response biases thus does not *directly* change the mapping from stimulus properties to categorization responses. As we show next, the change model for response biases can, however, affect this mapping indirectly. This is important to keep in mind, as it means that even simple changes in response biases can change listeners' categorization function in complex ways.
 
-Figure \@ref(fig:demonstrate-lapse-bias-change) illustrates this change model for three different values of $\beta_\pi$ when the lapse rate $\lambda=0$. As in the case studies presented below, we assume a uniform initial bias across all categories, leaving $\beta_{\pi}$ as the only degree of freedom. The input to this model is identical to the one used in the previous section to demonstrate changes in representations. The right panel highlights an interesting limitation in the types of results that can be explained through changes in response biases: in the absence of lapses, changes in response biases can only explain *additive* effects on the log-odds of the categories, but not changes in the *slope* of the categorization function (in log-odds). To see how this limitation arises, how the *log-odds* of a category---e.g., /d/---in Equation \@ref(eq:posterior-probability-lapse) depend on the response biases $\pi$:
-
-\begin{equation}\label{eq:posterior-probability-lapse-PR}
-\begin{split}
-p(/d/ | input) & = \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/}}{\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_i} \Rightarrow \\
-\log \frac{p(/d/ | input)}{1 - p(/d/ | input)} & =  \\
-\log \frac{p(/d/ | input)}{p(/t/ | input)} & =  \log \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/}}{\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right) \pi_{/t/}} \\
- & = \log \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right)}{\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right)} + \log\frac{\pi_{/d/}}{\pi_{/t/}}
-\end{split}
-\end{equation}
-
-In other words, changes in response biases have additive effects on the log-odds of /d/ when $\lambda = 0$: adding some arbitrary amount to $\pi_{/d/}$ in Equation \@ref(eq:posterior-probability-lapse-PR) and subtracting same amount from $\pi_{/t/}$ (since $\Sigma_i \pi_i = 1$) will lift/lower the entire categorization function up or down by a constant amount, independent of the stimulus. This property does not depend on the specific change model assumed in Equation \@ref(eq:bias-probability). <!-- Regardless of the specific way in which response biases change as a function of the input, these changes should have additive effects on the posterior log-odds. We have heard this constraint informally summarized as "differences in response biases can only explain boundary shifts, but not changes in the slope of the categorization function". -->
-Critically, however, this constraint on changes in decision-making only follows if $\lambda = 0$. For $\lambda \neq 0$, changes in response biases can lead to non-additive changes in the posterior log-odds.^[Specifically: $\log \frac{p(/d/ | input)}{p(/t/ | input)} = \log \frac{(1-\lambda)\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) + \lambda \left(\Sigma_i \mathcal{N}\!\left( input | \mu_{i}, \Sigma_{i} \right)\pi(c_i)\right)}{(1-\lambda)\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right) + \lambda \left(\Sigma_i \mathcal{N}\!\left( input | \mu_{i}, \Sigma_{i} \right)\pi(c_i)\right)} + \log\frac{\pi_{/d/}}{\pi_{/t/}}$.] This is illustrated in Figure \@ref(fig:demonstrate-lapse-bias-change-nonzero-lapse). Changes in the slope of the categorization function (even in log-odds) therefore do *not* rule out explanations in terms of changing response biases (unless it is also shown that the lapse rate is 0).
+Figure \@ref(fig:demonstrate-lapse-bias-change) illustrates the proposed change model for three different values of $\beta_\pi$ when the lapse rate $\lambda=0$. As in the case studies presented in Sections \@ref(sec:PR) and \@ref(sec:AA), we assume uniform initial biases across all categories, leaving $\beta_{\pi}$ as the only degree of freedom. The right panel highlights an interesting limitation in the types of results that can be explained through changes in response biases: in the absence of lapses ($\lambda=0$), changes in response biases can only explain *additive* effects on the log-odds of the categories, but not changes in the *slope* of the categorization function (in log-odds).^[To see how this limitation arises, consider how the *log-odds* of a category---e.g., /d/---in Equation \@ref(eq:posterior-probability-lapse) depend on the response biases $\pi$ when $\lambda=0$: $p(/d/ | input) = \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/}}{\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_i} \Rightarrow \log \frac{p(/d/ | input)}{1 - p(/d/ | input)} = \log \frac{p(/d/ | input)}{p(/t/ | input)} =  \log \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/}}{\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right) \pi_{/t/}} = \log \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right)}{\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right)} + \log\frac{\pi_{/d/}}{\pi_{/t/}}$. In other words, adding some arbitrary amount to $\pi_{/d/}$ and subtracting same amount from $\pi_{/t/}$ (since $\Sigma_i \pi_i = 1$) will lift/lower the entire categorization function by a constant amount in log-odds, independent of the stimulus.] This property does not depend on the specific change model assumed in Equation \@ref(eq:bias-updating). Critically, however, this constraint on changes in decision-making only follows if $\lambda = 0$. For $\lambda \neq 0$, changes in response biases can lead to non-additive changes in the posterior log-odds.^[Specifically: $\log \frac{p(/d/ | input)}{p(/t/ | input)} = \log \frac{(1-\lambda)\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) + \lambda \left(\Sigma_i \mathcal{N}\!\left( input | \mu_{i}, \Sigma_{i} \right)\pi(c_i)\right)}{(1-\lambda)\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right) + \lambda \left(\Sigma_i \mathcal{N}\!\left( input | \mu_{i}, \Sigma_{i} \right)\pi(c_i)\right)} + \log\frac{\pi_{/d/}}{\pi_{/t/}}$.] This is illustrated in Figure \@ref(fig:demonstrate-lapse-bias-change-nonzero-lapse). Changes in the slope of the categorization function (even in log-odds) therefore do *not* rule out explanations in terms of changing response biases (unless it is also shown that the lapse rate is 0).
 
 (ref:demonstrate-lapse-bias-change) Illustrating the effects of $\beta_{\pi}$ on changes in the categorization function (**Left:** posterior probability, **Right:** posterior log-odds). The model has the same uncertain prior beliefs about category mean and variances as the model in Figure \@ref(fig:demonstrate-niw-prior-mu-sigma)D ($\kappa_{0,c} = \nu_{0,c}=0$). Neither normalization nor prior beliefs about the categories changes as a function of exposure. We set the lapse rate $\lambda = 0$, the prior lapse biases to uniform ($\pi_{0,c}=.5$). The input to this change model is identical to what was used in Figures \@ref(fig:demonstrate-changes-in-representations) and \@ref(fig:demonstrate-changes-in-representations-b). In the left panel, orange arrows indicate changes in the category boundary (point of subjective equality) for $\beta_{\pi} = 1$. In the right panel, orange arrows indicate the distance between the posterior log-odds resulting from the two most extreme $\beta_{\pi}$s. This highlights the fact that changes to response biases have additive effects on the log-odds of `r categories.demo[1]` responses when $\lambda = 0$. Animation controls require Acrobat PDF reader.
 
@@ -639,19 +627,19 @@ d.exposure <-
   select(-prior) %>%
   crossing(use_logit = c(T, F)) %>%
   unnest(posterior) %>%
-  nest(posterior = -c(data, beta, use_logit, starts_with("observation")))
+  nest(posterior = -c(data, beta, use_logit, starts_with("observation"))) %>%
+  select(-data)
 
 d.exposure %<>%
   mutate(
     posterior.categorization_function = map2(
       posterior, 
       use_logit, 
-      ~ get_categorization_function_from_NIW_ideal_adaptor(.x, logit = .y, noise_treatment = "marginalize")))
+      ~ get_categorization_function_from_NIW_ideal_adaptor(.x, logit = .y, noise_treatment = "marginalize"))) %>%
+  select(-c(posterior))
 
 p <- 
   d.exposure %>%
-  select(-c(data, posterior)) %>%
-  filter(!is.na(observation.category)) %>%
   mutate(use_logit = factor(ifelse(use_logit, "log-odds", "probability"), levels = c("probability", "log-odds"))) %>%
   ggplot(aes(x = !! sym(cue.demo))) +
   # categorization function
@@ -664,11 +652,14 @@ p <-
   # background rug
   geom_rug(
     data = . %>%
+      filter(!is.na(observation.category)) %>%
       distinct(!! sym(paste0("observation.", cue.demo)), observation.category),
     aes(x = !! sym(paste0("observation.", cue.demo)), color = observation.category),
     alpha = .4) +
   # current rug
   geom_rug(
+    data = . %>%
+      filter(!is.na(observation.category)),
     aes(x = !! sym(paste0("observation.", cue.demo)), color = observation.category),
     size = 2) +
   # labels
@@ -779,14 +770,16 @@ d.exposure <-
   select(-prior) %>%
   crossing(use_logit = c(T, F)) %>%
   unnest(posterior) %>%
-  nest(posterior = -c(data, beta, use_logit, starts_with("observation")))
+  nest(posterior = -c(beta, use_logit, starts_with("observation"))) %>%
+  select(-data)
 
 d.exposure %<>%
   mutate(
     posterior.categorization_function = map2(
       posterior, 
       use_logit, 
-      ~ get_categorization_function_from_NIW_ideal_adaptor(.x, logit = .y, noise_treatment = "marginalize")))
+      ~ get_categorization_function_from_NIW_ideal_adaptor(.x, logit = .y, noise_treatment = "marginalize"))) %>%
+  select(-posterior)
 
 p %+% 
   (d.exposure %>%

@@ -742,7 +742,7 @@ p <-
       x = !! sym(cue.demo),
       xend = !! sym(cue.demo),
       yend = yend),
-    y = .5, color = "orange", arrow = arrow(type = "closed", angle = 15)) +
+    y = .5, color = "orange", arrow = arrow(type = "closed", angle = 30, length = unit(0.05, "inches"))) +
   scale_x_continuous("VOT (msec)") +
   scale_y_continuous("Posterior of /d/") +
   scale_color_manual("Category", values = colors.voicing) +

@@ -403,7 +403,7 @@ d.AA <- d.AA.exposure %>%
 ```
 
 We follow the exact same approach as in Case Study 1, including identical parameter settings.
-<!-- To model exposure-driven changes in the mapping from VOT and f0 to the /d/ and /t/ categories, as in Case Study 1, we use the $\mathcal{NW}^{-1}$ ideal adaptor model described in Section \@ref(sec:ideal-adaptor) while varying the $\kappa_{0,c}$ and $\nu_{0,c}$ parameters. We set the other two parameters of the $\mathcal{NW}^{-1}$ ideal adaptor ($\mathrm{m}$ and $\mathrm{S}$) so that they match the expected mean and covariance of the data in @chodroff-wilson2018 (as we did in Section \@ref(sec:ideal-adaptor)). Normalization and responses biases did not change based on exposure ($\kappa_0 = \infty$; $\beta_{\delta_\pi}=0$). -->
+<!-- To model exposure-driven changes in the mapping from VOT and f0 to the /d/ and /t/ categories, as in Case Study 1, we use the $\mathcal{NW}^{-1}$ ideal adaptor model described in Section \@ref(sec:ideal-adaptor) while varying the $\kappa_{0,c}$ and $\nu_{0,c}$ parameters. We set the other two parameters of the $\mathcal{NW}^{-1}$ ideal adaptor ($\mathrm{m}$ and $\mathrm{S}$) so that they match the expected mean and covariance of the data in @chodroff-wilson2018 (as we did in Section \@ref(sec:ideal-adaptor)). Normalization and responses biases did not change based on exposure ($\kappa_0 = \infty$; $\beta_{\pi}=0$). -->
 Figure \@ref(fig:AA-result-changes-in-representations) shows the predicted categorization accuracy after exposure to L1- or L2-accented speech, as a function of the strength of the prior beliefs for the category means and variances. As in Case Study 1, we show the results for $\kappa_{0,c}$s and $\nu_{0,c}$s ranging from 1024 (very slow learning) to 4 (very fast learning). 
 
 
@@ -485,22 +485,22 @@ add_prior_and_posterior_with_changed_response_biases_based_on_exposure.AA <- fun
     nest(data = -c(Condition, Subject)) %>%
     crossing(
       posterior.lapse_rate = c(.0005, .005, .05, .5, 1),
-      beta_delta_epsilon = c(0, .05, .1, .2, .8)) %>%
+      beta_pi = c(0, .05, .1, .2, .8)) %>%
     crossing(
       prior %>%
         filter(prior_kappa == max(prior_kappa), prior_nu == max(prior_nu)) %>%
         nest(prior = everything())) %>%
-    group_by(Condition, Subject, posterior.lapse_rate, beta_delta_epsilon) %>%
+    group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
     mutate(
       posterior = pmap(
-        .l = list(data, prior, posterior.lapse_rate, beta_delta_epsilon),
-        .f = function(.data, .prior, .posterior.lapse_rate, .beta_delta_epsilon)
+        .l = list(data, prior, posterior.lapse_rate, beta_pi),
+        .f = function(.data, .prior, .posterior.lapse_rate, .beta_pi)
           update_NIW_response_bias_incrementally(
             prior = .prior,
             exposure = .data,
             exposure.category = "Item.Category",
             exposure.cues = c("VOT", "f0_Mel"),
-            beta = .beta_delta_epsilon, 
+            beta = .beta_pi, 
             decision_rule = decision_rule, 
             noise_treatment = if (idealized) "marginalize" else "sample",
             lapse_treatment = if (idealized) "marginalize" else "sample",
@@ -510,7 +510,7 @@ add_prior_and_posterior_with_changed_response_biases_based_on_exposure.AA <- fun
 }
 ```
 
-As in Case Study 1, we again vary two parameters: the rate at which response biases can change $\beta_{\delta_\epsilon}$ and the lapse rate $\lambda$. All other parameters were set in exactly the same way as in Case Study 1. Figure \@ref(fig:AA-result-changes-in-decision-making) shows the effects of changes in decision-making across different values of these two parameters. 
+As in Case Study 1, we again vary two parameters: the rate at which response biases can change $\beta_{\pi}$ and the lapse rate $\lambda$. All other parameters were set in exactly the same way as in Case Study 1. Figure \@ref(fig:AA-result-changes-in-decision-making) shows the effects of changes in decision-making across different values of these two parameters. 
 
 Paralleling Figure \@ref(fig:PR-result-changes-in-decision-making) for perceptual recalibration, the bottom row shows the edge case where $\lambda=1$, meaning that listeners are always lapsing and thus never responding based on the stimulus. Although highly implausible, this extreme case provides a useful, hypothetical, reference against which the rest of the results can be interpreted. When listeners' categorization is entirely dependent on their response biases, and when the biases do not change from the initial uniform distributions (bottom left panel in Figure \@ref(fig:AA-result-changes-in-decision-making)), the accuracy is at chance. *If* the biases change, they change according to perceptual errors that are experienced during exposure (Section \@ref(sec:change-bias)). Errors are naturally more frequent in the L2-accented than in the L1-accented exposure conditions, and most commonly involve mishearing /d/ as /t/. As a result, the changes of response biases are more likely to affect categorization accuracy in the L2-accented exposure condition than in the L1-accented exposure condition. The faster the response biases change (larger $\beta_{\pi}$), the greater the differences between the L1- and L2-accented exposure conditions are. 
 
@@ -521,7 +521,7 @@ d.AA.bias <- d.AA.exposure %>%
   add_prior_and_posterior_with_changed_response_biases_based_on_exposure.AA(prior = m.ia.VOT_f0.AA) %>%
   add_test_tokens(d.AA.test) %>%
   add_categorization_functions() %>%
-  group_by(Condition, Subject, posterior.lapse_rate, beta_delta_epsilon) %>%
+  group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
   add_categorization() %>%
   distinct() %>%
   left_join(., d.AA.test %>% select(x, Item.Intended_category), by = "x") %>%
@@ -542,12 +542,12 @@ p.AA.results.bias <- d.AA.bias %>%
   xlab("Exposure condition") + 
   ylab("Predicted categorization accuracy") + 
   geom_text(inherit.aes = FALSE, data = . %>%
-               group_by(Condition,posterior.lapse_rate,beta_delta_epsilon) %>%
+               group_by(Condition,posterior.lapse_rate,beta_pi) %>%
                summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
   facet_grid(
-    posterior.lapse_rate ~ beta_delta_epsilon, 
+    posterior.lapse_rate ~ beta_pi, 
     labeller = label_bquote(
-      cols = beta[pi] == .(beta_delta_epsilon),
+      cols = beta[pi] == .(beta_pi),
       rows = lambda[posterior] == ~.(posterior.lapse_rate))) +
   myGplot.defaults(base_size = 14, set_theme = F) + 
   theme(legend.position = "top", panel.grid.major.x = element_blank())
@@ -557,9 +557,9 @@ p.AA.results.bias +
   insert_layers(
       geom_rect(data = d.AA.bias %>%
     filter(category == Item.Intended_category) %>%
-                  distinct(posterior.lapse_rate, beta_delta_epsilon) %>%
+                  distinct(posterior.lapse_rate, beta_pi) %>%
                   mutate(highlight = case_when(
-                    posterior.lapse_rate == min(d.AA.bias$posterior.lapse_rate) & beta_delta_epsilon == max(d.AA.bias$beta_delta_epsilon) ~ T,
+                    posterior.lapse_rate == min(d.AA.bias$posterior.lapse_rate) & beta_pi == max(d.AA.bias$beta_pi) ~ T,
                     T ~ F)), 
                 aes(fill = highlight), alpha = .1, inherit.aes = F,
                 xmin = -Inf,xmax = Inf, ymin = -Inf,ymax = Inf)
@@ -569,7 +569,7 @@ p.AA.results.bias +
 
 best_performing_case.bias <- d.AA.bias %>%
   filter(category == Item.Intended_category) %>%
-  filter(posterior.lapse_rate == min(d.AA.bias$posterior.lapse_rate) & beta_delta_epsilon == max(d.AA.bias$beta_delta_epsilon)) %>%
+  filter(posterior.lapse_rate == min(d.AA.bias$posterior.lapse_rate) & beta_pi == max(d.AA.bias$beta_pi)) %>%
   summarise(mAcc = round(mean(response), digits = 2))
 ```
 

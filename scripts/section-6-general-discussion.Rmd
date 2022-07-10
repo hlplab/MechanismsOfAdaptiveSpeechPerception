@@ -39,9 +39,9 @@ d.AA1 <-
 d.AA2 <- 
   d.AA.bias %>%
   filter(category == Item.Intended_category) %>%
-  filter(posterior.lapse_rate == min(d.AA.bias$posterior.lapse_rate) & beta_delta_epsilon == max(d.AA.bias$beta_delta_epsilon)) %>%
+  filter(posterior.lapse_rate == min(d.AA.bias$posterior.lapse_rate) & beta_pi == max(d.AA.bias$beta_pi)) %>%
    droplevels() %>%
-  distinct(Condition, Subject, data, posterior.lapse_rate, beta_delta_epsilon, prior, posterior, posterior.categorization)
+  distinct(Condition, Subject, data, posterior.lapse_rate, beta_pi, prior, posterior, posterior.categorization)
 
 d.AA3 <- 
   d.AA.normalization %>%

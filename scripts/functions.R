@@ -636,22 +636,22 @@ add_prior_and_posterior_with_changed_response_biases_based_on_exposure <- functi
     nest(data = -c(Condition, Subject)) %>%
     crossing(
       posterior.lapse_rate = c(.0005, .005, .05, .5, 1),
-      beta_delta_epsilon = c(0, .01, .05, .1, .2, .8)) %>%
+      beta_pi = c(0, .01, .05, .1, .2, .8)) %>%
     crossing(
       prior %>%
         filter(prior_kappa == max(prior_kappa), prior_nu == max(prior_nu)) %>%
         nest(prior = everything())) %>%
-    group_by(Condition, Subject, posterior.lapse_rate, beta_delta_epsilon) %>%
+    group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
     mutate(
       posterior = pmap(
-        .l = list(data, prior, posterior.lapse_rate, beta_delta_epsilon),
-        .f = function(.data, .prior, .posterior.lapse_rate, .beta_delta_epsilon)
+        .l = list(data, prior, posterior.lapse_rate, beta_pi),
+        .f = function(.data, .prior, .posterior.lapse_rate, .beta_pi)
           update_NIW_response_bias_incrementally(
             prior = .prior,
             exposure = .data,
             exposure.category = "Item.Category",
             exposure.cues = c("VOT", "f0_Mel"),
-            beta = .beta_delta_epsilon, 
+            beta = .beta_pi, 
             decision_rule = decision_rule, 
             noise_treatment = if (idealized) "marginalize" else "sample",
             lapse_treatment = if (idealized) "marginalize" else "sample",

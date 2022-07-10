@@ -38,6 +38,8 @@ Revisions to Sec 2:
  * not many because we want to keep the paper tutorial-like. However, if this is an issue, we could extract that entire section and either move it into a separate paper or make it part of the SI.
  
  * We made the structure of this section clearer---dividing it into two main sections (categorization and change models), and highlighted in the introduction to the section what is new in this model and what is not. 
+ 
+ * We made a small change to the change model for decision biases to make it more similar to one of the most common types of learning models assumed in the cognitive sciences. We now update decision biases based on the prediction error (surprisal) experienced for an observation. This model makes very similar predictions to the specific change model we used previously (because it has very similar updating mechanics) but is a bit easier to describe, and hopefully more familiar to readers.
 
 
 ## CUTS---PLEASE CHECK CAREFULLY AND DELETE THOSE THAT YOU THINK CAN GO

@@ -800,8 +800,11 @@ Next, we present two case studies that illustrate the predictions of the three c
 ```{r MVG-make-models}
 cues <- c("VOT_centered", "f0_Mel_centered")
 
+
+items <- c("DOLLARS","TOPIC","DOES","TUNNELS","DAUGHTER","TALKING","DIED","TIME","DEFINITELY", "TELL", "DAY","TAKE", "DEAL", "TEACHER","DON'T","TOTALLY","DO","TOO")
+
 n_token_talker <- d.chodroff_wilson %>%
-#  mutate(voicing = ifelse(category %in% c("/b/","/d/", "/g/"), "voiced", "voiceless")) %>%
+  filter(Word %in% items) %>%
   mutate(place = case_when(
     category %in% c("/b/", "/p/") ~ "labial",
     category %in% c("/d/", "/t/") ~ "alveolar",
@@ -831,9 +834,10 @@ n_items <- d.chodroff_wilson %>%
 
 prior_marginal_VOT_f0_stats <- 
   d.chodroff_wilson %>%
+  filter(Word %in% items) %>%
   left_join(., n_token_talker %>% select(-n), by = c("Talker", "category")) %>%
   group_by(Talker, category) %>%
-  sample_n(n_min) %>% # sample a balanced set of voiced and voiceless tokens for each place of articulation; the specific number is determined by the min number of tokens per category for that contrast 
+  sample_n(n_min) %>% # sample a balanced set of voiced and voiceless tokens for each place of articulation; the specific number is determined by the min number of tokens per category for that contrast
   group_by(Talker) %>%
   summarise(across(c(VOT, f0_Mel), mean)) %>%
   ungroup() %>%

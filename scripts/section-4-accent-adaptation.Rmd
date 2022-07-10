@@ -687,7 +687,7 @@ d.AA.normalization %>%
 
 (ref:AA-result-changes-in-normalization) Predictions of a model that derives accent adaptation from changes in normalization, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure.
 
-```{r AA-result-changes-in-normalization, fig.width=base.width*5, fig.height=base.height + 0.5, fig.cap="(ref:AA-result-changes-in-normalization)", warning=FALSE}
+```{r AA-result-changes-in-normalization, fig.width=base.width*5, fig.height=base.height + 0.8, fig.cap="(ref:AA-result-changes-in-normalization)", warning=FALSE}
 p.AA.results.normalization <- d.AA.normalization %>%
   filter(category == Item.Intended_category) %>% # show the response for intended category
   filter(normalization == "centered based\non exposure") %>%
@@ -717,10 +717,11 @@ p.AA.results.normalization +
   ggnewscale::new_scale_fill() +
   insert_layers(
       geom_rect(data = d.AA.normalization %>%
-    filter(category == Item.Intended_category) %>%
+                  filter(category == Item.Intended_category) %>%
+                  filter(normalization == "centered based\non exposure") %>%
                   distinct(prior_kappa.normalization) %>%
                   mutate(highlight = case_when(
-                    posterior.lapse_rate == min(d.AA.normalization$prior_kappa.normalization) ~ T,
+                    prior_kappa.normalization == min(as.numeric(as.character(d.AA.normalization$prior_kappa.normalization))) ~ T,
                     T ~ F)), 
                 aes(fill = highlight), alpha = .1, inherit.aes = F,
                 xmin = -Inf,xmax = Inf, ymin = -Inf,ymax = Inf)

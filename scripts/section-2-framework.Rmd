@@ -783,7 +783,6 @@ d.exposure %<>%
 
 p %+% 
   (d.exposure %>%
-  filter(!is.na(observation.category)) %>%
   mutate(use_logit = factor(ifelse(use_logit, "log-odds", "probability"), levels = c("probability", "log-odds"))))
 ```
 

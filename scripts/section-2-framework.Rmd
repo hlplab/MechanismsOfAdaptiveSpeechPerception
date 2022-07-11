@@ -806,6 +806,13 @@ n_token_talker <- d.chodroff_wilson %>%
   group_by(Talker, place) %>%
   mutate(n_min = min(n))
 
+selected_talkers <- n_token_talker %>%
+  group_by(Talker) %>%
+  tally() %>%
+  filter(n == 2) %>% # select talkers with both /d/ and /t/ observations
+  droplevels()
+  
+
 n_token_talker.summary <- n_token_talker %>%
   select(-n_min) %>%
   group_by(category) %>%
@@ -826,6 +833,7 @@ n_items <- d.chodroff_wilson %>%
 prior_marginal_VOT_f0_stats <- 
   d.chodroff_wilson %>%
   filter(Word %in% items) %>%
+  filter(Talker %in% levels(factor(selected_talkers$Talker))) %>%
   left_join(., n_token_talker %>% select(-n), by = c("Talker", "category")) %>%
   group_by(Talker, category) %>%
   sample_n(n_min) %>% # sample a balanced set of voiced and voiceless tokens for each place of articulation; the specific number is determined by the min number of tokens per category for that contrast

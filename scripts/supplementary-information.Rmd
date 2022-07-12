@@ -144,7 +144,7 @@ p.means +
 ```
 
 ## Applying C-CuRE
-We follow @mcmurray-jongman2011 and use linear regression to remove the effects of talker from each observation in the database. In extending normalization accounts to our present goals, we encountered few decision points that we have not previously seen discussed:
+We follow @mcmurray-jongman2011 and use linear regression to remove the effects of talker from each observation in the database. In extending normalization accounts to our present goals, we encountered a few decision points that we have not previously seen discussed:
 
   1. C-CuRE removes the *overall* cue mean from each observation's cue value. Based on this, it would seem most appropriate to include all six stop categories in the estimation of the cue means. However, the experiments we model in the main text involve only two of the categories (/d/ and /t/). We thus decided to only include tokens of /d/ and /t/ in the estimation of cue means. This decision was made because C-CuRE is intended to correct observed cue values for listeners' expectations *for the current context*. Put differently, we assume that listeners expect that the sound will be a /d/ or a /t/ since these are the only two response options provided to participants. This assumption affects some of our results (but not as much as it would if we studied /b/-/p/ or /g/-/k/ since the mean cue values for /d/s and /t/s are closer to the mean cue values across all six categories). 
   

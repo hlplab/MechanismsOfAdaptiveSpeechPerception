@@ -166,8 +166,6 @@ cue \sim 1 + (1 | Talker)
 
 Rather than to just use the residuals of these regressions, we only subtracted the random effects (BLUPs) from each observation. This removes the talker- and word-specific effects from each token but leaves observations in the original cue space (e.g. resulting in VOT values that mostly fall between 0 and 80, rather than being centered around 0). 
 
-As mentioned in footnote \@ref(fn:c-cure-subsampling) in the main text, there is one additional complication that needs to be considered when applying C-CuRE (or other normalizations). 
-
 (ref:chodroff-stop-VOT-f0ST-normalized) Same as Figure \@ref(fig:chodroff-stop-VOT-f0ST) but for normalized VOT and f0. Normalization does not affect the relative placement of tokens within the talker's space but it does affect the absolute placement. This is also evident in Figure \@ref(fig:chodroff-stop-VOT-f0ST-mu-normalized)
 
 ```{r chodroff-stop-VOT-f0ST-normalized, fig.width=base.width * 3 + 1, fig.height = base.height * 3, fig.cap=c("(ref:chodroff-stop-VOT-f0ST-normalized)")}

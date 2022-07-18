@@ -187,7 +187,7 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```{r, child="section-5-distributional-learning.Rmd", eval=FALSE}
 ```
 
-```{r, child="section-6-general-discussion.Rmd", eval=FALSE}
+```{r, child="section-6-general-discussion.Rmd", eval=TRUE}
 ```
 
 ```{r, child="section-7-references.Rmd", eval=TRUE}

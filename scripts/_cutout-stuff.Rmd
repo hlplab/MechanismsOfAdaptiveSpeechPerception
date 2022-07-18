@@ -184,3 +184,10 @@ my.priors.bivariate = c(
 <!-- #     list("mean" = mean, "sd" = sd), -->
 <!-- #     na.rm = T) -->
 <!-- ``` -->
+
+
+# Accent adaptation
+
+There are a few noteworthy differences between the accent adaptation and the perceptual recalibration paradigms. First, most work on accent adaptation uses naturally-produced speech, instead of creating artificial speech via acoustic manipulation [e.g., @bradlow-bent2008; @sidaras2009; @baeseberk2013; @smith2014; @mitterer-mcqueen2009]. The specific manner in which L2-accented speech categories differ from L1-accented counterparts is constrained by sound systems of both languages [@bent-baeseberk2021]. L2-accented speech therefore naturally deviates from L1-accented speech along multiple cue dimensions[@xie-jaeger2020; @vaughn2019], rather than along just a single cue dimension as is often assumed for a typical perceptual recalibration experiment. 
+
+Second, and relatedly, L1 and L2 accents can vary not only in categories' central tendencies (means) and dispersions (variances and covariances) but also types of phonetic cues that are used to distinguish the categories as well as weights given to each of them [@kim2002; @schertz2013; @ingvalson2011; @yamada-tohkura1992; @liu-holt2015; @harmon2019]. For instance, in Korean-accented English, the primary and and the secondary cues to the word-initial /d/ vs. /t/ contrast are reversed: f0, which is the secondary cue to voicing in L1-accented English, outweighs VOT [e.g., @schertz2015]. Another case in point is the word-final stops in Mandarin-accented English, where burst duration substitutes preceding vowel duration as the primary cue to voicing distinction [e.g., @xie2017].

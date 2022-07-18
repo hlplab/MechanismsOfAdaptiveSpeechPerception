@@ -607,7 +607,7 @@ add_prior_and_normalize_test_tokens_based_on_exposure.AA <- function(data.exposu
 
 Finally, we compare models that normalize test tokens based on the phonetic inputs experienced during exposure to models that continue to apply normalization based on previous long-term L1 experience. We again employ the same parameter settings as in Case Study 1. Figure \@ref(fig:AA-result-changes-in-normalization) shows the predicted categorization accuracy following changes in normalization in L1- and L2-accented exposure conditions. We again obtain both signature results of experiments on accent adaptation. For L1-accented exposure, we continue to see that /d/ test tokens are categorized substantially less accurately than /t/ test tokens. As expected, this result does not depend much on the specific value of $\kappa_0$. In contrast, categorization of /d/ test tokens is predicted to be more accurate after L2-accented exposure, and this benefit of L2-accented exposure is predicted to be larger the faster normalization proceeds (smaller $\kappa_0$ values). Critically, the improved recognition accuracy for /d/ does not come at the cost of equivalent decreases in recognition accuracy for /t/. Normalization can thus also predict *overall* improvements in recognition accuracy. 
 
-For the particular range of parameters considered here, and the stimulus statistics of the (simulated) experiment, the maximal benefits of L2-accented exposure predicted by our normalization model are smaller than those predicted for the other two change models. For reasons discussed in the previous section, this differences is, however, hard to interpret.
+For the particular range of parameters considered here, and the stimulus statistics of the (simulated) experiment, the maximal benefits of L2-accented exposure predicted by our normalization model are smaller than those predicted for the other two change models. For reasons discussed in the previous section, this differences is, however, hard to interpret. <!-- TO DO: Xin, this seems like a natural place to add any potential additional visualizations illustrating how different choices of stimulus statistics affect the specific predicted improvement for, say, the 'best' parameter setting (say kappa = 4). What do you think? -->
 
 <!-- (ref:AA-test-normalization) Effects of changes in normalization on the perception of test tokens. Category means of each condition after normalization are indicated by rug marks.-->
 
@@ -668,7 +668,7 @@ d.AA.normalization %>%
   theme(legend.position = "top")
 ```
 
-(ref:AA-result-changes-in-normalization) Predictions of a model that derives accent adaptation from changes in normalization, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure.
+(ref:AA-result-changes-in-normalization) Predictions of a model that derives accent adaptation from changes in normalization, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure. 
 
 ```{r AA-result-changes-in-normalization, fig.width=base.width*5, fig.height=base.height + 0.8, fig.cap="(ref:AA-result-changes-in-normalization)", warning=FALSE}
 p.AA.results.normalization <- d.AA.normalization %>%

@@ -185,15 +185,26 @@ my.priors.bivariate = c(
 <!-- #     na.rm = T) -->
 <!-- ``` -->
 
+# Introduction
+
+  * ^[Additional lines of work have investigated exposure to synthesized, vocoded, or otherwise distorted speech [e.g., @adank2009; @davis2005; @fenn2003; @mattys2012] or have used distributional learning paradigms [e.g., @clare2019; @clayards2008; @idemaru-holt2011; @maye2008; @schertz2013; @theodore-monto2019; @wade2007]. In the general discussion, we return to distributional learning paradigms, which we believe to hold particular promise in addressing the issues we identify below.] <!--TO_DO:this footnote should perhaps be moved elsewhere now that we do not talk about the two paradigms here--> 
+  
+  * Even if one were to take for granted that the three mechanisms in Figure \@ref(fig:overview) *jointly* underlie the effects of recent exposure, it remains unclear which of those mechanisms any given results sheds light on. For example, can we conclude from experiments like @clarke-garrett2004 that listeners can learn new representations (or at least select some mixture of existing representations) within two minutes of exposure? Or are those results due to normalization, and if so, where should we draw the line between processing and learning? Also, do the results of perceptual recalibration and accent adaptation stem from the same mechanism(s), or do they reflect different mechanisms [@baeseberk2018; @samuel-kraljic2009; @zheng-samuel2020]? Our comprehensive framework will make it possible to empirically test whether two paradigms that differ substantially in their design, tasks, and ecological validity of the speech stimuli would in fact engage the same mechanism(s). 
+  
 
 # Accent adaptation
 
  * There are a few noteworthy differences between the accent adaptation and the perceptual recalibration paradigms. First, most work on accent adaptation uses naturally-produced speech, instead of creating artificial speech via acoustic manipulation [e.g., @bradlow-bent2008; @sidaras2009; @baeseberk2013; @smith2014; @mitterer-mcqueen2009]. The specific manner in which L2-accented speech categories differ from L1-accented counterparts is constrained by sound systems of both languages [@bent-baeseberk2021]. L2-accented speech therefore naturally deviates from L1-accented speech along multiple cue dimensions[@xie-jaeger2020; @vaughn2019], rather than along just a single cue dimension as is often assumed for a typical perceptual recalibration experiment. 
 
  * Second, and relatedly, L1 and L2 accents can vary not only in categories' central tendencies (means) and dispersions (variances and covariances) but also types of phonetic cues that are used to distinguish the categories as well as weights given to each of them [@kim2002; @schertz2013; @ingvalson2011; @yamada-tohkura1992; @liu-holt2015; @harmon2019]. For instance, in Korean-accented English, the primary and and the secondary cues to the word-initial /d/ vs. /t/ contrast are reversed: f0, which is the secondary cue to voicing in L1-accented English, outweighs VOT [e.g., @schertz2015]. Another case in point is the word-final stops in Mandarin-accented English, where burst duration substitutes preceding vowel duration as the primary cue to voicing distinction [e.g., @xie2017].
+ 
+ 
+  * It is often assumed, for example, that response biases can only change the relative proportion of answers but cannot explain overall improvements in accuracy. Under this assumption, overall improvements in the perception of an accent would seem to rule out explanations in terms of response biases, at least if the experimenter carefully balanced how often each category occurs during test. This is, however, a common misconception (one that we shared, for what it is worth). As we demonstrate below, changes in response biases can explain findings that are often attributed to changes in representations. The same applies to pre-linguistic normalization: contrary to common intuitions, simple normalization mechanisms can explain seemingly complex changes in listeners' categorization following exposure to L2-accented or otherwise shifted speech (as, e.g., in perceptual recalibration paradigms).
 
 # General discussion
 
   * ... in the broader context of other research. This includes research on accent adaptation and related topics that has pioneered analyses beyond changes in accuracy or processing speed, towards a more in-depth understanding of the link between the acoustic input and perception [e.g., @clare2019; @idemaru-holt2020; @kartushina2015; @kim2020; @schertz2015; @wade2007].
  
   * Additionally, specific linking hypotheses---like the ones we have introduced here---can be compared in terms of their *quantitative* fit against the data, while appropriately taking into account their functional flexibility [e.g., through model comparison measures like the Bayesian leave-one-out information criterion, @vehtari2017]. 
+  
+    *These separate lines of research (our own work included) seem to have drawn theoretical conclusions through convention, rather than through strong empirical evidence in favor of a particular mechanism. 

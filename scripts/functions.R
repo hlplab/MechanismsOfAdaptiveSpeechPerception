@@ -114,26 +114,6 @@ my_plot_grid <- function(
 
 # Error bars that only goes up
 # From https://newbedev.com/error-bars-for-barplot-only-in-one-direction
-geom_uperrorbar <- function(mapping = NULL, data = NULL,
-                            stat = "identity", position = "identity",
-                            ...,
-                            na.rm = FALSE,
-                            show.legend = NA,
-                            inherit.aes = TRUE) {
-  layer(
-    data = data,
-    mapping = mapping,
-    stat = stat,
-    geom = GeomUperrorbar,
-    position = position,
-    show.legend = show.legend,
-    inherit.aes = inherit.aes,
-    params = list(
-      na.rm = na.rm,
-      ...
-    )
-  )
-}
 
 GeomUperrorbar <- ggproto(
   "GeomUperrorbar", Geom,
@@ -165,6 +145,27 @@ GeomUperrorbar <- ggproto(
     ), panel_scales, coord)
   }
 )  
+
+geom_uperrorbar <- function(mapping = NULL, data = NULL,
+                            stat = "identity", position = "identity",
+                            ...,
+                            na.rm = FALSE,
+                            show.legend = NA,
+                            inherit.aes = TRUE) {
+  layer(
+    data = data,
+    mapping = mapping,
+    stat = stat,
+    geom = GeomUperrorbar,
+    position = position,
+    show.legend = show.legend,
+    inherit.aes = inherit.aes,
+    params = list(
+      na.rm = na.rm,
+      ...
+    )
+  )
+}
 
 "%||%" <- function(a, b) {
   if (!is.null(a)) a else b

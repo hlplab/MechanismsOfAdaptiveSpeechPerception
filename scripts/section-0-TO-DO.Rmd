@@ -8,15 +8,14 @@ Let's delete to-dos after they have been addressed, and post in Slack what we've
   * Xin:
     * The accuracies in case study 2 seem considerably larger after changes in representations than after changes in decision biases. **Given that the learning/change rule for the latter has changed, this could be an issue with the range of parameters considered.** (but it was already the case in the previous submission, meaning we might not have explore the necessary parameter space there either). Or it could be the best changes in decision biases can do. **We need to figure out which one it is, and we need to carefully adjust the caption and main texts for case study 2 and the general discussion accordingly.**
     * Do we have a reference for "*changes in response biases do not necessarily result in the type of zero-sum trade-offs that is sometimes attributed to them*" in case study 2? I want to keep that claim in any case, but it'd be great to be able to link it to some references that have made that claim?
-    * In the bar plots for case study 2, you seem to be using a geom "uperrorbar". I don't think I know it. But I had assumed it would only show the top part of an error bar. That's what we want (both for statistical reasons and because it will make the transparent bars look the same as the opaque ones). But that's NOT what we're getting atm.
     * CHECK ALL REMAINING TO-DO comments in the text.
     * **discuss the impact of unbalanced data on different normalization methods** (see discussion on Slack)
     * We probably need to spell out in the SI how you generated the data for the AA section. Have a look what I did for the PR section (in the SI)?
-    * Amend the SI to describe the procedure and rationale for the pre-processing done on the Chodroff data to gain a balanced set of voiced and voiceless tokens.
+
     
   * Xin and Chigusa:
     * I cut some passages. There are linked in this section below. Please check whether they ought to go somewhere else. If you're ok cutting them, please move them into Cutout-stuff.Rmd.
-    ** Xin, I am ok with cutting these parts out. If you want me to, I can move them to Cutout-stuff.Rmd. (07/10/22) FLORIAN SAYS: YES PLEASE DO, AND THEN CUT THIS POINT FROM THE TO-DO?
+
 
   * Florian: 
     * **discuss whether e.g., norris et al's (ambiguous nonce-word) condition rules out normalization**. If labeling makes a difference that's an issue for normalization accounts (see also goldilocks Babel et al; other results in which labeling makes a difference). **This could be framed under 'potential objections to our conclusions' where we acknowledge that there are isolated results that may be taken to argue for one account over the other; however, arguably, we would still as a field want to increase the informativeness of our studies, rather than to rely on isolated findings.

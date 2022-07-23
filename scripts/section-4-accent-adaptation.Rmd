@@ -702,7 +702,7 @@ p.AA.results.normalization <- d.AA.normalization %>%
   scale_fill_manual("Category", values = colors.category) + 
   scale_alpha_discrete(range = c(0.2, 1), guide = "none") +
   xlab("Exposure condition") + 
-  ylab("Predicted categorization accuracy") + 
+  ylab("Predicted \ncategorization accuracy") + 
   scale_x_discrete(labels= c("L1-\naccented", "L2-\naccented")) + 
   geom_text(inherit.aes = FALSE, data = . %>%
                group_by(Condition, normalization, prior_kappa.normalization) %>%
@@ -822,11 +822,9 @@ construct_three_best_models <- function(
 ```
 
 
-(ref:AA-result-comparison-best-three-models) A simulated accent adaptation experiment representing another type of L1-L2 accent difference. Predictions of a model that derives accent adaptation as changes in decision-making. Predicted categorization responses are shown for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda_{posterior}$). The highlighted panel corresponds to the combination of $\beta_{\pi}$ and $\lambda_{posterior}$ resulting in the best overall accuracy. 
+(ref:AA-result-comparison-best-three-models) A simulated accent adaptation experiment representing another type of L1-L2 accent difference. Predictions of a model that derives accent adaptation as changes in decision-making. Predicted categorization responses are shown for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda_{posterior}$). The highlighted panel corresponds to the combination of $\beta_{\pi}$ and $\lambda_{posterior}$ resulting in the best overall accuracy. **Panel A - Exposure:** Distribution of the stimuli used during the exposure phase of the accent adaptation experiment (`r n.exposure.token` tokens each of `r conditions.AA[1]` and `r conditions.AA[2]` `r paste(categories.AA, collapse = " and ")`, respectively). **Panel B - Test:**  Distribution of the stimuli used during the test phase of the accent adaptation experiment. The test tokens come from L2-accented speech (`r n.test.token` tokens per category) and are identical for the two exposure conditions. Ellipses show the 95% probability mass for the two categories in L2-accented exposure speech. **Panel C - Change model predictions:** Predicted categorization accuracies are shown for the L2-accented test tokens after L1-accented and L2-accented exposure. The average accuracy across all test tokens for each condition is shown above the bars. Error bars show 95% bootstrapped confidence intervals. The parameter settings are identical to those shown in Case Study 2. The parameter combinations that result in the best overall accuracy in each model are shown.
 
-**Panel A - Exposure:** Distribution of the stimuli used during the exposure phase of the accent adaptation experiment (`r n.exposure.token` tokens each of `r conditions.AA[1]` and `r conditions.AA[2]` `r paste(categories.AA, collapse = " and ")`, respectively). **Panel B - Test:**  Distribution of the stimuli used during the test phase of the accent adaptation experiment. The test tokens come from L2-accented speech (`r n.test.token` tokens per category) and are identical for the two exposure conditions. Ellipses show the 95% probability mass for the two categories in L2-accented exposure speech. **Panel C - Change model predictions:** Predicted categorization accuracies are shown for the L2-accented test tokens after L1-accented and L2-accented exposure. The average accuracy across all test tokens for each condition is shown above the bars. Error bars show 95% bootstrapped confidence intervals. The parameter settings are identical to those shown in Case Study 2. The parameter combinations that result in the best overall accuracy in each model are shown.
-
-```{r AA-result-comparison-best-three-models,fig.width=base.width*3 + .5,  fig.height=base.height*2 + .5, fig.cap="(ref:AA-result-comparison-best-three-models", warning=FALSE}
+```{r AA-result-comparison-best-three-models,fig.width=base.width*3 + .5, fig.height=base.height*2 + .5, fig.cap = "(ref:AA-result-comparison-best-three-models", warning=FALSE}
 
 # Examine a new scenario
 dist.L2_category.cue1 <- 0.5

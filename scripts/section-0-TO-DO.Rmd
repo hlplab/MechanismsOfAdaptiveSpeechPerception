@@ -6,11 +6,9 @@
 Let's delete to-dos after they have been addressed, and post in Slack what we've done. Thanks.
 
   * Xin:
-    * The accuracies in case study 2 seem considerably larger after changes in representations than after changes in decision biases. **Given that the learning/change rule for the latter has changed, this could be an issue with the range of parameters considered.** (but it was already the case in the previous submission, meaning we might not have explore the necessary parameter space there either). Or it could be the best changes in decision biases can do. **We need to figure out which one it is, and we need to carefully adjust the caption and main texts for case study 2 and the general discussion accordingly.**
-    * Do we have a reference for "*changes in response biases do not necessarily result in the type of zero-sum trade-offs that is sometimes attributed to them*" in case study 2? I want to keep that claim in any case, but it'd be great to be able to link it to some references that have made that claim?
+    *  **Relative benefit of the three models: carefully adjust the caption and main texts for case study 2 and the general discussion accordingly.**
     * CHECK ALL REMAINING TO-DO comments in the text.
     * **discuss the impact of unbalanced data on different normalization methods** (see discussion on Slack)
-    * We probably need to spell out in the SI how you generated the data for the AA section. Have a look what I did for the PR section (in the SI)?
 
     
   * Xin and Chigusa:

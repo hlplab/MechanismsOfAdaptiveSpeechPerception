@@ -92,7 +92,8 @@ always_allow_html: true
 ---
 
 ```{r libraries, include=FALSE, message=FALSE}
-devtools::install_github("crsh/papaja")
+library(curl)               # Check availability of internet for install of remote libraries
+if (has_internet()) devtools::install_github("crsh/papaja")
 library(papaja)             # APA formatted ms
 
 library(tidyverse)
@@ -114,7 +115,7 @@ library(lme4)               # for C-CuRE normalization through regression
 library(modelr)
 library(diptest)            # test for bimodality
 
-devtools::install_github("hlplab/MVBeliefUpdatr")
+if (has_internet()) devtools::install_github("hlplab/MVBeliefUpdatr")
 library(MVBeliefUpdatr)     # for ideal observers and adaptors 
 library(LaplacesDemon)      # for additional density distributions (e.g., inverse-Wishart, W^-1)
 ```
@@ -187,7 +188,7 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```{r, child="section-5-distributional-learning.Rmd", eval=FALSE}
 ```
 
-```{r, child="section-6-general-discussion.Rmd", eval=FALSE}
+```{r, child="section-6-general-discussion.Rmd", eval=TRUE}
 ```
 
 ```{r, child="section-7-references.Rmd", eval=TRUE}

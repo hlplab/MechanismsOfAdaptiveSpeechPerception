@@ -9,9 +9,10 @@ As in the case of perceptual recalibration, changes of listeners' perceptual res
 
 Compared to perceptual recalibration paradigms, experiments on accent adaptation exhibit more heterogeneity in their designs and tasks. Here we focus on studies in which treatment exposure employs a single talker with the unfamiliar accent, and the test phase heard by both groups of participants employs previously unheard stimuli from the same accented talker [e.g., @eisner2013; @schertz2015; @xie2017].^[The approach we take here can also be applied to understand cross-talker generalization---i.e., paradigms in which different talkers of the same (or different) accent are used during test [@baeseberk2013; @bradlow-bent2008; @sidaras2009].] For example, in an exposure-test experiment, @xie2016jep exposed two groups of L1-English listeners to Mandarin-accented speech. In exposure, participants in the treatment group heard 30 words ending in /d/ (e.g., _overload_) together with 60 fillers and 90 nonwords. The /d/-final words were chosen to label the final sound as /d/. Participants in the control group heard the same recordings except that the 30 /d/-final words were replaced with words that did not contain /d/ (e.g., _animal_). After exposure, participants in both conditions categorized recordings of 60 minimal /d/-/t/ pairs (e.g., _seed_ vs. _seat_) spoken by the same Mandarin-accented talker. Participants who heard /d/-final words during exposure were more likely to categorize /d/-final words correctly during test, compared to the control condition. At the same time, a non-significant numerical *de*crease in accuracy was observed for /t/-final words [see also @xie2018lcn]. Related paradigms have yielded similar results for other contrasts and other L1-L2 pairs [e.g., @zheng-samuel2020; @eisner2013].
 
-For Case Study 2, we construct a hypothetical experiment that closely follows this type of design. Listeners are exposed to an L2-accent constructed to exhibit the hallmarks of L2-accented speech mentioned above. For the sake of continuity, we focus on the same syllable-initial /d/-/t/ contrast used in Case Study 1. Specifically, we model the type of situation that occurs in, for example, Korean-accented English---which relies more on f0 rather than VOT to signal word-initial /d/-/t/ contrasts, compared to L1-accented English [e.g., @schertz2015]. Like in Case Study 1, we analyze the data in Case Study 2 following the conventions of the field. For experiments on accent adaptation, this typically means that the facilitatory effects of treatment exposure are assessed through improvements in categorization accuracy during test. 
+For Case Study 2, we construct a hypothetical experiment that closely follows this type of design. Listeners are exposed to an L2-accent constructed to exhibit the hallmarks of L2-accented speech mentioned above. For the sake of continuity, we focus on the same syllable-initial /d/-/t/ contrast used in Case Study 1. Specifically, we model the type of situation that occurs in, for example, Korean-accented English---which relies more on f0 rather than VOT to signal word-initial /d/-/t/ contrasts, compared to L1-accented English [e.g., @schertz2015]. Like in Case Study 1, we analyze the data in Case Study 2 following the conventions of the field. For experiments on accent adaptation, this typically means that the facilitatory effects of L2-accented exposure are assessed through improvements in categorization accuracy during test. 
 
 ## Data
+The stimulus generation procedure is described in detail in the SI (\@ref(sec:SI-AA)).
 
 ```{r study-AA-setup, message=FALSE}
 # Set plotting aesthetics
@@ -76,7 +77,6 @@ m.ia.VOT_f0.AA <-
 
 ### Exposure phase
 Figure \@ref(fig:study-AA-exposure-test-plot)A shows the stimuli for the exposure and test phases of the experiment. In the L2-accented exposure condition, listeners hear 30 word recordings containing L2-accented initial /d/ and 30 word recordings containing L1-accented initial /t/ (plus fillers that do not affect any of the change models). In the control condition with L1-accented exposure, listeners hear the same words but from an L1-accented talker.^[The use of L1-accented exposure, rather than L2-accented exposure without /d/, as control follows a typical design in accent adaptation studies [e.g., @bradlow-bent2008], rather than @xie2016jep. Xie and colleagues instead employed L2-accented exposure without /d/, using the same L2-accented talker as during test [see also @eisner2013]. Their control condition also (mostly) avoided other sounds that are expected to contain indirect information about the realization of /d/ [because of cross-category correlations in talker-specific pronunciation differences, see @chodroff-wilson2017, @chodroff-wilson2018]. This is arguably a more conservative control, as it rules out explanations that attribute the difference of L1- and L2-accented exposure to the cost of talker-switching (from exposure to test) in the L1-accented condition. It also means that advantages of the treatment condition are most likely due to exposure to, specifically, L2-accented */d/*. For the present purpose, however, both types of control conditions lead to identical predictions (as long as the L1-accented control exposure successfully avoids conveying non-negligible amount of information about the categories considered during the test phase) since the current implementation of the three change models do not consider talker-switch costs. We therefore describe the control condition as L1-accented exposure for mostly presentational purposes, making for a more intuitive difference between control and treatment.] For L1-accented exposure, the category likelihoods were set to match those observed in @chodroff-wilson2018, after C-CuRE normalization (i.e., the distributions shown in Figure \@ref(fig:demonstrate-normalization)B). This follows the same approach we took for the typical tokens in Case Study 1. For L2-accented exposure, we aimed to mimic the type of scenario commonly observed for L2 accents. Whereas the L2-accented /t/ was given the exact same distribution as the L1-accented /t/, the L2-accented /d/ differed from the L1-accented /d/ both in terms of its location and in terms of its covariance. As a result, the primary cue for L1 listeners (VOT) becomes the secondary cue in the L2-accented speech while preserving the relative ordering between categories (i.e., shorter VOT and lower f0 signaling a /d/ than a /t/ category).
-
 
 ```{r study-AA-exposure-functions}
 # Get acoustic locations that correspond to targeted response proportions.
@@ -360,9 +360,7 @@ appender <- function(string, prefix = "Changes in\n") paste0(prefix, string)
 ```
 
 ```{r study-AA-exposure-test-plot, fig.width=base.width*3 + .5, fig.height=base.height + .5, fig.cap="(ref:study-AA-exposure-test-plot)"}
-
 Make_exposure_test_plot(exposure.data = d.AA.exposure, test.data = d.AA.test)
-
 ```
 
 ```{r add-subjects-AA-exposure-test-data}
@@ -406,7 +404,7 @@ For L1-accented exposure, the accuracy is always predicted to be much higher for
 
 (ref:AA-result-changes-in-representations) Predictions of a learning model that derives accent adaptation as changes in category representations. Predicted categorization accuracies are shown for the L2-accented test tokens after L1-accented and L2-accented exposure, as a function of the strength of the prior beliefs in category means ($\kappa_0$) and covariances ($\nu_0$). The average accuracy across all test tokens for each condition is shown above the bars. Error bars show 95% bootstrapped confidence intervals. The highlighted panel corresponds to the combination of $\kappa_{0,c}$ and $\nu_{0,c}$ resulting in the best overall accuracy.
 
-```{r AA-result-changes-in-representations, fig.width=base.width*5, fig.height=base.height*5+.5, fig.cap="(ref:AA-result-changes-in-representations)", warning=FALSE}
+```{r AA-result-changes-in-representations, fig.width= base.width * 5, fig.height= base.height * 5 +.5, fig.cap="(ref:AA-result-changes-in-representations)", warning=FALSE}
 pos <- position_dodge(.7)
 p.AA.results.representations <-
   d.AA.representations %>%
@@ -512,7 +510,7 @@ Paralleling Figure \@ref(fig:PR-result-changes-in-decision-making) for perceptua
 
 (ref:AA-result-changes-in-decision-making) Predictions of a model that derives accent adaptation as changes in decision-making. Predicted categorization responses are shown for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda_{posterior}$). The highlighted panel corresponds to the combination of $\beta_{\pi}$ and $\lambda_{posterior}$ resulting in the best overall accuracy. 
 
-```{r AA-result-changes-in-decision-making, fig.width=base.width*5, fig.height=base.height*5+.5, fig.cap="(ref:AA-result-changes-in-decision-making)", warning=FALSE}
+```{r AA-result-changes-in-decision-making, fig.width= base.width * 5, fig.height= base.height * 5 +.5, fig.cap="(ref:AA-result-changes-in-decision-making)", warning=FALSE}
 d.AA.bias <- d.AA.exposure %>%
   add_prior_and_posterior_with_changed_response_biases_based_on_exposure.AA(prior = m.ia.VOT_f0.AA) %>%
   add_test_tokens(d.AA.test) %>%
@@ -655,7 +653,7 @@ d.AA.normalization %<>%
   distinct()
 ```
 
-```{r AA-test-normalization, fig.width=base.width*2, fig.height=base.height*3 + .5, fig.cap="(ref:AA-test-normalization)", eval = FALSE}
+```{r AA-test-normalization, fig.width=base.width * 2, fig.height=base.height * 3 + .5, fig.cap="(ref:AA-test-normalization)", eval = FALSE}
 limits <- get_plot_limits(p.AA.exposure)
 d.AA.normalization %>%
   filter(category == Item.Intended_category) %>%
@@ -685,7 +683,7 @@ d.AA.normalization %>%
 
 (ref:AA-result-changes-in-normalization) Predictions of a model that derives accent adaptation from changes in normalization, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure. The highlighted panel corresponds to the $\kappa_0$ resulting in the best overall accuracy. 
 
-```{r AA-result-changes-in-normalization, fig.width=base.width*5, fig.height=base.height + 0.8, fig.cap="(ref:AA-result-changes-in-normalization)", warning=FALSE}
+```{r AA-result-changes-in-normalization, fig.width= base.width * 5, fig.height= base.height + 1, fig.cap="(ref:AA-result-changes-in-normalization)", warning=FALSE}
 p.AA.results.normalization <- d.AA.normalization %>%
   filter(category == Item.Intended_category) %>% # show the response for intended category
   filter(normalization == "centered based\non exposure") %>%
@@ -819,7 +817,7 @@ construct_three_best_models <- function(
 }
 ```
 
-(ref:AA-result-comparison-best-three-models) A simulated accent adaptation experiment representing another common type of L1-L2 accent difference: contrast collapse or reduction. **Panel A - Exposure:** Distribution of the stimuli used during the exposure phase shows how the L2-accented speech almost entirely collapses the /d/-/t/ contrast along VOT without increasing informativity of f0 (cf. Figure \@ref(fig::study-AA-exposure-test-plot)A). **Panel B - Test:**  Distribution of the stimuli used during the test phase (cf. Figure \@ref(fig::study-AA-exposure-test-plot)B). **Panel C - Change model predictions:** Predicted categorization accuracies for the L2-accented test tokens after L1-accented and L2-accented exposure, for the *best-performing* parameter settings of each of the three change models (cf. gray panels in Figures \@ref(AA-result-changes-in-representations)-\@ref(AA-result-changes-in-normalization)). The best-performing model was determined by considering the same range of parameter settings as in Figures \@ref(AA-result-changes-in-representations)-\@ref(AA-result-changes-in-normalization). The average accuracy across all test tokens for each condition is shown above the bars. Error bars show 95% bootstrapped confidence intervals. 
+(ref:AA-result-comparison-best-three-models) A simulated accent adaptation experiment representing another common type of L1-L2 accent difference: contrast collapse or reduction. **Panel A - Exposure:** Distribution of the stimuli used during the exposure phase shows how the L2-accented speech almost entirely collapses the /d/-/t/ contrast along VOT without increasing informativity of f0 (cf. Figure \@ref(fig:study-AA-exposure-test-plot)A). **Panel B - Test:**  Distribution of the stimuli used during the test phase (cf. Figure \@ref(fig:study-AA-exposure-test-plot)B). **Panel C - Change model predictions:** Predicted categorization accuracies for the L2-accented test tokens after L1-accented and L2-accented exposure, for the *best-performing* parameter settings of each of the three change models (cf. gray panels in Figures \@ref(fig:AA-result-changes-in-representations)-\@ref(fig:AA-result-changes-in-normalization)). The best-performing model was determined by considering the same range of parameter settings as in Figures \@ref(fig:AA-result-changes-in-representations)-\@ref(fig:AA-result-changes-in-normalization). The average accuracy across all test tokens for each condition is shown above the bars. Error bars show 95% bootstrapped confidence intervals. 
 
 ```{r AA-result-comparison-best-three-models, fig.width=base.width*3 + .5, fig.height=base.height*2 + .5, fig.cap = "(ref:AA-result-comparison-best-three-models)", warning=FALSE}
 # Examine a new scenario

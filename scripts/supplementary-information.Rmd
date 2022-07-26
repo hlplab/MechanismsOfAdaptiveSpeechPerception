@@ -211,11 +211,21 @@ p.means +
     alpha = .3)
 ```
 
-# Graphical models of change models {#sec:SI-models}
+# Additional details about the change models {#sec:SI-models}
+This section contains additional details about the change models.
 
 ## Changes in representations {#sec:SI-models-changes-in-representations}
+The updating of the four $\mathcal{NW^{-1}}$ parameters after $N$ observations of a category $c$ from the talker is described by the equations in \@ref(eq:niw-updating-parameters), and is deterministic [for details and derivation, see @murphy2012, p. 134]. $\kappa_c$ and $\nu_c$ simply increase by 1 with each observation, capturing the fact that each observation adds additional information about the talker's category mean and covariances. $\mathrm{m}_{N,c}$ is a weighted combination of its prior value $\mathrm{m}_{0,c}$ and the category mean of the $N$ observations $\bar{x}$---following the same logic that we applied to the inference of the overall cue mean in Equation \@ref(eq:normalization-change). Similarly, $\mathrm{S}_{N,c}$ is a weighted combination of its prior value $\mathrm{S}_{0,c}$ and the category variability of the $N$ observations,^[$\mathrm{S}_c \triangleq \Sigma_{i=1}^N x_{i,c} x_{i,c}^T$ is the uncentered sum of squares matrix of the $N$ observations [@murphy2012].] plus an additional term that captures the uncertainty about the category mean. Figure \ref{fig:model-belief-updating} visualizes the belief-updating process in Equations \@ref(eq:niw-updating)-\@ref(eq:niw-updating-parameters) as a graphical model.
 
-Figure \ref{fig:model-belief-updating} visualizes the belief-updating process of the $\mathcal{NW^{-1}}$ model in factor graph notation.
+\begin{equation}\label{eq:niw-updating-parameters}
+\begin{split}
+\mathrm{m}_{N,c} & = \frac{\kappa_{0,c} \mathrm{m}_{0,c} + N \bar{x}}{\kappa_{N,c}} = \frac{\kappa_{0,c}}{\kappa_{0,c} + N} \mathrm{m}_{0,c} + \frac{N}{\kappa_{0,c} + N}\bar{x}_c \\
+\kappa_{N,c} & = \kappa_{0,c} + N \\
+\nu_{N,c} & = \nu_{0,c} + N \\
+\mathrm{S}_{N,c} & = \mathrm{S}_{0,c} + \mathrm{S}_{\bar{x}_c} + \frac{\kappa_{0,c} N}{\kappa_{0,c} + N}\left( \bar{x}_c-\mathrm{m}_{0,c} \right) \left( \bar{x}_c-\mathrm{m}_{0,c} \right)^T \\
+ & = \mathrm{S}_{0,c} + \mathrm{S}_c + \kappa_{0,c} \mathrm{m}_{0,c} \mathrm{m}_{0,c}^T - \kappa_{N,c} \mathrm{m}_{N,c} \mathrm{m}_{N,c}^T
+\end{split}
+\end{equation}
 
 \begin{figure}
   \centering
@@ -283,6 +293,63 @@ Figure \ref{fig:model-belief-updating} visualizes the belief-updating process of
   }
   \caption{$\mathcal{NW}^{-1}$ Bayesian belief-updating model, as employed here. We set $\mathrm{m}_{0,c} = \mathbf{E}(\mu_c)$ and $\mathrm{S}_{0,c}=\mathbf{E}(\Sigma_c)$, where $\mathbf{E}(\mu_c)$ and $\mathbf{E}(\Sigma_c)$ are observable from phonetically annotated databases. We further assume that all categories share a common $\kappa_{0,c}$ and $\nu_{0,c}$, shown as $\kappa_{0}$ and $\nu_{0}$. These $\kappa_{0}$ and $\nu_{0}$ are the only two degrees of freedom in this highly simplified model of distributional learning (in the manuscript, we keep the $c$ subscript to avoid confusion with the parameter for changes in normalization in Equation \ref{eq:normalization-change}). All other variables are either observable (filled gray circles) or fully determined by other variables.}\label{fig:model-belief-updating}
 \end{figure}
+
+The $\kappa_{c}$s and $\nu_{c}$s are also sometimes called "pseudocounts" because they have a rather intuitive interpretation: the value of these parameters can be seen as describing the number of observations of this category that the listener assumes to have observed from the talker. For example, a listener with $\kappa_{c,0} = 100$ updates her beliefs about an unfamiliar talker's category mean as if she has already seen 100 observations of that category from the talker *prior to having received any input from that talker*. After 900 observations of that category from the unfamiliar talker, this listener's belief about the talker's category mean would be 10/90 mixture of the prior $\mathrm{m}_{c,0}$ and the mean of the 900 observed category instances $\bar{x}_c$.^[The extent to which listeners transfer prior expectations to an unfamiliar talker or context (i.e., the values of $\kappa_{c,0}$ and $\nu_{c,0}$) is expected to differ across phonological contrasts [see discussion in @kleinschmidt-jaeger2015].]
+
+### Setting the $m_{0,c}$ and $S_{0,c}$ parameters
+It is possible to treat $m_{0,c}$ and $S_{0,c}$ as free parameters of the Normal-Inverse-Wishart belief-updating model, and to infer them from participants' responses in perceptual experiments [@kleinschmidt-jaeger2016; @tan2023]. This makes it possible to compare whether estimates of these parameters that are purely based on *listeners'* behavior correspond to distributions of category means $\mu_c$ and category covariances $\Sigma_c$ that match those observed in the input that listeners have received throughout their lives---i.e., the joint distribution of $\mu_c$ and $\Sigma_c$ observed in phonetically annotated databases that are are representative of the input listeners have previously received. If such a match is indeed observed, this would lend support to the hypothesis that listeners learn and store knowledge about the statistics of cue-to-category mappings in the input [for initial tests of this type, and further discussion, see @kleinschmidt-jaeger2016; @tan2023].
+
+However, it is also possible to instead set $\mathrm{m}_{0,c}$ and $\mathrm{S}_{0,c}$ based on phonetically annotated data. This fixes all $J$ DFs for $\mathrm{m}_{0,c}$ and $\frac{J}{2}(K^2+K)$ DFs for $\mathrm{S}_{0,c}$ prior to predicting listeners' behavior but *assumes* (rather than tests) that listeners learn and store knowledge about the statistics of cue-to-category mappings in the input. This latter approach is the one that we took in our case studies. The core idea is to select $\mathrm{m}_{0,c}$ and $\mathrm{S}_{0,c}$ so that they yield a prior joint distribution of $\mu_c$ and $\Sigma_c$ that match those observed in a sufficiently large phonetic database that can reasonably assumed to approximate the type of input an average participant has received throughout their life. 
+
+For the present purpose, we simplify this estimation problem further by setting $\mathrm{m}_{0,c}$ and $\mathrm{S}_{0,c}$ so that the expected values of the *marginal* distributions of $\mu_c$ and $\Sigma_c$ match the maximum likelihood estimates of the category mean and covariance matrix, respectively, in the phonetic database [@chodroff-wilson2018]. This means that we set $\mathrm{m_{0,c}}$ to the empirical mean (i.e., maximum likelihood estimate) of the category's cue distribution, $\bar{x}_c$, estimated from the phonetic database. Since the Normal-Inverse-Wishart belief-updating model describes the prior distribution of the category mean $\mu_c$ as a Normal distribution with mean $\mathrm{m}_{0,c}$ and covariance matrix $\frac{1}{\kappa_{0,c}}\Sigma_c$, this yields an expected prior category mean $\mathbf{E}(\mu_c) = \mathrm{m_{0,c}} = \bar{x}_c$.
+
+The prior distribution of the category covariance matrix $\Sigma_c$ is described by the Inverse-Wishart distribution with scale parameter $\mathrm{S_{0,c}}$ and degree of freedom $\nu_{0,c}$. For our case studies, we thus again set $\mathrm{S_{0,c}}$, such that the expected prior category covariance matrix matches the empirical covariance matrix $\frac{\bar{S}_c}{N}$ (i.e., the empirical sum of squares matrix divided by the number of observations) estimated from the phonetic database *given $\nu_{0,c}$*. This yields $\mathrm{S_{0,c}} = \mathbf{E}(\Sigma_c)(\nu_{0,c}-D-1)$ = $\bar{S}_c(\nu_{0,c}-D-1)$, where $D$ is the dimensionality of input [i.e., the number of phonetic cues considered, cf. @murphy2012, p. 134-5].
+
+We note that the approach employed in our case studies does not take into account that category means and covariance matrices can be correlated. In that case, the expected values of the marginal distributions of $\mu_c$ and $\Sigma_c$ will not be identical to the expected value of the joint distribution of $\mu_c$ and $\Sigma_c$.^[This might also reveal that some of the assumptions of the Normal-Inverse-Wishart belief-updating model are problematic, either for researchers or for listeners.] For future work, it would thus be more appropriate to estimate the *joint* distribution of $\mu_c$ and $\Sigma_c$ from phonetic data, and to find the values for $\mathrm{m}_{0,c}$ and $\mathrm{S}_{0,c}$ that best approximate this distribution (e.g., through moment-matching). For the present purpose, however, this change is not expected to qualitatively affect the conclusions reached in our case studies.
+
+## Changes in decision-making {#sec:SI-models-changes-in-decision-making}
+Here, we model the prediction error as the surprisal experienced when observing the category label, $I(c_{observed})$. This surprisal is a log-inverse function of the posterior probability of the category label given the beliefs held by the listener prior to observing the category label. 
+
+\begin{equation}\label{eq:bias-updating}
+\begin{split}
+\mathrm{logit}(\pi_{n,c_{observed}}) & = \mathrm{logit}(\pi_{n-1,c}) + \beta_{\pi} I(c_{observed}) \\
+                          & = \mathrm{logit}(\pi_{n-1,c}) - \beta_{\pi} \log_2 p_{n-1}(c_{observed}) \\
+\end{split}
+\end{equation}
+
+The same amount that is added to the bias of the observed (labeled) category is subtracted from the response biases for all other categories (uniformly distributed across those categories). <!-- For the simple case of a 2AFC task, which involves only two categories, changes in the bias after $n$ observations are thus described by a logistic regression with intercept $\mathrm{logit}(\pi_{n-1,c})$ and surprisal slope $\beta_{\pi}$:
+
+\begin{equation}\label{eq:bias-probability}
+\begin{split}
+\pi_{n,c} = \frac{1}{1+ e^{\mathrm{logit}(\pi_{n-1,c}) + \beta_{\pi} I(c_{observed}) }}
+\end{split}
+\end{equation}
+
+-->
+Like the representational change model, the change model for response biases is sensitive to the mismatch between listeners' expectations based on the input and labeling information provided by the context. Unlike the representational change model, however, the change model for response biases uses the new observations to update response biases rather than beliefs about category likelihoods. As such, the change for response biases does not *directly* change the mapping from stimulus properties to categorization responses. The change model for response biases can, however, affect this mapping indirectly. This means that even simple changes in response biases can change listeners' categorization function in complex ways.
+
+We also briefly considered another simple change model for decision-making but never implemented it since it could not possibly explain the findings we present in Sections \@ref(sec:PR) and \@ref(sec:AA). This alternative model holds that listeners aim to infer the relative probability of each category based on recent input, and that response biases reflect these estimates. For example, listeners might enter an experiment with expectations about the relative probability of each category based on their relative frequency in previously experienced input, and then update their expectations based on the relative frequency of the categories within the experiment [similar to belief-updating models of syntactic adaptation, @fine-jaeger2013; @jaeger2019; @prasad2021]. However, such a model could not possibly explain exposure effects in, for example, a typical perceptual recalibration experiment since the relative frequency of the two categories does not differ between exposure conditions.
+
+### (Non)-additivity of changes as a function of $\lambda$
+In Figures \@ref(fig:demonstrate-lapse-bias-change) and \@ref(fig:demonstrate-lapse-bias-change-nonzero-lapse) in the main text, we demonstrate that the (non)-additivity of changes in decision-making depends on $\lambda$. Specifically, changes are additive in the log-odds of the posterior probability of categories if and only if $\lambda = 0$. To see how this limitation arises, consider how the *log-odds* of a category---e.g., /d/---in Equation \@ref(eq:posterior-probability-lapse) depend on the response biases $\pi$ when $\lambda=0$: 
+
+\begin{equation}
+\begin{split}
+p(/d/ | input) & = \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/}}{\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_i} \Rightarrow \\
+\log \frac{p(/d/ | input)}{1 - p(/d/ | input)} & = \log \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/}}{\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right) \pi_{/t/}} \\
+ & = \log \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right)}{\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right)} + \log\frac{\pi_{/d/}}{\pi_{/t/}} \\
+\end{split}
+\end{equation}
+
+In other words, adding some arbitrary amount to $\pi_{/d/}$ and subtracting same amount from $\pi_{/t/}$ (since $\Sigma_i \pi_i = 1$) will lift/lower the entire categorization function by a constant amount in log-odds, independent of the stimulus.
+
+However, if $\lambda \neq 0$, then:
+
+\begin{equation}
+\begin{split}
+\log \frac{p(/d/ | input)}{p(/t/ | input)} = \log \frac{(1-\lambda)\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) + \lambda \left(\Sigma_i \mathcal{N}\!\left( input | \mu_{i}, \Sigma_{i} \right)\pi(c_i)\right)}{(1-\lambda)\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right) + \lambda \left(\Sigma_i \mathcal{N}\!\left( input | \mu_{i}, \Sigma_{i} \right)\pi(c_i)\right)} + \log\frac{\pi_{/d/}}{\pi_{/t/}}
+\end{split}
+\end{equation}
 
 # Creating the stimuli for the (simulated) perceptual recalibration paradigm {#sec:SI-PR}
 As also mentioned in the main text, many studies on perceptual recalibration do not report the acoustic properties of the exposure and test stimuli,^[Some studies provide aggregate information [e.g., @kraljic-samuel2006; @kraljic-samuel2007] and very few provide detailed information and visualization [e.g., @drouin2016].] and analyses that relate the acoustic properties of exposure and test stimuli to participants' responses during test remain the exception. In our experience, it is also not uncommon that original recordings are no longer available or only partially available (see one of our recommendations in the general discussions). Phonetic annotations that aid the extraction of acoustic information about these recordings are available for only a very small number of studies.^[Some notable exceptions for research on American English include the labs of Drs. Babel (UBC), Myer (UConn), and Theodore (UConn). In an ongoing project at Rochester, we have collected a database of phonetically annotated perceptual recalibration experiments on American English /s/-/`r linguisticsdown::cond_cmpl("ʃ")`/ that links stimulus recordings, phonetic annotations, and over 20 phonetic extracted phonetic cues to categorization responses from several thousand participants across a dozen experiments from multiple labs. Researchers interested in the database can contact any of the authors.] For that reason, we use simulated data in our case study on perceptual recalibration. Our stimulus generation procedure aims to capture the qualitative properties of the most common approaches to stimulus selection in perceptual recalibration experiments. 

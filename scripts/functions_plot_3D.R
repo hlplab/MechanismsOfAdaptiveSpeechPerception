@@ -233,7 +233,7 @@ plot_3D.categorization.diff <- function(df.resp){
 }
 
 # Function to make categorization surface in 3D space based on the modeling results from the three change mechanisms
-prepare_3D.categorization_from_results <- function(data, cue1_range, cue2_range, n){
+prepare_3D.categorization_from_results <- function(data, exposure.data, test.data, cue1_range, cue2_range, n){
   
   x<-seq(cue1_range[1], cue1_range[2],length=n)  # generating the vector series cue 1
   y<-seq(cue2_range[1], cue2_range[2],length=n) 
@@ -252,8 +252,8 @@ prepare_3D.categorization_from_results <- function(data, cue1_range, cue2_range,
     #convert cue values based on the mu_inferred for the current parameter of prior_kappa.normalization
 
     if(data$model == "Normalization"){
-      d.AA.normalization.step0 <- d.AA.exposure %>%
-        add_prior_and_normalize_test_tokens_based_on_exposure.AA(data.test = d.AA.test, prior.normalization = prior_marginal_VOT_f0_stats, prior.categories = m.ia.VOT_f0.AA) %>%
+      d.AA.normalization.step0 <- exposure.data %>%
+        add_prior_and_normalize_test_tokens_based_on_exposure.AA(data.test = test.data, prior.normalization = prior_marginal_VOT_f0_stats, prior.categories = m.ia.VOT_f0.AA) %>%
         filter(prior_kappa.normalization %in% levels(factor(d.AA3$prior_kappa.normalization))) %>%
         filter(Condition == conditions.AA[i]) %>%
         droplevels()

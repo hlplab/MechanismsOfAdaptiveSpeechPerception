@@ -34,7 +34,7 @@ While the ASP change models for all three mechanisms can qualitatively account f
 
 ```{r compare-AA-models-results-across-three-mechanisms, warning=FALSE}
 d.AA1 <- 
-  d.AA %>%
+  d.AA.representations %>%
   filter(category == Item.Intended_category) %>%
   filter(prior_kappa == 4 & prior_nu == 1024) %>%
   droplevels() %>%
@@ -81,7 +81,7 @@ for (j in 1:length(model_names)){
     filter(model == model_names[j])
   
   for (i in 1:length(conditions.AA)){
-    output.AA <- prepare_3D.categorization_from_results(data, VOT_range, f0_range, n_points)
+    output.AA <- prepare_3D.categorization_from_results(data, d.AA.exposure, d.AA.test, VOT_range, f0_range, n_points)
     
     df.resp = output.AA[[i]]
     

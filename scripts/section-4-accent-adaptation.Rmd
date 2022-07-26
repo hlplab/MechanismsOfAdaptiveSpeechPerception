@@ -770,7 +770,9 @@ Figure \@ref(fig:AA-result-comparison-best-three-models-case3) presents yet anot
 construct_three_best_models <- function(
     experimenter.ideal_observer,
     category_dist_ratio1 = dist.L2_category.cue1,
-     category_dist_ratio2 = dist.L2_category.cue2,
+    category_dist_ratio2 = dist.L2_category.cue2,
+    shift_mean_1 = shift.cue1, 
+    shift_mean_2 = shift.cue2,
     test.n_block = n.test_block,
     n_test = n.test.token) {
   d.AA.exposure <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
@@ -851,15 +853,17 @@ construct_three_best_models <- function(
 # Examine a new scenario
 dist.L2_category.cue1 <- 0.5
 dist.L2_category.cue2 <- 0
+shift.cue1 <- 0
+shift.cue2 <- 0
 
-d.AA.exposure <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA)
-d.AA.test <- make_accent_adaptation_test_design(d.AA.exposure, experimenter.ideal_observer = m.io.VOT_f0.AA)
+d.AA.exposure.case2 <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA)
+d.AA.test.case2 <- make_accent_adaptation_test_design(d.AA.exposure.case2, experimenter.ideal_observer = m.io.VOT_f0.AA)
 
-d.AA.results.best  <- construct_three_best_models(experimenter.ideal_observer = m.io.VOT_f0.AA)
-p.top <- Make_exposure_test_plot(exposure.data = d.AA.exposure, test.data = d.AA.test)
+d.AA.results.best.case2  <- construct_three_best_models(experimenter.ideal_observer = m.io.VOT_f0.AA)
+p.top <- Make_exposure_test_plot(exposure.data = d.AA.exposure.case2, test.data = d.AA.test.case2)
 
 
-p.bottom <- d.AA.results.best %>%
+p.bottom <- d.AA.results.best.case2 %>%
 ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
     stat_summary(fun = mean,
                  geom="bar", position = pos,
@@ -895,13 +899,13 @@ dist.L2_category.cue2 <- 0
 shift.cue1 <- 0.2
 shift.cue2 <- 0
 
-d.AA.exposure <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA)
-d.AA.test <- make_accent_adaptation_test_design(d.AA.exposure, experimenter.ideal_observer = m.io.VOT_f0.AA)
+d.AA.exposure.case3 <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA)
+d.AA.test.case3 <- make_accent_adaptation_test_design(d.AA.exposure.case3, experimenter.ideal_observer = m.io.VOT_f0.AA)
 
-d.AA.results.best  <- construct_three_best_models(experimenter.ideal_observer = m.io.VOT_f0.AA)
-p.top <- Make_exposure_test_plot(exposure.data = d.AA.exposure, test.data = d.AA.test)
+d.AA.results.best.case3  <- construct_three_best_models(experimenter.ideal_observer = m.io.VOT_f0.AA)
+p.top <- Make_exposure_test_plot(exposure.data = d.AA.exposure.case3, test.data = d.AA.test.case3)
 
-p.bottom <- d.AA.results.best %>%
+p.bottom <- d.AA.results.best.case3 %>%
 ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
     stat_summary(fun = mean,
                  geom="bar", position = pos,

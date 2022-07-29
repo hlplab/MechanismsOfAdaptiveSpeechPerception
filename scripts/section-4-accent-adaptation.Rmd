@@ -50,7 +50,7 @@ shift.cue2 <- 0
 # shift.cue2 <- 0
 
 # Case 3: no cue-weighting, no change in category overlap, but a general shift along the primary cue dimension (e.g., word-initial stops in Spanish-accented English)
-# dist.L2_category.cue1 <- 0.8
+# dist.L2_category.cue1 <- 1
 # dist.L2_category.cue2 <- 0
 # shift.cue1 <- 0.2
 # shift.cue2 <- 0
@@ -115,14 +115,15 @@ get_parameters_phonetic_contrast.AA <- function(ideal.observer,
    Omega_native_A <- cov2cor(Sigma_native_A)
    Omega_nonnative_A <- matrix(c(Omega_native_A[1], Omega_native_A[2], Omega_native_A[3], Omega_native_A[4]), nrow=2) # change omega if orientation of category dispersion changes
    Sigma_nonnative_A <- cor2cov(Omega_nonnative_A, sqrt(diag(Sigma_native_A)))
-
-
-  # Allow a shift of nonnative category means
-    mu_nonnative_A <- c(mu_nonnative_A[1]+ (mu_nonnative_A[1]+ mu_nonnative_B[1])/2*shift_mean_1,
-                        mu_nonnative_A[2]+ (mu_nonnative_A[2]+ mu_nonnative_B[2])/2*shift_mean_2)
-    mu_nonnative_B <- c(mu_nonnative_B[1]+ (mu_nonnative_A[1]+ mu_nonnative_B[1])/2*shift_mean_1,
-                        mu_nonnative_B[2]+ (mu_nonnative_A[2]+ mu_nonnative_B[2])/2*shift_mean_2)
-
+    
+   # Allow a shift of nonnative category means
+    shift1 <- (mu_nonnative_A[1]+ mu_nonnative_B[1])/2*shift_mean_1
+    shift2 <- (mu_nonnative_A[2]+ mu_nonnative_B[2])/2*shift_mean_2
+    mu_nonnative_A <- c(mu_nonnative_A[1]+ shift1,
+                        mu_nonnative_A[2]+ shift2)
+    mu_nonnative_B <- c(mu_nonnative_B[1]+ shift1,
+                        mu_nonnative_B[2]+ shift2)
+    
     tau_native_A <-  sqrt(diag(Sigma_native_A))
     Omega_native_A <- cov2cor(Sigma_native_A)
     tau_native_B <-  sqrt(diag(Sigma_native_B))
@@ -341,14 +342,20 @@ Make_exposure_test_plot <- function(exposure.data, test.data){
     geom_rug(data = . %>%
                  group_by(Condition, Item.Category) %>%
                  summarise(VOT = mean(VOT), f0_Mel = mean(f0_Mel)), show.legend = FALSE) +
-    scale_x_continuous(expression("VOT (ms)"), expand = expansion(mult = .1, add = 0), breaks=seq(0, 120, by = 30)) +
+    scale_x_continuous(expression("VOT (ms)"), 
+                        # breaks=seq(0, 120, by = 30),
+                        expand = expansion(mult = .1, add = 0)
+                        ) +
     scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0), breaks=seq(0, 500, by = 100)) +
-    coord_cartesian(ylim = c(0, 500), xlim = c(0,120)) +
+     coord_cartesian(
+  #  xlim = c(0,120), 
+    ylim = c(0, 500)) +
     scale_color_manual("Category", breaks = categories.AA, values = colors.category) +
     scale_fill_manual("Category", breaks = categories.AA, values = colors.category) +
     facet_grid(~ Condition)
 
   limits <- get_plot_limits(p.AA.exposure)
+  breaks <- get_plot_breaks(p.AA.exposure)
 
   p.AA.test <- test.data %>%
     mutate(Speech = ifelse(grepl("L1", Condition), "L1-accented", "L2-accented")) %>%
@@ -359,20 +366,21 @@ Make_exposure_test_plot <- function(exposure.data, test.data){
     stat_ellipse(data = exposure.data %>% filter(Condition == "L2-accented"), aes(fill = Item.Category), level = .95, alpha = 0.3, geom = "polygon") +
     scale_x_continuous(expression("VOT (ms)"),
                        expand = expansion(mult = .1, add = 0),
-                       breaks=seq(0, 120, by = 30), limits = c(limits$xmin, limits$xmax)) +
+                       breaks = c(breaks$xbreaks),
+                       limits = c(limits$xmin, limits$xmax)) +
     scale_y_continuous(expression("f0 (Mel)"),
+                       breaks = c(breaks$ybreaks),
                        expand = expansion(mult = .1, add = 0),
-                       breaks=seq(0, 500, by = 100)
+                       limits = c(limits$ymin, limits$ymax)
                        ) +
     scale_color_manual("Category", values = colors.category) +
     scale_fill_manual("Category", values = colors.category, guide = "none") +
-    coord_cartesian(ylim = c(0, 500), xlim = c(0,120)) +
-   # coord_cartesian(xlim = c(limits$xmin, limits$xmax), ylim = c(limits$ymin, limits$ymax)) +
+    coord_cartesian(xlim = c(limits$xmin, limits$xmax), ylim = c(limits$ymin, limits$ymax), expand = FALSE) +
     facet_grid(~ Speech)
 
   prow = plot_grid(p.AA.exposure + theme(legend.position="none"),
                    p.AA.test + theme(legend.position="none"),
-                   labels = c('A)', 'B)'), nrow = 1, rel_widths = c(2,1))
+                   labels = c('A)', 'B)'), nrow = 1, rel_widths = c(2,1.1))
 
   # extract a legend that is laid out horizontally
   legend_prow <- get_legend(
@@ -385,6 +393,8 @@ Make_exposure_test_plot <- function(exposure.data, test.data){
 }
 
 appender <- function(string, prefix = "Changes in\n") paste0(prefix, string)
+
+
 ```
 
 ```{r study-AA-exposure-test-plot, fig.width=base.width*3 + .5, fig.height=base.height + .5, fig.cap="(ref:study-AA-exposure-test-plot)"}
@@ -775,18 +785,18 @@ construct_three_best_models <- function(
     shift_mean_2 = shift.cue2,
     test.n_block = n.test_block,
     n_test = n.test.token) {
-  d.AA.exposure <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
-  d.AA.exposure %<>%
+  exposure.data <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA, category_dist_ratio1 = dist.L2_category.cue1, category_dist_ratio2 = dist.L2_category.cue2, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
+  exposure.data %<>%
     add_subjects_to_exposure(n.subject = n.subject)
 
-  d.AA.test <- make_accent_adaptation_test_design(d.AA.exposure, experimenter.ideal_observer = m.io.VOT_f0.AA, test.n_block = n.test_block, n_test = n.test.token, category_dist_ratio1 = dist.L2_category.cue1, category_dist_ratio2 = dist.L2_category.cue2, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
+  test.data <- make_accent_adaptation_test_design(exposure.data, experimenter.ideal_observer = m.io.VOT_f0.AA, test.n_block = n.test_block, n_test = n.test.token, category_dist_ratio1 = dist.L2_category.cue1, category_dist_ratio2 = dist.L2_category.cue2, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
 
-  d.AA.test %<>%
+  test.data %<>%
     add_subjects_to_test(n.subject = n.subject)
 
-  d.AA.representations <- d.AA.exposure %>%
+  d.AA.representations <- exposure.data %>%
     add_prior_and_get_posterior_beliefs_based_on_exposure(prior = m.ia.VOT_f0.AA) %>%
-    add_test_tokens(d.AA.test) %>%
+    add_test_tokens(test.data) %>%
     add_categorization_functions() %>%
     group_by(Condition, Subject, prior_kappa, prior_nu) %>%
     add_categorization() %>%
@@ -796,24 +806,25 @@ construct_three_best_models <- function(
       ~ factor(as.character(.x), levels = as.character(rev(sort(unique(.x)))))) %>%
     distinct() %>%
     left_join(
-      d.AA.test %>%
+      test.data %>%
         select(x, Item.Intended_category), by = "x") %>%
     distinct()
+  
 
-  d.AA.bias <- d.AA.exposure %>%
+  d.AA.bias <- exposure.data %>%
     add_prior_and_posterior_with_changed_response_biases_based_on_exposure.AA(prior = m.ia.VOT_f0.AA) %>%
-    add_test_tokens(d.AA.test) %>%
+    add_test_tokens(test.data) %>%
     add_categorization_functions() %>%
     group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
     add_categorization() %>%
     distinct() %>%
-    left_join(., d.AA.test %>% select(x, Item.Intended_category), by = "x") %>%
+    left_join(., test.data %>% select(x, Item.Intended_category), by = "x") %>%
     distinct()
 
   d.AA.normalization <-
-    d.AA.exposure %>%
+    exposure.data %>%
     add_prior_and_normalize_test_tokens_based_on_exposure.AA(
-      data.test = d.AA.test,
+      data.test = test.data,
       prior.normalization = prior_marginal_VOT_f0_stats,
       prior.categories = m.ia.VOT_f0.AA) %>%
     group_by(Condition, Subject, prior_kappa.normalization, normalization) %>%
@@ -827,22 +838,24 @@ construct_three_best_models <- function(
   # get ItemID for normalized cue values so that the intended_category is known
   pair.ItemID.observationID <- d.AA.normalization %>%
     select(observationID, x, category) %>%
-    left_join(., d.AA.test %>% select(x, Item.Intended_category, ItemID), by = "x") %>%
+    left_join(., test.data %>% select(x, Item.Intended_category, ItemID), by = "x") %>%
     ungroup() %>%
     filter(!is.na(ItemID)) %>%
     distinct(observationID, ItemID)
 
   d.AA.normalization %<>%
     left_join(pair.ItemID.observationID) %>%
-    left_join(d.AA.test %>% select(Item.Intended_category, ItemID), by = "ItemID") %>%
+    left_join(test.data %>% select(Item.Intended_category, ItemID), by = "ItemID") %>%
     distinct()
 
-  # select the parameter combination for each model that results in the best overall accuracy
+ # select the parameter combination for each model that results in the best overall accuracy
   d <- bind_rows(
     d.AA.representations %>% filter(category == Item.Intended_category & prior_kappa == 4 & prior_nu == 1024) %>% mutate(ModelType = "representations"),
     d.AA.bias %>% filter(category == Item.Intended_category & posterior.lapse_rate == min(d.AA.bias$posterior.lapse_rate) & beta_pi == max(d.AA.bias$beta_pi)) %>% mutate(ModelType = "decision making"),
     d.AA.normalization %>% filter(category == Item.Intended_category & normalization == "centered based\non exposure" & prior_kappa.normalization == min(as.numeric(as.character(d.AA.normalization$prior_kappa.normalization)))) %>% mutate(ModelType = "normalization")) %>%
     mutate(ModelType = factor(ModelType, levels = c("representations", "decision making", "normalization")))
+
+
   return(d)
 }
 ```
@@ -856,14 +869,16 @@ dist.L2_category.cue2 <- 0
 shift.cue1 <- 0
 shift.cue2 <- 0
 
-d.AA.exposure.case2 <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA)
-d.AA.test.case2 <- make_accent_adaptation_test_design(d.AA.exposure.case2, experimenter.ideal_observer = m.io.VOT_f0.AA)
+d.AA.exposure.case2 <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
+d.AA.test.case2 <- make_accent_adaptation_test_design(d.AA.exposure.case2, experimenter.ideal_observer = m.io.VOT_f0.AA, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
+
 
 d.AA.results.best.case2  <- construct_three_best_models(experimenter.ideal_observer = m.io.VOT_f0.AA)
 p.top <- Make_exposure_test_plot(exposure.data = d.AA.exposure.case2, test.data = d.AA.test.case2)
 
 
 p.bottom <- d.AA.results.best.case2 %>%
+  filter(category == Item.Intended_category) %>%
 ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
     stat_summary(fun = mean,
                  geom="bar", position = pos,
@@ -894,17 +909,20 @@ plot_grid(p.top, p.bottom, labels = c('', 'C)'), ncol = 1, rel_heights = c(1, 1.
 
 ```{r AA-result-comparison-best-three-models-case3, fig.width=base.width*3 + .5, fig.height=base.height*2 + .5, fig.cap = "(ref:AA-result-comparison-best-three-models-case3)", warning=FALSE}
 # Examine a new scenario
-dist.L2_category.cue1 <- 0.8
+min_VOT = -100 # allows negative VOT when generating exposure and test data
+dist.L2_category.cue1 <- 1
 dist.L2_category.cue2 <- 0
-shift.cue1 <- 0.2
+shift.cue1 <- -1.2
 shift.cue2 <- 0
 
-d.AA.exposure.case3 <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA)
-d.AA.test.case3 <- make_accent_adaptation_test_design(d.AA.exposure.case3, experimenter.ideal_observer = m.io.VOT_f0.AA)
+
+d.AA.exposure.case3 <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
+d.AA.test.case3 <- make_accent_adaptation_test_design(d.AA.exposure.case3, experimenter.ideal_observer = m.io.VOT_f0.AA, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
 
 d.AA.results.best.case3  <- construct_three_best_models(experimenter.ideal_observer = m.io.VOT_f0.AA)
-p.top <- Make_exposure_test_plot(exposure.data = d.AA.exposure.case3, test.data = d.AA.test.case3)
 
+
+p.top <- Make_exposure_test_plot(exposure.data = d.AA.exposure.case3, test.data = d.AA.test.case3)
 p.bottom <- d.AA.results.best.case3 %>%
 ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
     stat_summary(fun = mean,

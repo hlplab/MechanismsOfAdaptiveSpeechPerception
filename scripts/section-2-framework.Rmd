@@ -4,7 +4,7 @@ Next, we present the ASP framework. We assume conceptual familiarity with reason
 \begin{figure}[h]
 \begin{center}
 \includegraphics[width=.7\columnwidth]{`r get_path("../figures/diagrams/schertzclare.png")`}
-\caption{Speech production realizes phonetic categories as distributions in a multi-dimensional acoustic or phonetic cue space. Implicit knowledge of these distributions is known to mediate listeners’ interpretation of speech inputs (reprinted from Schertz and Clare, 2020, permission pending). {\bf Panel A:} voice onset time (VOT) and fundemental frequency (f0) of word-initial stops from 24 English speakers' productions (data from Schertz, 2014). {\bf Panel B:} 24 English listeners' responses to a 2AFC ``ba'' vs. ``pa'' categorization task depending on VOT and f0. Each cell represents one stimulus, with the shading of the cell representing the percentage of ``pa'' response (data from Schertz, Cho, Lotto, and Warner, 2016).}\label{fig:schertzclare}
+\caption{Speech production realizes phonetic categories as distributions in a multi-dimensional acoustic or phonetic cue space. Implicit knowledge of these distributions is known to mediate listeners’ interpretation of speech inputs (reprinted from Schertz and Clare, 2020, permission pending). {\bf Panel A:} voice onset time (VOT) and fundamental frequency (f0) of word-initial stops from 24 English speakers' productions (data from Schertz, 2014). {\bf Panel B:} 24 English listeners' responses to a 2AFC ``ba'' vs. ``pa'' categorization task depending on VOT and f0. Each cell represents one stimulus, with the shading of the cell representing the percentage of ``pa'' response (data from Schertz, Cho, Lotto, and Warner, 2016).}\label{fig:schertzclare}
 \end{center}
 \end{figure}
 

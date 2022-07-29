@@ -9,6 +9,12 @@ get_plot_limits <- function(plot) {
   list(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax)
 }
 
+get_plot_breaks <- function(plot) {
+  gb = ggplot_build(plot)
+  xbreaks = gb$layout$panel_params[[1]]$x.sec$breaks
+  ybreaks = gb$layout$panel_params[[1]]$y.sec$breaks
+  list(xbreaks = xbreaks, ybreaks = ybreaks)
+}
 
 myGplot.defaults = function(
   type = c("paper","poster","slides")[1],

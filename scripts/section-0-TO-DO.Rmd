@@ -1,46 +1,21 @@
-# OPEN WORK
-
-  * BEGINNING OF GD
-
 # THINGS TO DO
 Let's delete to-dos after they have been addressed, and post in Slack what we've done. Thanks.
 
   * Xin:
     *  **Relative benefit of the three models: carefully adjust the caption and main texts for case study 2 and the general discussion accordingly.**
-    * CHECK ALL REMAINING TO-DO comments in the text.
-    * **discuss the impact of unbalanced data on different normalization methods** (see discussion on Slack)
-
+    * CHECK ALL REMAINING TO-DO comments in the text. THERE ARE NEW ONES.
     
   * Xin and Chigusa:
     * I cut some passages. There are linked in this section below. Please check whether they ought to go somewhere else. If you're ok cutting them, please move them into Cutout-stuff.Rmd.
 
-
   * Florian: 
-    * **discuss whether e.g., norris et al's (ambiguous nonce-word) condition rules out normalization**. If labeling makes a difference that's an issue for normalization accounts (see also goldilocks Babel et al; other results in which labeling makes a difference). **This could be framed under 'potential objections to our conclusions' where we acknowledge that there are isolated results that may be taken to argue for one account over the other; however, arguably, we would still as a field want to increase the informativeness of our studies, rather than to rely on isolated findings.
-    * **Find a way to signal more clearly that we are also entertaining that combinations of mechanisms matter.**
+    * Be clear somewhere in general discussion that relative weighting of change models doesn't require additional parameters. rather, it is achieved by parameterizing all models. e.g., setting beta_pi to zero switches of changes in decision-making, kappa_0 set to a very large number switches of normalization. 
     * CHECK OUT WHETHER CHANGES IN NORMALIZATION CAN LEAD TO NON-LINEAR CHANGES *DESPITE THE FACT THAT WE'RE USING SIMPLE LINEAR INTERPOLATION*
 
 ## Things to perhaps do later:
 
   * Florian
     * make a wrapper for categorization function (through optional argument) that makes the functions monotonic. do the math.
-
-## Notes for revision
-
-Revisions to intro:
-  
-1) be clearer about our contributions (indeed, the review we provide in the intro is in itself a contribution). as part of this, we are now more critical of the status quo of the field. This makes it clearer where we are coming from. But we would like to hear reviewers' thoughts on these issues.'
-2) be clearer about our goals, incl. what we do and do not aim to achieve in this paper. 
-3) remove unnecessary details
-
-
-Revisions to Sec 2:
-
- * not many because we want to keep the paper tutorial-like. However, if this is an issue, we could extract that entire section and either move it into a separate paper or make it part of the SI.
- 
- * We made the structure of this section clearer---dividing it into two main sections (categorization and change models), and highlighted in the introduction to the section what is new in this model and what is not. 
- 
- * We made a small change to the change model for decision biases to make it more similar to one of the most common types of learning models assumed in the cognitive sciences. We now update decision biases based on the prediction error (surprisal) experienced for an observation. This model makes very similar predictions to the specific change model we used previously (because it has very similar updating mechanics) but is a bit easier to describe, and hopefully more familiar to readers.
 
 
 ## CUTS---PLEASE CHECK CAREFULLY AND DELETE THOSE THAT YOU THINK CAN GO

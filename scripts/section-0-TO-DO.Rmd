@@ -1,6 +1,9 @@
 # THINGS TO DO
 Let's delete to-dos after they have been addressed, and post in Slack what we've done. Thanks.
 
+  * ALL: 
+    * Think about where comment about parameter space partitioning could go.
+
   * Xin:
     *  **Relative benefit of the three models: carefully adjust the caption and main texts for case study 2 and the general discussion accordingly.**
     * CHECK ALL REMAINING TO-DO comments in the text. THERE ARE NEW ONES.

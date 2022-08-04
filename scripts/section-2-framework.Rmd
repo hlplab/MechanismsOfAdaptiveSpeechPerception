@@ -15,7 +15,7 @@ Figure \@ref(fig:overview-change) provides an overview of how ASP can be used to
 \begin{figure}[h]
 \begin{center}
 \includegraphics[width=.99\columnwidth]{`r get_path("../figures/diagrams/overview-of-changes.png")`}
-\caption{Overview of our approach. Experiments on the effect of recent exposure on subsequent speech perception tend to involve two phases. An exposure phase manipulates the statistics of speech input between participants. A subsequent test phase assesses the effects of those manipulations on the interpretation of identical speech input. We seek to understand what type of exposure effects each of the three mechanisms in Figure \ref{fig:overview} can explain. To this end, we specify both a) a {\em categorization model} that describes the interpretation of speech input at any given moment (vertical information flow) and b) {\em change models} for all three mechanisms that describe how these parts of the categorization model change as a function of exposure (horizontal information flow). We then use the different change models to compare the predicted consequences of changes to normalization, representations, or response biases.}\label{fig:overview-change}
+\caption{Overview of the approach for the present study. Experiments on the effect of recent exposure on subsequent speech perception tend to involve two phases. An exposure phase manipulates the statistics of the speech input, typically between participants. A test phase---typically identical across participants---assesses the effects of those manipulations on the subsequent interpretation of speech input. We seek to understand what type of exposure effects each of the three mechanisms in Figure \ref{fig:overview} can explain. To this end, we specify both a) a {\em categorization model} that describes the interpretation of speech input at any given moment (vertical information flow) and b) {\em change models} for all three mechanisms that describe how these parts of the categorization model change as a function of exposure (horizontal information flow). We then use the different change models to compare the predicted consequences of changes to normalization, representations, or response biases.}\label{fig:overview-change}
 \end{center}
 \end{figure}
 
@@ -374,7 +374,18 @@ VOT_range <- c(0, 110)
 VOT_resolution = 100
 ```
 
-C-CuRE and most other models of normalization assume that the theoretical quantities employed in normalization---for C-CuRE, the means of all cues---are *known* to the listeners [e.g., @apfelbaum-mcmurray2015; @mcmurray-jongman2011]. However, listeners must somehow *infer* these quantities from the observed inputs [see also Section 3.3 in @weatherholtz-jaeger2016]. For example, in the types of experiments we consider below, listeners need to *infer* the unfamiliar talker's cue means from the inputs observed during exposure. At the beginning of exposure, the best estimates of the cue means for the unfamiliar talker are the mean expected based on listeners' longterm experience with various different talkers ($\mu_0$). With increasing exposure to the unfamiliar talker, listeners can update their estimates of the talker's cue means based on the input. ASP thus expands C-CuRE with a linking hypothesis that describes how listeners update their estimates of the unknown mean---not unlike representational accounts, but only for the *overall* (marginal) distribution of cues, rather than for each category. 
+C-CuRE and most other models of normalization assume that the theoretical quantities employed in normalization---for C-CuRE, the means of all cues---are *known* to the listeners [e.g., @apfelbaum-mcmurray2015; @mcmurray-jongman2011]. However, listeners must somehow *infer* these quantities from the observed inputs [see also Section 3.3 in @weatherholtz-jaeger2016]. For example, in the types of experiments we consider below, listeners need to *infer* the unfamiliar talker's cue means from the inputs observed during exposure. At the beginning of exposure, the best estimates of the cue means for the unfamiliar talker are the mean expected based on listeners' longterm experience with various different talkers ($\mu_0$). With increasing exposure to the unfamiliar talker, listeners can update their estimates of the talker's cue means based on the input. ASP thus expands C-CuRE with a linking hypothesis that describes how listeners update their estimates of the unknown mean---not unlike representational accounts, but only for the *overall* (marginal) distribution of cues, rather than for each category.
+
+<!-- \begin{figure} -->
+<!-- \centering -->
+<!--   \tikz{ % -->
+<!--     \node[latent] (mu) {\mu} -->
+<!--     \node[latent] (mu) {\mu} -->
+<!--     \node[obs, below=of xprime] (x) {x} ; % -->
+<!--     \node[const, left=of x, xshift=-.5cm] (acoustic) {{\bf acoustic input}} ; % -->
+<!--     \edge {x} {xprime} ; % -->
+<!-- } -->
+<!-- \end{figure} -->
 
 Some proposals for such functions include moving-window algorithms that estimate the mean as the sample mean over a finite number of the most recent observations [@lee2002; @zhang-peng2021]. Here, we model listeners' estimate of the talker-specific cue mean $\mu_n$ after $n$ observations from that talker as simple linear interpolation between the cue mean observed in previous longterm experience ($\mu_0$) and the mean observed in the sample observed from the unfamiliar talker ($\bar{x}$). This approach has the advantage that listeners can draw on prior experience when they do not yet have much (or any) data from an unfamiliar talker. They can then update the inferred cue mean as they observe further data from the talker [see discussion of the flexibility-stability trade-off in @kleinschmidt-jaeger2015, p. 178-182]:
 

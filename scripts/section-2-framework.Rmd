@@ -836,7 +836,12 @@ prior_marginal_VOT_f0_stats <-
 
 m.VOT_f0_MVG <- 
   make_MVG_from_data(
-  data = d.chodroff_wilson,
+  data = d.chodroff_wilson %>%
+    filter(Word %in% items) %>%
+    filter(Talker %in% levels(factor(selected_talkers$Talker))) %>%
+    left_join(., n_token_talker %>% select(-n), by = c("Talker", "category")) %>%
+    group_by(Talker, category) %>%
+    sample_n(n_min), # sample a balanced set of voiced and voiceless tokens for each place of articulation; the specific number is determined by the min number of tokens per category for that contrast,
   category = "category",
   cues = cues) 
 ```

@@ -787,35 +787,38 @@ cues <- c("VOT_centered", "f0_Mel_centered")
 
 items <- c("DOLLARS","TOPIC","DOES","TUNNELS","DAUGHTER","TALKING","DIED","TIME","DEFINITELY", "TELL", "DAY","TAKE", "DEAL", "TEACHER","DON'T","TOTALLY","DO","TOO")
 
-n_token_talker <- d.chodroff_wilson %>%
+n_token_talker <- 
+  d.chodroff_wilson %>%
   filter(Word %in% items) %>%
   mutate(place = case_when(
     category %in% c("/b/", "/p/") ~ "labial",
     category %in% c("/d/", "/t/") ~ "alveolar",
-    category %in% c("/g/", "/k/") ~ "velar"
-  )) %>%
+    category %in% c("/g/", "/k/") ~ "velar")) %>%
   group_by(Talker, category, place) %>%
   summarise(n = n()) %>%
   group_by(Talker, place) %>%
   mutate(n_min = min(n))
 
-selected_talkers <- n_token_talker %>%
+selected_talkers <- 
+  n_token_talker %>%
   group_by(Talker) %>%
   tally() %>%
   filter(n == 2) %>% # select talkers with both /d/ and /t/ observations
   droplevels()
-  
 
-n_token_talker.summary <- n_token_talker %>%
+n_token_talker.summary <- 
+  n_token_talker %>%
   select(-n_min) %>%
   group_by(category) %>%
-  summarise(n_mean = mean(n),
-            n_sd = sd(n),
-            n_max = max(n),
-            n_min = min(n),
-            n_sum = sum(n))
+  summarise(
+    n_mean = mean(n),
+    n_sd = sd(n),
+    n_max = max(n),
+    n_min = min(n),
+    n_sum = sum(n))
 
-n_items <- d.chodroff_wilson %>%
+n_items <- 
+  d.chodroff_wilson %>%
   group_by(Talker, category) %>%
   distinct(Word) %>%
   tally() %>%
@@ -823,12 +826,16 @@ n_items <- d.chodroff_wilson %>%
   summarise(n_min = min(n),
             n_max = max(n))
 
-d.chodroff_wilson.selected <- d.chodroff_wilson %>%
+d.chodroff_wilson.selected <- 
+  d.chodroff_wilson %>%
   filter(Word %in% items) %>%
   filter(Talker %in% levels(factor(selected_talkers$Talker))) %>%
-  left_join(., n_token_talker %>% select(-n), by = c("Talker", "category")) %>%
+  left_join(
+    n_token_talker %>% 
+      select(-n), 
+    by = c("Talker", "category")) %>%
   group_by(Talker, category) %>%
-  sample_n(n_min) %>%
+  slice_sample(n = n_min) %>%
   ungroup() %>%
   mutate_at(
       c("VOT", "f0", "f0_Mel", "f0_semitones"),

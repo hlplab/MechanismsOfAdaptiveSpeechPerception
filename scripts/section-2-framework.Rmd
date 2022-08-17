@@ -787,59 +787,23 @@ cues <- c("VOT_centered", "f0_Mel_centered")
 
 items <- c("DOLLARS","TOPIC","DOES","TUNNELS","DAUGHTER","TALKING","DIED","TIME","DEFINITELY", "TELL", "DAY","TAKE", "DEAL", "TEACHER","DON'T","TOTALLY","DO","TOO")
 
-n_token_talker <- 
-  d.chodroff_wilson %>%
-  filter(Word %in% items) %>%
-  mutate(place = case_when(
-    category %in% c("/b/", "/p/") ~ "labial",
-    category %in% c("/d/", "/t/") ~ "alveolar",
-    category %in% c("/g/", "/k/") ~ "velar")) %>%
-  group_by(Talker, category, place) %>%
-  summarise(n = n()) %>%
-  group_by(Talker, place) %>%
-  mutate(n_min = min(n))
-
-selected_talkers <- 
-  n_token_talker %>%
-  group_by(Talker) %>%
-  tally() %>%
-  filter(n == 2) %>% # select talkers with both /d/ and /t/ observations
-  droplevels()
-
-n_token_talker.summary <- 
-  n_token_talker %>%
-  select(-n_min) %>%
-  group_by(category) %>%
-  summarise(
-    n_mean = mean(n),
-    n_sd = sd(n),
-    n_max = max(n),
-    n_min = min(n),
-    n_sum = sum(n))
-
-n_items <- 
-  d.chodroff_wilson %>%
-  group_by(Talker, category) %>%
-  distinct(Word) %>%
-  tally() %>%
-  group_by(category) %>%
-  summarise(n_min = min(n),
-            n_max = max(n))
-
 d.chodroff_wilson.selected <- 
   d.chodroff_wilson %>%
   filter(Word %in% items) %>%
-  filter(Talker %in% levels(factor(selected_talkers$Talker))) %>%
-  left_join(
-    n_token_talker %>% 
-      select(-n), 
-    by = c("Talker", "category")) %>%
+#  filter(Talker %in% levels(factor(selected_talkers$Talker))) %>%
   group_by(Talker, category) %>%
-  slice_sample(n = n_min) %>%
+  mutate(n = n()) %>%
+  group_by(Talker) %>%
+  mutate(n_min = min(n), # subsample n tokens, as determined by category with fewer tokens
+         n_category = n_distinct(category)) %>%
+  filter(n_category == 2) %>% # select talkers with both /d/ and /t/ observations
+  group_by(Talker, category) %>%
+  sample_n(n_min) %>%
   ungroup() %>%
   mutate_at(
       c("VOT", "f0", "f0_Mel", "f0_semitones"),
       list("centered" = function(x) apply_ccure(x, data = .)))
+
 
 prior_marginal_VOT_f0_stats <- 
   d.chodroff_wilson.selected %>%

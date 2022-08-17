@@ -357,7 +357,7 @@ m.ia.VOT <-
     posterior = map2(
       prior_kappa, 
       prior_nu, 
-      ~ lift_MVG_ideal_observer_to_NIW_ideal_adaptor(model = m.io.VOT, kappa = .x, nu = .y))) %>%
+      ~ lift_MVG_ideal_observer_to_NIW_ideal_adaptor(x = m.io.VOT, kappa = .x, nu = .y))) %>%
   unnest(posterior)  %>%
   mutate(lapse_rate = lambda)
 

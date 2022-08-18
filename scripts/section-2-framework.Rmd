@@ -790,20 +790,21 @@ items <- c("DOLLARS","TOPIC","DOES","TUNNELS","DAUGHTER","TALKING","DIED","TIME"
 d.chodroff_wilson.selected <- 
   d.chodroff_wilson %>%
   filter(Word %in% items) %>%
-#  filter(Talker %in% levels(factor(selected_talkers$Talker))) %>%
   group_by(Talker, category) %>%
   mutate(n = n()) %>%
   group_by(Talker) %>%
-  mutate(n_min = min(n), # subsample n tokens, as determined by category with fewer tokens
-         n_category = n_distinct(category)) %>%
-  filter(n_category == 2) %>% # select talkers with both /d/ and /t/ observations
+  # subsample n tokens, as determined by category with fewer tokens
+  mutate(
+    n_min = min(n), 
+    n_category = n_distinct(category)) %>%
+  # select talkers with both /d/ and /t/ observations
+  filter(n_category == 2) %>% 
   group_by(Talker, category) %>%
-  sample_n(n_min) %>%
+  slice_sample(n = first(n_min)) %>%
   ungroup() %>%
   mutate_at(
       c("VOT", "f0", "f0_Mel", "f0_semitones"),
       list("centered" = function(x) apply_ccure(x, data = .)))
-
 
 prior_marginal_VOT_f0_stats <- 
   d.chodroff_wilson.selected %>%

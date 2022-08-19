@@ -794,7 +794,7 @@ d.chodroff_wilson.selected <-
   # select talkers with both /d/ and /t/ observations
   filter(n_category == 2) %>% 
   group_by(Talker, category) %>%
-  sample_n(n_min) %>%
+  slice_sample(size = n_min) %>%
   ungroup() %>%
   mutate_at(
       c("VOT", "f0", "f0_Mel", "f0_semitones"),

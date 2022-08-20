@@ -19,7 +19,7 @@ f.bivn <-function(x1, x2, mu, Sigma)
 } # setting up the function of the multivariate normal density
 
 
-fix_quadratic_effects <-function(data, n){
+fix_quadratic_effects <-function(data){
   data = as.matrix(data)
   
 # Function to fix the quadratic effects along the cue dimension that is currently listed as a column in the data
@@ -96,13 +96,12 @@ demonstrate_representations_3D <- function(m, n, cue1_range, cue2_range, cue_nam
 
     # create categorization surface
     resp.prob = d.prob/(d.prob + t.prob)
-    resp.prob.fixed <- resp.prob
 
     # fix the quadratic effects along cue 1 (i.e., VOT)
-    resp.prob.fixed <- fix_quadratic_effects(resp.prob, n)
+    resp.prob.fixed <- fix_quadratic_effects(resp.prob)
 
     # fix the quadratic effects along cue 2 (i.e., f0)
-    resp.prob.fixed <- fix_quadratic_effects(t(resp.prob.fixed), n)
+    resp.prob.fixed <- fix_quadratic_effects(t(resp.prob.fixed))
     resp.prob.fixed = t(resp.prob.fixed)
 
     # add lapse rate and response bias
@@ -251,7 +250,7 @@ prepare_3D.categorization_from_results <- function(data, exposure.data, test.dat
     ##----------------
     #convert cue values based on the mu_inferred for the current parameter of prior_kappa.normalization
 
-    if(data$model == "Normalization"){
+    if("Normalization" %in% levels(factor(data$model))){
       d.AA.normalization.step0 <- exposure.data %>%
         add_prior_and_normalize_test_tokens_based_on_exposure.AA(data.test = test.data, prior.normalization = prior_marginal_VOT_f0_stats, prior.categories = m.ia.VOT_f0.AA) %>%
         filter(prior_kappa.normalization %in% levels(factor(d.AA3$prior_kappa.normalization))) %>%
@@ -282,6 +281,18 @@ prepare_3D.categorization_from_results <- function(data, exposure.data, test.dat
 
 
     df.resp$d_prop = t(matrix(d.output$response, ncol=n))
+    
+    # create categorization surface
+    resp.prob = df.resp$d_prop
+    
+    # fix the quadratic effects along cue 1 (i.e., VOT)
+    resp.prob.fixed <- fix_quadratic_effects(resp.prob)
+    
+    # fix the quadratic effects along cue 2 (i.e., f0)
+    resp.prob.fixed <- fix_quadratic_effects(t(resp.prob.fixed))
+    resp.prob.fixed = t(resp.prob.fixed)
+    
+    df.resp$d_prop <- resp.prob.fixed
 
     output[[i]] = df.resp
   }

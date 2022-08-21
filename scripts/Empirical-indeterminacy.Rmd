@@ -112,12 +112,15 @@ library(processx)           # interface to orca (for plotly)
 library(tufte)              # for quotes
 
 library(lme4)               # for C-CuRE normalization through regression
+library(mixtools)           # TO DO: Xin what is this for?
 library(modelr)
 library(diptest)            # test for bimodality
 
 if (has_internet()) devtools::install_github("hlplab/MVBeliefUpdatr")
 library(MVBeliefUpdatr)     # for ideal observers and adaptors 
 library(LaplacesDemon)      # for additional density distributions (e.g., inverse-Wishart, W^-1)
+if (has_internet()) devtools::install_github("drammock/phonR")
+library(phonR)              # TO DO: Xin what is this for?
 ```
 
 ```{r constants-general, include=FALSE}

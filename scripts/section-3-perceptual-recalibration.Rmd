@@ -118,7 +118,7 @@ get_locations_along_phonetic_contrast <- function(ideal_observer, target_probabi
                                                               min(probability_of_category1_in_its_lexical_context_at_location))]]
   }
   
-  if (length(target_probabilities) == 1) location_selected <- location_selected[[target_probabilities]]
+  if (length(target_probabilities) == 1) location_selected <- location_selected[[as.character(target_probabilities)]]
   
   return(location_selected)
 }

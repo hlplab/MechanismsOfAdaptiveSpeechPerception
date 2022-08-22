@@ -1,5 +1,5 @@
 ---
-title             : "What we do (not) know about the mechanisms underlying adaptive speech perception: A computational review"
+title             : "What we do (not) know about the mechanisms underlying adaptive speech perception: A computational framework and review"
 shorttitle        : "Exposure effects in speech perception"
 date              : "`r format(Sys.time(), '%B %d, %Y')`"
 

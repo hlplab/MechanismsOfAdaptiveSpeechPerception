@@ -3,6 +3,7 @@ Let's delete to-dos after they have been addressed, and post in Slack what we've
 
   * ALL: 
     * Think about where comment about parameter space partitioning could go.
+    * Should we either use 1\$\beta$ of 1\$\kappa$ etc. to conceptually make all parameters either 'confidence' / weight of prior knowledge OR learning rates? 
 
   * Xin:
     *  **Relative benefit of the three models: carefully adjust the caption and main texts for case study 2 and the general discussion accordingly.**
@@ -12,7 +13,6 @@ Let's delete to-dos after they have been addressed, and post in Slack what we've
     * I cut some passages. There are linked in this section below. Please check whether they ought to go somewhere else. If you're ok cutting them, please move them into Cutout-stuff.Rmd.
 
   * Florian: 
-    * Be clear somewhere in general discussion that relative weighting of change models doesn't require additional parameters. rather, it is achieved by parameterizing all models. e.g., setting beta_pi to zero switches of changes in decision-making, kappa_0 set to a very large number switches of normalization. 
     * CHECK OUT WHETHER CHANGES IN NORMALIZATION CAN LEAD TO NON-LINEAR CHANGES *DESPITE THE FACT THAT WE'RE USING SIMPLE LINEAR INTERPOLATION*
 
 ## Things to perhaps do later:

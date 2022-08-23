@@ -334,23 +334,23 @@ Like the representational change model, the change model for response biases is 
 We also briefly considered another simple change model for decision-making but never implemented it since it could not possibly explain the findings we present in Sections \@ref(sec:PR) and \@ref(sec:AA). This alternative model holds that listeners aim to infer the relative probability of each category based on recent input, and that response biases reflect these estimates. For example, listeners might enter an experiment with expectations about the relative probability of each category based on their relative frequency in previously experienced input, and then update their expectations based on the relative frequency of the categories within the experiment [similar to belief-updating models of syntactic adaptation, @fine-jaeger2013; @jaeger2019; @prasad2021]. However, such a model could not possibly explain exposure effects in, for example, a typical perceptual recalibration experiment since the relative frequency of the two categories does not differ between exposure conditions.
 
 ### (Non)-additivity of changes as a function of $\lambda$
-In Figures \@ref(fig:demonstrate-lapse-bias-change) and \@ref(fig:demonstrate-lapse-bias-change-nonzero-lapse) in the main text, we demonstrate that the (non)-additivity of changes in decision-making depends on $\lambda$. Specifically, changes are additive in the log-odds of the posterior probability of categories if and only if $\lambda = 0$. To see how this limitation arises, consider how the *log-odds* of a category---e.g., /d/---in Equation \@ref(eq:posterior-probability-lapse) depend on the response biases $\pi$ when $\lambda=0$: 
+In Figures \@ref(fig:demonstrate-lapse-bias-change) and \@ref(fig:demonstrate-lapse-bias-change-nonzero-lapse) in the main text, we demonstrate that the (non)-additivity of changes in decision-making depends on $\lambda$. Specifically, changes are additive in the log-odds of the posterior probability of categories if and only if $\lambda = 0$. To see how this limitation arises, consider how the *log-odds* of a category---e.g., /d/---in Equation \@ref(eq:posterior-probability-lapse) depend on the response biases $\pi_c$ when $\lambda=0$: 
 
 \begin{equation}
 \begin{split}
-p(/d/ | input) & = \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/}}{\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_i} \Rightarrow \\
+p(/d/ | input) & = \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/}}{\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}} \Rightarrow \\
 \log \frac{p(/d/ | input)}{1 - p(/d/ | input)} & = \log \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/}}{\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right) \pi_{/t/}} \\
  & = \log \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right)}{\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right)} + \log\frac{\pi_{/d/}}{\pi_{/t/}} \\
 \end{split}
 \end{equation}
 
-In other words, adding some arbitrary amount to $\pi_{/d/}$ and subtracting same amount from $\pi_{/t/}$ (since $\Sigma_i \pi_i = 1$) will lift/lower the entire categorization function by a constant amount in log-odds, independent of the stimulus.
+In other words, adding some arbitrary amount to $\pi_{/d/}$ and subtracting same amount from $\pi_{/t/}$ (since $\Sigma_i \pi_{c_i} = 1$) will lift/lower the entire categorization function by a constant amount in log-odds, independent of the stimulus.
 
 However, if $\lambda \neq 0$, then:
 
 \begin{equation}
 \begin{split}
-\log \frac{p(/d/ | input)}{p(/t/ | input)} = \log \frac{(1-\lambda)\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) + \lambda \left(\Sigma_i \mathcal{N}\!\left( input | \mu_{i}, \Sigma_{i} \right)\pi(c_i)\right)}{(1-\lambda)\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right) + \lambda \left(\Sigma_i \mathcal{N}\!\left( input | \mu_{i}, \Sigma_{i} \right)\pi(c_i)\right)} + \log\frac{\pi_{/d/}}{\pi_{/t/}}
+\log \frac{p(/d/ | input)}{p(/t/ | input)} = \log \frac{(1-\lambda)\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) + \lambda \left(\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i} \right)\pi_{c_i}\right)}{(1-\lambda)\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right) + \lambda \left(\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i} \right)\pi_{c_i}\right)} + \log\frac{\pi_{/d/}}{\pi_{/t/}}
 \end{split}
 \end{equation}
 

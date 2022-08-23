@@ -56,7 +56,7 @@ figurelist        : no
 tablelist         : no
 footnotelist      : no
 linenumbers       : yes
-numbersections    : true
+numbersections    : false
 mask              : no
 draft             : no
 
@@ -91,9 +91,11 @@ output:
 always_allow_html: true
 ---
 
+\setcounter{secnumdepth}{5}
+
 ```{r libraries, include=FALSE, message=FALSE}
 library(curl)               # Check availability of internet for install of remote libraries
-if (has_internet()) devtools::install_github("crsh/papaja")
+if (has_internet()) devtools::install_github("crsh/papaja", ref = "devel")
 library(papaja)             # APA formatted ms
 
 library(tidyverse)

@@ -4,6 +4,7 @@ Let's delete to-dos after they have been addressed, and post in Slack what we've
   * ALL: 
     * Think about where comment about parameter space partitioning could go.
     * Should we either use 1\$\beta$ of 1\$\kappa$ etc. to conceptually make all parameters either 'confidence' / weight of prior knowledge OR learning rates? 
+    * What's going on with "talker-related" vs. "talker-specific". I guess the former was introduced by someone to NOT assume talker-specific. That's the type of terminological change that one should make others aware of to make sure we are consistent throughout the paper.
 
   * Xin:
     *  **Relative benefit of the three models: carefully adjust the caption and main texts for case study 2 and the general discussion accordingly.**

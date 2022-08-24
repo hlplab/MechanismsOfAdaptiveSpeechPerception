@@ -4,7 +4,7 @@ Let's delete to-dos after they have been addressed, and post in Slack what we've
   * Everyone: 
     * Think about where comment about parameter space partitioning could go.
     * Should we either use 1\$\beta$ of 1\$\kappa$ etc. to conceptually make all parameters either 'confidence' / weight of prior knowledge OR learning rates? 
-    * What's going on with "talker-related" vs. "talker-specific". I guess the former was introduced by someone to NOT assume talker-specific. That's the type of terminological change that one should make others aware of to make sure we are consistent throughout the paper.
+    * What's going on with "talker-related" vs. "talker-specific". I guess the former was introduced by someone to NOT assume talker-specific. That's the type of terminological change that one should make others aware of to make sure we are consistent throughout the paper. 
     * In 6.1, make sure that we're clear whether e.g., norris et al (and other findings) that can't be accounted for by normalization can be accounted for by decision-making? 
     * Also in 6.1, about the sine tone experiment, how is that ever going to allow us to investigate whether adaptation to natural variability is due to just normalization? These paradigms cannot be scaled to study how multiple mechanisms come together.
     * Be sure to integrate "parameter space partioning" comment by reviewer.
@@ -12,8 +12,8 @@ Let's delete to-dos after they have been addressed, and post in Slack what we've
   * **Xin:**
     *  **Relative benefit of the three models: carefully adjust the caption and main texts for case study 2 and the general discussion accordingly.**
     * Figures at end of Section 4
+    * Integrate MVPA into general discussion (currently 6.2) and revise those parts. Also consider 1 sentence in introduction ("we return to this point in the general discussion") following the sentence about neuroimaging leaving open what types of computations take place in which area. Make a recommendation in the GD.
     * Missing Figure in discussion
-    * Integrate MVPA into general discussion (currently 6.2) and revise those parts. Also consider 1 sentence in introduction ("we return to this point in the general discussion") following the sentence about neuroimaging leaving open what types of computations take place in which area.
     * Check whether you can fix toc refs / links to SI sections with paragraph symbol.
     * CHECK ALL REMAINING TO-DO comments in the text. THERE ARE NEW ONES.
     

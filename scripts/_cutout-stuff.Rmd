@@ -203,6 +203,10 @@ my.priors.bivariate = c(
  
  
   * It is often assumed, for example, that response biases can only change the relative proportion of answers but cannot explain overall improvements in accuracy. Under this assumption, overall improvements in the perception of an accent would seem to rule out explanations in terms of response biases, at least if the experimenter carefully balanced how often each category occurs during test. This is, however, a common misconception (one that we shared, for what it is worth). As we demonstrate below, changes in response biases can explain findings that are often attributed to changes in representations. The same applies to pre-linguistic normalization: contrary to common intuitions, simple normalization mechanisms can explain seemingly complex changes in listeners' categorization following exposure to L2-accented or otherwise shifted speech (as, e.g., in perceptual recalibration paradigms).
+  
+  <!--^[Likewise, an *absence of improvements* should not be taken as evidence to reject the hypothesis of representational changes. Such a conclusion is only valid if it is also shown that *successful learning of the exposure statistics* would be *predicted* to facilitate comprehension during test. Whether this prediction holds for a given experiment depends on the exposure and test stimuli---a fact that is sometimes not considered in the interpretation of experiments [cf. @zheng-samuel2020].]--> 
+  
+  <!--And these differences are often asymmetrically affecting the categories participating in a phonetic contrast. For example, L1-German speakers of English often have non-native realizations of /`r linguisticsdown::cond_cmpl("θ")`/ but have no trouble pronouncing /s/, which unlike /`r cond_cmpl("θ")`/ has a counterpart in their L1. These asymmetries in the production of L2 speech are reflected in L1 listeners' perception of L2-accented speech. For instance, L1-English listeners usually correctly identify German-accented word-final /t/s (e.g., *seat*), but mishear word-final /d/s as devoiced [for other asymmetries, see @schertz2015; @xie2017; @zheng-samuel2020].-->
 
 # General discussion
 

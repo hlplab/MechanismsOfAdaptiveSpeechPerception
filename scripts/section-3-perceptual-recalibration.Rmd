@@ -506,7 +506,7 @@ To illustrate the consequences of normalization, we vary the only parameter of o
 
 (ref:PR-test-normalization) Effects of changes in normalization on the perception of test locations, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure. Normalization based on exposure results in a shift in the perception of the test stimuli. The magnitude of that shift depends on $\kappa_0$, with larger shifts (more learning) for smaller $\kappa_0$ (see Equation \@ref(eq:normalization-change)). 
 
-```{r PR-test-normalization, fig.width= base.width * 2, fig.height= base.height * (if (animate) 1 else 3) + (if (animate) .5 else 0), fig.cap="(ref:PR-test-normalization)", fig.show= if (animate) 'animate' else 'asis'}
+```{r PR-test-normalization, fig.width= base.width * 2, fig.height= base.height * (if (animate) 1 else 3) + (if (animate) 1 else 0), fig.cap="(ref:PR-test-normalization)", fig.show= if (animate) 'animate' else 'asis'}
 d.PR <- d.PR.exposure %>%
   add_prior_and_normalize_test_tokens_based_on_exposure(data.test = d.PR.test, prior.normalization = prior_marginal_VOT_f0_stats, prior.categories = m.ia.VOT_f0.PR) %>%
   group_by(Condition, Subject, prior_kappa.normalization) %>%

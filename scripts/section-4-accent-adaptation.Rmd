@@ -890,12 +890,10 @@ dist.L2_category.cue2 <- 0
 shift.cue1 <- -1.2
 shift.cue2 <- 0
 
-
 d.AA.exposure.case3 <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
 d.AA.test.case3 <- make_accent_adaptation_test_design(d.AA.exposure.case3, experimenter.ideal_observer = m.io.VOT_f0.AA, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
 
 d.AA.results.best.case3  <- construct_three_best_models(experimenter.ideal_observer = m.io.VOT_f0.AA)
-
 
 p.top <- Make_exposure_test_plot(exposure.data = d.AA.exposure.case3, test.data = d.AA.test.case3)
 p.bottom <- d.AA.results.best.case3 %>%
@@ -939,7 +937,6 @@ d.AA.exposure.case4 <- make_accent_adaptation_exposure_design(experimenter.ideal
 d.AA.test.case4 <- make_accent_adaptation_test_design(d.AA.exposure.case4, experimenter.ideal_observer = m.io.VOT_f0.AA, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
 
 d.AA.results.best.case4  <- construct_three_best_models(experimenter.ideal_observer = m.io.VOT_f0.AA)
-
 
 p.top <- Make_exposure_test_plot(exposure.data = d.AA.exposure.case4, test.data = d.AA.test.case4)
 p.bottom <- d.AA.results.best.case4 %>%
@@ -985,26 +982,72 @@ d.AA.exposure.target.cases <- rbind(d.AA.exposure.target.case2 %>%
   mutate(Case = factor(Case, levels = c("case3", "case2", "case4"), 
                             labels = c("Contrast shift", "Contrast reduction", "Contrast collapse"))) 
 
-
 # plot ellipses for actual exposure
 p.AA.exposure <- d.AA.exposure.target.cases %>%
-    # mutate(Condition = factor(Condition, levels = c("L1-accented", "L2-accented"), 
-    #                           labels = c("Exposure condition 1", "Exposure condition 2"))) %>%
-    ggplot(aes(x = VOT, y = f0_Mel)) +
-  #  geom_point(alpha = 0.5) +
-   stat_ellipse(aes(fill = Item.Category), level = .95, alpha = 0.3, geom = "polygon") +
-    geom_rug(data = . %>%
-                 group_by(Case, Condition, Item.Category) %>%
-                 summarise(VOT = mean(VOT), f0_Mel = mean(f0_Mel)), aes(color = Item.Category), show.legend = FALSE) +
+  filter(Condition == "L2-accented") %>%
+  mutate(Group = factor(paste0(Condition, Item.Category))) %>%
+    ggplot(aes(x = VOT, y = f0_Mel, alpha = Condition)) +
+   stat_ellipse(aes(color = Group), level = .95, geom = "polygon") +
+    # geom_rug(data = . %>%
+    #              group_by(Case, Condition, Item.Category, Group) %>%
+    #              summarise(VOT = mean(VOT), f0_Mel = mean(f0_Mel)), aes(color = Item.Category), show.legend = FALSE) +
+  stat_ellipse(data = d.AA.exposure.target.cases %>%
+                   filter(Condition == "L1-accented") %>%
+  mutate(Group = factor(paste0(Condition, Item.Category))), aes(fill = Group), level = .95, geom = "polygon") +
     scale_x_continuous(expression("VOT (ms)"), 
                         # breaks=seq(0, 120, by = 30),
                         expand = expansion(mult = .1, add = 0)
                         ) +
     scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0), breaks=seq(0, 500, by = 100)) +
+   scale_alpha_discrete(range = c(0.2, 0), guide = "none") +
     coord_cartesian(ylim = c(0, 500)) +
-    scale_color_manual("Category", breaks = categories.AA, values = colors.category) +
-    scale_fill_manual("Category", breaks = categories.AA, values = colors.category) +
-    facet_grid(Case ~ Condition) + theme(legend.position="top") 
-
+      scale_fill_manual("Category",  values = c(colors.category), guide = "none") +
+      scale_color_manual("Category", values = c(colors.category), guide = "none") +
+    facet_grid(Case ~ ., switch = "y") + theme(legend.position="top") 
 ```
 
+```{r AA-plot-results-additional-cases, eval= FALSE}
+d.AA.results.best.cases <- rbind(d.AA.results.best.case2 %>%
+                               mutate(Case = "case2"),
+                             d.AA.results.best.case3 %>%
+                               mutate(Case = "case3"),
+                             d.AA.results.best.case4 %>%
+                               mutate(Case = "case4")
+                             ) %>%
+  mutate(Case = factor(Case, levels = c("case3", "case2", "case4"), 
+                            labels = c("Contrast shift", "Contrast reduction", "Contrast collapse"))) 
+
+p.bottom <- d.AA.results.best.cases %>%
+  mutate(ModelType = factor(paste0("Changes in ", ModelType))) %>%
+ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
+    stat_summary(fun = mean,
+                 geom="bar", position = pos,
+                 width = 0.6) +
+      stat_summary(aes(color = Item.Intended_category),
+                 fun.data = mean_cl_boot,
+                 geom = "uperrorbar",
+                 position = pos, width = 0.2) +
+    coord_cartesian(ylim =  c(0,1)) +
+    scale_color_manual("Category", values = colors.category) +
+    scale_fill_manual("Category", values = colors.category) +
+    scale_alpha_discrete(range = c(0.2, 1), guide = "none") +
+    xlab("Exposure condition") +
+    ylab("Predicted \ncategorization accuracy") +
+    scale_x_discrete(labels= c("L1-\naccented", "L2-\naccented")) +
+    geom_text(inherit.aes = FALSE, data = . %>%
+                 group_by(Case, Condition, ModelType) %>%
+                 summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
+    facet_grid(
+      Case ~ ModelType) +
+    theme(legend.position = "none", 
+          axis.title.x=element_blank(),
+          strip.text.y = element_blank(),
+          panel.grid.major.x = element_blank())
+
+plot_grid(p.AA.exposure, p.bottom, 
+          labels = c('A', 'B)'), 
+          ncol = 2, 
+         # rel_heights = c(1, 1.2), 
+          rel_widths = c(1,3))
+
+```

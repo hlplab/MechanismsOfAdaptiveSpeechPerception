@@ -12,7 +12,6 @@ Let's delete to-dos after they have been addressed, and post in Slack what we've
   * **Xin:**
     * Integrate MVPA into general discussion (currently 6.2) and revise those parts. Also consider 1 sentence in introduction ("we return to this point in the general discussion") following the sentence about neuroimaging leaving open what types of computations take place in which area. Make a recommendation in the GD.
     * Missing Figure in discussion
-    * CHECK ALL REMAINING TO-DO comments in the text. THERE ARE NEW ONES.
     
   * **Chigusa:**
     * There are a handful of new references. Could you add them?

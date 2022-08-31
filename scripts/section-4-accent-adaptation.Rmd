@@ -489,7 +489,6 @@ best_performing_increase_log <- qlogis(best_performing_case$mAcc[2]) - qlogis(be
 ```
 
 Figure \@ref(fig:AA-result-changes-in-representations) shows the predicted categorization accuracy after exposure to L1- or L2-accented speech, as a function of the strength of the prior beliefs for the category means and variances. Both signature results described above can be predicted by changes in category representations. First, for L1-accented exposure, the accuracy is always predicted to be lower for /d/ than for /t/, indicating that /d/ is often misheard as /t/.^[One additional finding for the L1-accented condition is of note. Compared across the rows from top to bottom, accuracy in the L1-accented condition improves for models with weaker prior beliefs about the category variances (small $\nu_{0,c}$, bottom rows of Figure \@ref(fig:AA-result-changes-in-representations)). At first blush, this is surprising given that listeners in the L1-exposure condition receive only input that matches their prior L1 expectations and mismatches the L2 speech they receive during test. However, for this instance of the (simulated) experiment, it turns out that the L1-accented /d/-exposure stimuli in Figure \@ref(fig:study-AA-exposure-test-plot) happen to---by chance---exhibit somewhat larger sample variance along f0 ($s^2$ = `r sample_var$s_var.f0[1]`) than is expected for a typical L1 talker [$\sigma^2$ = `r population_var$prior_variance[2]` based on the data from @chodroff-wilson2018]. The L2-accented /d/-exposure stimuli show a similar pattern, albeit slightly less so (sample variance $s^2$ = `r sample_var$s_var.f0[3]`). For these particular combinations of stimuli, a learner with weak prior beliefs about the category variance will thus correctly come to expect a larger category variance during test, leading to improved recognition accuracy on the L2-accented test tokens. This result is an example of the type of unexpected insights that fully specified linking hypotheses can yield. It also illustrates that some results of perception experiments can be highly dependent on the specific stimulus statistics of the exposure and/or test tokens. A failure to take these factors into account---as remains common---can make results *appear* surprising even when they are not.] Second, L2-accented exposure is predicted to improve recognition accuracy of /d/ compared to L1-accented exposure, and this improvement occurs without equivalent decreases in the recognition accuracy of /t/. 
-<!-- The best-performing model predicts a substantial increase from `r best_performing_case$mAcc[1]` to `r best_performing_case$mAcc[2]` after L2-accented exposure, compared to L1-accented exposure (+`r best_performing_increase_log` log-odds).  -->
 
 Looking across the distinct $\kappa_{0,c}$s and $\nu_{0,c}$ values, we make two more observations. On the one hand, faster learning of category means is generally beneficial under the current scenario. When listeners' beliefs about category covariances are held constant (i.e., looking within each row), smaller $\kappa_{0,c}$ values yield higher categorization accuracy. This is a straightforward consequence of the fact that the mean of the /d/ category is shifted in the L2 accents, as shown in Figure \@ref(fig:study-AA-exposure-test-plot). Adapting to the L2 accent thus hinges primarily on learning the new category mean for the /d/ category. On the other hand, updating beliefs about the _variance_ too rapidly is not necessarily desirable, as seen by comparing panels within each column. In the current scenario, the _true_ underlying variance of /d/ is unchanged between the L1 and the L2 accents. Weaker beliefs about the category covariance thus can run the risk of expanding the categories to a degree that causes miscategorization of relatively ambiguous tokens. This is an example of the flexibility-stability trade-off that human listeners are known to exhibit, and that any theory of adaptive speech perception needs to account for [@kleinschmidt-jaeger2015, pp. 178-182].
 
@@ -835,142 +834,53 @@ construct_three_best_models <- function(
 }
 ```
 
-<!--(ref:AA-result-comparison-best-three-models-case2) A simulated accent adaptation experiment representing another common type of L1-L2 accent difference: contrast collapse or reduction. **Panel A - Exposure:** Distribution of the stimuli used during the exposure phase shows how the L2-accented speech almost entirely collapses the /d/-/t/ contrast along VOT without increasing informativity of f0 (cf. Figure \@ref(fig:study-AA-exposure-test-plot)A). **Panel B - Test:**  Distribution of the stimuli used during the test phase (cf. Figure \@ref(fig:study-AA-exposure-test-plot)B). **Panel C - Change model predictions:** Predicted categorization accuracies for the L2-accented test tokens after L1-accented and L2-accented exposure, for the *best-performing* parameter settings of each of the three change models (cf. gray panels in Figures \@ref(fig:AA-result-changes-in-representations)-\@ref(fig:AA-result-changes-in-normalization)), from left to right: representations ($\kappa_{0,/d/}$ = $\kappa_{0,/t/}$ = 4 and $\nu_{0,/d/}$ = $\nu_{0,/t/}$ = 1024), decision making ($\beta_{\pi}$ = 0.8, $\lambda_{posterior}$ = 5e-04), and normalization ($\kappa_{0}$ = 4). The best-performing model was determined by considering the same range of parameter settings as in Figures \@ref(fig:AA-result-changes-in-representations)-\@ref(fig:AA-result-changes-in-normalization). The average accuracy across all test tokens for each condition is shown above the bars. Error bars show 95% bootstrapped confidence intervals.-->
+(ref:AA-plot-results-additional-cases) Three simulated accent adaptation experiment representing common types of L1-L2 accent difference, from top to bottom: contrast shift, reduction or collapse. **Panel A - Distributions of L1-accented and L2-accented categories:** Exposure stimuli for each exposure condition are drawn from corresponding distributions (cf. Figure \@ref(fig:study-AA-exposure-test-plot)A). L1-accented categories, represented in light shades, are kept constant across the three scenarios and identical to that in the main scenario above; L2-accented categories, represented by solid ellipses, are varied across scenarios. **Panel B - Change model predictions:** Predicted categorization accuracies for the L2-accented test tokens after L1-accented and L2-accented exposure, for the *best-performing* parameter settings of each of the three change models (cf. gray panels in Figures \@ref(fig:AA-result-changes-in-representations)-\@ref(fig:AA-result-changes-in-normalization)), from left to right: representations ($\kappa_{0,/d/}$ = $\kappa_{0,/t/}$ = 4 and $\nu_{0,/d/}$ = $\nu_{0,/t/}$ = 1024), decision making ($\beta_{\pi}$ = 0.8, $\lambda_{posterior}$ = 5e-04), and normalization ($\kappa_{0}$ = 4). The best-performing model was determined by considering the same range of parameter settings as in Figures \@ref(fig:AA-result-changes-in-representations)-\@ref(fig:AA-result-changes-in-normalization). The average accuracy across all test tokens for each condition is shown above the bars. Error bars show 95% bootstrapped confidence intervals.
 
-```{r AA-result-comparison-best-three-models-case2, fig.width=base.width*3 + .5, fig.height=base.height*2 + .5, fig.cap = "(ref:AA-result-comparison-best-three-models-case2)", warning=FALSE, eval = FALSE}
-# Examine a new scenario
+```{r AA-result-comparison-best-three-models-case2, warning=FALSE}
+# Examine a new scenario: contrast reduction
 dist.L2_category.cue1 <- 0.5
 dist.L2_category.cue2 <- 0
 shift.cue1 <- 0
 shift.cue2 <- 0
 
-d.AA.exposure.case2 <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
-d.AA.test.case2 <- make_accent_adaptation_test_design(d.AA.exposure.case2, experimenter.ideal_observer = m.io.VOT_f0.AA, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
-
-
 d.AA.results.best.case2  <- construct_three_best_models(experimenter.ideal_observer = m.io.VOT_f0.AA)
-p.top <- Make_exposure_test_plot(exposure.data = d.AA.exposure.case2, test.data = d.AA.test.case2)
 
-
-p.bottom <- d.AA.results.best.case2 %>%
-  filter(category == Item.Intended_category) %>%
-ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
-    stat_summary(fun = mean,
-                 geom="bar", position = pos,
-                 width = 0.6) +
-      stat_summary(aes(color = Item.Intended_category),
-                 fun.data = mean_cl_boot,
-                 geom = "uperrorbar",
-                 position = pos, width = 0.2) +
-    coord_cartesian(ylim =  c(0,1)) +
-    scale_color_manual("Category", values = colors.category) +
-    scale_fill_manual("Category", values = colors.category) +
-    scale_alpha_discrete(range = c(0.2, 1), guide = "none") +
-    xlab("Exposure condition") +
-    ylab("Predicted \ncategorization accuracy") +
-    scale_x_discrete(labels= c("L1-\naccented", "L2-\naccented")) +
-    geom_text(inherit.aes = FALSE, data = . %>%
-                 group_by(Condition, ModelType) %>%
-                 summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
-    facet_grid(
-      . ~ ModelType, labeller = as_labeller(appender)) +
-    theme(legend.position = "none", panel.grid.major.x = element_blank())
-
-plot_grid(p.top, p.bottom, labels = c('', 'C)'), ncol = 1, rel_heights = c(1, 1.2), rel_widths = c(2,1))
 ```
 
-
-<!--(ref:AA-result-comparison-best-three-models-case3) A simulated accent adaptation experiment representing another common type of L1-L2 accent difference: shifted categories with a good amount of between-category distinction. **Panel A - Exposure:** Distribution of the stimuli used during the exposure phase shows how the L2-accented speech almost entirely collapses the /d/-/t/ contrast along VOT without increasing informativity of f0 (cf. Figure \@ref(fig:study-AA-exposure-test-plot)A). **Panel B - Test:** Distribution of the stimuli used during the test phase (cf. Figure \@ref(fig:study-AA-exposure-test-plot)B). **Panel C - Change model predictions:** Predicted categorization accuracies for the L2-accented test tokens after L1-accented and L2-accented exposure, for the *best-performing* parameter settings of each of the three change models (cf. gray panels in Figures \@ref(fig:AA-result-changes-in-representations)-\@ref(fig:AA-result-changes-in-normalization)), from left to right: representations ($\kappa_{0,/d/}$ = $\kappa_{0,/t/}$ = 4 and $\nu_{0,/d/}$ = $\nu_{0,/t/}$ = 1024), decision making ($\beta_{\pi}$ = 0.8, $\lambda_{posterior}$ = 5e-04), and normalization ($\kappa_{0}$ = 4). The best-performing model was determined by considering the same range of parameter settings as in Figures \@ref(fig:AA-result-changes-in-representations)-\@ref(fig:AA-result-changes-in-normalization). The average accuracy across all test tokens for each condition is shown above the bars. Error bars show 95% bootstrapped confidence intervals.-->
-
-```{r AA-result-comparison-best-three-models-case3, fig.width=base.width*3 + .5, fig.height=base.height*2 + .5, fig.cap = "(ref:AA-result-comparison-best-three-models-case3)", warning=FALSE, eval = FALSE}
-# Examine a new scenario
+```{r AA-result-comparison-best-three-models-case3, warning=FALSE}
+# Examine a new scenario: contrast shift
 min_VOT = -100 # allows negative VOT when generating exposure and test data
 dist.L2_category.cue1 <- 1
 dist.L2_category.cue2 <- 0
 shift.cue1 <- -1.2
 shift.cue2 <- 0
 
-d.AA.exposure.case3 <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
-d.AA.test.case3 <- make_accent_adaptation_test_design(d.AA.exposure.case3, experimenter.ideal_observer = m.io.VOT_f0.AA, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
-
 d.AA.results.best.case3  <- construct_three_best_models(experimenter.ideal_observer = m.io.VOT_f0.AA)
 
-p.top <- Make_exposure_test_plot(exposure.data = d.AA.exposure.case3, test.data = d.AA.test.case3)
-p.bottom <- d.AA.results.best.case3 %>%
-ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
-    stat_summary(fun = mean,
-                 geom="bar", position = pos,
-                 width = 0.6) +
-      stat_summary(aes(color = Item.Intended_category),
-                 fun.data = mean_cl_boot,
-                 geom = "uperrorbar",
-                 position = pos, width = 0.2) +
-    coord_cartesian(ylim =  c(0,1)) +
-    scale_color_manual("Category", values = colors.category) +
-    scale_fill_manual("Category", values = colors.category) +
-    scale_alpha_discrete(range = c(0.2, 1), guide = "none") +
-    xlab("Exposure condition") +
-    ylab("Predicted \ncategorization accuracy") +
-    scale_x_discrete(labels= c("L1-\naccented", "L2-\naccented")) +
-    geom_text(inherit.aes = FALSE, data = . %>%
-                 group_by(Condition, ModelType) %>%
-                 summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
-    facet_grid(
-      . ~ ModelType, labeller = as_labeller(appender)) +
-    theme(legend.position = "none", panel.grid.major.x = element_blank())
-
-plot_grid(p.top, p.bottom, labels = c('', 'C)'), ncol = 1, rel_heights = c(1, 1.2), rel_widths = c(2,1))
 ```
 
-
-```{r AA-result-comparison-best-three-models-case4, fig.width=base.width*3 + .5, fig.height=base.height*2 + .5, fig.cap = "(ref:AA-result-comparison-best-three-models-case4)", warning=FALSE, eval = FALSE}
-# Examine a new scenario
+```{r AA-result-comparison-best-three-models-case4, warning=FALSE}
+# Examine a new scenario: contrast collapse
 min_VOT = -100 # allows negative VOT when generating exposure and test data
-# Examine a new scenario
+
 dist.L2_category.cue1 <- 0
 dist.L2_category.cue2 <- 0
 shift.cue1 <- -0.6
 shift.cue2 <- 0
 
-
-d.AA.exposure.case4 <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
-d.AA.test.case4 <- make_accent_adaptation_test_design(d.AA.exposure.case4, experimenter.ideal_observer = m.io.VOT_f0.AA, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
-
 d.AA.results.best.case4  <- construct_three_best_models(experimenter.ideal_observer = m.io.VOT_f0.AA)
 
-p.top <- Make_exposure_test_plot(exposure.data = d.AA.exposure.case4, test.data = d.AA.test.case4)
-p.bottom <- d.AA.results.best.case4 %>%
-ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
-    stat_summary(fun = mean,
-                 geom="bar", position = pos,
-                 width = 0.6) +
-      stat_summary(aes(color = Item.Intended_category),
-                 fun.data = mean_cl_boot,
-                 geom = "uperrorbar",
-                 position = pos, width = 0.2) +
-    coord_cartesian(ylim =  c(0,1)) +
-    scale_color_manual("Category", values = colors.category) +
-    scale_fill_manual("Category", values = colors.category) +
-    scale_alpha_discrete(range = c(0.2, 1), guide = "none") +
-    xlab("Exposure condition") +
-    ylab("Predicted \ncategorization accuracy") +
-    scale_x_discrete(labels= c("L1-\naccented", "L2-\naccented")) +
-    geom_text(inherit.aes = FALSE, data = . %>%
-                 group_by(Condition, ModelType) %>%
-                 summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
-    facet_grid(
-      . ~ ModelType, labeller = as_labeller(appender)) +
-    theme(legend.position = "none", panel.grid.major.x = element_blank())
-
-plot_grid(p.top, p.bottom, labels = c('', 'C)'), ncol = 1, rel_heights = c(1, 1.2), rel_widths = c(2,1))
 ```
 
-```{r AA-plot-target-exposure-additional-cases, eval= FALSE}
+```{r AA-plot-target-exposure-additional-cases, message = FALSE, warning=FALSE}
 # plot target exposure ellipses
+min_VOT = 5
 d.AA.exposure.target.case2 <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA, category_dist_ratio1 = 0.5, category_dist_ratio2 = 0, shift_mean_1 = 0, shift_mean_2 = 0, exposure.tokens.L1.n = 5000, exposure.tokens.L2.n = 5000)
-d.AA.exposure.target.case4 <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA, category_dist_ratio1 = 0, category_dist_ratio2 = 0, shift_mean_1 = -0.6, shift_mean_2 = 0, exposure.tokens.L1.n = 5000, exposure.tokens.L2.n = 5000)
-min_VOT = -100 
+
+
+min_VOT = -100 # simulating a case like French-accented English stops, so allowing negative VOTs
 d.AA.exposure.target.case3 <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA, category_dist_ratio1 = 1, category_dist_ratio2 = 0, shift_mean_1 = -1.2, shift_mean_2 = 0, exposure.tokens.L1.n = 5000, exposure.tokens.L2.n = 5000)
+d.AA.exposure.target.case4 <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA, category_dist_ratio1 = 0, category_dist_ratio2 = 0, shift_mean_1 = -0.6, shift_mean_2 = 0, exposure.tokens.L1.n = 5000, exposure.tokens.L2.n = 5000)
 
 d.AA.exposure.target.cases <- rbind(d.AA.exposure.target.case2 %>%
                                mutate(Case = "case2"),
@@ -984,29 +894,31 @@ d.AA.exposure.target.cases <- rbind(d.AA.exposure.target.case2 %>%
 
 # plot ellipses for actual exposure
 p.AA.exposure <- d.AA.exposure.target.cases %>%
+  mutate(Title = "Exposure distributions") %>%
   filter(Condition == "L2-accented") %>%
   mutate(Group = factor(paste0(Condition, Item.Category))) %>%
-    ggplot(aes(x = VOT, y = f0_Mel, alpha = Condition)) +
-   stat_ellipse(aes(color = Group), level = .95, geom = "polygon") +
+  ggplot(aes(x = VOT, y = f0_Mel, alpha = Condition)) +
+  stat_ellipse(aes(color = Group), level = .95, geom = "polygon") +
     # geom_rug(data = . %>%
     #              group_by(Case, Condition, Item.Category, Group) %>%
     #              summarise(VOT = mean(VOT), f0_Mel = mean(f0_Mel)), aes(color = Item.Category), show.legend = FALSE) +
   stat_ellipse(data = d.AA.exposure.target.cases %>%
-                   filter(Condition == "L1-accented") %>%
-  mutate(Group = factor(paste0(Condition, Item.Category))), aes(fill = Group), level = .95, geom = "polygon") +
-    scale_x_continuous(expression("VOT (ms)"), 
+                 mutate(Title = "Exposure distributions") %>%
+                 filter(Condition == "L1-accented") %>%
+                 mutate(Group = factor(paste0(Condition, Item.Category))), aes(fill = Group), level = .95, geom = "polygon") +
+  scale_x_continuous(expression("VOT (ms)"), 
                         # breaks=seq(0, 120, by = 30),
                         expand = expansion(mult = .1, add = 0)
                         ) +
-    scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0), breaks=seq(0, 500, by = 100)) +
-   scale_alpha_discrete(range = c(0.2, 0), guide = "none") +
-    coord_cartesian(ylim = c(0, 500)) +
-      scale_fill_manual("Category",  values = c(colors.category), guide = "none") +
-      scale_color_manual("Category", values = c(colors.category), guide = "none") +
-    facet_grid(Case ~ ., switch = "y") + theme(legend.position="top") 
+  scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0), breaks=seq(0, 500, by = 100)) +
+  scale_alpha_discrete(range = c(0.2, 0), guide = "none") +
+  coord_cartesian(ylim = c(0, 500)) +
+  scale_fill_manual("Category",  values = c(colors.category), guide = "none") +
+  scale_color_manual("Category", values = c(colors.category), guide = "none") +
+  facet_grid(Case ~ Title, switch = "y") + theme(legend.position="top") 
 ```
 
-```{r AA-plot-results-additional-cases, eval= FALSE}
+```{r AA-plot-results-additional-cases, fig.width=base.width*5 + .5, fig.height=base.height*3 + .5, fig.cap = "(ref:AA-plot-results-additional-cases)", warning=FALSE}
 d.AA.results.best.cases <- rbind(d.AA.results.best.case2 %>%
                                mutate(Case = "case2"),
                              d.AA.results.best.case3 %>%
@@ -1018,29 +930,30 @@ d.AA.results.best.cases <- rbind(d.AA.results.best.case2 %>%
                             labels = c("Contrast shift", "Contrast reduction", "Contrast collapse"))) 
 
 p.bottom <- d.AA.results.best.cases %>%
-  mutate(ModelType = factor(paste0("Changes in ", ModelType))) %>%
-ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
-    stat_summary(fun = mean,
+  mutate(
+    ModelType = factor(paste0("Changes in ", ModelType), levels = c("Changes in representations", "Changes in decision making", "Changes in normalization"))) %>%
+  ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
+  stat_summary(fun = mean,
                  geom="bar", position = pos,
                  width = 0.6) +
-      stat_summary(aes(color = Item.Intended_category),
+  stat_summary(aes(color = Item.Intended_category),
                  fun.data = mean_cl_boot,
                  geom = "uperrorbar",
                  position = pos, width = 0.2) +
-    coord_cartesian(ylim =  c(0,1)) +
-    scale_color_manual("Category", values = colors.category) +
-    scale_fill_manual("Category", values = colors.category) +
-    scale_alpha_discrete(range = c(0.2, 1), guide = "none") +
-    xlab("Exposure condition") +
-    ylab("Predicted \ncategorization accuracy") +
-    scale_x_discrete(labels= c("L1-\naccented", "L2-\naccented")) +
-    geom_text(inherit.aes = FALSE, data = . %>%
+  coord_cartesian(ylim =  c(0,1)) +
+  scale_color_manual("Category", values = colors.category) +
+  scale_fill_manual("Category", values = colors.category) +
+  scale_alpha_discrete(range = c(0.2, 1), guide = "none") +
+  xlab("Exposure condition") +
+  ylab("Predicted \ncategorization accuracy") +
+#  scale_x_discrete(labels= c("L1-\naccented", "L2-\naccented")) +
+  geom_text(inherit.aes = FALSE, data = . %>%
                  group_by(Case, Condition, ModelType) %>%
-                 summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
-    facet_grid(
-      Case ~ ModelType) +
-    theme(legend.position = "none", 
-          axis.title.x=element_blank(),
+                 summarise(mAcc = round(mean(response), digits = 2)),
+            aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
+  facet_grid(Case ~ ModelType) +
+  theme(legend.position = "none", 
+       #   axis.title.x=element_blank(),
           strip.text.y = element_blank(),
           panel.grid.major.x = element_blank())
 
@@ -1048,6 +961,6 @@ plot_grid(p.AA.exposure, p.bottom,
           labels = c('A', 'B)'), 
           ncol = 2, 
          # rel_heights = c(1, 1.2), 
-          rel_widths = c(1,3))
+          rel_widths = c(1.5,3.3))
 
 ```

@@ -173,7 +173,7 @@ plot_3D.density <- function(d.bivn, t.bivn, d.ellipse, t.ellipse, color){
 plot_3D.categorization <- function(df.resp){
   # plot categorization surface
   p.3d.categorization <- plot_ly(width = p_width, height = p_height) %>%
-    add_surface(x = df.resp$VOT, y = df.resp$f0, z = df.resp$d_prop,
+    add_surface(x = df.resp$x, y = df.resp$y, z = df.resp$d_prop,
                 opacity = 0.5,
                 # showlegend = FALSE,
                 showscale = FALSE,

@@ -834,7 +834,7 @@ construct_three_best_models <- function(
 }
 ```
 
-(ref:AA-plot-results-additional-cases) Three simulated accent adaptation experiment representing common types of L1-L2 accent difference, from top to bottom: contrast shift, reduction or collapse. **Panel A - Distributions of L1-accented and L2-accented categories:** Exposure stimuli for each exposure condition are drawn from corresponding distributions (cf. Figure \@ref(fig:study-AA-exposure-test-plot)A). L1-accented categories, represented in light shades, are kept constant across the three scenarios and identical to that in the main scenario above; L2-accented categories, represented by solid ellipses, are varied across scenarios. **Panel B - Change model predictions:** Predicted categorization accuracies for the L2-accented test tokens after L1-accented and L2-accented exposure, for the *best-performing* parameter settings of each of the three change models (cf. gray panels in Figures \@ref(fig:AA-result-changes-in-representations)-\@ref(fig:AA-result-changes-in-normalization)), from left to right: representations ($\kappa_{0,/d/}$ = $\kappa_{0,/t/}$ = 4 and $\nu_{0,/d/}$ = $\nu_{0,/t/}$ = 1024), decision making ($\beta_{\pi}$ = 0.8, $\lambda_{posterior}$ = 5e-04), and normalization ($\kappa_{0}$ = 4). The best-performing model was determined by considering the same range of parameter settings as in Figures \@ref(fig:AA-result-changes-in-representations)-\@ref(fig:AA-result-changes-in-normalization). The average accuracy across all test tokens for each condition is shown above the bars. Error bars show 95% bootstrapped confidence intervals.
+(ref:AA-plot-results-additional-cases) Simulated accent adaptation experiments representing three common types of L1-L2 accent difference, from top to bottom: contrast shift, contrast reduction and contrast collapse. **Panel A - Distributions of L1-accented and L2-accented categories:** Exposure stimuli for each exposure condition are drawn from corresponding distributions in each scenario (cf. Figure \@ref(fig:study-AA-exposure-test-plot)A). L1-accented categories, represented in light shades, are kept constant across the three scenarios and identical to that in the main scenario above; L2-accented categories, represented by solid ellipses, are varied across scenarios. **Panel B - Change model predictions:** Predicted categorization accuracies for the L2-accented test tokens after L1-accented and L2-accented exposure, for the *best-performing* parameter settings of each of the three change models (cf. gray panels in Figures \@ref(fig:AA-result-changes-in-representations)-\@ref(fig:AA-result-changes-in-normalization)), from left to right: representations ($\kappa_{0,/d/}$ = $\kappa_{0,/t/}$ = 4 and $\nu_{0,/d/}$ = $\nu_{0,/t/}$ = 1024), decision making ($\beta_{\pi}$ = 0.8, $\lambda_{posterior}$ = 5e-04), and normalization ($\kappa_{0}$ = 4). The best-performing model was determined by considering the same range of parameter settings as in Figures \@ref(fig:AA-result-changes-in-representations)-\@ref(fig:AA-result-changes-in-normalization). The average accuracy across all test tokens for each condition is shown above the bars. Error bars show 95% bootstrapped confidence intervals.
 
 ```{r AA-result-comparison-best-three-models-case2, warning=FALSE}
 # Examine a new scenario: contrast reduction
@@ -929,7 +929,7 @@ d.AA.results.best.cases <- rbind(d.AA.results.best.case2 %>%
   mutate(Case = factor(Case, levels = c("case3", "case2", "case4"), 
                             labels = c("Contrast shift", "Contrast reduction", "Contrast collapse"))) 
 
-p.bottom <- d.AA.results.best.cases %>%
+p.results.best.cases <- d.AA.results.best.cases %>%
   mutate(
     ModelType = factor(paste0("Changes in ", ModelType), levels = c("Changes in representations", "Changes in decision making", "Changes in normalization"))) %>%
   ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
@@ -943,7 +943,7 @@ p.bottom <- d.AA.results.best.cases %>%
   coord_cartesian(ylim =  c(0,1)) +
   scale_color_manual("Category", values = colors.category) +
   scale_fill_manual("Category", values = colors.category) +
-  scale_alpha_discrete(range = c(0.2, 1), guide = "none") +
+  scale_alpha_discrete(range = c(0.2, 1)) +
   xlab("Exposure condition") +
   ylab("Predicted \ncategorization accuracy") +
 #  scale_x_discrete(labels= c("L1-\naccented", "L2-\naccented")) +
@@ -952,15 +952,21 @@ p.bottom <- d.AA.results.best.cases %>%
                  summarise(mAcc = round(mean(response), digits = 2)),
             aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
   facet_grid(Case ~ ModelType) +
-  theme(legend.position = "none", 
+  theme(legend.position = "top",
        #   axis.title.x=element_blank(),
           strip.text.y = element_blank(),
           panel.grid.major.x = element_blank())
 
-plot_grid(p.AA.exposure, p.bottom, 
+prow = plot_grid(p.AA.exposure, p.results.best.cases + theme(legend.position="none"), 
           labels = c('A', 'B)'), 
           ncol = 2, 
-         # rel_heights = c(1, 1.2), 
           rel_widths = c(1.5,3.3))
+
+  # extract a legend that is laid out horizontally
+  legend_prow <- get_legend(
+    p.results.best.cases
+  )
+
+  plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.2, 1)) 
 
 ```

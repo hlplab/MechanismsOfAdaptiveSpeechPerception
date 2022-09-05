@@ -15,6 +15,7 @@ Let's delete to-dos after they have been addressed, and post in Slack what we've
     
   * **Chigusa:**
     * There are a handful of new references. Could you add them?
+    * Figure predictive-power-simulations needs to be plugged in GD. 
     
   * Florian: 
     * CHECK OUT WHETHER CHANGES IN NORMALIZATION CAN LEAD TO NON-LINEAR CHANGES *DESPITE THE FACT THAT WE'RE USING SIMPLE LINEAR INTERPOLATION*

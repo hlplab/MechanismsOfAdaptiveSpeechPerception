@@ -67,17 +67,24 @@ In the case studies, we demonstrated that the ASP change models for all three me
 (ref:show-model-categorization-3D-plots) The three change models predict different categorization functions when applied to the data from Case Study 2. From **left to right:** predictions for in changes in representations, decision making, and normalization. **Top:** Predicted categorization functions after L1-accented exposure. **Middle:** Same but after L2-accented exposure. **Bottom:** Differences in predicted posterior log-odds of /d/ between the two exposure conditions. Blue indicates higher predicted posterior log-odds of /d/ in the L2-accented exposure condition, relative to the L1-accented exposure condition. Red indicates the opposite. Gray indicates a difference of 0. The three models make distinct predictions about how exposure affects the perception of specific tokens across the VOT-f0 space.
 
 ```{r compare-AA-models-results-across-three-mechanisms, warning=FALSE}
+# select the model parameters to be illustrated as an example
+prior_kappa.selected = 1024
+prior_nu.selected = 1024
+posterior.lapse_rate.selected = min(d.AA.bias$posterior.lapse_rate)
+beta_pi.selected = 0.2
+prior_kappa.normalization.selected = 64
+
 d.AA1 <- 
   d.AA.representations %>%
   filter(category == Item.Intended_category) %>%
-  filter(prior_kappa == 4 & prior_nu == 1024) %>%
+  filter(prior_kappa == prior_kappa.selected & prior_nu == prior_nu.selected) %>%
   droplevels() %>%
   distinct(Condition, Subject, data, prior_kappa, prior_nu, prior, posterior, posterior.categorization)
 
 d.AA2 <- 
   d.AA.bias %>%
   filter(category == Item.Intended_category) %>%
-  filter(posterior.lapse_rate == min(d.AA.bias$posterior.lapse_rate) & beta_pi == max(d.AA.bias$beta_pi)) %>%
+  filter(posterior.lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected) %>%
    droplevels() %>%
   distinct(Condition, Subject, data, posterior.lapse_rate, beta_pi, prior, posterior, posterior.categorization)
 
@@ -85,7 +92,7 @@ d.AA3 <-
   d.AA.normalization %>%
   filter(category == Item.Intended_category) %>% 
   filter(normalization == "centered based\non exposure") %>%
-  filter(prior_kappa.normalization == 4) %>%
+  filter(prior_kappa.normalization == prior_kappa.normalization.selected) %>%
   droplevels() %>%
   distinct(Condition, Subject, data, prior_kappa.normalization, mu_inferred, prior, posterior, posterior.categorization)
 

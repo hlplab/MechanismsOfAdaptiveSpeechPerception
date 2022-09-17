@@ -10,13 +10,12 @@ Let's delete to-dos after they have been addressed, and post in Slack what we've
     * Be sure to integrate "parameter space partioning" comment by reviewer.
 
   * **Xin:**
-    * Integrate MVPA into general discussion (currently 6.2) and revise those parts. Also consider 1 sentence in introduction ("we return to this point in the general discussion") following the sentence about neuroimaging leaving open what types of computations take place in which area. Make a recommendation in the GD.
     * Missing Figure in discussion
+    * Are you ok with removing footnote 2? It seems not that important? Will anyone miss it? error correction seems sufficiently different from what we're doing?
     
   * **Chigusa:**
     * There are a handful of new references. Could you add them?
-    * Figure predictive-power-simulations needs to be plugged in GD. 
-    
+
   * Florian: 
     * CHECK OUT WHETHER CHANGES IN NORMALIZATION CAN LEAD TO NON-LINEAR CHANGES *DESPITE THE FACT THAT WE'RE USING SIMPLE LINEAR INTERPOLATION*
 

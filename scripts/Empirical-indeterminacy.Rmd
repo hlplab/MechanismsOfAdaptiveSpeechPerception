@@ -78,7 +78,7 @@ header-includes:
  - \subsubsectionfont{\color{black}}
  - \usepackage{setspace}\doublespacing
  - \usepackage{subfig}
- 
+
 documentclass     : "apa6"
 classoption       : "man"
 fontsize          : 11pt
@@ -196,7 +196,7 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```{r, child="section-7-references.Rmd", eval=TRUE}
 ```
 
-```{r, child="supplementary-information.Rmd", eval=TRUE}
+```{r, child="supplementary-information.Rmd", eval=FALSE}
 ```
 
 

@@ -25,23 +25,3 @@ Let's delete to-dos after they have been addressed, and post in Slack what we've
     * make a wrapper for categorization function (through optional argument) that makes the functions monotonic. do the math.
 
 
-
-## Somewhere list all the factors that can determine power during test:
-
-1. the expected change in the categorization function during exposure (describe elsewhere what this is a fucntion of)
-
-2. the location of the test tokens
-
-3. the task used during test
-3a. the lapse rate, which is a function of how boring and/or streneous the task is
-3b. response biases
-3c. response decision criterion relaxation
-
-4. the dependent variable
-4a. the measurement noise
-4b. the inherent variability
-
-5. anything that undoes the exposure effect, limited the effective sample size.
-
-6. the choice of analysis
-6a. validity of assumptions

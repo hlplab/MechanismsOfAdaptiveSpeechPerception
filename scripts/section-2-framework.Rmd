@@ -1,5 +1,5 @@
 # Modeling adaptive changes in speech perception  {#sec:framework}
-We assume conceptual familiarity with reasoning about distributions and contemporary theories of speech perception---all of which expect that listeners have implicit representations of the mapping between phonetic cues and linguistic categories that encompass (in one form or other) knowledge of the distribution of cues that correspond to a linguistic category. This assumption is motivated by observations made as early as @abramson1973voice or @nearey-hogan1986, and illustrated in Figure \@ref(fig:demonstrate--production-perception-link): listeners' categorization responses for two phonetic categories (/b/ and /p/ in Figure \@ref(fig:demonstrate--production-perception-link)B) can be predicted by considering the phonetic properties of the input *relative to the distribution of phonetic cues* that listeners have previously experienced (Figure \@ref(fig:demonstrate--production-perception-link)A). Recent introductions to, and discussions of, this perspective are provided in @bent-baeseberk2021, @kurumada-roettger2021, @quam-creel2021, and @schertz-clare2020. 
+We assume conceptual familiarity with reasoning about distributions and contemporary theories of speech perception---all of which expect that listeners have implicit representations of the mapping between phonetic cues and linguistic categories that encompass (in one form or other) knowledge of the distribution of cues that correspond to a linguistic category. This assumption is motivated by observations made as early as @abramson1973voice or @nearey-hogan1986, and illustrated in Figure \@ref(fig:demonstrate-production-perception-link): listeners' categorization responses for two phonetic categories (/b/ and /p/ in Figure \@ref(fig:demonstrate-production-perception-link)B) can be predicted by considering the phonetic properties of the input *relative to the distribution of phonetic cues* that listeners have previously experienced (Figure \@ref(fig:demonstrate-production-perception-link)A). Recent introductions to, and discussions of, this perspective are provided in @bent-baeseberk2021, @kurumada-roettger2021, @quam-creel2021, and @schertz-clare2020. 
 
 ```{r}
 d.production_to_perception <-
@@ -13,9 +13,9 @@ d.production_to_perception <-
       list("centered" = function(x) apply_ccure(x, data = .)))
 ```
 
-(ref:demonstrate--production-perception-link) Speech production realizes phonetic categories as distributions in a multi-dimensional acoustic or phonetic cue space. Implicit knowledge of these distributions is known to mediate listeners’ interpretation of speech inputs [for review, see @schertz-clare2020]. **Panel A:** voice onset time (VOT) and fundamental frequency (f0) of `r nrow(d.production_to_perception)` word-initial /d/ and /t/ from `r d.production_to_perception %>% droplevels() %>% pull(Talker) %>% nlevels()` male L1 speakers of US English [data from @chodroff-wilson2018]. VOT and f0 were centered relative to their overall mean (see Section \@ref(sec:normalization)). **Panel B:** responses to a 2AFC (``da'' vs. ``ta'') categorization task by 10 L1 listeners of US English, depending on VOT and f0 [data from Experiment 1 in @burchill-jaeger2022].
+(ref:demonstrate-production-perception-link) Speech production realizes phonetic categories as distributions in a multi-dimensional acoustic or phonetic cue space. Implicit knowledge of these distributions is known to mediate listeners’ interpretation of speech inputs [for review, see @schertz-clare2020]. **Panel A:** voice onset time (VOT) and fundamental frequency (f0) of `r nrow(d.production_to_perception)` word-initial /d/ and /t/ from `r d.production_to_perception %>% droplevels() %>% pull(Talker) %>% nlevels()` male L1 speakers of US English [data from @chodroff-wilson2018]. VOT and f0 were centered relative to their overall mean (see Section \@ref(sec:normalization)). **Panel B:** responses to a 2AFC ("da" vs. "ta") categorization task by 10 L1 listeners of US English, depending on VOT and f0 [data from Experiment 1 in @burchill-jaeger2022].
 
-```{r demonstrate-production-perception-link, fig.width= base.width * 2, fig.height = base.height * 1 + 2, fig.cap="(ref:demonstrate-production-perception-link)"}
+```{r demonstrate-production-perception-link, fig.width= base.width * 2.5, fig.height = base.height * 1 + .5, fig.cap="(ref:demonstrate-production-perception-link)"}
 p <- 
   d.production_to_perception %>%
   ggplot(aes(x = VOT_centered, y = f0_Mel_centered)) +
@@ -27,25 +27,35 @@ p2 <-
   p %+%
   (read.csv("../data/Burchill-Jaeger-2023/raw_avg.csv") %>%
   mutate(f0_Mel = phonR::normMel(f0))) + 
-  theme(legend.position = "top", plot.margin = margin(t = -50)) +
+  theme(legend.position = "top", legend.box="horizontal", panel.grid = element_blank()) +
   aes(x = VOT, y = f0_Mel, fill = (1 - is_voiced) * 100) +
   geom_tile() +
-  scale_fill_gradient2("Percent /t/-responses", midpoint = 50, low = "blue", high = "red") +
-  coord_cartesian(expand = F)
+  scale_y_continuous(NULL) +
+  scale_fill_gradient2("Percent /t/-\nresponses", midpoint = 50, low = "blue", high = "red", guide = "colourbar") +
+  guides(fill = guide_colorbar(title.position = "left"))
 
 limits <- get_plot_limits(p2)
+p2 <- 
+  p2 +
+  coord_fixed(expand = F, ratio = (limits$xmax - limits$xmin) / (limits$ymax - limits$ymin))
+
 p1 <- 
   p + 
-  geom_point(aes(color = voicing), alpha = .05) +
   geom_density_2d(aes(color = voicing)) +
+  geom_point(aes(color = voicing), alpha = .05) +
   scale_color_manual("Category", breaks = c("yes", "no"), labels = c("/d/", "/t/"), values = colors.voicing) +
   guides(colour = guide_legend(override.aes = list(alpha = 1))) +
-  coord_cartesian(xlim = c(limits$xmin, limits$xmax), ylim = c(limits$ymin, limits$ymax), expand = F)
+  coord_fixed(
+    xlim = c(limits$xmin, limits$xmax), 
+    ylim = c(limits$ymin, limits$ymax), 
+    expand = F, 
+    ratio = (limits$xmax - limits$xmin) / (limits$ymax - limits$ymin)) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
 plot_grid(
   plotlist = list(p1, p2), 
   nrow = 1, labels = c("A)", "B)"),
-  align = "h",
+  align = "hv",
   axis = "lrtb")
 ```
 

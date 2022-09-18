@@ -338,25 +338,104 @@ Like the representational change model, the change model for response biases is 
 We also briefly considered another simple change model for decision-making but never implemented it since it could not possibly explain the findings we present in Sections \@ref(sec:PR) and \@ref(sec:AA). This alternative model holds that listeners aim to infer the relative probability of each category based on recent input, and that response biases reflect these estimates. For example, listeners might enter an experiment with expectations about the relative probability of each category based on their relative frequency in previously experienced input, and then update their expectations based on the relative frequency of the categories within the experiment [similar to belief-updating models of syntactic adaptation, @fine-jaeger2013; @jaeger2019; @prasad2021]. However, such a model could not possibly explain exposure effects in, for example, a typical perceptual recalibration experiment since the relative frequency of the two categories does not differ between exposure conditions.
 
 ### (Non)-additivity of changes as a function of $\lambda$
-In Figures \@ref(fig:demonstrate-lapse-bias-change) and \@ref(fig:demonstrate-lapse-bias-change-nonzero-lapse) in the main text, we demonstrate that the (non)-additivity of changes in decision-making depends on $\lambda$. Specifically, changes are additive in the log-odds of the posterior probability of categories if and only if $\lambda = 0$. To see how this limitation arises, consider how the *log-odds* of a category---e.g., /d/---in Equation \@ref(eq:posterior-probability-lapse) depend on the response biases $\pi_c$ when $\lambda=0$: 
+In Figures \@ref(fig:demonstrate-lapse-bias-change) and \@ref(fig:demonstrate-lapse-bias-change-nonzero-lapse) in the main text, we demonstrate that the (non)-additivity of changes in decision-making depends on $\lambda$. Specifically, changes are additive in the log-odds of the posterior probability of categories if and only if $\lambda \in \{0, 1\}$. To see how this limitation arises, consider how the *log-odds* of a category---e.g., /d/---in Equation \@ref(eq:posterior-probability-lapse) depend on the response biases $\pi_c$ when $\lambda=0$: 
 
-\begin{equation}
+\begin{equation}\label{eq:change-bias}
 \begin{split}
-p(/d/ | input) & = \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/}}{\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}} \Rightarrow \\
-\log \frac{p(/d/ | input)}{1 - p(/d/ | input)} & = \log \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/}}{\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right) \pi_{/t/}} \\
- & = \log \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right)}{\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right)} + \log\frac{\pi_{/d/}}{\pi_{/t/}} \\
+p(/d/ | input) & = (1-\lambda) \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/}}{\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}} + \lambda \frac{\pi_{/d/}}{\Sigma_i \pi_{c_i}} \\
+ & = (1-\lambda) \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/}}{\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}} + \lambda \pi_{/d/} \\
+ & = \frac{(1-\lambda) \mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/} + \lambda \pi_{/d/} \Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}}{\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}} \Rightarrow \\
+\log \frac{p(/d/ | input)}{p(/t/ | input)}  & = \log \frac{(1-\lambda) \mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/} + \lambda \pi_{/d/} \Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}}{(1-\lambda) \mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right) \pi_{/t/} + \lambda \pi_{/t/} \Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}} \\
+ & = \log \frac{(1-\lambda) \mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) + \lambda \Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}}{(1-\lambda) \mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right)  + \lambda  \Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}} + \log\frac{\pi_{/d/}}{\pi_{/t/}} \\
 \end{split}
 \end{equation}
 
-In other words, adding some arbitrary amount to $\pi_{/d/}$ and subtracting same amount from $\pi_{/t/}$ (since $\Sigma_i \pi_{c_i} = 1$) will lift/lower the entire categorization function by a constant amount in log-odds, independent of the stimulus.
-
-However, if $\lambda \neq 0$, then:
+When $\lambda=1$, this simplifies to:
 
 \begin{equation}
 \begin{split}
-\log \frac{p(/d/ | input)}{p(/t/ | input)} = \log \frac{(1-\lambda)\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) + \lambda \left(\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i} \right)\pi_{c_i}\right)}{(1-\lambda)\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right) + \lambda \left(\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i} \right)\pi_{c_i}\right)} + \log\frac{\pi_{/d/}}{\pi_{/t/}}
+\log \frac{p(/d/ | input)}{p(/t/ | input)} & = \log\frac{\pi_{/d/}}{\pi_{/t/}}
 \end{split}
 \end{equation}
+
+And for $\lambda=0$:
+
+\begin{equation}
+\begin{split}
+\log \frac{p(/d/ | input)}{p(/t/ | input)} & = \log \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right)}{\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right)} + \log\frac{\pi_{/d/}}{\pi_{/t/}} 
+\end{split}
+\end{equation}
+
+Either way, a change in responses ($\pi$) will result in a change in predicted categorization behavior that is independent of the $input$, leading to changes in the log-odds of categorization responses that are constant across the acoustic-phonetic space. 
+
+Even when $\lambda \not\in \{0,1\}$, equation \@ref(eq:change-bias) suggests that the type of changes in posterior log-odds that can be explained through changes in decision-making are constrained. For example, when the two categories exhibit equal variance (so that $\log \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right)}{\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right)}$ describes a line), changes in decision-biases are predicted to lead to changes in categorization that are most extreme between the two category means and converge against two different constants 'outside' of the two category means (see Figure \@ref(fig:lapse-rate-consequences)). The shape of the predicted changes further gains in complexity if the variances of the two categories differ (Figure \@ref(fig:lapse-rate-consequences-unequal)). Further study of this constraint and similar limitations of the other changes models is needed to characterize the range of adaptive behaviors each model can predict (see Recommendation 5 in the general discussion).
+
+(ref:lapse-rate-consequences) Predicted difference in posterior log-odds of /d/ as a function of the lapse rate ($\lambda$), prior response bias for /d/ ($\pi_{/d/}$) and the change in that response bias after exposure ($\Delta_{\pi_{/d/}}$). For this example, only VOT is considered. The mean of /d/ and /t/ were set to that observed in Chodroff & Wilson (2018) and the variance was held equal across the two categories (at the average of the variances observed in Chodroff & Wilson, 2018).
+
+```{r lapse-rate-consequences, fig.width=base.width * 4 + .5, fig.height=base.height * 3 + 1.5, fig.cap="(ref:lapse-rate-consequences)"}
+categories <- c("/d/", "/t/")
+x <- seq(-30, 150, .5)
+
+logodds <- function(x, pi, lambda) {
+  c1 <- dnorm(x, m.VOT_f0_MVG$mu[[1]][1], sqrt((m.VOT_f0_MVG$Sigma[[1]][1] + m.VOT_f0_MVG$Sigma[[2]][1]) / 2))
+  c2 <- dnorm(x, m.VOT_f0_MVG$mu[[2]][1], sqrt((m.VOT_f0_MVG$Sigma[[1]][1] + m.VOT_f0_MVG$Sigma[[2]][1]) / 2))
+
+  log((1-lambda) * c1 + lambda * (c1 * pi[1] + c2 * pi[2])) - 
+    log((1-lambda) * c2 + lambda * (c1 * pi[1] + c2 * pi[2])) + 
+    log(pi[1]/pi[2]) 
+}
+
+diff_in_logodds <- function(x, pi_c1, diff_in_pi_c1, lambda = 0) {
+  logodds(x, c(pi_c1 + diff_in_pi_c1, 1 - (pi_c1 + diff_in_pi_c1)), lambda) - 
+    logodds(x, c(pi_c1, 1 - pi_c1), lambda)
+}
+
+crossing(x = list(x), lambda = c(0, .001, .01, .1, .5), pi_c1 = c(.3, .5, .7), diff_in_pi_c1 = c(.025, .05, .1, .2)) %>%
+  mutate(
+    change_in_logodds = pmap(
+    .l = list(x, pi_c1, diff_in_pi_c1, lambda),
+    .f = function(x, pi_c1, diff_in_pi_c1, lambda) diff_in_logodds(x, pi_c1, diff_in_pi_c1, lambda))) %>%
+  unnest(c(x, change_in_logodds)) %>%
+  ggplot(aes(x = x, y = change_in_logodds, color = factor(lambda))) +
+  geom_path() +
+  scale_x_continuous("VOT (in msec)") +
+  scale_y_continuous("Difference in log-odds of /d/") +
+  scale_color_discrete(expression(lambda)) +
+  facet_grid(pi_c1 ~ diff_in_pi_c1, 
+             labeller = label_bquote(
+               rows = { pi[.(categories[1])] == ~.(as.character(pi_c1)) },
+               cols = { Delta[pi[.(categories[1])]] == ~.(as.character(diff_in_pi_c1)) } )) +
+  theme(legend.position = "top")
+```
+(ref:lapse-rate-consequences-unequal) Same as in Figure \@ref(fig:lapse-rate-consequences) but while setting the variances of the two categories to the unequal values observed in Chodroff & Wilson (2018).
+
+```{r lapse-rate-consequences-unequal, fig.width=base.width * 4 + .5, fig.height=base.height * 3 + 1.5, fig.cap="(ref:lapse-rate-consequences-unequal)"}
+logodds <- function(x, pi, lambda) {
+  c1 <- dnorm(x, m.VOT_f0_MVG$mu[[1]][1], sqrt(m.VOT_f0_MVG$Sigma[[1]][1]))
+  c2 <- dnorm(x, m.VOT_f0_MVG$mu[[2]][1], sqrt(m.VOT_f0_MVG$Sigma[[2]][1]))
+
+  log((1-lambda) * c1 + lambda * (c1 * pi[1] + c2 * pi[2])) - 
+    log((1-lambda) * c2 + lambda * (c1 * pi[1] + c2 * pi[2])) + 
+    log(pi[1]/pi[2]) 
+}
+
+crossing(x = list(x), lambda = c(0, .001, .01, .1, .5), pi_c1 = c(.3, .5, .7), diff_in_pi_c1 = c(.025, .05, .1, .2)) %>%
+  mutate(
+    change_in_logodds = pmap(
+    .l = list(x, pi_c1, diff_in_pi_c1, lambda),
+    .f = function(x, pi_c1, diff_in_pi_c1, lambda) diff_in_logodds(x, pi_c1, diff_in_pi_c1, lambda))) %>%
+  unnest(c(x, change_in_logodds)) %>%
+  ggplot(aes(x = x, y = change_in_logodds, color = factor(lambda))) +
+  geom_path() +
+  scale_x_continuous("VOT (in msec)") +
+  scale_y_continuous("Difference in log-odds of /d/") +
+  scale_color_discrete(expression(lambda)) +
+  facet_grid(pi_c1 ~ diff_in_pi_c1, 
+             labeller = label_bquote(
+               rows = { pi[.(categories[1])] == ~.(as.character(pi_c1)) },
+               cols = { Delta[pi[.(categories[1])]] == ~.(as.character(diff_in_pi_c1)) } )) +
+  theme(legend.position = "top")
+```
 
 # Creating the stimuli for the (simulated) perceptual recalibration paradigm {#sec:SI-PR}
 As also mentioned in the main text, many studies on perceptual recalibration do not report the acoustic properties of the exposure and test stimuli,^[Some studies provide aggregate information [e.g., @kraljic-samuel2006; @kraljic-samuel2007] and very few provide detailed information and visualization [e.g., @drouin2016].] and analyses that relate the acoustic properties of exposure and test stimuli to participants' responses during test remain the exception. In our experience, it is also not uncommon that original recordings are no longer available or only partially available (see one of our recommendations in the general discussions). Phonetic annotations that aid the extraction of acoustic information about these recordings are available for only a very small number of studies.^[Some notable exceptions for research on US English include the labs of Drs. Babel (UBC), Myer (UConn), and Theodore (UConn). In an ongoing project at Rochester, we have collected a database of phonetically annotated perceptual recalibration experiments on L1 US English /s/-/`r linguisticsdown::cond_cmpl("ʃ")`/ that links stimulus recordings, phonetic annotations, and over 20 phonetic extracted phonetic cues to categorization responses from several thousand participants across a dozen experiments from multiple labs. Researchers interested in the database can contact any of the authors.] For that reason, we use simulated data in our case study on perceptual recalibration. Our stimulus generation procedure aims to capture the qualitative properties of the most common approaches to stimulus selection in perceptual recalibration experiments. 

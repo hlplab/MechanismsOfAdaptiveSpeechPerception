@@ -15,7 +15,7 @@ d.production_to_perception <-
 
 (ref:demonstrate-production-perception-link) Speech production realizes phonetic categories as distributions in a multi-dimensional acoustic or phonetic cue space. Implicit knowledge of these distributions is known to mediate listeners’ interpretation of speech inputs [for review, see @schertz-clare2020]. **Panel A:** voice onset time (VOT) and fundamental frequency (f0) of `r nrow(d.production_to_perception)` word-initial /d/ and /t/ from `r d.production_to_perception %>% droplevels() %>% pull(Talker) %>% nlevels()` male L1 speakers of US English [data from @chodroff-wilson2018]. VOT and f0 were centered relative to their overall mean (see SI \@ref(sec:SI-chodroff)). **Panel B:** responses to a 2AFC ("da" vs. "ta") categorization task by 10 L1 listeners of US English, depending on VOT and f0 [data from Experiment 1 in @burchill-jaeger2022].
 
-```{r demonstrate-production-perception-link, fig.width= base.width * 2.5, fig.height = base.height * 1 + .5, fig.cap="(ref:demonstrate-production-perception-link)"}
+```{r demonstrate-production-perception-link, fig.width= base.width * 3, fig.height = base.height * 1 + 1, fig.cap="(ref:demonstrate-production-perception-link)"}
 p <- 
   d.production_to_perception %>%
   ggplot(aes(x = VOT_centered, y = f0_Mel_centered)) +
@@ -28,11 +28,11 @@ p2 <-
   (read.csv("../data/Burchill-Jaeger-2023/raw_avg.csv") %>%
   mutate(f0_Mel = phonR::normMel(f0))) + 
   theme(legend.position = "top", legend.box="horizontal", panel.grid = element_blank()) +
-  aes(x = VOT, y = f0_Mel, fill = (1 - is_voiced) * 100) +
+  aes(x = VOT, y = f0_Mel, fill = is_voiced * 100) +
   geom_tile() +
   scale_y_continuous(NULL) +
-  scale_fill_gradient2("Percent /t/-\nresponses", midpoint = 50, low = "blue", high = "red", guide = "colourbar") +
-  guides(fill = guide_colorbar(title.position = "left"))
+  scale_fill_gradient2("Percent /d/-\nresponses", midpoint = 50, low = "red", high = "blue", guide = "colourbar", ) +
+  guides(fill = guide_colorbar(title.position = "left", reverse = T))
 
 limits <- get_plot_limits(p2)
 p2 <- 
@@ -41,8 +41,8 @@ p2 <-
 
 p1 <- 
   p + 
-  geom_density_2d(aes(color = voicing)) +
   geom_point(aes(color = voicing), alpha = .05) +
+  geom_density_2d(aes(color = voicing), size = .1) +
   scale_color_manual("Category", breaks = c("yes", "no"), labels = c("/d/", "/t/"), values = colors.voicing) +
   guides(colour = guide_legend(override.aes = list(alpha = 1))) +
   coord_fixed(
@@ -561,7 +561,7 @@ Finally, we specify a linking hypothesis for changes in response biases. To the 
 
 Consider a typical experiment on accent adaptation. A listener unfamiliar with the L2 accent will initially miscategorize the L2-accented inputs. Typically, these errors will not be random but rather exhibit directionality. For example, in experiments on Mandarin-accented English, L1-English participants initially mishear voiced syllable-final stops as voiceless [e.g., hearing *lid* as *lit*, @flege1992; @xie2016jep]. Since experiments of this type tend to employ exposure stimuli that effectively label the stimulus with the intended category (e.g., *lemona_e*), participants receive a clear error signal, indicating to what extent their expectations based on the acoustic input mismatched the intended category. Participants can use this information to adapt the biases for all categories---increasing the bias for the labeled category (/d/ in this example) and decreasing the bias for all other categories, thereby improving their recognition accuracy for the L2-accented speech.<!--^[We thank Zach Burchill for bringing this possibility to our attention.]--> Each time an input of the observed (labeled) category is not heard as intended, the log-odds for the observed category increased by an amount jointly determined by the change rate ($\beta_{\pi}$) and the prediction error, where a larger $\beta_{\pi}$ results in larger changes as a function of the observed input (for details, see the SI, \@ref(sec:SI-models-changes-in-decision-making)). 
 
-Figure \@ref(fig:demonstrate-lapse-bias-change) illustrates the proposed change model for three different values of $\beta_{\pi}$ when the lapse rate $\lambda=0$. Here and in the case studies in Sections \@ref(sec:PR) and \@ref(sec:AA), we assume uniform initial biases across all categories, leaving $\beta_{\pi}$ as the only degree of freedom. The right panel highlights an interesting limitation in the types of results that can be explained through changes in response biases: in the absence of lapses ($\lambda=0$), changes in response biases can only explain *additive* effects on the log-odds of the categories, but not changes in the *slope* of the categorization function (in log-odds). This property does not depend on the specific change model assumed here (for derivation, see the SI, \@ref(sec:SI-models-changes-in-decision-making)). Critically, however, this constraint on changes in decision-making only follows if $\lambda = 0$. For $\lambda \neq 0$, changes in response biases can lead to non-additive changes in the posterior log-odds. This is illustrated in Figure \@ref(fig:demonstrate-lapse-bias-change-nonzero-lapse). Once the possibility of non-zero lapse rates is considered, changes in the slope of the categorization function (even in log-odds) therefore do *not* rule out explanations in terms of changing response biases. This means that changes in decision-making can explain a wider range of behaviors than is typically considered.
+Figure \@ref(fig:demonstrate-lapse-bias-change) illustrates the proposed change model for three different values of $\beta_{\pi}$ when the lapse rate $\lambda=0$. Here and in the case studies in Sections \@ref(sec:PR) and \@ref(sec:AA), we assume uniform initial biases across all categories, leaving $\beta_{\pi}$ as the only degree of freedom. The right panel highlights an interesting limitation in the types of results that can be explained through changes in response biases: in the absence of lapses ($\lambda=0$), changes in response biases can only explain *additive* effects on the log-odds of the categories, but not changes in the *slope* of the categorization function (in log-odds). This property does not depend on the specific change model assumed here (for derivation, see the SI, \@ref(sec:SI-models-changes-in-decision-making)). Critically, however, this strong constraint on changes in decision-making only follows if $\lambda = 0$. For $\lambda \neq 0$, changes in response biases can lead to non-additive changes in the posterior log-odds. This is illustrated in Figure \@ref(fig:demonstrate-lapse-bias-change-nonzero-lapse). Once the possibility of non-zero lapse rates is considered, changes in the slope of the categorization function (even in log-odds) therefore do *not* rule out explanations in terms of changing response biases. This does not mean that changes in decision-making can explain arbitrary types of adaptive behavior. In the general discussion, we demonstrate that even with non-zero lapse rates, there are strong constraints on the type of adaptive behavior that can be explained by changes in decision-making. It does, however, mean that changes in decision-making can explain a wider range of behaviors than is typically considered, and we will see examples of that in our case studies.
 
 (ref:demonstrate-lapse-bias-change) Illustrating the effects of $\beta_{\pi}$ on changes in the categorization function (**Left:** posterior probability, **Right:** posterior log-odds). The model has the same uncertain prior beliefs about category mean and variances as the model in Figure \@ref(fig:demonstrate-niw-prior-mu-sigma)D ($\kappa_{0,c} = \nu_{0,c}=0$). Neither normalization nor prior beliefs about the categories changes as a function of exposure. We set the lapse rate $\lambda = 0$, the prior lapse biases to uniform ($\pi_{0,c}=.5$). The input to this change model is identical to what was used in Figures \@ref(fig:demonstrate-changes-in-representations) and \@ref(fig:demonstrate-changes-in-representations-b). In the left panel, orange arrows indicate changes in the category boundary (point of subjective equality) for $\beta_{\pi} = 1$. In the right panel, orange arrows indicate the distance between the posterior log-odds resulting from the two most extreme $\beta_{\pi}$s. This highlights the fact that changes to response biases have additive effects on the log-odds of `r categories.demo[1]` responses when $\lambda = 0$. Animation controls require Acrobat PDF reader.
 

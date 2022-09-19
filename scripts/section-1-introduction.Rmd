@@ -46,6 +46,7 @@ d.chodroff_wilson %<>%
   filter(n > min.observation.n)
 
 # Identify and remove talkers with bimodal f0 distributions
+# (indicating pitch halving/doubling)
 d.chodroff_wilson %<>%
   group_by(Talker) %>%
   mutate(f0_Mel = phonR::normMel(f0)) %>%

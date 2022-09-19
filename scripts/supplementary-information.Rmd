@@ -75,7 +75,7 @@ n.subj <- 3
 seed <- 59876
 ```
 
-(ref:chodroff-stop-VOT-f0ST) Unormalized VOT and f0 of word-initial stop consonants in L1 US English from `r n.subj` random talkers in the Mixer corpus (Chodroff & Wilson, 2017). Transparent points show individual tokens, which cover a large of different phonotactic, lexical, and utterance contexts. Solid points show talker-specific means over these tokens, connected by a gray line. Ellipses show the 95% probability mass for talker-specific bivariate Gaussian categories. 
+(ref:chodroff-stop-VOT-f0ST) Unormalized VOT and f0 of word-initial stop consonants in L1 US English from `r n.subj` random talkers in the Mixer corpus (Chodroff & Wilson, 2017). Transparent points show individual tokens, which cover a range of different phonotactic, lexical, and utterance contexts. Solid points show talker-specific means over these tokens, connected by a gray line. Ellipses show the 95% probability mass for talker-specific bivariate Gaussian categories. 
 
 ```{r chodroff-stop-VOT-f0ST, fig.width=base.width * 3 + 1, fig.height = base.height * 3, fig.cap=c("(ref:chodroff-stop-VOT-f0ST)")}
 talkers <- sample(unique(d.chodroff_wilson$Talker), n.subj, replace = F)

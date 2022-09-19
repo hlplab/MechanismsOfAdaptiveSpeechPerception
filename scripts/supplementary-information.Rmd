@@ -20,9 +20,9 @@ You will also need to download the IPA font [SIL Doulos](https://software.sil.or
 
 We used the following R packages to create this document: `r cite_r("latex-stuff/r-references.bib", withhold = T, pkgs = c("MVBeliefUpdatr"))`. If opened in RStudio, the top of the R markdown document should alert you to any libraries you will need to download, if you have not already installed them. This includes the \texttt{MVBeliefUpdatr} library that supports working with multivariate Gaussian ideal observers and adaptors (see also Dave Kleinschmidt's \texttt{beliefupdatr} library that this library is based on). The full session information is provided at the end of this document.
 
-# A database of natural productions of word-initial stop voicing in American English [@chodroff-wilson2018] {#sec:SI-chodroff}
+# A database of natural productions of word-initial stop voicing in L1 US English [@chodroff-wilson2018] {#sec:SI-chodroff}
 
-All case studies presented in the main text are based on a phonetically annotated database of word-initial stop voicing in American English [@chodroff-wilson2018]. Chodroff and Wilson (2018, p. 3) describe the database:
+All case studies presented in the main text are based on a phonetically annotated database of word-initial stop voicing in L1 US English [@chodroff-wilson2018]. Chodroff and Wilson (2018, p. 3) describe the database:
 
 > The data was extracted from an audited subset of the Mixer 6 corpus (Brandschain et al. 2010, Brandschain
 et al. 2013; Chodroff et al. 2016) containing approximately 45 minutes of read speech from 180 native AE
@@ -75,7 +75,7 @@ n.subj <- 3
 seed <- 59876
 ```
 
-(ref:chodroff-stop-VOT-f0ST) Unormalized VOT and f0 of word-initial stop consonants in American English from `r n.subj` random talkers in the Mixer corpus (Chodroff & Wilson, 2017). Transparent points show individual tokens, which cover a large of different phonotactic, lexical, and utterance contexts. Solid points show talker-specific means over these tokens, connected by a gray line. Ellipses show the 95% probability mass for talker-specific bivariate Gaussian categories. 
+(ref:chodroff-stop-VOT-f0ST) Unormalized VOT and f0 of word-initial stop consonants in L1 US English from `r n.subj` random talkers in the Mixer corpus (Chodroff & Wilson, 2017). Transparent points show individual tokens, which cover a large of different phonotactic, lexical, and utterance contexts. Solid points show talker-specific means over these tokens, connected by a gray line. Ellipses show the 95% probability mass for talker-specific bivariate Gaussian categories. 
 
 ```{r chodroff-stop-VOT-f0ST, fig.width=base.width * 3 + 1, fig.height = base.height * 3, fig.cap=c("(ref:chodroff-stop-VOT-f0ST)")}
 talkers <- sample(unique(d.chodroff_wilson$Talker), n.subj, replace = F)
@@ -154,12 +154,13 @@ We follow @mcmurray-jongman2011 and use linear regression to remove the effects 
   
   3. Finally, the original data from @chodroff-wilson2018 contained nearly three times as many /d/s as /t/s, and this asymmetry was retained after the data cleaning procedures described above. While this particular imbalance is probably not reflective of natural speech, natural speech will often exhibit *some* form of asymmetry in the relative frequencies of categories. This raises the question of whether listeners somehow correct for these asymmetries when normalizing the speech input for an experiment for which there all categories can be expected to be equally frequent. Following similar considerations as in Point 1 above, we assume this to be the case. We thus randomly subsampled equal numbers of tokens for each /d/ and /t/ from all talkers. This number was determined by the number of tokens of the less frequent category for each talker. For instance, if a talker produced 40 /d/s and 20 /t/s, then 20 /d/ and 20 /t/ observations were randomly pulled from the data. 
 
-For experimenters, the issues described here will arise whenever the distribution of categories and/or phonological contexts differs between exposure and test: the estimated mean will then reflect expectations that do not veridically reflect the statistics of the current input. In previous evaluations of C-CuRE this was never the case: both the distribution of categories and the distribution of phonological contexts during test were identical to the distributions that the C-CuRE model was trained on [@mcmurray-jongman2011]. For the present study, we investigate how listeners might transfer and adapt expectations based on previous long-term exposure to novel input from an unfamiliar talker. We therefore used subsamples that were well-balanced between /d/ and /t/ tokens in terms of their frequency and phonological contexts---a pattern matched to those employed during the exposure and test in typical experiments. We note, however, that none of our core results seem to depend on the assumptions we make here. We obtained qualitatively identical results for all critical comparisons in previous simulations that did not subsample the data to be balanced with regard to /d/ and /t/ or their phonological contexts.
+For experimenters, the issues described here will arise whenever the distribution of categories and/or phonological contexts differ between prior exposure and the exposure in the experiment, or between exposure and test in the experiment: the estimated mean will then reflect expectations that do not veridically reflect the statistics of the current input. In previous evaluations of C-CuRE this was never the case: both the distribution of categories and the distribution of phonological contexts during test were identical to the distributions that the C-CuRE model was trained on [@mcmurray-jongman2011]. For the present study, we investigate how listeners might transfer and adapt expectations based on previous long-term exposure to novel input from an unfamiliar talker. We therefore used subsamples that were well-balanced between /d/ and /t/ tokens in terms of their frequency and phonological contexts---a pattern matched to those employed during the exposure and test in typical experiments. We note, however, that none of our core results seem to depend on the assumptions we make here. We obtained qualitatively identical results for all critical comparisons in previous simulations that did not subsample the data to be balanced with regard to /d/ and /t/ or their phonological contexts.
 
-The three issues raises above also raise questions about C-CuRE that go beyond practical concerns for experimenters. For any of the three decisions we described above, it is an empirical question whether listeners do something similar. Put differently, there are complexities in applying approaches like C-CuRE to scenarios that are likely to occur in everyday speech perception that need to be investigated in future research.
+The three issues raised above also raise questions about C-CuRE that go beyond practical concerns for experimenters. For any of the three decisions we described above, it is an empirical question whether listeners do something similar. Put differently, there are complexities in applying approaches like C-CuRE to scenarios that are likely to occur in everyday speech perception that need to be investigated in future research. 
+
+For example, our third assumption essentially means that normalization is sensitive to which category tokens are inferred to originate from (unlike any normalization accounts we know of), and this can result in some counter-intuitive predictions. Consider a scenario, in which a listener hears 100 typical /d/ tokens that match the listener's prior expectations for /d/. As formulated in @mcmurray-jongman2011, C-CuRE would predict that the listener's estimate for the cue mean will move towards the category mean of /d/ (since normalization is assumed to be insensitive to which category tokens originate from).^[Intriguingly, this would predict that the listener will categorize fewer tokens along the prototypical /d/ to /t/ continuum as /d/---in line with findings that repeated exposure to prototypical tokens of a category leads to selective adaptation [@REF].] Alternatively, if normalization *is* sensitive to which category a token is inferred to originate from, then the listener's estimate of the cue mean is predicted to not change much at all (since all tokens were expected given that they were a /d/). Which of these two rather different conceptualizations of normalization is empirically more adequate is, to the best of our knowledge, unknown.
 
 <!-- TO-DO commented out for now but should go into SI or GD?: It is important to keep in mind that while the updates in normalization in this case study seem computationally simple---requiring only the computation of cue mean of exposure tokens, the computational processes required for the normalization of talker differences in real-life situations can be more complex than first meets the eye. As simulated here, empirical tests of normalization accounts often employ balanced samples across categories within a contrast. However, in real encounters with an unfamiliar talker, human listeners may be dealing with unbalanced data or data in which the token frequency of categories does not follow the pattern of regularities in one’s long-term input. Both will create artificial shifts in normalized cue space that should not be attributed to cross-talker differences. For instance, in the data employed here, the mean VOTs for /d/ and /t/ are 16ms and 72ms respectively, yielding a cue-level mean of 39ms. Consider two scenarios. In one case, a listener is exposed to a talker who produces equal number of shifted /d/ productions with a mean of 34ms and typical /t/s. In another case, the listener hears a talker who produces twice as many as /t/s than /d/s. In both cases, the cue mean of the newly experienced talker is 53ms. If listeners do not explicitly encode labels for the exposure tokens, then the same boundary shift is predicted in both cases. Yet only the shift in the first case is desirable. In other words, in order to effectively compensate for talker differences, the expectations about the mean of previous input would need to take into account both the previous input itself and its labels (e.g., whether it should be a /d/ or /t/). Listener therefore need to either infer and store category labels along with specific instances or keep track of the frequency by which each category occurs, in addition to inferring the cue mean. Regardless, the computational demand of normalization-based changes is higher than recognized in previous discussions of normalization accounts.  -->
-
 
 Decisions 1-3 left a total of 5632 observations (2816 each for /d/ and /t/). To avoid over-fitting to individual talkers, we use linear mixed-effects regression rather than ordinary linear regression. This 'shrinks' talker-specific estimates of the cue means towards the overall (population-level) mean, and does so more when less data is available for the particular talker. Separate regressions were use to predict VOT and f0 (Mel). Both regressions used the formula:
 
@@ -219,7 +220,7 @@ p.means +
 # Additional details about the change models {#sec:SI-models}
 This section contains additional details about the change models.
 
-## Changes in representations {#sec:SI-models-changes-in-representations}
+## Changes in category representations {#sec:SI-models-changes-in-representations}
 The updating of the four $\mathcal{NW^{-1}}$ parameters after $N$ observations of a category $c$ from the talker is described by the equations in \@ref(eq:niw-updating-parameters), and is deterministic [for details and derivation, see @murphy2012, p. 134]. $\kappa_c$ and $\nu_c$ simply increase by 1 with each observation, capturing the fact that each observation adds additional information about the talker's category mean and covariances. $\mathrm{m}_{N,c}$ is a weighted combination of its prior value $\mathrm{m}_{0,c}$ and the category mean of the $N$ observations $\bar{x}$---following the same logic that we applied to the inference of the overall cue mean in Equation \@ref(eq:normalization-change). Similarly, $\mathrm{S}_{N,c}$ is a weighted combination of its prior value $\mathrm{S}_{0,c}$ and the category variability of the $N$ observations,^[$\mathrm{S}_c \triangleq \Sigma_{i=1}^N x_{i,c} x_{i,c}^T$ is the uncentered sum of squares matrix of the $N$ observations [@murphy2012].] plus an additional term that captures the uncertainty about the category mean. Figure \ref{fig:model-belief-updating} visualizes the belief-updating process in Equations \@ref(eq:niw-updating)-\@ref(eq:niw-updating-parameters) as a graphical model.
 
 \begin{equation}\label{eq:niw-updating-parameters}
@@ -312,6 +313,7 @@ The prior distribution of the category covariance matrix $\Sigma_c$ is described
 
 We note that the approach employed in our case studies does not take into account that category means and covariance matrices can be correlated. In that case, the expected values of the marginal distributions of $\mu_c$ and $\Sigma_c$ will not be identical to the expected value of the joint distribution of $\mu_c$ and $\Sigma_c$.^[This might also reveal that some of the assumptions of the Normal-Inverse-Wishart belief-updating model are problematic, either for researchers or for listeners.] For future work, it would thus be more appropriate to estimate the *joint* distribution of $\mu_c$ and $\Sigma_c$ from phonetic data, and to find the values for $\mathrm{m}_{0,c}$ and $\mathrm{S}_{0,c}$ that best approximate this distribution (e.g., through moment-matching). For the present purpose, however, this change is not expected to qualitatively affect the conclusions reached in our case studies.
 
+
 ## Changes in decision-making {#sec:SI-models-changes-in-decision-making}
 Here, we model the prediction error as the surprisal experienced when observing the category label, $I(c_{observed})$. This surprisal is a log-inverse function of the posterior probability of the category label given the beliefs held by the listener prior to observing the category label. 
 
@@ -335,29 +337,108 @@ Like the representational change model, the change model for response biases is 
 
 We also briefly considered another simple change model for decision-making but never implemented it since it could not possibly explain the findings we present in Sections \@ref(sec:PR) and \@ref(sec:AA). This alternative model holds that listeners aim to infer the relative probability of each category based on recent input, and that response biases reflect these estimates. For example, listeners might enter an experiment with expectations about the relative probability of each category based on their relative frequency in previously experienced input, and then update their expectations based on the relative frequency of the categories within the experiment [similar to belief-updating models of syntactic adaptation, @fine-jaeger2013; @jaeger2019; @prasad2021]. However, such a model could not possibly explain exposure effects in, for example, a typical perceptual recalibration experiment since the relative frequency of the two categories does not differ between exposure conditions.
 
-### (Non)-additivity of changes as a function of $\lambda$
-In Figures \@ref(fig:demonstrate-lapse-bias-change) and \@ref(fig:demonstrate-lapse-bias-change-nonzero-lapse) in the main text, we demonstrate that the (non)-additivity of changes in decision-making depends on $\lambda$. Specifically, changes are additive in the log-odds of the posterior probability of categories if and only if $\lambda = 0$. To see how this limitation arises, consider how the *log-odds* of a category---e.g., /d/---in Equation \@ref(eq:posterior-probability-lapse) depend on the response biases $\pi_c$ when $\lambda=0$: 
+### (Non)-additivity of changes as a function of $\lambda$ {#sec:consequences-of-lambda}
+In Figures \@ref(fig:demonstrate-lapse-bias-change) and \@ref(fig:demonstrate-lapse-bias-change-nonzero-lapse) in the main text, we demonstrate that the (non)-additivity of changes in decision-making depends on $\lambda$. Specifically, changes are additive in the log-odds of the posterior probability of categories if and only if $\lambda \in \{0, 1\}$. To see how this limitation arises, consider how the *log-odds* of a category---e.g., /d/---in Equation \@ref(eq:posterior-probability-lapse) depend on the response biases $\pi_c$ when $\lambda=0$: 
 
-\begin{equation}
+\begin{equation}\label{eq:change-bias}
 \begin{split}
-p(/d/ | input) & = \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/}}{\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}} \Rightarrow \\
-\log \frac{p(/d/ | input)}{1 - p(/d/ | input)} & = \log \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/}}{\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right) \pi_{/t/}} \\
- & = \log \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right)}{\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right)} + \log\frac{\pi_{/d/}}{\pi_{/t/}} \\
+p(/d/ | input) & = (1-\lambda) \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/}}{\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}} + \lambda \frac{\pi_{/d/}}{\Sigma_i \pi_{c_i}} \\
+ & = (1-\lambda) \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/}}{\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}} + \lambda \pi_{/d/} \\
+ & = \frac{(1-\lambda) \mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/} + \lambda \pi_{/d/} \Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}}{\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}} \Rightarrow \\
+\log \frac{p(/d/ | input)}{p(/t/ | input)}  & = \log \frac{(1-\lambda) \mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/} + \lambda \pi_{/d/} \Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}}{(1-\lambda) \mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right) \pi_{/t/} + \lambda \pi_{/t/} \Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}} \\
+ & = \log \frac{(1-\lambda) \mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) + \lambda \Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}}{(1-\lambda) \mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right)  + \lambda  \Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}} + \log\frac{\pi_{/d/}}{\pi_{/t/}} \\
 \end{split}
 \end{equation}
 
-In other words, adding some arbitrary amount to $\pi_{/d/}$ and subtracting same amount from $\pi_{/t/}$ (since $\Sigma_i \pi_{c_i} = 1$) will lift/lower the entire categorization function by a constant amount in log-odds, independent of the stimulus.
-
-However, if $\lambda \neq 0$, then:
+When $\lambda=1$, this simplifies to:
 
 \begin{equation}
 \begin{split}
-\log \frac{p(/d/ | input)}{p(/t/ | input)} = \log \frac{(1-\lambda)\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) + \lambda \left(\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i} \right)\pi_{c_i}\right)}{(1-\lambda)\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right) + \lambda \left(\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i} \right)\pi_{c_i}\right)} + \log\frac{\pi_{/d/}}{\pi_{/t/}}
+\log \frac{p(/d/ | input)}{p(/t/ | input)} & = \log\frac{\pi_{/d/}}{\pi_{/t/}}
 \end{split}
 \end{equation}
+
+And for $\lambda=0$:
+
+\begin{equation}
+\begin{split}
+\log \frac{p(/d/ | input)}{p(/t/ | input)} & = \log \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right)}{\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right)} + \log\frac{\pi_{/d/}}{\pi_{/t/}} 
+\end{split}
+\end{equation}
+
+Either way, a change in responses ($\pi$) will result in a change in predicted categorization behavior that is independent of the $input$, leading to changes in the log-odds of categorization responses that are constant across the acoustic-phonetic space. 
+
+Even when $\lambda \not\in \{0,1\}$, equation \@ref(eq:change-bias) suggests that the type of changes in posterior log-odds that can be explained through changes in decision-making are constrained. For example, when the two categories exhibit equal variance (so that $\log \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right)}{\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right)}$ describes a line), changes in decision-biases are predicted to lead to changes in categorization that are most extreme between the two category means and converge against two different constants 'outside' of the two category means (see Figure \@ref(fig:lapse-rate-consequences)). The shape of the predicted changes further gains in complexity if the variances of the two categories differ (Figure \@ref(fig:lapse-rate-consequences-unequal)). Further study of this constraint and similar limitations of the other changes models is needed to characterize the range of adaptive behaviors each model can predict (see Recommendation 5 in the general discussion).
+
+(ref:lapse-rate-consequences) Predicted difference in posterior log-odds of /d/ as a function of the lapse rate ($\lambda$), prior response bias for /d/ ($\pi_{/d/}$) and the change in that response bias after exposure ($\Delta_{\pi_{/d/}}$). For this example, only VOT is considered. The mean of /d/ and /t/ were set to that observed in Chodroff & Wilson (2018) and the variance was held equal across the two categories (at the average of the variances observed in Chodroff & Wilson, 2018).
+
+```{r lapse-rate-consequences, fig.width=base.width * 4 + .5, fig.height=base.height * 3 + 1.5, fig.cap="(ref:lapse-rate-consequences)"}
+categories <- c("/d/", "/t/")
+x <- seq(-30, 150, .5)
+
+logodds <- function(x, pi, lambda) {
+  c1 <- dnorm(x, m.VOT_f0_MVG$mu[[1]][1], sqrt((m.VOT_f0_MVG$Sigma[[1]][1] + m.VOT_f0_MVG$Sigma[[2]][1]) / 2))
+  c2 <- dnorm(x, m.VOT_f0_MVG$mu[[2]][1], sqrt((m.VOT_f0_MVG$Sigma[[1]][1] + m.VOT_f0_MVG$Sigma[[2]][1]) / 2))
+
+  log((1-lambda) * c1 + lambda * (c1 * pi[1] + c2 * pi[2])) - 
+    log((1-lambda) * c2 + lambda * (c1 * pi[1] + c2 * pi[2])) + 
+    log(pi[1]/pi[2]) 
+}
+
+diff_in_logodds <- function(x, pi_c1, diff_in_pi_c1, lambda = 0) {
+  logodds(x, c(pi_c1 + diff_in_pi_c1, 1 - (pi_c1 + diff_in_pi_c1)), lambda) - 
+    logodds(x, c(pi_c1, 1 - pi_c1), lambda)
+}
+
+crossing(x = list(x), lambda = c(0, .001, .01, .1, .5), pi_c1 = c(.3, .5, .7), diff_in_pi_c1 = c(.025, .05, .1, .2)) %>%
+  mutate(
+    change_in_logodds = pmap(
+    .l = list(x, pi_c1, diff_in_pi_c1, lambda),
+    .f = function(x, pi_c1, diff_in_pi_c1, lambda) diff_in_logodds(x, pi_c1, diff_in_pi_c1, lambda))) %>%
+  unnest(c(x, change_in_logodds)) %>%
+  ggplot(aes(x = x, y = change_in_logodds, color = factor(lambda))) +
+  geom_path() +
+  scale_x_continuous("VOT (in msec)") +
+  scale_y_continuous("Difference in log-odds of /d/") +
+  scale_color_discrete(expression(lambda)) +
+  facet_grid(pi_c1 ~ diff_in_pi_c1, 
+             labeller = label_bquote(
+               rows = { pi[.(categories[1])] == ~.(as.character(pi_c1)) },
+               cols = { Delta[pi[.(categories[1])]] == ~.(as.character(diff_in_pi_c1)) } )) +
+  theme(legend.position = "top")
+```
+(ref:lapse-rate-consequences-unequal) Same as in Figure \@ref(fig:lapse-rate-consequences) but while setting the variances of the two categories to the unequal values observed in Chodroff & Wilson (2018).
+
+```{r lapse-rate-consequences-unequal, fig.width=base.width * 4 + .5, fig.height=base.height * 3 + 1.5, fig.cap="(ref:lapse-rate-consequences-unequal)"}
+logodds <- function(x, pi, lambda) {
+  c1 <- dnorm(x, m.VOT_f0_MVG$mu[[1]][1], sqrt(m.VOT_f0_MVG$Sigma[[1]][1]))
+  c2 <- dnorm(x, m.VOT_f0_MVG$mu[[2]][1], sqrt(m.VOT_f0_MVG$Sigma[[2]][1]))
+
+  log((1-lambda) * c1 + lambda * (c1 * pi[1] + c2 * pi[2])) - 
+    log((1-lambda) * c2 + lambda * (c1 * pi[1] + c2 * pi[2])) + 
+    log(pi[1]/pi[2]) 
+}
+
+crossing(x = list(x), lambda = c(0, .001, .01, .1, .5), pi_c1 = c(.3, .5, .7), diff_in_pi_c1 = c(.025, .05, .1, .2)) %>%
+  mutate(
+    change_in_logodds = pmap(
+    .l = list(x, pi_c1, diff_in_pi_c1, lambda),
+    .f = function(x, pi_c1, diff_in_pi_c1, lambda) diff_in_logodds(x, pi_c1, diff_in_pi_c1, lambda))) %>%
+  unnest(c(x, change_in_logodds)) %>%
+  ggplot(aes(x = x, y = change_in_logodds, color = factor(lambda))) +
+  geom_path() +
+  scale_x_continuous("VOT (in msec)") +
+  scale_y_continuous("Difference in log-odds of /d/") +
+  scale_color_discrete(expression(lambda)) +
+  facet_grid(pi_c1 ~ diff_in_pi_c1, 
+             labeller = label_bquote(
+               rows = { pi[.(categories[1])] == ~.(as.character(pi_c1)) },
+               cols = { Delta[pi[.(categories[1])]] == ~.(as.character(diff_in_pi_c1)) } )) +
+  theme(legend.position = "top")
+```
 
 # Creating the stimuli for the (simulated) perceptual recalibration paradigm {#sec:SI-PR}
-As also mentioned in the main text, many studies on perceptual recalibration do not report the acoustic properties of the exposure and test stimuli,^[Some studies provide aggregate information [e.g., @kraljic-samuel2006; @kraljic-samuel2007] and very few provide detailed information and visualization [e.g., @drouin2016].] and analyses that relate the acoustic properties of exposure and test stimuli to participants' responses during test remain the exception. In our experience, it is also not uncommon that original recordings are no longer available or only partially available (see one of our recommendations in the general discussions). Phonetic annotations that aid the extraction of acoustic information about these recordings are available for only a very small number of studies.^[Some notable exceptions for research on American English include the labs of Drs. Babel (UBC), Myer (UConn), and Theodore (UConn). In an ongoing project at Rochester, we have collected a database of phonetically annotated perceptual recalibration experiments on American English /s/-/`r linguisticsdown::cond_cmpl("ʃ")`/ that links stimulus recordings, phonetic annotations, and over 20 phonetic extracted phonetic cues to categorization responses from several thousand participants across a dozen experiments from multiple labs. Researchers interested in the database can contact any of the authors.] For that reason, we use simulated data in our case study on perceptual recalibration. Our stimulus generation procedure aims to capture the qualitative properties of the most common approaches to stimulus selection in perceptual recalibration experiments. 
+As also mentioned in the main text, many studies on perceptual recalibration do not report the acoustic properties of the exposure and test stimuli,^[Some studies provide aggregate information [e.g., @kraljic-samuel2006; @kraljic-samuel2007] and very few provide detailed information and visualization [e.g., @drouin2016].] and analyses that relate the acoustic properties of exposure and test stimuli to participants' responses during test remain the exception. In our experience, it is also not uncommon that original recordings are no longer available or only partially available (see one of our recommendations in the general discussions). Phonetic annotations that aid the extraction of acoustic information about these recordings are available for only a very small number of studies.^[Some notable exceptions for research on US English include the labs of Drs. Babel (UBC), Myer (UConn), and Theodore (UConn). In an ongoing project at Rochester, we have collected a database of phonetically annotated perceptual recalibration experiments on L1 US English /s/-/`r linguisticsdown::cond_cmpl("ʃ")`/ that links stimulus recordings, phonetic annotations, and over 20 phonetic extracted phonetic cues to categorization responses from several thousand participants across a dozen experiments from multiple labs. Researchers interested in the database can contact any of the authors.] For that reason, we use simulated data in our case study on perceptual recalibration. Our stimulus generation procedure aims to capture the qualitative properties of the most common approaches to stimulus selection in perceptual recalibration experiments. 
 
 ## Exposure
 As described in the main text, the exposure phase of a typical perceptual recalibration experiment employs both typical stimuli and stimuli that are manipulated to be perceptually ambiguous between the two categories. In practice, researchers determine this point of perceptual ambiguity by first generating a continuum from the recording of the typical sound (e.g., _crocodile_) to a recording in which that sound is replaced with the opposite sound (_crocotile_). Procedures to create these continua range from simple blending of the two recordings---mixing the two recordings weighted by different amplitudes (from 100% _crocodile_ and 0% _crocotile_ to 0% "crocodile" and 100% _crocotile_)---to more careful phonetic manipulations (e.g., inserting addition silence to create longer VOTs) or the use of speech synthesis [for an insightful critique of the frequently used blending procedure, see @theodore-cummings2021]. The former is the by far more common approach. The perceptually most ambiguous point along the resulting continua is then determined either by the experimenter(s) or in a separate norming experiment, with the former approach being far more common. In short, perceptual recalibration experiments do neither carefully select the tokens within each category based on phonetic properties, nor is there any form of counter-balancing of the average phonetic or perceptual shifts across the two bias conditions. 

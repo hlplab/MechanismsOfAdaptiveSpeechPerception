@@ -250,60 +250,6 @@ apply_ccure <- function(x, data) {
 
 # MAKE IDEAL OBSERVERS ----------------------------------------------------
 
-# make_stop_VOTf0_MVG <- function(categories = c("/b/", "/d/", "/g/", "/p/", "/t/", "/k/")) {
-#   categories.all = c("/b/", "/d/", "/g/", "/p/", "/t/", "/k/")
-#   assert_that(all(categories %in% categories.all),
-#               msg = paste("categories must be elements of:", paste(categories.all, collapse = ", ")))
-#
-#   # # Run or load simple effects model of word-initial stop VOT
-#   # m <- brm(
-#   #   formula = bf(
-#   #     # Voicing varies within subject but between words
-#   #     vot ~ -1 + poa : voicing + (-1 + poa : voicing | s | subj) + (1 | w | word),
-#   #     sigma ~ -1 + poa : voicing + (-1 + poa : voicing | s | subj) + (1 | w | word)),
-#   #   data = d.chodroff_wilson,
-#   #   family = gaussian,
-#   #   prior = priors.weakly_regularizing,
-#   #   file = get_path("../models/production-word-initial-stop-VOT-normal-simple_effects"),
-#   #   chains = 4, cores = 4, backend = "cmdstanr")
-#   #
-#   # # From Chodroff & Wilson (2018)
-#   # mu_VOT <- unname(fixef(m)[c(1:6), 1])
-#   # mu_f0 <- rep(200, 6)
-#   #
-#   # tau_VOT <- exp(unname(fixef(m)[c(7:12), 1]))
-#   # tau_f0 <- rep(80, 6)
-#   # omega_VOT_f0 <- rep(.1, 6)
-#
-#   # d <- tibble(
-#   #   category = factor(categories.all),
-#   #   mu =
-#   #     cbind(VOT = mu_VOT, f0 = mu_f0) %>%
-#   #     as_tibble() %>%
-#   #     transmute(mu = map2(VOT, f0, .f = ~ c(VOT = .x, f0 = .y))) %>%
-#   #     pull(mu),
-#   #   Sigma =
-#   #     cbind(VOT = tau_VOT, f0 = tau_f0, cor = omega_VOT_f0) %>%
-#   #     as_tibble() %>%
-#   #     transmute(
-#   #       Sigma = pmap(
-#   #         .l = list(VOT, f0, cor),
-#   #         .f = function(tau1, tau2, cor)
-#   #           cor2cov(
-#   #             matrix(
-#   #               c(1, cor, cor, 1),
-#   #               ncol = 2,
-#   #               dimnames = list(
-#   #                 c("VOT", "f0"),
-#   #                 c("VOT", "f0"))),
-#   #             c(tau1, tau2)))) %>%
-#   #     pull(Sigma))
-#
-#   d %>%
-#     filter(category %in% categories)
-# }
-
-# Make IO out of MVG
 # Make IO out of MVG
 make_stop_VOTf0_ideal_observer <- function(
     m,

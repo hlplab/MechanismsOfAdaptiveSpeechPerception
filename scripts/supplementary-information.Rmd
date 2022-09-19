@@ -170,7 +170,7 @@ cue \sim 1 + (1 | Talker)
 \end{split}
 \end{equation}
 
-Rather than to just use the residuals of these regressions, we only subtracted the random effects (BLUPs) from each observation. This removes the talker-specific effects from each token (as intended by C-CuRE) but leaves observations in the original cue space (rather than residual VOTs centered around 0), thus achieving talker normalization without loss in interpretability. The R code for the steps described here is found in R markdown document for the main text, at the end of Section \@ref(sec:framework).
+Rather than to just use the residuals of these regressions, we only subtracted the random effects (BLUPs) from each observation. This removes the talker-specific effects from each token (as intended by C-CuRE) but leaves observations in the original cue space (rather than residual VOTs centered around 0), thus achieving talker normalization without loss in interpretability. The R code for the steps described here is found in R markdown document for the main text, at the end of Section \@ref(sec:framework). Figures \@ref(fig:chodroff-stop-VOT-f0ST-normalized) and \@ref(fig:chodroff-stop-VOT-f0ST-mu-normalized) replot Figures \@ref(fig:chodroff-stop-VOT-f0ST) and \@ref(fig:chodroff-stop-VOT-f0ST-mu) after C-CuRE normalization has been applied to the data.
 
 (ref:chodroff-stop-VOT-f0ST-normalized) Same as Figure \@ref(fig:chodroff-stop-VOT-f0ST) but for normalized VOT and f0. Normalization does not affect the relative placement of tokens within the talker's space but it does affect the absolute placement. This is also evident in Figure \@ref(fig:chodroff-stop-VOT-f0ST-mu-normalized)
 
@@ -194,7 +194,7 @@ p.talkers +
     alpha = .9)
 ```
 
-(ref:chodroff-stop-VOT-f0ST-mu-normalized) Same as Figure \@ref(fig:chodroff-stop-VOT-f0ST-mu-normalized) but for normalized VOT and f0---both for the means and for the 95% ellipse.
+(ref:chodroff-stop-VOT-f0ST-mu-normalized) Same as Figure \@ref(fig:chodroff-stop-VOT-f0ST-mu) but for normalized VOT and f0---both for the means and for the 95% ellipse.
 
 ```{r chodroff-stop-VOT-f0ST-mu-normalized, fig.width=base.width * 3 + 1, fig.height = base.height, fig.cap=c("(ref:chodroff-stop-VOT-f0ST-mu-normalized)")}
 p.means +

@@ -759,6 +759,8 @@ cues <- c("VOT_centered", "f0_Mel_centered")
 
 items <- c("DOLLARS","TOPIC","DOES","TUNNELS","DAUGHTER","TALKING","DIED","TIME","DEFINITELY", "TELL", "DAY","TAKE", "DEAL", "TEACHER","DON'T","TOTALLY","DO","TOO")
 
+# sample a balanced set of voiced and voiceless tokens for each place of articulation 
+# the specific number is determined by the min number of tokens per category for that contrast
 d.chodroff_wilson.selected <- 
   d.chodroff_wilson %>%
   filter(Word %in% items) %>%
@@ -791,7 +793,7 @@ prior_marginal_VOT_f0_stats <-
 
 m.VOT_f0_MVG <- 
   make_MVG_from_data(
-  data = d.chodroff_wilson.selected, # sample a balanced set of voiced and voiceless tokens for each place of articulation; the specific number is determined by the min number of tokens per category for that contrast,
+  data = d.chodroff_wilson.selected, 
   category = "category",
   cues = cues) 
 ```

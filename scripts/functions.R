@@ -256,7 +256,7 @@ make_stop_VOTf0_ideal_observer <- function(
     prior = rep(1 / nrow(m), nrow(m)),
     lapse_rate = 0,
     lapse_bias = rep(1 / nrow(m), nrow(m)),
-    Sigma_noise = matrix(c(80, 0, 0, 878), ncol = 2, dimnames = list(c("VOT", "f0_Mel"), c("VOT", "f0_Mel")))
+    Sigma_noise = matrix(c(80, 0, 0, 878), ncol = 2, dimnames = list(names(first(m$mu)), names(first(m$mu))))
 ) {
   message("By default, using noise estimates from Kronrod et al. (2016). Mel noise estimates are taken from their vowel studies.")
   m %>%

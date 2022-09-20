@@ -315,7 +315,7 @@ m.io.VOT <-
   category = "category",
   cues = cue.demo) %>%
   filter(category %in% categories.demo) %>%
-  lift_MVG_to_MVG_ideal_observer(prior = bias.demo, lapse_rate = 0, lapse_bias = bias.demo, Sigma_noise = matrix(80, nrow = 1))
+  lift_MVG_to_MVG_ideal_observer(prior = bias.demo, lapse_rate = 0, lapse_bias = bias.demo, Sigma_noise = matrix(80, nrow = 1, dimnames = list("VOT_centered")))
 
 m.ia.VOT <-
   crossing(

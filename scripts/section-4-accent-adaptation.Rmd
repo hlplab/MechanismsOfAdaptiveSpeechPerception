@@ -17,6 +17,7 @@ The stimulus generation procedure is described in detail in the SI (\@ref(sec:SI
 ```{r study-AA-setup, message=FALSE}
 # Set plotting aesthetics
 geom_text.size <- theme_get()$text$size *5/14 # change from mm to point scale; keeping the size of geom_text the same as the rest of text in ggplot
+pos <- position_dodge(.6)
 
 # Random seed for this study
 set.seed(123498765)
@@ -43,17 +44,34 @@ dist.L2_category.cue2 <- 0.7
 shift.cue1 <- 0
 shift.cue2 <- 0
 
-# Case 2: no cue-weighting, but greater category overlap due to reduced distance (e.g., s-th in Mandarin-accented English)
+# Case 2 -- contrast reduction: no cue-weighting, but greater category overlap due to reduced distance (e.g., e.g., vowels in Spanish-accented English)
+# min_VOT = 5
 # dist.L2_category.cue1 <- 0.5
 # dist.L2_category.cue2 <- 0
 # shift.cue1 <- 0
 # shift.cue2 <- 0
 
-# Case 3: no cue-weighting, no change in category overlap, but a general shift along the primary cue dimension (e.g., word-initial stops in Spanish-accented English)
+# Case 3 -- contrast shift: no cue-weighting, no change in category overlap, but a general shift along the primary cue dimension (e.g., word-initial stops in French-accented English)
+# min_VOT = -100
 # dist.L2_category.cue1 <- 1
 # dist.L2_category.cue2 <- 0
-# shift.cue1 <- 0.2
+# shift.cue1 <- -1.2
 # shift.cue2 <- 0
+
+# Case 4 -- contrast collapse: two categories are collapsed into one (i.e., here implemented as having the same category mean, e.g., s-th in Mandarin-accented English)
+# min_VOT = -100
+# dist.L2_category.cue1 <- 0
+# dist.L2_category.cue2 <- 0
+# shift.cue1 <- -0.6
+# shift.cue2 <- 0
+
+# Case 5 -- contrast shift + variance increase 
+# min_VOT = -100
+# dist.L2_category.cue1 <- 1
+# dist.L2_category.cue2 <- 0
+# shift.cue1 <- -1.2
+# shift.cue2 <- 0
+# var.ratio = 3
 
 # arbitrarily assume that the variance of the speech stimuli in the experiment is $\frac{1}{`r my_experimenter.variability_reduction`}$th of that observed in natural productions (applying to L1-accented speech only)
 my_experimenter.variability_reduction <- 1
@@ -76,8 +94,11 @@ m.io.VOT_f0.AA <-
 
 m.ia.VOT_f0.AA <-
   crossing(
-    prior_kappa = 4^(1:5),
-    prior_nu = 4^(1:5)) %>%
+    # prior_kappa = 4^(1:5),
+    # prior_nu = 4^(1:5)
+    prior_kappa = c(4, 8, 16, 32, 64),
+    prior_nu = 4^(1:6)
+    ) %>%
   rowwise() %>%
   mutate(
     ideal_adaptor = map2(prior_kappa, prior_nu, ~ make_stop_VOTf0_ideal_adaptor(m = m.io.VOT_f0.AA, kappa = .x, nu = .y))) %>%
@@ -104,7 +125,8 @@ get_parameters_phonetic_contrast.AA <- function(ideal.observer,
 
    # nonnative categories
    mu_nonnative_B <- mu_native_B
-   Sigma_nonnative_B <- Sigma_native_B
+ #  Sigma_nonnative_B <- Sigma_native_B
+   Sigma_nonnative_B <- matrix(c(Sigma_native_B[1]*var.ratio, Sigma_native_B[2], Sigma_native_B[3], Sigma_native_B[4]), nrow=2)
 
    # The larger the category_dist_ratio, the greater distance along that cue dimension (1 = VOT, 2 = f0) between the two categories in the L2 accent.
    # If category_dist_ratio1 = category_dist_ratio2 = 0, then the two categories overlap entirely in the L2 accent.
@@ -114,7 +136,8 @@ get_parameters_phonetic_contrast.AA <- function(ideal.observer,
 
    Omega_native_A <- cov2cor(Sigma_native_A)
    Omega_nonnative_A <- matrix(c(Omega_native_A[1], Omega_native_A[2], Omega_native_A[3], Omega_native_A[4]), nrow=2) # change omega if orientation of category dispersion changes
-   Sigma_nonnative_A <- cor2cov(Omega_nonnative_A, sqrt(diag(Sigma_native_A)))
+ #  Sigma_nonnative_A <- cor2cov(Omega_nonnative_A, sqrt(diag(Sigma_native_A)))
+   Sigma_nonnative_A <- cor2cov(Omega_nonnative_A, sqrt(diag(Sigma_native_A))*var.ratio)
     
    # Allow a shift of nonnative category means
     shift1 <- (mu_nonnative_A[1]+ mu_nonnative_B[1])/2*shift_mean_1
@@ -435,7 +458,7 @@ d.AA.representations <- d.AA.exposure %>%
 (ref:AA-result-changes-in-representations) Predictions of a learning model that derives accent adaptation as changes in category representations. Predicted categorization accuracies are shown for the L2-accented test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, as a function of the strength of the prior beliefs in category means ($\kappa_{0,c}$) and covariances ($\nu_{0,c}$). The average accuracy across /d/ and /t/ is shown above the bars for each exposure condition. Error bars show 95% bootstrapped confidence intervals. The highlighted panel corresponds to the combination of $\kappa_{0,c}$ and $\nu_{0,c}$ resulting in the best overall accuracy.
 
 ```{r AA-result-changes-in-representations, fig.width= base.width * 5, fig.height= base.height * 5 +.5, fig.cap="(ref:AA-result-changes-in-representations)", warning=FALSE}
-pos <- position_dodge(.6)
+
 p.AA.results.representations <-
   d.AA.representations %>%
   filter(category == Item.Intended_category) %>% # show the response for intended category
@@ -509,7 +532,9 @@ add_prior_and_posterior_with_changed_response_biases_based_on_exposure.AA <- fun
     nest(data = -c(Condition, Subject)) %>%
     crossing(
       posterior.lapse_rate = c(.0005, .005, .05, .5, 1),
-      beta_pi = c(0, .05, .1, .2, .8)) %>%
+    #  beta_pi = c(0, .05, .1, .2, .8)
+      beta_pi = c(0, .8, 2, 4, 8, 16)
+      ) %>%
     crossing(
       prior %>%
         filter(prior_kappa == max(prior_kappa), prior_nu == max(prior_nu)) %>%
@@ -618,7 +643,8 @@ add_prior_and_normalize_test_tokens_based_on_exposure.AA <- function(data.exposu
     nest(data = -c(Condition, Subject)) %>%
     crossing(
       normalization = factor(c("no normalization", "centered based\non exposure"), levels = c("no normalization", "centered based\non exposure")),
-      prior_kappa.normalization = 4^(1:5),
+    #  prior_kappa.normalization = 4^(1:5),
+      prior_kappa.normalization = c(1,2,4,8,16, 64),
       prior.categories %>%
         filter(prior_kappa == max(prior_kappa) & prior_nu == max(prior_nu)) %>%
         nest(prior = everything())) %>%
@@ -876,11 +902,14 @@ d.AA.results.best.case4  <- construct_three_best_models(experimenter.ideal_obser
 ```{r AA-plot-target-exposure-additional-cases, message = FALSE, warning=FALSE}
 # plot target exposure ellipses
 min_VOT = 5
+# simulating a case of contrast reduction
 d.AA.exposure.target.case2 <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA, category_dist_ratio1 = 0.5, category_dist_ratio2 = 0, shift_mean_1 = 0, shift_mean_2 = 0, exposure.tokens.L1.n = 5000, exposure.tokens.L2.n = 5000)
 
 
-min_VOT = -100 # simulating a case like French-accented English stops, so allowing negative VOTs
-d.AA.exposure.target.case3 <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA, category_dist_ratio1 = 1, category_dist_ratio2 = 0, shift_mean_1 = -1.2, shift_mean_2 = 0, exposure.tokens.L1.n = 5000, exposure.tokens.L2.n = 5000)
+min_VOT = -100 
+# simulating a case of contrast shift: like French-accented English stops, so allowing negative VOTs
+d.AA.exposure.target.case3 <-  make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA, category_dist_ratio1 = 1, category_dist_ratio2 = 0, shift_mean_1 = -1.2, shift_mean_2 = 0, exposure.tokens.L1.n = 5000, exposure.tokens.L2.n = 5000) 
+# simulating a case of contrast collapse
 d.AA.exposure.target.case4 <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA, category_dist_ratio1 = 0, category_dist_ratio2 = 0, shift_mean_1 = -0.6, shift_mean_2 = 0, exposure.tokens.L1.n = 5000, exposure.tokens.L2.n = 5000)
 
 d.AA.exposure.target.cases <- rbind(d.AA.exposure.target.case2 %>%

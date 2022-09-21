@@ -35,6 +35,8 @@ n.subject <- 1
 # Number of exposure tokens for each category, shifted and typical
 n.exposure.token <- 30
 
+# Multiple category variance by a constant; var.ratio = 1 means no change in category variance
+var.ratio = 1
 # How separable the categories are in the L2 accent?
 # e.g., dist.L2_category.cue1  -- The ratio of category mean difference along the primary cue in L2 to that in L1 (the primary cue does not have to be the same cue dimension across accents); 1 means the distance is equal to that in L1 accent.
 
@@ -94,10 +96,10 @@ m.io.VOT_f0.AA <-
 
 m.ia.VOT_f0.AA <-
   crossing(
-    # prior_kappa = 4^(1:5),
-    # prior_nu = 4^(1:5)
-    prior_kappa = c(4, 8, 16, 32, 64),
-    prior_nu = 4^(1:6)
+    prior_kappa = 4^(1:5),
+    prior_nu = 4^(1:5)
+    # prior_kappa = c(4, 8, 16, 32, 64),
+    # prior_nu = 4^(1:6)
     ) %>%
   rowwise() %>%
   mutate(

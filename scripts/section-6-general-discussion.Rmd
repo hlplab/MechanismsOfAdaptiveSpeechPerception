@@ -71,8 +71,8 @@ In the case studies, we demonstrated that the ASP change models for all three me
 prior_kappa.selected = 1024
 prior_nu.selected = 1024
 posterior.lapse_rate.selected = min(d.AA.bias$posterior.lapse_rate)
-beta_pi.selected = 0.2
-prior_kappa.normalization.selected = 64
+beta_pi.selected = 0.8
+prior_kappa.normalization.selected = 4
 
 d.AA1 <- 
   d.AA.representations %>%

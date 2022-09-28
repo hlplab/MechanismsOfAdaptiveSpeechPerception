@@ -128,9 +128,10 @@ colors.voicing = c("blue", "red")
 ```
 
 ```{r functions-general, include=FALSE}
+get_path <- function(filename) return(paste0("", filename))
+
 source("functions.R")
 source("functions_plot_3D.R")
-get_path <- function(filename) return(paste0("", filename))
 
 # For plotting
 myGplot.defaults("paper")

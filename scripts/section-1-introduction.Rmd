@@ -2,71 +2,17 @@
 \setcounter{page}{1}
 
 ```{r, include=FALSE}
-max.f0 <- 350            # max raw f0
-min.observation.n <- 25  # min observation per stop
-max.p <- .1              # cut-off for rejection of unimodality
-
-d.chodroff_wilson <- read_csv(get_path("../data/Chodroff-Wilson-2018/all_observations_with_non-missing_vot_cog_f0.csv")) %>%
-  rename(category = stop, VOT = vot, f0 = usef0, Talker = subj, Word = word, Trial = trial, Vowel = vowel) %>%
-  mutate(
-    category = 
-      plyr::mapvalues(
-        category,
-        c("B", "D", "G", "P", "T", "K"),
-        c("/b/", "/d/", "/g/", "/p/", "/t/", "/k/")),
-    gender = factor(
-      plyr::mapvalues(
-        gender, 
-        c("F", "M"),
-        c("female", "male")),
-      levels = c("male", "female")),
-    poa = factor(
-      plyr::mapvalues(
-        poa, 
-        c("lab", "cor", "dor"),
-        c("/b/-/p/", "/d/-/t/", "/g/-/k/")),
-      levels = c("/b/-/p/", "/d/-/t/", "/g/-/k/")),
-    voicing = factor(
-      ifelse(category %in% c("/b/", "/d/", "/g/"), "yes", "no"),
-      levels = c("yes", "no"))) %>%
-  mutate(across(c(Talker, Word, gender, category), factor)) %>%
-  select(Talker, Word, Trial, Vowel, gender, category, poa, voicing, VOT, f0)
-
-# Filter f0 above 500 Hz
-d.chodroff_wilson %<>%
-  filter(f0 < max.f0)
-
-# Keep only subjects with at last n.min observations for each stop
-d.chodroff_wilson %<>%
-  group_by(Talker, category) %>%
-  mutate(n = length(category)) %>%
-  group_by(Talker) %>%
-  mutate(n = ifelse(any(is.na(n)), 0, min(n))) %>%
-  ungroup() %>%
-  filter(n > min.observation.n)
-
-# Identify and remove talkers with bimodal f0 distributions
-# (indicating pitch halving/doubling)
-d.chodroff_wilson %<>%
-  group_by(Talker) %>%
-  mutate(f0_Mel = phonR::normMel(f0)) %>%
-  group_by(Talker, category) %>%
-  mutate(
-    f0.multimodal = dip.test(f0)$p.value < .1,
-    f0_Mel.multimodal = dip.test(f0_Mel)$p.value < .1) %>%
-  filter(!f0.multimodal, !f0.multimodal) %>%
-  droplevels()
-
-# Get Mel and Semitones, then C-CuRE
-d.chodroff_wilson %<>%
-  group_by(Talker) %>%
-  mutate(
-    f0_Mel = phonR::normMel(f0),
-    f0_semitones = 12 * log(f0 / mean(f0)) / log(2)) %>%
-  ungroup() %>%
+d.chodroff_wilson <- 
+  get_ChodroffWilson_data(
+    database_filename = get_path("../data/Chodroff-Wilson-2018/all_observations_with_non-missing_vot_cog_f0.csv"),
+    min.n_per_talker_and_stop = 25,
+    limits.VOT = c(-Inf, Inf),
+    limits.f0 = c(0, 350),
+    max.p_for_multimodality = .1
+  ) %>%
   mutate_at(
-      c("VOT", "f0", "f0_Mel", "f0_semitones"),
-      list("centered" = function(x) apply_ccure(x, data = .)))
+    c("VOT", "f0", "f0_Mel", "f0_semitones"),
+    list("centered" = function(x) apply_ccure(x, data = .)))
 ```
 
 # Introduction

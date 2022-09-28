@@ -243,8 +243,93 @@ combine_animations_into_gif <- function(a, b, height = 300, width = 500) {
 }
 
 
+# LOAD DATA ---------------------------------------------------------------
+get_ChodroffWilson_data <- function(
+    database_filename,
+    min.n_per_talker_and_stop = 0,
+    limits.VOT = c(-Inf, Inf),
+    limits.f0 = c(0, Inf),
+    max.p_for_multimodality = 1
+) {
+  require(tidyverse)
+  require(magrittr)
+  require(diptest)
+
+  d.chodroff_wilson <-
+    read_csv(database_filename, show_col_types = FALSE) %>%
+    rename(category = stop, VOT = vot, f0 = usef0, Talker = subj, Word = word, Trial = trial, Vowel = vowel) %>%
+    mutate(
+      category =
+        plyr::mapvalues(
+          category,
+          c("B", "D", "G", "P", "T", "K"),
+          c("/b/", "/d/", "/g/", "/p/", "/t/", "/k/")),
+      gender = factor(
+        plyr::mapvalues(
+          gender,
+          c("F", "M"),
+          c("female", "male")),
+        levels = c("male", "female")),
+      poa = factor(
+        plyr::mapvalues(
+          poa,
+          c("lab", "cor", "dor"),
+          c("/b/-/p/", "/d/-/t/", "/g/-/k/")),
+        levels = c("/b/-/p/", "/d/-/t/", "/g/-/k/")),
+      voicing = factor(
+        ifelse(category %in% c("/b/", "/d/", "/g/"), "yes", "no"),
+        levels = c("yes", "no"))) %>%
+    mutate(across(c(Talker, Word, gender, category), factor)) %>%
+    select(Talker, Word, Trial, Vowel, gender, category, poa, voicing, VOT, f0)
+
+  # Filter VOT and f0 for absolute values to deal with outliers
+  d.chodroff_wilson %<>%
+    filter(
+      between(VOT, min(limits.VOT), max(limits.VOT)),
+      between(f0, min(limits.f0), max(limits.f0)))
+
+  # Keep only talkers with at last n.min observations for each stop
+  # (this is done both prior to and after the multimodality test in order to avoid low N warnings)
+  d.chodroff_wilson %<>%
+    group_by(Talker, category) %>%
+    mutate(n = length(category)) %>%
+    group_by(Talker) %>%
+    mutate(n = ifelse(any(is.na(n)), 0, min(n))) %>%
+    ungroup() %>%
+    filter(n > min.n_per_talker_and_stop)
+
+  # Identify and remove talkers with bimodal f0 distributions
+  # (indicating pitch halving/doubling)
+  d.chodroff_wilson %<>%
+    group_by(Talker) %>%
+    mutate(f0_Mel = phonR::normMel(f0)) %>%
+    group_by(Talker, category) %>%
+    mutate(
+      f0_Mel.multimodal = dip.test(f0_Mel)$p.value < max.p_for_multimodality) %>%
+    filter(!f0_Mel.multimodal) %>%
+    droplevels()
+
+  # Keep only talkers with at last n.min observations for each stop
+  d.chodroff_wilson %<>%
+    group_by(Talker, category) %>%
+    mutate(n = length(category)) %>%
+    group_by(Talker) %>%
+    mutate(n = ifelse(any(is.na(n)), 0, min(n))) %>%
+    ungroup() %>%
+    filter(n > min.n_per_talker_and_stop)
+
+  # Get Mel and Semitones, then C-CuRE
+  d.chodroff_wilson %<>%
+    group_by(Talker) %>%
+    mutate(
+      f0_semitones = 12 * log(f0 / mean(f0)) / log(2)) %>%
+    ungroup()
+}
+
 # NORMALIZATION -----------------------------------------------------------
 apply_ccure <- function(x, data) {
+  require(lme4)
+
   x - predict(lmer(x ~ 1 + (1 | Talker), data = data), random.only = T)
 }
 

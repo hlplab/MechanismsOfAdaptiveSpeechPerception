@@ -2,13 +2,17 @@
 \setcounter{page}{1}
 
 ```{r, include=FALSE}
+max.f0 <- 350
+min.observation.n <- 25
+max.p <- .1
+
 d.chodroff_wilson <- 
   get_ChodroffWilson_data(
     database_filename = get_path("../data/Chodroff-Wilson-2018/all_observations_with_non-missing_vot_cog_f0.csv"),
-    min.n_per_talker_and_stop = 25,
+    min.n_per_talker_and_stop = min.observation.n,
     limits.VOT = c(-Inf, Inf),
-    limits.f0 = c(0, 350),
-    max.p_for_multimodality = .1
+    limits.f0 = c(0, max.f0),
+    max.p_for_multimodality = max.p
   ) %>%
   mutate_at(
     c("VOT", "f0", "f0_Mel", "f0_semitones"),

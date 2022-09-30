@@ -197,7 +197,7 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```{r, child="section-7-references.Rmd", eval=TRUE}
 ```
 
-```{r, child="supplementary-information.Rmd", eval=FALSE}
+```{r, child="supplementary-information.Rmd", eval=TRUE}
 ```
 
 

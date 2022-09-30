@@ -1,5 +1,5 @@
 # Case Study 2: accent adaptation {#sec:AA}
-The second paradigm we consider focuses on *naturally* accented speech---e.g., dialectal [@smith2014], varietal [@shaw2018], or second language (L2) accents [@bradlow-bent2008; @eisner2013; @sidaras2009; @weil2001a]. Typically, exposure to the unfamiliar accent is compared to a control condition in which listeners are exposed to a familiar accent, most often the 'standard' variety of listeners' L1. Following exposure, listeners in either group are tested on the unfamiliar accent. In an influential study, @bradlow-bent2008 had listeners transcribe a total of 160 sentences of either Mandarin-accented English or L1-accented English, distributed over two sessions on two separate days. In a subsequent test phase, both groups transcribed Mandarin-accented sentences. Participants who were first exposed to Mandarin-accented English were significantly more accurate during test (over 90% accuracy compared to about 80%). This finding has since been replicated and extended [for review, see @baeseberk2020]. We now know that substantially shorter exposure can lead to similarly large improvements in accuracy [e.g., 80 sentences in a single session, about 2-5 minutes of speech, @xie2021jep], that these can persist over hours and days [@witteman2015; @xie2018lcn], and that accent adaptation can sometimes generalize across talkers of the same or similar accents [e.g., @baeseberk2013; @tzeng2016; @xie2021jep]. <!-- Facilitatory effects of exposure have also been demonstrated in tasks that tap into online processing of naturally accented speech, including cross-modal matching [@clarke-garrett2004; @xie2018jasa], phonological priming [@eisner2013; @xie2017], and visual world eye-tracking [@dahan2008; @trude2012talker].-->
+The second paradigm we consider focuses on *naturally* accented speech---e.g., dialectal [@smith2014], varietal [@shaw2018], or second language (L2) accents [@bradlow-bent2008; @eisner2013; @sidaras2009; @weil2001a]. Typically, exposure to an unfamiliar accent is compared to a control condition in which listeners are exposed to a familiar accent, most often the 'standard' variety of listeners' L1. Following exposure, listeners in either group are tested on the unfamiliar accent. In an influential study, @bradlow-bent2008 had listeners transcribe a total of 160 sentences of either Mandarin-accented English or L1-accented English, distributed over two sessions on two separate days. In a subsequent test phase, both groups transcribed Mandarin-accented sentences. Participants who were first exposed to Mandarin-accented English were significantly more accurate during test (over 90% accuracy compared to about 80%). This finding has since been replicated and extended [for review, see @baeseberk2020]. We now know that substantially shorter exposure can lead to similarly large improvements in accuracy [e.g., 80 sentences in a single session, about 2-5 minutes of speech, @xie2021jep], that these can persist over hours and days [@witteman2015; @xie2018lcn], and that accent adaptation can sometimes generalize across talkers of the same or similar accents [e.g., @baeseberk2013; @tzeng2016; @xie2021jep]. <!-- Facilitatory effects of exposure have also been demonstrated in tasks that tap into online processing of naturally accented speech, including cross-modal matching [@clarke-garrett2004; @xie2018jasa], phonological priming [@eisner2013; @xie2017], and visual world eye-tracking [@dahan2008; @trude2012talker].-->
 
 Critically, naturally accented speech typically differs from listeners' expectations in ways that can be considerably more complex than the types of manipulation studied in perceptual recalibration experiments. It is thus not clear whether the same mechanisms that underlie perceptual recalibration also underlie adaptation to natural accents. This question continues to attract attention [see recent reviews, @baeseberk2018; @bent-baeseberk2021; @zheng-samuel2020], because its answer determines whether perceptual recalibration and related paradigms---which afford increased control over stimuli characteristics but come at the risk of decreased ecological validity---can shed light on how listeners overcome the challenge of cross-talker variability in everyday speech.
 
@@ -9,7 +9,7 @@ Compared to perceptual recalibration paradigms, experiments on accent adaptation
 
 For Case Study 2, we construct a hypothetical experiment that closely follows this type of design. For the sake of continuity, we focus on the same syllable-initial /d/-/t/ contrast used in Case Study 1. Like in Case Study 1, we analyze the data following the conventions of the field. For experiments on accent adaptation, this typically means that the facilitatory effects of L2-accented exposure are assessed through improvements in categorization accuracy during test.
 
-As in Case Study 1, we ask whether any of the three change mechanisms can *qualitatively* explain the signature results found in @xie2016jep and other similar work. The simulation process requires us to be specific about the properties of the L1 and L2 accents---and therefore their difference---at the level of acoustic-phonetic distributions. These properties, however, are rarely ever reported in the literature, and their predicted consequences for perception are even less commonly modeled (for an exception, see Tan et al., 2021). In the discussion, we consider their influence on the model behaviors and further reflect on how the three change mechanisms can be distinguished.
+As in Case Study 1, we ask whether any of the three change mechanisms can *qualitatively* explain the signature results found in @xie2016jep and other similar work. The simulation process requires us to be specific about the properties of the L1 and L2 accents---and therefore their difference---at the level of acoustic-phonetic distributions. These properties---although well characterized in studies on L2 production---are rarely ever reported in the literature on adaptive speech perception, and their predicted consequences for perception are even less commonly modeled (for an exception, see Tan et al., 2021). In the discussion, we consider their influence on the model behaviors and further reflect on how the systematic patterns of differences between L1- and L2-accents provide an opportunity to distinguish between the three change mechanisms.
 
 ## Data
 The stimulus generation procedure is described in detail in the SI (\@ref(sec:SI-AA)).
@@ -96,8 +96,8 @@ m.io.VOT_f0.AA <-
 
 m.ia.VOT_f0.AA <-
   crossing(
-    prior_kappa = 4^(1:5),
-    prior_nu = 4^(1:5)
+    prior_kappa = 4^(1:6),
+    prior_nu = 4^(1:6)
     # prior_kappa = c(4, 8, 16, 32, 64),
     # prior_nu = 4^(1:6)
     ) %>%
@@ -435,7 +435,7 @@ Paralleling Case Study 1, we ask which of the three change models can account fo
 
 Below we focus on whether each change model can *qualitatively* account for these signature results, rather than the specific magnitude of accuracy improvements. We do so, because the predicted improvements do not only depend on each change model's parameters, but also the statistics of the L2-accented exposure and test tokens. For a different set of (real or simulated) stimuli, the predicted magnitude of accuracy improvements after L2-accented exposure can thus differ. This is an important consideration to keep in mind, and we return to it in the discussion. 
 
-As in Case Study 1, we first model changes in representations, and then compare them against change models in decision-making and normalization. In  all cases, we employ the same parameterizations as in Case Study 1.
+As in Case Study 1, we first model changes in representations, and then compare them against change models in decision-making and normalization. In  all cases, we explore a larger range of parameterizations than those in Case Study 1 in order to illustrate the full range of model behaviors as a function of them.
 
 ### Changes in representations
 
@@ -455,6 +455,18 @@ d.AA.representations <- d.AA.exposure %>%
     d.AA.test %>%
       select(x, Item.Intended_category), by = "x") %>%
   distinct()
+
+# examine best-performing parameterization
+d.AA.representations.rank <- d.AA.representations %>%
+  filter(category == Item.Intended_category) %>%
+  mutate(prior_kappa = as.numeric(as.character(prior_kappa)),
+         prior_nu = as.numeric(as.character(prior_nu))) %>%
+  group_by(Condition, prior_kappa, prior_nu) %>%
+  summarise(mAcc = mean(response)) %>%
+  arrange(-mAcc, -prior_kappa, -prior_nu) %>%
+  filter(Condition == "L2-accented")
+best_performing_case.representations <- d.AA.representations.rank[1,]
+
 ```
 
 (ref:AA-result-changes-in-representations) Predictions of a learning model that derives accent adaptation as changes in category representations. Predicted categorization accuracies are shown for the L2-accented test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, as a function of the strength of the prior beliefs in category means ($\kappa_{0,c}$) and covariances ($\nu_{0,c}$). The average accuracy across /d/ and /t/ is shown above the bars for each exposure condition. Error bars show 95% bootstrapped confidence intervals. The highlighted panel corresponds to the combination of $\kappa_{0,c}$ and $\nu_{0,c}$ resulting in the best overall accuracy.
@@ -497,25 +509,21 @@ p.AA.results.representations +
                 filter(category == Item.Intended_category) %>%
                 distinct(prior_kappa, prior_nu) %>%
                 mutate(highlight = case_when(
-                  prior_kappa == 4 & prior_nu == 1024 ~ T,
+                  prior_kappa == best_performing_case.representations$prior_kappa & prior_nu == best_performing_case.representations$prior_nu ~ T,
                   T ~ F)),
               aes(fill = highlight), alpha = .1, inherit.aes = F,
               xmin = -Inf,xmax = Inf, ymin = -Inf, ymax = Inf)) +
   scale_fill_manual(breaks = c(T, F), values = c("darkgray", "white")) +
   guides(fill = "none")
 
-best_performing_case <- d.AA.representations %>%
-  filter(category == Item.Intended_category) %>%
-  filter(prior_kappa == 4 & prior_nu == 1024) %>%
-  group_by(Condition,prior_nu,prior_kappa) %>%
-  summarise(mAcc = round(mean(response), digits = 2))
 
-best_performing_increase_log <- qlogis(best_performing_case$mAcc[2]) - qlogis(best_performing_case$mAcc[1])
 ```
 
-Figure \@ref(fig:AA-result-changes-in-representations) shows the predicted categorization accuracy after exposure to L1- or L2-accented speech, as a function of the strength of the prior beliefs for the category means and variances. Both signature results described above can be predicted by changes in category representations. First, for L1-accented exposure, the accuracy is always predicted to be lower for /d/ than for /t/, indicating that /d/ is often misheard as /t/.^[One additional finding for the L1-accented condition is of note. Compared across the rows from top to bottom, accuracy in the L1-accented condition improves for models with weaker prior beliefs about the category variances (small $\nu_{0,c}$, bottom rows of Figure \@ref(fig:AA-result-changes-in-representations)). At first blush, this is surprising given that listeners in the L1-exposure condition receive only input that matches their prior L1 expectations and mismatches the L2 speech they receive during test. However, for this instance of the (simulated) experiment, it turns out that the L1-accented /d/-exposure stimuli in Figure \@ref(fig:study-AA-exposure-test-plot) happen to---by chance---exhibit somewhat larger sample variance along f0 ($s^2$ = `r sample_var$s_var.f0[1]`) than is expected for a typical L1 talker [$\sigma^2$ = `r population_var$prior_variance[2]` based on the data from @chodroff-wilson2018]. The L2-accented /d/-exposure stimuli show a similar pattern, albeit slightly less so (sample variance $s^2$ = `r sample_var$s_var.f0[3]`). For these particular combinations of stimuli, a learner with weak prior beliefs about the category variance will thus correctly come to expect a larger category variance during test, leading to improved recognition accuracy on the L2-accented test tokens. This result is an example of the type of unexpected insights that fully specified linking hypotheses can yield. It also illustrates that some results of perception experiments can be highly dependent on the specific stimulus statistics of the exposure and/or test tokens. A failure to take these factors into account---as remains common---can make results *appear* surprising even when they are not.] Second, L2-accented exposure is predicted to improve recognition accuracy of /d/ compared to L1-accented exposure, and this improvement occurs without equivalent decreases in the recognition accuracy of /t/. 
+Figure \@ref(fig:AA-result-changes-in-representations) shows the predicted categorization accuracy after exposure to L1- or L2-accented speech, as a function of the strength of the prior beliefs for the category means and variances. First consider the top left panel where both $\kappa_{0,c}$s and $\nu_{0,c}$ have very high values. This simulates a extremely slow learner who has strong prior beliefs for both category means and variances such that the small number of tokens heard during exposure phase has minimal influence on subsequent perception of the test tokens. Therefore, the performance from both L1- and L2-accented exposure conditions are highly similar (or identical, if even slower learning rates are applied), reflecting how a listener would categorize based on their long-term prior experience predominantly. 
 
-Looking across the distinct $\kappa_{0,c}$s and $\nu_{0,c}$ values, we make two more observations. On the one hand, faster learning of category means is generally beneficial under the current scenario. When listeners' beliefs about category covariances are held constant (i.e., looking within each row), smaller $\kappa_{0,c}$ values yield higher categorization accuracy. This is a straightforward consequence of the fact that the mean of the /d/ category is shifted in the L2 accents, as shown in Figure \@ref(fig:study-AA-exposure-test-plot). Adapting to the L2 accent thus hinges primarily on learning the new category mean for the /d/ category. On the other hand, updating beliefs about the _variance_ too rapidly is not necessarily desirable, as seen by comparing panels within each column. In the current scenario, the _true_ underlying variance of /d/ is unchanged between the L1 and the L2 accents. Weaker beliefs about the category covariance thus can run the risk of expanding the categories to a degree that causes miscategorization of relatively ambiguous tokens. This is an example of the flexibility-stability trade-off that human listeners are known to exhibit, and that any theory of adaptive speech perception needs to account for [@kleinschmidt-jaeger2015, pp. 178-182].
+As $\kappa_{0,c}$s and $\nu_{0,c}$ get smaller (i.e., weaker prior beliefs), the effects of exposure conditions become more noticeable. Both signature results described above can be predicted by changes in category representations. First, for L1-accented exposure, the accuracy is always predicted to be lower for /d/ than for /t/, indicating that /d/ is often misheard as /t/.^[One additional finding for the L1-accented condition is of note. Compared across the rows from top to bottom, accuracy in the L1-accented condition improves for models with weaker prior beliefs about the category variances (small $\nu_{0,c}$, bottom rows of Figure \@ref(fig:AA-result-changes-in-representations)). At first blush, this is surprising given that listeners in the L1-exposure condition receive only input that matches their prior L1 expectations and mismatches the L2 speech they receive during test. However, for this instance of the (simulated) experiment, it turns out that the L1-accented /d/-exposure stimuli in Figure \@ref(fig:study-AA-exposure-test-plot) happen to---by chance---exhibit somewhat larger sample variance along f0 ($s^2$ = `r sample_var$s_var.f0[1]`) than is expected for a typical L1 talker [$\sigma^2$ = `r population_var$prior_variance[2]` based on the data from @chodroff-wilson2018]. The L2-accented /d/-exposure stimuli show a similar pattern, albeit slightly less so (sample variance $s^2$ = `r sample_var$s_var.f0[3]`). For these particular combinations of stimuli, a learner with weak prior beliefs about the category variance will thus correctly come to expect a larger category variance during test, leading to improved recognition accuracy on the L2-accented test tokens. This result is an example of the type of unexpected insights that fully specified linking hypotheses can yield. It also illustrates that some results of perception experiments can be highly dependent on the specific stimulus statistics of the exposure and/or test tokens. A failure to take these factors into account---as remains common---can make results *appear* surprising even when they are not.] Second, L2-accented exposure is predicted to improve recognition accuracy of /d/ compared to L1-accented exposure, and this improvement occurs without equivalent decreases in the recognition accuracy of /t/. 
+
+Looking across the distinct $\kappa_{0,c}$s and $\nu_{0,c}$ values, we make two more observations. On the one hand, faster learning of category means is generally beneficial under the current scenario. When listeners' beliefs about category covariances are held constant (i.e., looking within each row), smaller $\kappa_{0,c}$ values yield higher categorization accuracy. This is a straightforward consequence of the fact that the mean of the /d/ category is shifted in the L2 accents, as shown in Figure \@ref(fig:study-AA-exposure-test-plot). Adapting to the L2 accent thus hinges primarily on learning the new category mean for the /d/ category. On the other hand, updating beliefs about the _variance_ too rapidly is not necessarily desirable, as seen by comparing panels within each column. In the current scenario, the _true_ underlying variance of /d/ is unchanged between the L1 and the L2 accents. When the _category mean_ is updated at slower rates (i.e., see the left four columns), faster updating of _variance_ appears to be beneficial because it allows some ambiguous tokens to be included into /d/. But when $\kappa_{0,c}$s are small (i.e., see the right two columns) and the _category means_ are rapidly adjusted, weaker beliefs about the category covariance thus can run the risk of expanding the categories to a degree that causes miscategorization of relatively ambiguous tokens. This is an example of the flexibility-stability trade-off that human listeners are known to exhibit, and that any theory of adaptive speech perception needs to account for [@kleinschmidt-jaeger2015, pp. 178-182].
 
 Taken together, these results show that changes in representation can generally explain the types of results that are considered the signature of accent adaptation [e.g., @bradlow-bent2008; @clarke-garrett2004; @sidaras2009; @xie2016].
 
@@ -535,7 +543,7 @@ add_prior_and_posterior_with_changed_response_biases_based_on_exposure.AA <- fun
     crossing(
       posterior.lapse_rate = c(.0005, .005, .05, .5, 1),
     #  beta_pi = c(0, .05, .1, .2, .8)
-      beta_pi = c(0, .8, 2, 4, 8, 16)
+      beta_pi = c(0, .1, .8, 2, 4, 8, 16)
       ) %>%
     crossing(
       prior %>%
@@ -574,6 +582,16 @@ d.AA.bias <- d.AA.exposure %>%
   left_join(., d.AA.test %>% select(x, Item.Intended_category), by = "x") %>%
   distinct()
 
+# examine best-performing parameterization
+d.AA.bias.rank <- d.AA.bias %>%
+  filter(category == Item.Intended_category) %>%
+  group_by(Condition, posterior.lapse_rate, beta_pi) %>%
+  summarise(mAcc = mean(response)) %>%
+  arrange(-mAcc, -posterior.lapse_rate, -beta_pi) %>%
+  filter(Condition == "L2-accented")
+best_performing_case.bias <- d.AA.bias.rank[1,]
+
+
 p.AA.results.bias <- d.AA.bias %>%
   filter(category == Item.Intended_category) %>% # show the response for intended category
   ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
@@ -608,7 +626,7 @@ p.AA.results.bias +
     filter(category == Item.Intended_category) %>%
                   distinct(posterior.lapse_rate, beta_pi) %>%
                   mutate(highlight = case_when(
-                    posterior.lapse_rate == min(d.AA.bias$posterior.lapse_rate) & beta_pi == max(d.AA.bias$beta_pi) ~ T,
+                    (posterior.lapse_rate == best_performing_case.bias$posterior.lapse_rate & beta_pi == best_performing_case.bias$beta_pi) ~ T,
                     T ~ F)),
                 aes(fill = highlight), alpha = .1, inherit.aes = F,
                 xmin = -Inf,xmax = Inf, ymin = -Inf,ymax = Inf)
@@ -616,13 +634,10 @@ p.AA.results.bias +
      scale_fill_manual(breaks = c(T, F), values = c("darkgray", "white")) +
   guides(fill = "none")
 
-best_performing_case.bias <- d.AA.bias %>%
-  filter(category == Item.Intended_category) %>%
-  filter(posterior.lapse_rate == min(d.AA.bias$posterior.lapse_rate) & beta_pi == max(d.AA.bias$beta_pi)) %>%
-  summarise(mAcc = round(mean(response), digits = 2))
+
 ```
 
-Figure \@ref(fig:AA-result-changes-in-decision-making) shows the effects of changes in decision-making, depending on the rate at which response biases change $\beta_{\pi}$ and the lapse rate $\lambda$. For L1-accented exposure, we again see that /d/ test tokens are categorized substantially less accurately than /t/ test tokens, regardless of the specific value of ($\beta_{\pi}$). The second signature result---improved accuracy after L2-accented exposure for /d/---is obtained for sufficiently large $\beta_{\pi}$. The largest improvements are found for the smallest lapse rates and fastest change rates (gray panel in Figure \@ref(fig:AA-result-changes-in-decision-making)).
+Figure \@ref(fig:AA-result-changes-in-decision-making) shows the effects of changes in decision-making, depending on the rate at which response biases change $\beta_{\pi}$ and the lapse rate $\lambda$. For L1-accented exposure, we again see that /d/ test tokens are categorized substantially less accurately than /t/ test tokens, regardless of the specific value of ($\beta_{\pi}$). The second signature result---improved accuracy after L2-accented exposure for /d/---is obtained for sufficiently large $\beta_{\pi}$. As $\beta_{\pi}$ increases, the overall recognition accuracy first increases and then plateaus. The largest improvements are found for the smallest lapse rates and fast-enough change rates (gray panel in Figure \@ref(fig:AA-result-changes-in-decision-making)).
 
 Figure \@ref(fig:AA-result-changes-in-decision-making) also shows that changes in response biases do not necessarily result in the type of zero-sum trade-off that is sometimes attributed to them---accuracy improving by some degree for one category while decreasing by the same degree for the other category. Rather, L2-accented exposure can predict improvements in the *overall* recognition accuracy across both categories (e.g., top right panel). Indeed, zero-sum trade-offs are only expected under the highly implausible assumptions that responses are entirely independent of stimulus properties (bottom row of Figure \@ref(fig:AA-result-changes-in-decision-making)).
 
@@ -646,7 +661,7 @@ add_prior_and_normalize_test_tokens_based_on_exposure.AA <- function(data.exposu
     crossing(
       normalization = factor(c("no normalization", "centered based\non exposure"), levels = c("no normalization", "centered based\non exposure")),
     #  prior_kappa.normalization = 4^(1:5),
-      prior_kappa.normalization = c(1,2,4,8,16, 64),
+      prior_kappa.normalization = c(1,4,16,64,256,1024),
       prior.categories %>%
         filter(prior_kappa == max(prior_kappa) & prior_nu == max(prior_nu)) %>%
         nest(prior = everything())) %>%
@@ -671,7 +686,7 @@ add_prior_and_normalize_test_tokens_based_on_exposure.AA <- function(data.exposu
 }
 ```
 
-Finally, we compare models that normalize test tokens based on the phonetic inputs experienced during exposure to models that continue to apply normalization based on previous long-term L1 experience. Figure \@ref(fig:AA-result-changes-in-normalization) shows the predicted categorization accuracy following changes in normalization in L1- and L2-accented exposure conditions. We again obtain both signature results of experiments on accent adaptation. For L1-accented exposure, we continue to see that /d/ test tokens are categorized substantially less accurately than /t/ test tokens. For L2-accented exposure, recognition accuracy is improved for /d/ test tokens without the cost of equivalent decreases in recognition accuracy for /t/. That is, like the other two change models, normalization can predict *overall* improvements in recognition accuracy after L2-accented exposure.
+Finally, we compare models that normalize test tokens based on the phonetic inputs experienced during exposure to models that continue to apply normalization based on previous long-term L1 experience. Figure \@ref(fig:AA-result-changes-in-normalization) shows the predicted categorization accuracy following changes in normalization in L1- and L2-accented exposure conditions. We again obtain both signature results of experiments on accent adaptation. For L1-accented exposure, we continue to see that /d/ test tokens are categorized substantially less accurately than /t/ test tokens. For L2-accented exposure, recognition accuracy is improved for /d/ test tokens without the cost of equivalent decreases in recognition accuracy for /t/. That is, like the other two change models, normalization can predict *overall* improvements in recognition accuracy after L2-accented exposure. 
 
 ```{r study-AA-models-normalization}
 d.AA.normalization <-
@@ -701,21 +716,27 @@ d.AA.normalization %<>%
   left_join(d.AA.test %>% select(Item.Intended_category, ItemID), by = "ItemID") %>%
   distinct()
 
-best_performing_case.normalization <- d.AA.normalization %>%
-  group_by(Condition) %>%
+# examine best-performing parameterization
+d.AA.normalization.rank <- d.AA.normalization %>%
   filter(category == Item.Intended_category) %>%
   filter(normalization == "centered based\non exposure") %>%
-  filter(prior_kappa.normalization == min(as.numeric(as.character(d.AA.normalization$prior_kappa.normalization)))) %>%
-  summarise(mAcc = round(mean(response), digits = 2))
+  mutate(prior_kappa.normalization = as.numeric(as.character(prior_kappa.normalization))) %>%
+  group_by(Condition, prior_kappa.normalization) %>%
+  summarise(mAcc = mean(response)) %>%
+  arrange(-mAcc, -prior_kappa.normalization) %>%
+  filter(Condition == "L2-accented")
+best_performing_case.normalization <- d.AA.normalization.rank[1,]
+
 ```
 
 (ref:AA-result-changes-in-normalization) Predictions of a model that derives accent adaptation from changes in normalization, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure. The highlighted panel corresponds to the $\kappa_0$ resulting in the best overall accuracy.
 
 ```{r AA-result-changes-in-normalization, fig.width= base.width * 5, fig.height= base.height + 1.5, fig.cap="(ref:AA-result-changes-in-normalization)", warning=FALSE}
-p.AA.results.normalization <- d.AA.normalization %>%
+p.AA.results.normalization <- 
+  ggplot(data = d.AA.normalization %>%
   filter(category == Item.Intended_category) %>% # show the response for intended category
-  filter(normalization == "centered based\non exposure") %>%
-  ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
+  filter(normalization == "centered based\non exposure"), 
+  aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
   stat_summary(fun = mean,
                geom="bar", position = pos,
                width = 0.6) +
@@ -728,7 +749,7 @@ p.AA.results.normalization <- d.AA.normalization %>%
   scale_fill_manual("Category", values = colors.category) +
   scale_alpha_discrete(range = c(0.2, 1), guide = "none") +
   xlab("Exposure condition") +
-  ylab("Predicted \ncategorization accuracy") +
+  ylab("Predicted categorization accuracy") +
   scale_x_discrete(labels= c("L1-\naccented", "L2-\naccented")) +
   geom_text(inherit.aes = FALSE, data = . %>%
                group_by(Condition, normalization, prior_kappa.normalization) %>%
@@ -748,7 +769,7 @@ p.AA.results.normalization +
                   filter(normalization == "centered based\non exposure") %>%
                   distinct(prior_kappa.normalization) %>%
                   mutate(highlight = case_when(
-                    prior_kappa.normalization == min(as.numeric(as.character(d.AA.normalization$prior_kappa.normalization))) ~ T,
+                    (prior_kappa.normalization ==   best_performing_case.normalization$prior_kappa.normalization) ~ T,
                     T ~ F)),
                 aes(fill = highlight), alpha = .1, inherit.aes = F,
                 xmin = -Inf,xmax = Inf, ymin = -Inf,ymax = Inf)
@@ -762,7 +783,7 @@ p.AA.results.normalization +
 
 Paralleling Case Study 1 on perceptual recalibration, we find that any of the three change mechanisms can *qualitatively* explain the signature results of experiments on accent adaptation. Contrary to common assumptions, even non-representational mechanisms---normalization and decision-making---can lead to _overall_ improvements in recognition accuracy, rather than only zero-sum trade-offs. Overall improvements in accuracy after exposure to an unfamiliar accent are thus _not_ diagnostic of listeners' learning L2-specific category realizations. This supports the conclusion of Case Study 1: at the level of analysis that is commonly applied in previous work (and thus here), experiments on accent adaptation do not decisively rule out any of the three mechanisms as a driver of the facilitatory effects of exposure.
 
-Beyond their similarity in qualitative fit to existing behavioral patterns, the three change models exhibit some quantitative differences. The maximal benefits of L2-accented exposure are predicted to be largest for the representational change model (overall improvements from `r best_performing_case$mAcc[1]` to `r best_performing_case$mAcc[2]`), followed by the decision-making change model (from `r best_performing_case.bias$mAcc[1]` to `r best_performing_case.bias$mAcc[2]`) and smallest in the normalization change model (`r best_performing_case.normalization$mAcc[1]` to `r best_performing_case.normalization$mAcc[2]`). <!--This difference has to be interpreted with caution for at least two reasons. First, the present simulations consider only a range of parameter settings. It is thus possible that, for example, higher values of $\beta_{\pi}$ yield larger benefits of L2-accented exposure from changes in decision-making.--><!-- We note, however, that the magnitude of overall accuracy improvements after talker-specific L2-accented exposure that has been observed in experiments [e.g., about 6% in @xie2016jep; ~10% in @bradlow-bent2008] falls well within the range that any of the three change models can explain (for the present stimuli and parameter settings).-->However, these differences do not mean that the representational change model is always more advantageous than the other two. Rather, it exemplifies a critical prediction of the ASP framework: the specific quantitative benefit of L2-accented exposure under each mechanisms depends on distributional structures of the exposure and test stimuli of the experiment and thus---if naturally produced speech is employed---how exactly acoustic-phonetic distributions of an L2 accent deviate from those of an L1 accent. 
+Beyond their similarity in qualitative fit to existing behavioral patterns, the three change models exhibit some quantitative differences. For the hypothetical L2 accent considered in Case Study 2, the maximal benefits of L2-accented exposure are predicted to be largest for the representational change model (overall improvements from `r best_performing_case.representations$mAcc[1]` to `r best_performing_case.representations$mAcc[2]`), followed by the decision-making change model (from `r best_performing_case.bias$mAcc[1]` to `r best_performing_case.bias$mAcc[2]`) and smallest in the normalization change model (`r best_performing_case.normalization$mAcc[1]` to `r best_performing_case.normalization$mAcc[2]`). However, these differences do not mean that the representational change model is always more advantageous than the other two. Rather, it exemplifies a critical prediction of the ASP framework: the specific quantitative benefit of L2-accented exposure under each mechanisms depends on distributional structures of the exposure and test stimuli of the experiment and thus---if naturally produced speech is employed---how exactly acoustic-phonetic distributions of an L2 accent deviate from those of an L1 accent. 
 
 To make this point more concrete, Figure \@ref(fig:AA-result-comparison-best-three-models-case2) presents three additional (simulated) scenarios that are common for L2 accents, along with the best-performing variants of each change model in each scenario. The top panel shows an example of *contrast shift*, where two categories in L2-accented speech are shifted along one or more of the cue dimensions as compared to L1-accented speech [e.g., attested for word-initial stops in French-accented English, @Sumner2011a]. The middle panel shows an example of *contrast reduction*, where an L2-accent shows a greater category overlap than an L1-accent [e.g., attested for vowels in Spanish-accented English, @wade2007]. The bottom panel shows an example of *contrast collapse*, where two contrasting categories in an L1-accent overlap substantilly or completely in an L2-accent [e.g., characteristic of a loss of distinction between [s] and [`r linguisticsdown::cond_cmpl("θ")`] in Mandarin-accented English, @zheng-samuel2020]. The three scenarios are created by merely varying category means along VOT for the L2-accented categories, without introducing more complex variation in category variance and covariance. The L1-accented exposure condition is the same as in the scenario above (Figure \@ref(fig:study-AA-exposure-test-plot) and held constant across these three scenarios. As above, test tokens are randomly sampled from the distribution of each of the L2-accent category. Consequently, test tokens varied across the three scenarios examined here. For consistency, we focus on the model parameter settings identical to the main scenario. 
 
@@ -850,45 +871,80 @@ construct_three_best_models <- function(
     left_join(test.data %>% select(Item.Intended_category, ItemID), by = "ItemID") %>%
     distinct()
 
- # select the parameter combination for each model that results in the best overall accuracy
+ 
+  # examine best-performing parameterization
+  d.AA.representations.rank <- d.AA.representations %>%
+    filter(category == Item.Intended_category) %>%
+    mutate(prior_kappa = as.numeric(as.character(prior_kappa)),
+           prior_nu = as.numeric(as.character(prior_nu))) %>%
+    group_by(Condition, prior_kappa, prior_nu) %>%
+    summarise(mAcc = mean(response)) %>%
+    arrange(-mAcc, -prior_kappa, -prior_nu) %>%
+    filter(Condition == "L2-accented")
+    
+  best_performing_case.representations <- d.AA.representations.rank[1,]
+  
+  d.AA.bias.rank <- d.AA.bias %>%
+    filter(category == Item.Intended_category) %>%
+    group_by(Condition, posterior.lapse_rate, beta_pi) %>%
+    summarise(mAcc = mean(response)) %>%
+    arrange(-mAcc, -posterior.lapse_rate, -beta_pi) %>%
+    filter(Condition == "L2-accented")
+  best_performing_case.bias <- d.AA.bias.rank[1,]
+
+
+  d.AA.normalization.rank <- d.AA.normalization %>%
+    filter(category == Item.Intended_category) %>%
+    filter(normalization == "centered based\non exposure") %>%
+    mutate(prior_kappa.normalization = as.numeric(as.character(prior_kappa.normalization))) %>%
+    group_by(Condition, prior_kappa.normalization) %>%
+    summarise(mAcc = mean(response)) %>%
+    arrange(-mAcc, -prior_kappa.normalization) %>%
+    filter(Condition == "L2-accented")
+  best_performing_case.normalization <- d.AA.normalization.rank[1,]
+
+
+  # select the parameter combination for each model that results in the best overall accuracy
+  
+  
   d <- bind_rows(
-    d.AA.representations %>% filter(category == Item.Intended_category & prior_kappa == 4 & prior_nu == 1024) %>% mutate(ModelType = "representations"),
-    d.AA.bias %>% filter(category == Item.Intended_category & posterior.lapse_rate == min(d.AA.bias$posterior.lapse_rate) & beta_pi == max(d.AA.bias$beta_pi)) %>% mutate(ModelType = "decision making"),
-    d.AA.normalization %>% filter(category == Item.Intended_category & normalization == "centered based\non exposure" & prior_kappa.normalization == min(as.numeric(as.character(d.AA.normalization$prior_kappa.normalization)))) %>% mutate(ModelType = "normalization")) %>%
+    d.AA.representations %>% 
+      filter(category == Item.Intended_category & prior_kappa == best_performing_case.representations$prior_kappa & prior_nu == best_performing_case.representations$prior_nu) %>% 
+      mutate(ModelType = "representations"),
+    d.AA.bias %>% 
+      filter(category == Item.Intended_category & posterior.lapse_rate == best_performing_case.bias$posterior.lapse_rate & beta_pi == best_performing_case.bias$beta_pi) %>%
+      mutate(ModelType = "decision making"),
+    d.AA.normalization %>%
+      filter(category == Item.Intended_category & normalization == "centered based\non exposure" & prior_kappa.normalization == best_performing_case.normalization$prior_kappa.normalization) %>%
+      mutate(ModelType = "normalization")) %>%
     mutate(ModelType = factor(ModelType, levels = c("representations", "decision making", "normalization")))
 
 
   return(d)
 }
+
+
+
+
 ```
 
 (ref:AA-plot-results-additional-cases) 
 Predicted adaptation for three types of L2 accents, from top to bottom: contrast shift, contrast reduction and contrast collapse. Predictions were derived for one random experiment of the same number of exposure and test stimuli as in Case Study 2. **Panel A - Distributions of L1-accented and L2-accented categories:** L1-accented categories, represented in light shades, are kept constant across the three scenarios and identical to that in the main scenario above; L2-accented categories, represented by solid ellipses, are varied across scenarios. **Panel B - Change model predictions:** Predicted categorization accuracies for the L2-accented test tokens after L1-accented and L2-accented exposure, for the *best-performing* parameter settings of each of the three change models (cf. gray panels in Figures \@ref(fig:AA-result-changes-in-representations)-\@ref(fig:AA-result-changes-in-normalization)), from left to right: representations ($\kappa_{0,/d/}$ = $\kappa_{0,/t/}$ = 4 and $\nu_{0,/d/}$ = $\nu_{0,/t/}$ = 1024), decision making ($\beta_{\pi}$ = 0.8, $\lambda_{posterior}$ = 5e-04), and normalization ($\kappa_{0}$ = 4). The best-performing model was determined by considering the same range of parameter settings as in Figures \@ref(fig:AA-result-changes-in-representations)-\@ref(fig:AA-result-changes-in-normalization). The average accuracy across all test tokens for each condition is shown above the bars. Error bars show 95% bootstrapped confidence intervals.
 
-```{r AA-result-comparison-best-three-models-case2, warning=FALSE}
+```{r AA-result-comparison-best-three-models-contrast-reduction, warning=FALSE}
+min_VOT = 5
 # Examine a new scenario: contrast reduction
 dist.L2_category.cue1 <- 0.5
 dist.L2_category.cue2 <- 0
 shift.cue1 <- 0
 shift.cue2 <- 0
-
-d.AA.results.best.case2  <- construct_three_best_models(experimenter.ideal_observer = m.io.VOT_f0.AA)
-
-```
-
-```{r AA-result-comparison-best-three-models-case3, warning=FALSE}
-# Examine a new scenario: contrast shift
-min_VOT = -100 # allows negative VOT when generating exposure and test data
-dist.L2_category.cue1 <- 1
-dist.L2_category.cue2 <- 0
-shift.cue1 <- -1.2
-shift.cue2 <- 0
-
-d.AA.results.best.case3  <- construct_three_best_models(experimenter.ideal_observer = m.io.VOT_f0.AA)
+var.ratio = 1
+d.AA.results.best.contrast.reduction  <- construct_three_best_models(experimenter.ideal_observer = m.io.VOT_f0.AA)
 
 ```
 
-```{r AA-result-comparison-best-three-models-case4, warning=FALSE}
+
+```{r AA-result-comparison-best-three-models-contrast-collapse, warning=FALSE}
 # Examine a new scenario: contrast collapse
 min_VOT = -100 # allows negative VOT when generating exposure and test data
 
@@ -896,33 +952,99 @@ dist.L2_category.cue1 <- 0
 dist.L2_category.cue2 <- 0
 shift.cue1 <- -0.6
 shift.cue2 <- 0
-
-d.AA.results.best.case4  <- construct_three_best_models(experimenter.ideal_observer = m.io.VOT_f0.AA)
+var.ratio = 1
+d.AA.results.best.contrast.collapse  <- construct_three_best_models(experimenter.ideal_observer = m.io.VOT_f0.AA)
 
 ```
+```{r AA-result-comparison-best-three-models-contrast-shift, warning=FALSE}
+# Examine a new scenario: contrast shift
+min_VOT = -100 # allows negative VOT when generating exposure and test data
+dist.L2_category.cue1 <- 1
+dist.L2_category.cue2 <- 0
+shift.cue1 <- -1.2
+shift.cue2 <- 0
+var.ratio = 1
+d.AA.results.best.contrast.shift  <- construct_three_best_models(experimenter.ideal_observer = m.io.VOT_f0.AA)
+
+```
+
+```{r AA-result-comparison-best-three-models-contrast-shift_var, warning=FALSE}
+# Examine a new scenario: contrast shift + variance increase
+min_VOT = -100
+dist.L2_category.cue1 <- 1
+dist.L2_category.cue2 <- 0
+shift.cue1 <- -1.2
+shift.cue2 <- 0
+var.ratio = 3
+
+d.AA.results.best.contrast.shift_var  <- construct_three_best_models(experimenter.ideal_observer = m.io.VOT_f0.AA)
+
+```
+
 
 ```{r AA-plot-target-exposure-additional-cases, message = FALSE, warning=FALSE}
 # plot target exposure ellipses
 min_VOT = 5
+var.ratio = 1
 # simulating a case of contrast reduction
-d.AA.exposure.target.case2 <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA, category_dist_ratio1 = 0.5, category_dist_ratio2 = 0, shift_mean_1 = 0, shift_mean_2 = 0, exposure.tokens.L1.n = 5000, exposure.tokens.L2.n = 5000)
+d.AA.exposure.target.contrast.reduction <- make_accent_adaptation_exposure_design(
+  experimenter.ideal_observer = m.io.VOT_f0.AA, 
+  category_dist_ratio1 = 0.5, 
+  category_dist_ratio2 = 0, 
+  shift_mean_1 = 0, 
+  shift_mean_2 = 0, 
+  exposure.tokens.L1.n = 5000, 
+  exposure.tokens.L2.n = 5000)
 
 
-min_VOT = -100 
-# simulating a case of contrast shift: like French-accented English stops, so allowing negative VOTs
-d.AA.exposure.target.case3 <-  make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA, category_dist_ratio1 = 1, category_dist_ratio2 = 0, shift_mean_1 = -1.2, shift_mean_2 = 0, exposure.tokens.L1.n = 5000, exposure.tokens.L2.n = 5000) 
 # simulating a case of contrast collapse
-d.AA.exposure.target.case4 <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA, category_dist_ratio1 = 0, category_dist_ratio2 = 0, shift_mean_1 = -0.6, shift_mean_2 = 0, exposure.tokens.L1.n = 5000, exposure.tokens.L2.n = 5000)
+min_VOT = -100
+var.ratio = 1
+d.AA.exposure.target.contrast.collapse <-  make_accent_adaptation_exposure_design(
+  experimenter.ideal_observer = m.io.VOT_f0.AA, 
+  category_dist_ratio1 = 0,
+  category_dist_ratio2 = 0,
+  shift_mean_1 = -0.6,
+  shift_mean_2 = 0,
+  exposure.tokens.L1.n = 5000, 
+  exposure.tokens.L2.n = 5000) 
 
-d.AA.exposure.target.cases <- rbind(d.AA.exposure.target.case2 %>%
-                               mutate(Case = "case2"),
-                             d.AA.exposure.target.case3 %>%
-                               mutate(Case = "case3"),
-                             d.AA.exposure.target.case4 %>%
-                               mutate(Case = "case4")
-                             ) %>%
-  mutate(Case = factor(Case, levels = c("case3", "case2", "case4"), 
-                            labels = c("Contrast shift", "Contrast reduction", "Contrast collapse"))) 
+# simulating a case of contrast shift: like French-accented English stops, so allowing negative VOTs
+min_VOT = -100
+var.ratio = 1
+d.AA.exposure.target.contrast.shift <- make_accent_adaptation_exposure_design(
+  experimenter.ideal_observer = m.io.VOT_f0.AA, 
+  category_dist_ratio1 = 1, 
+  category_dist_ratio2 = 0, 
+  shift_mean_1 = -1.2, 
+  shift_mean_2 = 0, 
+  exposure.tokens.L1.n = 5000, 
+  exposure.tokens.L2.n = 5000)
+
+# simulating a case of contrast shift + variance increase
+min_VOT = -100
+var.ratio = 3
+d.AA.exposure.target.contrast.shift_var <- make_accent_adaptation_exposure_design(
+  experimenter.ideal_observer = m.io.VOT_f0.AA, 
+  category_dist_ratio1 = 1, 
+  category_dist_ratio2 = 0, 
+  shift_mean_1 = -1.2, 
+  shift_mean_2 = 0, 
+  exposure.tokens.L1.n = 5000, 
+  exposure.tokens.L2.n = 5000)
+
+d.AA.exposure.target.cases <- rbind(
+  d.AA.exposure.target.contrast.reduction %>%
+    mutate(Case = "Contrast reduction"),
+  d.AA.exposure.target.contrast.collapse %>%
+    mutate(Case = "Contrast collapse"),
+  d.AA.exposure.target.contrast.shift %>%
+    mutate(Case = "Contrast shift"),
+  d.AA.exposure.target.contrast.shift_var %>%
+    mutate(Case = "Shift + var increase")
+)  %>%
+  mutate(
+    Case = factor(Case, levels = c("Contrast reduction", "Contrast collapse", "Contrast shift", "Shift + var increase")))
 
 # plot ellipses for actual exposure
 p.AA.exposure <- d.AA.exposure.target.cases %>%
@@ -931,9 +1053,6 @@ p.AA.exposure <- d.AA.exposure.target.cases %>%
   mutate(Group = factor(paste0(Condition, Item.Category))) %>%
   ggplot(aes(x = VOT, y = f0_Mel, alpha = Condition)) +
   stat_ellipse(aes(color = Group), level = .95, geom = "polygon") +
-    # geom_rug(data = . %>%
-    #              group_by(Case, Condition, Item.Category, Group) %>%
-    #              summarise(VOT = mean(VOT), f0_Mel = mean(f0_Mel)), aes(color = Item.Category), show.legend = FALSE) +
   stat_ellipse(data = d.AA.exposure.target.cases %>%
                  mutate(Title = "Exposure distributions") %>%
                  filter(Condition == "L1-accented") %>%
@@ -950,20 +1069,30 @@ p.AA.exposure <- d.AA.exposure.target.cases %>%
   facet_grid(Case ~ Title, switch = "y") + theme(legend.position="top") 
 ```
 
-```{r AA-plot-results-additional-cases, fig.width=base.width*5 + .5, fig.height=base.height*3 + .5, fig.cap = "(ref:AA-plot-results-additional-cases)", warning=FALSE}
-d.AA.results.best.cases <- rbind(d.AA.results.best.case2 %>%
-                               mutate(Case = "case2"),
-                             d.AA.results.best.case3 %>%
-                               mutate(Case = "case3"),
-                             d.AA.results.best.case4 %>%
-                               mutate(Case = "case4")
-                             ) %>%
-  mutate(Case = factor(Case, levels = c("case3", "case2", "case4"), 
-                            labels = c("Contrast shift", "Contrast reduction", "Contrast collapse"))) 
+```{r AA-plot-results-additional-cases, fig.width=base.width*5 + .5, fig.height=base.height*4 + .5, fig.cap = "(ref:AA-plot-results-additional-cases)", warning=FALSE}
+d.AA.results.best.cases <- rbind(
+  d.AA.results.best.contrast.reduction %>%
+    mutate(Case = "Contrast reduction"),
+  d.AA.results.best.contrast.collapse %>%
+    mutate(Case = "Contrast collapse"),
+  d.AA.results.best.contrast.shift %>%
+    mutate(Case = "Contrast shift"),
+  d.AA.results.best.contrast.shift_var %>%
+    mutate(Case = "Shift + var increase")
+) %>%
+  mutate(
+    Case = factor(Case, levels = c("Contrast reduction", "Contrast collapse", "Contrast shift", "Shift + var increase"))) %>%
+  mutate(parameterization = case_when(
+   ModelType == "representations" ~ paste0("kappa = ", prior_kappa, ", nu = ", prior_nu),
+   ModelType == "decision making" ~ paste0("lambda = ", posterior.lapse_rate, ", beta = ", beta_pi),
+   ModelType == "normalization" ~ paste0("kappa = ", prior_kappa.normalization)
+  ))
 
 p.results.best.cases <- d.AA.results.best.cases %>%
   mutate(
     ModelType = factor(paste0("Changes in ", ModelType), levels = c("Changes in representations", "Changes in decision making", "Changes in normalization"))) %>%
+  mutate(Label = interaction(ModelType, parameterization, sep = "\n")) %>%
+#  distinct(Case, Label) %>%
   ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
   stat_summary(fun = mean,
                  geom="bar", position = pos,
@@ -990,7 +1119,7 @@ p.results.best.cases <- d.AA.results.best.cases %>%
           panel.grid.major.x = element_blank())
 
 prow = plot_grid(p.AA.exposure, p.results.best.cases + theme(legend.position="none"), 
-          labels = c('A', 'B)'), 
+          labels = c('A)', 'B)'), 
           ncol = 2, 
           rel_widths = c(1.5,3.3))
 
@@ -1001,4 +1130,11 @@ prow = plot_grid(p.AA.exposure, p.results.best.cases + theme(legend.position="no
 
   plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.2, 1)) 
 
+  parameters.results.best.cases <- d.AA.results.best.cases %>%
+    mutate(
+      ModelType = factor(paste0("Changes in ", ModelType), levels = c("Changes in representations", "Changes in decision making", "Changes in normalization"))) %>%
+  #  mutate(Label = interaction(ModelType, parameterization, sep = "\n")) %>%
+    distinct(Case, ModelType, parameterization)
+  
+  print(parameters.results.best.cases)
 ```

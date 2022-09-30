@@ -224,7 +224,7 @@ plot_3D.categorization.diff <- function(df.resp){
           eye = list(x = -0.5, y = -2.5, z = 0.5), # perspective good for showing categorization curve
           up =  list(x = 0, y = 0, z = 1)),
         #   zaxis = list(range = VO, autotick = F, tickmode = "array", tickvals = c(0.15,0.10,0.05)),
-        zaxis = list(title = "Diff. in posterior<br>log-odds of /d/", titlefont = list(size = 22), range = c(-5,15)),
+        zaxis = list(title = "Diff. in posterior<br>log-odds of /d/", titlefont = list(size = 22), range = c(-5,10)),
         yaxis = list(title = "f0 (Mel)",titlefont = list(size = 22)),
         xaxis = list(title = "VOT (ms)", titlefont = list(size = 22))
       )
@@ -253,7 +253,7 @@ prepare_3D.categorization_from_results <- function(data, exposure.data, test.dat
     if("Normalization" %in% levels(factor(data$model))){
       d.AA.normalization.step0 <- exposure.data %>%
         add_prior_and_normalize_test_tokens_based_on_exposure.AA(data.test = test.data, prior.normalization = prior_marginal_VOT_f0_stats, prior.categories = m.ia.VOT_f0.AA) %>%
-        filter(prior_kappa.normalization %in% levels(factor(d.AA3$prior_kappa.normalization))) %>%
+        filter(prior_kappa.normalization  == prior_kappa.normalization.selected) %>%
         filter(Condition == conditions.AA[i]) %>%
         droplevels()
 

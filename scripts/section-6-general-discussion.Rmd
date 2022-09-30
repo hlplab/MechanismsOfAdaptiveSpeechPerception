@@ -23,7 +23,7 @@ A third limitation of normalization accounts that can be productively explored i
 # Put figure here.
 ```
 
-<!--Just like normalization accounts are limited in the types of changes they can account for, so are change models for decision-making. -->In Section \@ref(sec:framework), we showed that the limitations of change models for  decision-making are less well understood than sometimes assumed. One recommendation for future research is thus to further explore the mathematical limitations of decision-making change models. Designs that limit attentional lapses to basically zero [e.g., by employing more engaging tasks, as in gamified paradigms, @wade-holt2005; @lim-holt2011] would emphasize the computational limitations of decision-making change models. In such scenarios, changes in response biases can only explain changes that are additive in the posterior log-odds of categories (Section \@ref(sec:change-bias)). That is, changes in response biases cannot account for changes in the *slope* of categorization functions. Future studies should use exposure conditions for which such changes are predicted by representational or normalization models to test whether changes in response biases are sufficient to explain adaptive speech perception<!-- [e.g., if zero lapses had been observed in @clayards2008, which was, however, not the case]-->. Since it can be difficult to detect changes in categorization slopes---especially without making strong linearity assumptions, we suspect that this question is better explored by manipulating the relative reliability of two cues (see also Figure \@ref(fig:show-model-categorization-3D-plots)). Such manipulations are routinely used in a paradigm known as "dimension-based statistical learning" [@idemaru-holt2011; @lehet-holt2020; @liu-holt2015]. With recent trends towards analyses that more transparently link phonetic cues to changes in participants' responses [@idemaru-holt2020; @schertz-clare2020, see also recommendation XXX in Section \@ref(sec:methodological-advances)]  <!-- TO DO: fill in --> this field of study is in a good position to test the sufficiency of changes in decision-making accounts. An ongoing project from one of our labs, uses ASP-like simulations in combination with experimental designs that are intended to directly address this question [@burchill-jaeger2022].
+<!--Just like normalization accounts are limited in the types of changes they can account for, so are change models for decision-making. -->In Section \@ref(sec:framework), we showed that the limitations of change models for  decision-making are less well understood than sometimes assumed. One recommendation for future research is thus to further explore the mathematical limitations of decision-making change models. Designs that limit attentional lapses to basically zero [e.g., by employing more engaging tasks, as in gamified paradigms, @wade-holt2005; @lim-holt2011] would emphasize the computational limitations of decision-making change models. In such scenarios, changes in response biases can only explain changes that are additive in the posterior log-odds of categories (Section \@ref(sec:change-bias)). That is, changes in response biases cannot account for changes in the *slope* of categorization functions. Future studies should use exposure conditions for which such changes are predicted by representational or normalization models to test whether changes in response biases are sufficient to explain adaptive speech perception<!-- [e.g., if zero lapses had been observed in @clayards2008, which was, however, not the case]-->. Since it can be difficult to detect changes in categorization slopes---especially without making strong linearity assumptions, we suspect that this question is better explored by manipulating the relative reliability of two cues (see also Figure \@ref(fig:show-model-categorization-3D-plots-similar-accuracy)). Such manipulations are routinely used in a paradigm known as "dimension-based statistical learning" [@idemaru-holt2011; @lehet-holt2020; @liu-holt2015]. With recent trends towards analyses that more transparently link phonetic cues to changes in participants' responses [@idemaru-holt2020; @schertz-clare2020, see also recommendation XXX in Section \@ref(sec:methodological-advances)]  <!-- TO DO: fill in --> this field of study is in a good position to test the sufficiency of changes in decision-making accounts. An ongoing project from one of our labs, uses ASP-like simulations in combination with experimental designs that are intended to directly address this question [@burchill-jaeger2022].
 
 Conversely, there are ways to assess whether representational changes alone are sufficient to explain all forms of adaptive speech perception. For example, if auditory input that arguably carries no information about category statistics affects subsequent speech perception, this provides evidence that changes in representations alone cannot explain all aspects of adaptive speech perception. Perhaps one of the most convincing demonstrations of this type comes from the findings of auditory enhancement effects, wherein non-speech stimuli (e.g., pure tones) can systematically alter the perception of subsequently played speech stimuli [@chodroff-wilson2020; @holt2001; @holt2005; @holt2006; @huang-holt2011; for review, see also @weatherholtz-jaeger2016]. While these demonstrations might be challenged for lack of ecological validity (potentially inviting meta-reasoning about experimenters' intentions that is unlikely to be present during everyday speech perception), it is unclear how representational changes---or, for that matter, changes in response biases---can explain such findings. At the very least then, these findings suggest that normalization *can* be involved in adaptive speech perception.
 
@@ -62,49 +62,11 @@ Our first recommendation is to *embrace computational models and use them to der
 
 Formal models of normalization have now existed for decades, and modern variants of them are no more complex than standard data analysis [e.g., linear regression for C-CuRE, @mcmurray-jongman2011]. Fully specified distributional learning models have been available for about a decade [e.g., exemplar models, @REF; ideal adaptors, @kleinschmidt-jaeger2015], along with freely available R libraries that implement them (e.g., \texttt{beliefupdatr}, Kleinschmidt, 2015). ASP implements these and  decision-making change models, and the R markdown code that this document is generated from can be used to derive predictions for future experiments. ASP and other analytical frameworks thus provide a readily available alternative to informal reasoning about changes in speech perception, and can be a powerful tool for principled hypothesis testing [see also @apfelbaum-mcmurray2015; @sohoglu-davis2016; @tan2021; @theodore-monto2019; @toscano2018; @xie2021cognition]. ASP and similar frameworks can be used to derive quantitative predictions based on particular linking hypotheses about mappings between acoustic cues and speech categories. ASP can be used, for example, to predict *when*, *to what acoustic-phonetic inputs* and *after how much exposure* listeners would show adapted responses under the three mechanistic hypotheses. We provide an initial demonstration of this next.
 
-In the case studies, we demonstrated that the ASP change models for all three mechanisms can qualitatively account for the signature results of perceptual recalibration and accent adaptation paradigms. Beyond this, ASP also shows that the different change mechanisms can be distinguished behaviorally. Figure \@ref(fig:show-model-categorization-3D-plots) illustrates this point for the data from Case Study 2. For each of the three change models, we take the parameters that resulted in the highest post-L2-exposure accuracy during test, and plot the predicted categorization functions for both exposure conditions. These are the categorization functions that a listener would employ while categorizing test stimuli. Despite the fact that the three change models resulted in qualitatively similar categorization accuracy in Case Study 2, the three models differ in *how* they achieve this accuracy. Specifically, they predict different categorization functions over the VOT-f0 space. 
+In the case studies, we demonstrated that the ASP change models for all three mechanisms can qualitatively account for the signature results of perceptual recalibration and accent adaptation paradigms. Beyond this, ASP also shows that the different change mechanisms can be distinguished behaviorally. Figure \@ref(fig:show-model-categorization-3D-plots-similar-accuracy) illustrates this point for the data from Case Study 2. For each of the three change models, we take the parameters that resulted in the highest post-L2-exposure accuracy during test, and plot the predicted categorization functions for both exposure conditions. These are the categorization functions that a listener would employ while categorizing test stimuli. Despite the fact that the three change models resulted in qualitatively similar categorization accuracy in Case Study 2, the three models differ in *how* they achieve this accuracy. Specifically, they predict different categorization functions over the VOT-f0 space. 
 
-(ref:show-model-categorization-3D-plots) The three change models predict different categorization functions when applied to the data from Case Study 2. From **left to right:** predictions for in changes in representations, decision making, and normalization. **Top:** Predicted categorization functions after L1-accented exposure. **Middle:** Same but after L2-accented exposure. **Bottom:** Differences in predicted posterior log-odds of /d/ between the two exposure conditions. Blue indicates higher predicted posterior log-odds of /d/ in the L2-accented exposure condition, relative to the L1-accented exposure condition. Red indicates the opposite. Gray indicates a difference of 0. The three models make distinct predictions about how exposure affects the perception of specific tokens across the VOT-f0 space.
+(ref:show-model-categorization-3D-plots-similar-accuracy) The three change models predict different categorization functions when applied to the data from Case Study 2, despite achieving a similar leve of overall recognition accuracy. From **left to right:** predictions for in changes in representations, decision making, and normalization. **Top:** Predicted categorization functions after L1-accented exposure. **Middle:** Same but after L2-accented exposure. **Bottom:** Differences in predicted posterior log-odds of /d/ between the two exposure conditions. Blue indicates higher predicted posterior log-odds of /d/ in the L2-accented exposure condition, relative to the L1-accented exposure condition. Red indicates the opposite. Gray indicates a difference of 0. The three models make distinct predictions about how exposure affects the perception of specific tokens across the VOT-f0 space.
 
-```{r compare-AA-models-results-across-three-mechanisms, warning=FALSE}
-# select the model parameters to be illustrated as an example
-prior_kappa.selected = 1024
-prior_nu.selected = 1024
-posterior.lapse_rate.selected = min(d.AA.bias$posterior.lapse_rate)
-beta_pi.selected = 0.8
-prior_kappa.normalization.selected = 4
-
-d.AA1 <- 
-  d.AA.representations %>%
-  filter(category == Item.Intended_category) %>%
-  filter(prior_kappa == prior_kappa.selected & prior_nu == prior_nu.selected) %>%
-  droplevels() %>%
-  distinct(Condition, Subject, data, prior_kappa, prior_nu, prior, posterior, posterior.categorization)
-
-d.AA2 <- 
-  d.AA.bias %>%
-  filter(category == Item.Intended_category) %>%
-  filter(posterior.lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected) %>%
-   droplevels() %>%
-  distinct(Condition, Subject, data, posterior.lapse_rate, beta_pi, prior, posterior, posterior.categorization)
-
-d.AA3 <- 
-  d.AA.normalization %>%
-  filter(category == Item.Intended_category) %>% 
-  filter(normalization == "centered based\non exposure") %>%
-  filter(prior_kappa.normalization == prior_kappa.normalization.selected) %>%
-  droplevels() %>%
-  distinct(Condition, Subject, data, prior_kappa.normalization, mu_inferred, prior, posterior, posterior.categorization)
-
-d.model.compare <- 
-  bind_rows(
-    d.AA1 %>%
-      mutate(model = "Representations"),
-    d.AA2 %>%
-      mutate(model = "Decision_making"),
-    d.AA3 %>%
-      mutate(model = "Normalization"))
-
+```{r set-3D-plot-parameters, warning=FALSE}
 # Set parameters
 p.current <- d.AA.exposure %>%
     mutate(Condition = paste0("Exposure: ", Condition)) %>%
@@ -120,61 +82,173 @@ category.contrasts = c("/d/", "/t/")
 # Set image size
 p_width = 900
 p_height = 900
+```
 
-for (j in 1:length(model_names)){
-  data = d.model.compare %>%
-    filter(model == model_names[j])
+
+```{r compare-AA-models-results-functions, warning=FALSE}
+compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT_range, f0_range, n_points) {
+    d.model.compare <- 
+    bind_rows(
+      data1 %>%
+        filter(category == Item.Intended_category) %>%
+        filter(prior_kappa == prior_kappa.selected & prior_nu == prior_nu.selected) %>%
+        droplevels() %>%
+        distinct(Condition, Subject, data, prior_kappa, prior_nu, prior, posterior, posterior.categorization) %>%
+        mutate(model = "Representations"),
+      data2 %>%
+        filter(category == Item.Intended_category) %>%
+        filter(posterior.lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected) %>%
+        droplevels() %>%
+        distinct(Condition, Subject, data, posterior.lapse_rate, beta_pi, prior, posterior, posterior.categorization) %>%
+        mutate(model = "Decision_making"),
+      data3 %>%
+        filter(category == Item.Intended_category) %>% 
+        filter(normalization == "centered based\non exposure") %>%
+        filter(prior_kappa.normalization == prior_kappa.normalization.selected) %>%
+        droplevels() %>%
+        distinct(Condition, Subject, data, prior_kappa.normalization, mu_inferred, prior, posterior, posterior.categorization) %>%
+        mutate(model = "Normalization"))
   
-  for (i in 1:length(conditions.AA)){
-    output.AA <- prepare_3D.categorization_from_results(data, d.AA.exposure, d.AA.test, VOT_range, f0_range, n_points)
+  
+  for (j in 1:length(model_names)){
+    data = d.model.compare %>%
+      filter(model == model_names[j])
     
-    df.resp = output.AA[[i]]
+    for (i in 1:length(conditions.AA)){
+      output.AA <- prepare_3D.categorization_from_results(data, d.AA.exposure, d.AA.test, VOT_range, f0_range, n_points)
+      
+      df.resp = output.AA[[i]]
+      
+      p.3d.categorization <- plot_3D.categorization(df.resp) %>%
+        layout(
+          margin = margin,
+          scene = list(
+            camera = list(
+              eye = list(x = -0.5, y = -2.5, z = 0.1)) # perspective good for showing categorization curve
+          ))
+      
+      save_figure_or_not(p.3d.categorization, paste0('p.3d.categorization.model_', model_names[j], '_', conditions.AA[i], '_', compare_model_label, '.png'))
+    }
     
-    p.3d.categorization <- plot_3D.categorization(df.resp) %>%
+    # show differences between exposure conditions in log odds space
+    df.diff = list()
+    df.diff$d_diff = qlogis(output.AA[[2]]$d_prop) - qlogis(output.AA[[1]]$d_prop)
+    df.diff$x = df.resp$x
+    df.diff$y = df.resp$y
+    
+    p.3d.categorization.diff <- plot_3D.categorization.diff(df.diff) %>%
       layout(
         margin = margin,
         scene = list(
           camera = list(
-            eye = list(x = -0.5, y = -2.5, z = 0.1)) # perspective good for showing categorization curve
-        ))
+            eye = list(x = -0.5, y = -2.5, z = 0.1))))
     
-    save_figure_or_not(p.3d.categorization, paste0('p.3d.categorization.model_', model_names[j], '_', conditions.AA[i], '.png'))
+    save_figure_or_not(p.3d.categorization.diff, paste0('p.3d.categorization.difference.model_', model_names[j], '_', compare_model_label, '.png'))
   }
+    
+    # show the bar graph demonstrating the model parameters and recognition accuracy for each model
+    d.accuracy1 <- data1 %>%
+      filter(category == Item.Intended_category) %>%
+      filter(prior_kappa == prior_kappa.selected & prior_nu == prior_nu.selected) 
+    p.aacuracy1 <- p.AA.results.representations %+% d.accuracy1
+    
+    d.accuracy2 <- data2 %>%
+      filter(category == Item.Intended_category) %>%
+      filter(posterior.lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected)
+    p.aacuracy2 <- p.AA.results.bias %+% d.accuracy2
+    
+    d.accuracy3 <- data3 %>%
+      filter(category == Item.Intended_category) %>% 
+      filter(normalization == "centered based\non exposure") %>%
+      filter(prior_kappa.normalization == prior_kappa.normalization.selected)
+    p.aacuracy3 <- p.AA.results.normalization %+% d.accuracy3
+    
+    prow = plot_grid(p.aacuracy1 + theme(legend.position="none"),
+                     p.aacuracy2 + theme(legend.position="none"),
+                     p.aacuracy3 + theme(legend.position="none"),
+                 #  labels = c('A)', 'B)', 'C)'),
+                   nrow = 1, rel_widths = c(1.1, 1.1, 1))
+
+    legend_prow <- get_legend(
+      p.aacuracy1 +
+        guides(color = guide_legend(title.position = "left", nrow = 1))
+    )
   
-  # show differences between exposure conditions in log odds space
-  df.diff = list()
-  df.diff$d_diff = qlogis(output.AA[[2]]$d_prop) - qlogis(output.AA[[1]]$d_prop)
-  df.diff$x = df.resp$x
-  df.diff$y = df.resp$y
-  
-  p.3d.categorization.diff <- plot_3D.categorization.diff(df.diff) %>%
-    layout(
-      margin = margin,
-      scene = list(
-        camera = list(
-          eye = list(x = -0.5, y = -2.5, z = 0.1))))
-  
-  save_figure_or_not(p.3d.categorization.diff, paste0('p.3d.categorization.difference.model_', model_names[j], '.png'))
+    p.output <-  plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.1, 1))
+      
+    ggsave(paste0('../figures/plotly/p.model_comparison_', compare_model_label, '.png'), plot = p.output)
+
 }
 ```
 
-```{r show-model-categorization-3D-plots, fig.ncol = 3, fig.show='hold',fig.align='center', out.width="33%", out.height="49%", fig.cap="(ref:show-model-categorization-3D-plots)", fig.subcap=c('Representations: L1-accented', 'Decision making: L1-accented', 'Normalization: L1-accented', 'Representations: L2-accented', 'Decision making: L2-accented', 'Normalization: L2-accented', 'Representations: difference', 'Decision making: difference', 'Normalization: difference')}
+
+
+```{r compare-AA-models-results-across-three-mechanisms-similar-accuracy, warning=FALSE}
+# select the model parameters to be illustrated as an example where all three models predict a similar overall accuracy
+prior_kappa.selected = 1024
+prior_nu.selected = 1024
+posterior.lapse_rate.selected = min(d.AA.bias$posterior.lapse_rate)
+beta_pi.selected = 0.1
+prior_kappa.normalization.selected = 64
+compare_model_label = "similar-accuracy"
+
+compare_models.AA(d.AA.representations, d.AA.bias, d.AA.normalization, d.AA.exposure, d.AA.test, VOT_range, f0_range, n_points)
+
+```
+
+<!--TO DO: change the size of the bar graph at the top-->
+```{r show-model-categorization-3D-plots-similar-accuracy, fig.ncol = 3, fig.show='hold',fig.align='center', out.width="33%", out.height="49%", fig.cap="(ref:show-model-categorization-3D-plots-similar-accuracy)", fig.subcap=c('Representations: L1-accented', 'Decision making: L1-accented', 'Normalization: L1-accented', 'Representations: L2-accented', 'Decision making: L2-accented', 'Normalization: L2-accented', 'Representations: difference', 'Decision making: difference', 'Normalization: difference')}
 filename = c()
 
 for (p in 1:length(model_names)) {
-  filename[p] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L1-accented.png'))
+  filename[p] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L1-accented', '_', compare_model_label, '.png'))
 }
 
 for (p in 1:length(model_names)) {
-  filename[p + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L2-accented.png'))
+  filename[p + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L2-accented', '_', compare_model_label, '.png'))
 }
 
 for (p in 1:length(model_names)) {
-  filename[p + 3 + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.difference.model_', model_names[p], '.png'))
+  filename[p + 3 + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.difference.model_', model_names[p], '_', compare_model_label, '.png'))
+}
+
+filename = c(paste0('../figures/plotly/p.model_comparison_', compare_model_label, '.png'), filename)
+knitr::include_graphics(filename)
+```
+
+(ref:show-model-categorization-3D-plots-best-performing) Using the best-performing parameterization for each model, the three change models predict different categorization functions when applied to the data from Case Study 2. From **left to right:** predictions for in changes in representations, decision making, and normalization. **Top:** Predicted categorization functions after L1-accented exposure. **Middle:** Same but after L2-accented exposure. **Bottom:** Differences in predicted posterior log-odds of /d/ between the two exposure conditions. Blue indicates higher predicted posterior log-odds of /d/ in the L2-accented exposure condition, relative to the L1-accented exposure condition. Red indicates the opposite. Gray indicates a difference of 0. The three models make distinct predictions about how exposure affects the perception of specific tokens across the VOT-f0 space.
+
+```{r compare-AA-models-results-across-three-mechanisms-best-performing, warning=FALSE}
+# select the model parameters to be illustrated as an example where all three models predict a similar overall accuracy
+prior_kappa.selected = 4
+prior_nu.selected = 4096
+posterior.lapse_rate.selected = min(d.AA.bias$posterior.lapse_rate)
+beta_pi.selected = 4
+prior_kappa.normalization.selected = 4
+compare_model_label = "best-performing"
+
+compare_models.AA(d.AA.representations, d.AA.bias, d.AA.normalization, d.AA.exposure, d.AA.test, VOT_range, f0_range, n_points)
+```
+
+```{r show-model-categorization-3D-plots-best-performing, fig.ncol = 3, fig.show='hold',fig.align='center', out.width="33%", out.height="49%", fig.cap="(ref:show-model-categorization-3D-plots-best-performing)", fig.subcap=c('Representations: L1-accented', 'Decision making: L1-accented', 'Normalization: L1-accented', 'Representations: L2-accented', 'Decision making: L2-accented', 'Normalization: L2-accented', 'Representations: difference', 'Decision making: difference', 'Normalization: difference')}
+filename = c()
+
+for (p in 1:length(model_names)) {
+  filename[p] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L1-accented', '_', compare_model_label, '.png'))
+}
+
+for (p in 1:length(model_names)) {
+  filename[p + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L2-accented', '_', compare_model_label, '.png'))
+}
+
+for (p in 1:length(model_names)) {
+  filename[p + 3 + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.difference.model_', model_names[p], '_', compare_model_label, '.png'))
 }
 
 knitr::include_graphics(filename)
 ```
+
+
 
  * talk about how this assumes that parameters are known. but by starting to use these models iteratively, we can narrow down plausible parameter settings.
 
@@ -214,9 +288,9 @@ But do their results really provide evidence against this hypothesis? Taking at 
 ### Recommendation 2: Dense and targeted sampling of the stimulus space
 While the ASP change models for all three mechanisms can account for the signature results of perceptual recalibration and accent adaptation paradigms, they do also make different predictions. <!-- The predictions of all three of the models are constrained by: 1) the prior state of listeners; 2) the acoustic/phonetic properties as well as category labels of the exposure stimuli; and 3) the acoustic/phonetic properties of the test stimuli. For any combination of 1)-3), each change model predicts a response distribution across test tokens that can be compared to actual human responses. Given (1) an estimate of listeners state prior to the experiment and (2) a set of exposure and test stimuli, these predictions are mediated only through the parameters of the change model (e.g., $\beta_{\pi}$ for changes in response biases), limiting the range of results a change model can account for. That is, instead of merely comparing the ability in which each mechanism captures the *qualitative* pattern of behavioral changes, we can compare the three mechanisms by assessing their accuracy in *quantitatively* predict and explain human responses across a variety of experimental conditions. -->
 
-Figure \@ref(fig:show-model-categorization-3D-plots) illustrates this point for the data from Case Study 2. For each of the three change models, we take the parameters that resulted in the highest post-L2-exposure accuracy during test, and plot the predicted categorization functions for both exposure conditions. These are the categorization functions that a listener would be predicted to employ while categorizing test stimuli. Despite the fact that the three change models resulted in qualitatively similar categorization accuracy in Case Study 2, the three models differ in *how* they achieve this accuracy. Specifically, they predict different categorization functions over the VOT-f0 space. 
+Figure \@ref(fig:show-model-categorization-3D-plots-similar-accuracy) illustrates this point for the data from Case Study 2. For each of the three change models, we take the parameters that resulted in the highest post-L2-exposure accuracy during test, and plot the predicted categorization functions for both exposure conditions. These are the categorization functions that a listener would be predicted to employ while categorizing test stimuli. Despite the fact that the three change models resulted in qualitatively similar categorization accuracy in Case Study 2, the three models differ in *how* they achieve this accuracy. Specifically, they predict different categorization functions over the VOT-f0 space. 
 
-This points the way to approaches that can more clearly distinguish between the three alternative mechanisms. Intuitively, paradigms should elicit 'rich' data---i.e., data that is informative about the functional shape of changes in the stimulus-to-response mapping---and analyses should take advantage of the 'richness' of the data. Most immediately, this is achieved by moving beyond comparisons that are limited to changes in overall categorization accuracy or processing speed, towards analyses that directly assess the link between the acoustic/phonetic properties of the speech input and listeners' responses (see Recommendation 3). Such approaches remain the exception but are now increasingly common [e.g., @clare2019; @idemaru-holt2020; @kartushina2015; @kim2020; @liu-holt2015; @schertz2015; @wade2007]. In order to reliably detect changes in categorization functions, it can be beneficial to more densely sample the acoustic/phonetic space during the test phase. Strategic placement of test stimuli can be used to increase the statistical power to test predicted differences between the different change models [@burchill-jaeger2022]. For example, the bottom row of Figure \@ref(fig:show-model-categorization-3D-plots) suggests that denser sampling of certain VOT-f0 combinations should make it possible to distinguish between the three change models (with the specific parameterizations assumed in the figure). 
+This points the way to approaches that can more clearly distinguish between the three alternative mechanisms. Intuitively, paradigms should elicit 'rich' data---i.e., data that is informative about the functional shape of changes in the stimulus-to-response mapping---and analyses should take advantage of the 'richness' of the data. Most immediately, this is achieved by moving beyond comparisons that are limited to changes in overall categorization accuracy or processing speed, towards analyses that directly assess the link between the acoustic/phonetic properties of the speech input and listeners' responses (see Recommendation 3). Such approaches remain the exception but are now increasingly common [e.g., @clare2019; @idemaru-holt2020; @kartushina2015; @kim2020; @liu-holt2015; @schertz2015; @wade2007]. In order to reliably detect changes in categorization functions, it can be beneficial to more densely sample the acoustic/phonetic space during the test phase. Strategic placement of test stimuli can be used to increase the statistical power to test predicted differences between the different change models [@burchill-jaeger2022]. For example, the bottom row of Figure \@ref(fig:show-model-categorization-3D-plots-similar-accuracy) suggests that denser sampling of certain VOT-f0 combinations should make it possible to distinguish between the three change models (with the specific parameterizations assumed in the figure). 
 
 Moving beyond binary contrasts between two exposure conditions can further facilitate comparison between change models. Experiments that employ more exposure conditions---especially, exposure conditions that sample a wide range of different exposure scenarios---are likely to facilitate more accurate and reliable estimation of the change model parameters. This, in turn, can increase the statistical power of model comparison. For instance, @kleinschmidt-jaeger2016cogsci created six different between-subject exposure conditions with distinct VOT distributions for /b/ and /p/, using a similar paradigm as @clayards2008. Kleinschmidt and Jaeger used these data to contrast different parameterizations of the same change model [for additional analyses and insightful discussion, see also @kleinschmidt2020]. Future research could use similar approaches to contrast the competing change models, or to infer the relative weighting of the three mechanisms. While some previous work has employed multiple exposure conditions [e.g., for perceptual recalibration and similar paradigms, @babel2019; @sumner2011], this approach remains under-utilized, and computational analyses of the results of experiments with multiple exposure conditions remain lacking. In an ongoing project, we use meta-analyses to address this gap. We have constructed a database of over 100,000 categorization responses from dozens of perceptual recalibration experiments on the English /s/-/`r linguisticsdown::cond_cmpl("ʃ")`/ contrast. Each of these experiments employs slightly different exposure and test stimuli, potentially increasing the statistical power to distinguish between the competing models. <!-- Such item-level meta-analyses benefit immensely from open science standards that facilitate (or even require) the sharing of data in well-documented formats. -->
 
@@ -239,7 +313,7 @@ Estimates for 2) and 3) require researchers to annotate the stimuli they employ 
 ### Recommendation 4: Predictive power analyses prior to conducting experiments
 Like other computational frameworks, ASP can be used to estimate expected effect sizes and statistical power before conducting an experiment. Unlike commonly used power estimates, which *assume* effect sizes [e.g., "moderate" effects, @zheng-samuel2020], predictive power-analyses of the type we envision are based effect sizes that are derived from the acoustic properties of the exposure and test stimuli. This makes these predictive power simulations considerably more informative. Taking a step beyond even predictive power analyses, ASP could even be used to guide experimental design---specifically, to select exposure and test stimuli that are expected to increase statistical power.
 
-There are, however, challenges that will have to be met so that ASP can be used for predictive power simulations. Figure \@ref(fig:predictive-power-simulations) illustrates these challenges. For a specific set of exposure and test stimuli, and specific parameter settings for all change models, ASP predicts an expected categorization function. This is what we showed in, for example, in Figure \@ref(fig:show-model-categorization-3D-plots) and the result figures for Case Study 1 [see also, e.g., @tan2021; @theodore-monto2019; @xie2021 for similar approaches applied to only representational change models]. This categorization function can be used to derive a predictive power estimate by repeatedly sampling responses for the planned test stimuli and the planned number of participants. This can be done for any individual exposure conditions, for combinations of exposure conditions, and/or the predicted differences between exposure conditions.
+There are, however, challenges that will have to be met so that ASP can be used for predictive power simulations. Figure \@ref(fig:predictive-power-simulations) illustrates these challenges. For a specific set of exposure and test stimuli, and specific parameter settings for all change models, ASP predicts an expected categorization function. This is what we showed in, for example, in Figure \@ref(fig:show-model-categorization-3D-plots-similar-accuracy) and the result figures for Case Study 1 [see also, e.g., @tan2021; @theodore-monto2019; @xie2021 for similar approaches applied to only representational change models]. This categorization function can be used to derive a predictive power estimate by repeatedly sampling responses for the planned test stimuli and the planned number of participants. This can be done for any individual exposure conditions, for combinations of exposure conditions, and/or the predicted differences between exposure conditions.
 
 \begin{figure}[h]
 \begin{center}

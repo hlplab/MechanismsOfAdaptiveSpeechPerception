@@ -43,7 +43,6 @@ Formal models of normalization have now existed for decades, and modern variants
 
 In the case studies, we demonstrated that the ASP change models for all three mechanisms can qualitatively account for the signature results of perceptual recalibration and accent adaptation paradigms. Beyond this, ASP also shows that the different change mechanisms can be distinguished behaviorally. Figure \@ref(fig:show-model-categorization-3D-plots-similar-accuracy) illustrates this point for the data from Case Study 2. For each of the three change models, we take the parameters that resulted in the highest post-L2-exposure accuracy during test, and plot the predicted categorization functions for both exposure conditions. These are the categorization functions that a listener would employ while categorizing test stimuli. Despite the fact that the three change models resulted in qualitatively similar categorization accuracy in Case Study 2, the three models differ in *how* they achieve this accuracy. Specifically, they predict different categorization functions over the VOT-f0 space. 
 
-(ref:show-model-categorization-3D-plots-similar-accuracy) The three change models predict different categorization functions when applied to the data from Case Study 2, despite achieving a similar leve of overall recognition accuracy. From **left to right:** predictions for in changes in representations, decision making, and normalization. **Top:** Predicted categorization functions after L1-accented exposure. **Middle:** Same but after L2-accented exposure. **Bottom:** Differences in predicted posterior log-odds of /d/ between the two exposure conditions. Blue indicates higher predicted posterior log-odds of /d/ in the L2-accented exposure condition, relative to the L1-accented exposure condition. Red indicates the opposite. Gray indicates a difference of 0. The three models make distinct predictions about how exposure affects the perception of specific tokens across the VOT-f0 space.
 
 ```{r set-3D-plot-parameters, warning=FALSE}
 # Set parameters
@@ -124,43 +123,135 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
     
     save_figure_or_not(p.3d.categorization.diff, paste0('p.3d.categorization.difference.model_', model_names[j], '_', compare_model_label, '.png'))
   }
-    
+  
     # show the bar graph demonstrating the model parameters and recognition accuracy for each model
-    d.accuracy1 <- data1 %>%
+    p.aacuracy1 <- data1 %>%
       filter(category == Item.Intended_category) %>%
-      filter(prior_kappa == prior_kappa.selected & prior_nu == prior_nu.selected) 
-    p.aacuracy1 <- p.AA.results.representations %+% d.accuracy1
+      filter(prior_kappa == prior_kappa.selected & prior_nu == prior_nu.selected) %>%
+      ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
+    stat_summary(fun = mean,
+                 geom = "bar", position = pos, width = 0.6) +
+    stat_summary(aes(color = Item.Intended_category),
+                 fun.data = mean_cl_boot,
+                 geom = "uperrorbar",
+                 position = pos, width = 0.2) +
+    coord_cartesian(ylim =  c(0,1)) +
+    scale_color_manual("Category", values = colors.category) +
+    scale_fill_manual("Category", values = colors.category) +
+    scale_alpha_discrete(range = c(0.2, 1), guide = "none") +
+    scale_x_discrete(labels= c("L1-\naccented", "L2-\naccented")) +
+    xlab("Exposure condition") +
+    ylab("Predicted categorization accuracy") +
+    geom_text(inherit.aes = FALSE, data = . %>%
+                 group_by(Condition,prior_nu,prior_kappa) %>%
+                summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
+    facet_grid(
+      prior_nu ~ prior_kappa,
+      labeller = label_bquote(
+        cols = {kappa[0~","~ .(categories.AA[1])] == kappa[0~","~ .(categories.AA[2])]} == .(as.character(prior_kappa)),
+        rows = {nu[0~","~ .(categories.AA[1])] == nu[0~","~ .(categories.AA[2])]} == .(as.character(prior_nu)))) + # as.table = T doesn't seem to work
+    myGplot.defaults(base_size = 14, set_theme = F) +
+    theme(legend.position = "top", panel.grid.major.x = element_blank())
     
-    d.accuracy2 <- data2 %>%
+    p.aacuracy2 <- data2 %>%
       filter(category == Item.Intended_category) %>%
-      filter(posterior.lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected)
-    p.aacuracy2 <- p.AA.results.bias %+% d.accuracy2
+      filter(posterior.lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected) %>%
+  ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
+  stat_summary(fun = mean,
+               geom="bar", position = pos,
+               width = 0.6) +
+  stat_summary(aes(color = Item.Intended_category),fun.data = mean_cl_boot,
+               geom = "uperrorbar",
+               position = pos, width = 0.2) +
+  coord_cartesian(ylim =  c(0,1)) +
+  scale_color_manual("Category", values = colors.category) +
+  scale_fill_manual("Category", values = colors.category) +
+  scale_alpha_discrete(range = c(0.2, 1), guide = "none") +
+  scale_x_discrete(labels= c("L1-\naccented", "L2-\naccented")) +
+  xlab("Exposure condition") +
+  ylab("Predicted categorization accuracy") +
+  geom_text(inherit.aes = FALSE, data = . %>%
+               group_by(Condition,posterior.lapse_rate,beta_pi) %>%
+               summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
+  facet_grid(
+    posterior.lapse_rate ~ beta_pi,
+    labeller = label_bquote(
+      cols = beta[pi] == .(beta_pi),
+      rows = lambda[posterior] == ~.(posterior.lapse_rate))) +
+  myGplot.defaults(base_size = 14, set_theme = F) +
+  theme(legend.position = "top", panel.grid.major.x = element_blank())
     
-    d.accuracy3 <- data3 %>%
-      filter(category == Item.Intended_category) %>% 
+    p.aacuracy3 <- data3 %>%
+      filter(category == Item.Intended_category) %>%
       filter(normalization == "centered based\non exposure") %>%
-      filter(prior_kappa.normalization == prior_kappa.normalization.selected)
-    p.aacuracy3 <- p.AA.results.normalization %+% d.accuracy3
+      filter(prior_kappa.normalization == prior_kappa.normalization.selected) %>%
+      ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
+      stat_summary(fun = mean,
+                   geom="bar", position = pos,
+                   width = 0.6) +
+      stat_summary(aes(color = Item.Intended_category),
+                   fun.data = mean_cl_boot,
+                   geom = "uperrorbar",
+                   position = pos, width = 0.2) +
+      coord_cartesian(ylim =  c(0,1)) +
+      scale_color_manual("Category", values = colors.category) +
+      scale_fill_manual("Category", values = colors.category) +
+      scale_alpha_discrete(range = c(0.2, 1), guide = "none") +
+      xlab("Exposure condition") +
+      ylab("Predicted categorization accuracy") +
+      scale_x_discrete(labels= c("L1-\naccented", "L2-\naccented")) +
+      geom_text(inherit.aes = FALSE, data = . %>%
+                   group_by(Condition, normalization, prior_kappa.normalization) %>%
+                   summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
+      facet_grid(
+        . ~ prior_kappa.normalization,
+        labeller = label_bquote(
+          cols = ~kappa[0] == .(as.character(prior_kappa.normalization)))) +
+      myGplot.defaults(base_size = 14, set_theme = F) +
+      theme(legend.position = "top", panel.grid.major.x = element_blank())
+        
+        prow = plot_grid(p.aacuracy1 + theme(legend.position="none"),
+                         p.aacuracy2 + theme(legend.position="none"),
+                         p.aacuracy3 + theme(legend.position="none"),
+                     #  labels = c('A)', 'B)', 'C)'),
+                       nrow = 1, rel_widths = c(1.1, 1.1, 1))
     
-    prow = plot_grid(p.aacuracy1 + theme(legend.position="none"),
-                     p.aacuracy2 + theme(legend.position="none"),
-                     p.aacuracy3 + theme(legend.position="none"),
-                 #  labels = c('A)', 'B)', 'C)'),
-                   nrow = 1, rel_widths = c(1.1, 1.1, 1))
-
-    legend_prow <- get_legend(
-      p.aacuracy1 +
-        guides(color = guide_legend(title.position = "left", nrow = 1))
-    )
+        legend_prow <- get_legend(
+          p.aacuracy1 +
+            guides(color = guide_legend(title.position = "left", nrow = 1))
+        )
   
     p.output <-  plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.1, 1))
       
-    ggsave(paste0('../figures/plotly/p.model_comparison_', compare_model_label, '.png'), plot = p.output)
+    ggsave(paste0('../figures/plotly/p.model_comparison_', compare_model_label, '.png'), plot = p.output, width = 2*(base.width*3 + .5), height = 2*(base.height + .5), dpi = 300)
+
+}
+
+
+make_plot_compare_models.AA <- function(compare_model_label){
+  filename = c()
+  model_names = c("Representations", "Decision_making", "Normalization")
+  compare_model_label = "best-performing"
+  for (p in 1:length(model_names)) {
+    filename[p] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L1-accented', '_', compare_model_label, '.png'))
+  }
+  
+  for (p in 1:length(model_names)) {
+    filename[p + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L2-accented', '_', compare_model_label, '.png'))
+  }
+  
+  for (p in 1:length(model_names)) {
+    filename[p + 3 + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.difference.model_', model_names[p], '_', compare_model_label, '.png'))
+  }
+  
+  filename = c(paste0('../figures/plotly/p.model_comparison_', compare_model_label, '.png'), filename)
+  knitr::include_graphics(filename)
 
 }
 ```
 
-
+<!--TO DO: fix the figure size; make sure the caption show in the same page--> 
+(ref:show-model-categorization-3D-plots-similar-accuracy) The three change models predict different categorization functions when applied to the data from Case Study 2, despite achieving a similar level of overall recognition accuracy. From **left to right:** predictions for in changes in representations, decision making, and normalization. **Top:** Predicted categorization functions after L1-accented exposure. **Middle:** Same but after L2-accented exposure. **Bottom:** Differences in predicted posterior log-odds of /d/ between the two exposure conditions. Blue indicates higher predicted posterior log-odds of /d/ in the L2-accented exposure condition, relative to the L1-accented exposure condition. Red indicates the opposite. Gray indicates a difference of 0. The three models make distinct predictions about how exposure affects the perception of specific tokens across the VOT-f0 space.
 
 ```{r compare-AA-models-results-across-three-mechanisms-similar-accuracy, warning=FALSE}
 # select the model parameters to be illustrated as an example where all three models predict a similar overall accuracy
@@ -172,27 +263,12 @@ prior_kappa.normalization.selected = 64
 compare_model_label = "similar-accuracy"
 
 compare_models.AA(d.AA.representations, d.AA.bias, d.AA.normalization, d.AA.exposure, d.AA.test, VOT_range, f0_range, n_points)
-
 ```
 
 <!--TO DO: change the size of the bar graph at the top-->
-```{r show-model-categorization-3D-plots-similar-accuracy, fig.ncol = 3, fig.show='hold',fig.align='center', out.width="33%", out.height="49%", fig.cap="(ref:show-model-categorization-3D-plots-similar-accuracy)", fig.subcap=c('Representations: L1-accented', 'Decision making: L1-accented', 'Normalization: L1-accented', 'Representations: L2-accented', 'Decision making: L2-accented', 'Normalization: L2-accented', 'Representations: difference', 'Decision making: difference', 'Normalization: difference')}
-filename = c()
+```{r show-model-categorization-3D-plots-similar-accuracy, fig.ncol = 3, fig.show='hold',fig.align='center',out.width= c("99%",rep("33%",9)), out.height=c("20%",rep("20%",4)), fig.cap="(ref:show-model-categorization-3D-plots-similar-accuracy)", fig.subcap=c('Model predictions in accuracy','Representations: L1-accented', 'Decision making: L1-accented', 'Normalization: L1-accented', 'Representations: L2-accented', 'Decision making: L2-accented', 'Normalization: L2-accented', 'Representations: difference', 'Decision making: difference', 'Normalization: difference')}
 
-for (p in 1:length(model_names)) {
-  filename[p] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L1-accented', '_', compare_model_label, '.png'))
-}
-
-for (p in 1:length(model_names)) {
-  filename[p + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L2-accented', '_', compare_model_label, '.png'))
-}
-
-for (p in 1:length(model_names)) {
-  filename[p + 3 + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.difference.model_', model_names[p], '_', compare_model_label, '.png'))
-}
-
-filename = c(paste0('../figures/plotly/p.model_comparison_', compare_model_label, '.png'), filename)
-knitr::include_graphics(filename)
+make_plot_compare_models.AA(compare_model_label = "similar-accuracy")
 ```
 
 (ref:show-model-categorization-3D-plots-best-performing) Using the best-performing parameterization for each model, the three change models predict different categorization functions when applied to the data from Case Study 2. From **left to right:** predictions for in changes in representations, decision making, and normalization. **Top:** Predicted categorization functions after L1-accented exposure. **Middle:** Same but after L2-accented exposure. **Bottom:** Differences in predicted posterior log-odds of /d/ between the two exposure conditions. Blue indicates higher predicted posterior log-odds of /d/ in the L2-accented exposure condition, relative to the L1-accented exposure condition. Red indicates the opposite. Gray indicates a difference of 0. The three models make distinct predictions about how exposure affects the perception of specific tokens across the VOT-f0 space.
@@ -209,22 +285,9 @@ compare_model_label = "best-performing"
 compare_models.AA(d.AA.representations, d.AA.bias, d.AA.normalization, d.AA.exposure, d.AA.test, VOT_range, f0_range, n_points)
 ```
 
-```{r show-model-categorization-3D-plots-best-performing, fig.ncol = 3, fig.show='hold',fig.align='center', out.width="33%", out.height="49%", fig.cap="(ref:show-model-categorization-3D-plots-best-performing)", fig.subcap=c('Representations: L1-accented', 'Decision making: L1-accented', 'Normalization: L1-accented', 'Representations: L2-accented', 'Decision making: L2-accented', 'Normalization: L2-accented', 'Representations: difference', 'Decision making: difference', 'Normalization: difference')}
-filename = c()
+```{r show-model-categorization-3D-plots-best-performing, fig.ncol = 3, fig.show='hold',fig.align='center',out.width= c("99%",rep("33%",9)), out.height=c("20%",rep("20%",4)), fig.cap="(ref:show-model-categorization-3D-plots-best-performing)", fig.subcap=c('Model predictions in accuracy','Representations: L1-accented', 'Decision making: L1-accented', 'Normalization: L1-accented', 'Representations: L2-accented', 'Decision making: L2-accented', 'Normalization: L2-accented', 'Representations: difference', 'Decision making: difference', 'Normalization: difference')}
 
-for (p in 1:length(model_names)) {
-  filename[p] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L1-accented', '_', compare_model_label, '.png'))
-}
-
-for (p in 1:length(model_names)) {
-  filename[p + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L2-accented', '_', compare_model_label, '.png'))
-}
-
-for (p in 1:length(model_names)) {
-  filename[p + 3 + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.difference.model_', model_names[p], '_', compare_model_label, '.png'))
-}
-
-knitr::include_graphics(filename)
+make_plot_compare_models.AA(compare_model_label = "best-performing")
 ```
 
 

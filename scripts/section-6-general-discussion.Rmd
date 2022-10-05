@@ -125,7 +125,7 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
   }
   
     # show the bar graph demonstrating the model parameters and recognition accuracy for each model
-    p.aacuracy1 <- data1 %>%
+    p.accuracy1 <- data1 %>%
       filter(category == Item.Intended_category) %>%
       filter(prior_kappa == prior_kappa.selected & prior_nu == prior_nu.selected) %>%
       ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
@@ -153,7 +153,7 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
     myGplot.defaults(base_size = 14, set_theme = F) +
     theme(legend.position = "top", panel.grid.major.x = element_blank())
     
-    p.aacuracy2 <- data2 %>%
+    p.accuracy2 <- data2 %>%
       filter(category == Item.Intended_category) %>%
       filter(posterior.lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected) %>%
   ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
@@ -181,7 +181,7 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
   myGplot.defaults(base_size = 14, set_theme = F) +
   theme(legend.position = "top", panel.grid.major.x = element_blank())
     
-    p.aacuracy3 <- data3 %>%
+    p.accuracy3 <- data3 %>%
       filter(category == Item.Intended_category) %>%
       filter(normalization == "centered based\non exposure") %>%
       filter(prior_kappa.normalization == prior_kappa.normalization.selected) %>%
@@ -210,14 +210,14 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
       myGplot.defaults(base_size = 14, set_theme = F) +
       theme(legend.position = "top", panel.grid.major.x = element_blank())
         
-        prow = plot_grid(p.aacuracy1 + theme(legend.position="none"),
-                         p.aacuracy2 + theme(legend.position="none"),
-                         p.aacuracy3 + theme(legend.position="none"),
+        prow = plot_grid(p.accuracy1 + theme(legend.position="none"),
+                         p.accuracy2 + theme(legend.position="none"),
+                         p.accuracy3 + theme(legend.position="none"),
                      #  labels = c('A)', 'B)', 'C)'),
                        nrow = 1, rel_widths = c(1.1, 1.1, 1))
     
         legend_prow <- get_legend(
-          p.aacuracy1 +
+          p.accuracy1 +
             guides(color = guide_legend(title.position = "left", nrow = 1))
         )
   
@@ -252,6 +252,33 @@ make_plot_compare_models.AA <- function(compare_model_label){
 
 <!--TO DO: fix the figure size; make sure the caption show in the same page--> 
 (ref:show-model-categorization-3D-plots-similar-accuracy) The three change models predict different categorization functions when applied to the data from Case Study 2, despite achieving a similar level of overall recognition accuracy. From **left to right:** predictions for in changes in representations, decision making, and normalization. **Top:** Predicted categorization functions after L1-accented exposure. **Middle:** Same but after L2-accented exposure. **Bottom:** Differences in predicted posterior log-odds of /d/ between the two exposure conditions. Blue indicates higher predicted posterior log-odds of /d/ in the L2-accented exposure condition, relative to the L1-accented exposure condition. Red indicates the opposite. Gray indicates a difference of 0. The three models make distinct predictions about how exposure affects the perception of specific tokens across the VOT-f0 space.
+```{r compare-AA-models-results-bias-debug, eval = FALSE}
+d.temp <- d.AA.bias %>% filter(posterior.lapse_rate == 5e-04 & beta_pi == .8) %>% filter(category == Item.Intended_category) %>% distinct(Condition, Subject, data, posterior.lapse_rate, beta_pi, prior, posterior, posterior.categorization)
+
+d.temp.results <- d.AA.bias %>% 
+  filter(posterior.lapse_rate == 5e-04 & beta_pi == .8) %>% 
+  filter(category == Item.Intended_category) %>%
+  select(Condition, category, response, x, observationID) %>%
+  group_by(Condition, category) %>%
+  summarise(mAcc = mean(response))
+  
+
+output.AA <- prepare_3D.categorization_from_results(d.temp, d.AA.exposure, d.AA.test, VOT_range, f0_range, n_points)
+output.AA[[1]]$d_prop
+output.AA[[2]]$d_prop
+
+prior_kappa.selected = 1024
+prior_nu.selected = 1024
+posterior.lapse_rate.selected = min(d.AA.bias$posterior.lapse_rate)
+beta_pi.selected = 0.8
+prior_kappa.normalization.selected = 64
+compare_model_label = "similar-accuracy"
+
+compare_models.AA(d.AA.representations, d.AA.bias, d.AA.normalization, d.AA.exposure, d.AA.test, VOT_range, f0_range, n_points)
+
+p.AA.bias <- Make_results_plot_decision_making(d.AA.bias, best_performing_case.bias)
+p.AA.bias
+```
 
 ```{r compare-AA-models-results-across-three-mechanisms-similar-accuracy, warning=FALSE}
 # select the model parameters to be illustrated as an example where all three models predict a similar overall accuracy
@@ -273,7 +300,7 @@ make_plot_compare_models.AA(compare_model_label = "similar-accuracy")
 
 (ref:show-model-categorization-3D-plots-best-performing) Using the best-performing parameterization for each model, the three change models predict different categorization functions when applied to the data from Case Study 2. From **left to right:** predictions for in changes in representations, decision making, and normalization. **Top:** Predicted categorization functions after L1-accented exposure. **Middle:** Same but after L2-accented exposure. **Bottom:** Differences in predicted posterior log-odds of /d/ between the two exposure conditions. Blue indicates higher predicted posterior log-odds of /d/ in the L2-accented exposure condition, relative to the L1-accented exposure condition. Red indicates the opposite. Gray indicates a difference of 0. The three models make distinct predictions about how exposure affects the perception of specific tokens across the VOT-f0 space.
 
-```{r compare-AA-models-results-across-three-mechanisms-best-performing, warning=FALSE}
+```{r compare-AA-models-results-across-three-mechanisms-best-performing, warning=FALSE, eval = TRUE}
 # select the model parameters to be illustrated as an example where all three models predict a similar overall accuracy
 prior_kappa.selected = 4
 prior_nu.selected = 4096
@@ -285,7 +312,7 @@ compare_model_label = "best-performing"
 compare_models.AA(d.AA.representations, d.AA.bias, d.AA.normalization, d.AA.exposure, d.AA.test, VOT_range, f0_range, n_points)
 ```
 
-```{r show-model-categorization-3D-plots-best-performing, fig.ncol = 3, fig.show='hold',fig.align='center',out.width= c("99%",rep("33%",9)), out.height=c("20%",rep("20%",4)), fig.cap="(ref:show-model-categorization-3D-plots-best-performing)", fig.subcap=c('Model predictions in accuracy','Representations: L1-accented', 'Decision making: L1-accented', 'Normalization: L1-accented', 'Representations: L2-accented', 'Decision making: L2-accented', 'Normalization: L2-accented', 'Representations: difference', 'Decision making: difference', 'Normalization: difference')}
+```{r show-model-categorization-3D-plots-best-performing, fig.ncol = 3, fig.show='hold',fig.align='center',out.width= c("99%",rep("33%",9)), out.height=c("20%",rep("20%",4)), fig.cap="(ref:show-model-categorization-3D-plots-best-performing)", fig.subcap=c('Model predictions in accuracy','Representations: L1-accented', 'Decision making: L1-accented', 'Normalization: L1-accented', 'Representations: L2-accented', 'Decision making: L2-accented', 'Normalization: L2-accented', 'Representations: difference', 'Decision making: difference', 'Normalization: difference'), eval = TRUE}
 
 make_plot_compare_models.AA(compare_model_label = "best-performing")
 ```

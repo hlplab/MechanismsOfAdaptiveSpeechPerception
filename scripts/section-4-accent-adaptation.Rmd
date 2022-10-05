@@ -550,7 +550,7 @@ add_prior_and_posterior_with_changed_response_biases_based_on_exposure.AA <- fun
     nest(data = -c(Condition, Subject)) %>%
     crossing(
       posterior.lapse_rate = c(.0005, .005, .05, .5, 1),
-    #  beta_pi = c(0, .05, .1, .2, .8)
+    #  beta_pi = c(0, .1, .8)
       beta_pi = c(0, .1, .8, 2, 4, 8, 16)
       ) %>%
     crossing(
@@ -579,6 +579,10 @@ add_prior_and_posterior_with_changed_response_biases_based_on_exposure.AA <- fun
 
 ```{r study-AA-models-changes-in-decision-making}
 d.AA.bias <- d.AA.exposure %>%
+#  group_by(Condition) %>%
+#  arrange(-VOT) %>%
+  mutate(nrow = row_number()) %>%
+#  filter(nrow < 41) %>%
   add_prior_and_posterior_with_changed_response_biases_based_on_exposure.AA(prior = m.ia.VOT_f0.AA) %>%
   add_test_tokens(d.AA.test) %>%
   add_categorization_functions() %>%

@@ -1,3 +1,5 @@
+require(tidyverse)
+
 mycall <- function(fn, args) suppressWarnings(exec(fn, !!! args))
 
 get_plot_limits <- function(plot) {
@@ -24,33 +26,17 @@ myGplot.defaults = function(
 )
 {
   require(ggplot2)
+  t <- theme(axis.text.x = element_text(size=base_size, vjust=1),
+            axis.text.y = element_text(size=base_size, hjust=1, vjust=.5),
+            axis.title.x = element_text(size=base_size , vjust=0, hjust=0.5, face = "bold"),
+            axis.title.y = element_text(size=base_size, hjust= 0.5, vjust=0.5, face = "bold"),
+            strip.text = element_text(size=base_size, color = "white"),
+            strip.background = element_rect(fill = "black", color = "black"),
+            legend.title = element_text(size=base_size, face = "bold", hjust= 0),
+            legend.text = element_text(size=base_size),
+            plot.margin = unit(margin, "lines"))
 
-  if (set_theme) {
-    theme_set(theme_bw(base_size=base_size))
-    theme_update(
-      axis.text.x = element_text(size=base_size, vjust=1),
-      axis.text.y = element_text(size=base_size, hjust=1, vjust=.5),
-      axis.title.x = element_text(size=base_size , vjust=0, hjust=0.5, face = "bold"),
-      axis.title.y = element_text(size=base_size, hjust= 0.5, vjust=0.5, face = "bold"),
-      strip.text = element_text(size=base_size, color = "white"),
-      strip.background = element_rect(fill = "black", color = "black"),
-      legend.title = element_text(size=base_size, face = "bold", hjust= 0),
-      legend.text = element_text(size=base_size),
-      plot.margin = unit(margin, "lines")
-    )
-  } else {
-    return(
-      theme(
-        axis.text.x = element_text(size=base_size, vjust=1),
-        axis.text.y = element_text(size=base_size, hjust=1, vjust=.5),
-        axis.title.x = element_text(size=base_size , vjust=0, hjust=0.5, face = "bold"),
-        axis.title.y = element_text(size=base_size, hjust= 0.5, vjust=0.5, face = "bold"),
-        strip.text = element_text(size=base_size, color = "white"),
-        strip.background = element_rect(fill = "black", color = "black"),
-        legend.title = element_text(size=base_size, face = "bold", hjust= 0),
-        legend.text = element_text(size=base_size),
-        plot.margin = unit(margin, "lines")))
-  }
+  if (set_theme) theme_set(theme_bw(base_size=base_size) + t) else return(t)
 }
 
 # Align a list of plots with shared x-axis but potentially multiple rows, each with different y-axis

@@ -477,16 +477,20 @@ best_performing_case.representations.both <- d.AA.representations %>%
 (ref:AA-result-changes-in-representations) Predictions of a learning model that derives accent adaptation as changes in category representations. Predicted categorization accuracies are shown for the L2-accented test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, as a function of the strength of the prior beliefs in category means ($\kappa_{0,c}$) and covariances ($\nu_{0,c}$). The average accuracy across /d/ and /t/ is shown above the bars for each exposure condition. Error bars show 95% bootstrapped confidence intervals. The highlighted panel corresponds to the combination of $\kappa_{0,c}$ and $\nu_{0,c}$ resulting in the best overall accuracy.
 
 ```{r plot-AA-results-representations-functions}
-Make_results_plot_representations <- function(data, data_best){
-  p.AA.results.representations <- data %>%
-    filter(category == Item.Intended_category) %>% # show the response for intended category
+make_results_plot_representations <- function(data, data_best) {
+  p.AA.results.representations <- 
+    data %>%
+    # Show the response only for intended category
+    filter(category == Item.Intended_category) %>% 
     ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
-    stat_summary(fun = mean,
-                 geom = "bar", position = pos, width = 0.6) +
-    stat_summary(aes(color = Item.Intended_category),
-                 fun.data = mean_cl_boot,
-                 geom = "uperrorbar",
-                 position = pos, width = 0.2) +
+    stat_summary(
+      fun = mean,
+      geom = "bar", position = pos, width = 0.6) +
+    stat_summary(
+      aes(color = Item.Intended_category),
+      fun.data = mean_cl_boot,
+      geom = "uperrorbar",
+      position = pos, width = 0.2) +
     coord_cartesian(ylim =  c(0,1)) +
     scale_color_manual("Category", values = colors.category) +
     scale_fill_manual("Category", values = colors.category) +
@@ -494,9 +498,10 @@ Make_results_plot_representations <- function(data, data_best){
     scale_x_discrete(labels= c("L1-\naccented", "L2-\naccented")) +
     xlab("Exposure condition") +
     ylab("Predicted categorization accuracy") +
-    geom_text(inherit.aes = FALSE, data = . %>%
-                 group_by(Condition,prior_nu,prior_kappa) %>%
-                summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
+    geom_text(
+      inherit.aes = FALSE, data = . %>%
+        group_by(Condition,prior_nu,prior_kappa) %>%
+        summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
     facet_grid(
       prior_nu ~ prior_kappa,
       labeller = label_bquote(
@@ -515,16 +520,14 @@ Make_results_plot_representations <- function(data, data_best){
                   prior_kappa == data_best$prior_kappa & prior_nu == data_best$prior_nu ~ T,
                   T ~ F)),
               aes(fill = highlight), alpha = .1, inherit.aes = F,
-              xmin = -Inf,xmax = Inf, ymin = -Inf, ymax = Inf)) +
+              xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf)) +
   scale_fill_manual(breaks = c(T, F), values = c("darkgray", "white")) +
   guides(fill = "none")
 }
 ```
 
 ```{r AA-result-changes-in-representations, fig.width= base.width * 5, fig.height= base.height * 5 +.5, fig.cap="(ref:AA-result-changes-in-representations)", warning=FALSE}
-
-p.AA.representations <- Make_results_plot_representations(d.AA.representations, best_performing_case.representations)
-p.AA.representations
+make_results_plot_representations(d.AA.representations, best_performing_case.representations)
 ```
 
 Figure \@ref(fig:AA-result-changes-in-representations) shows the predicted categorization accuracy after exposure to L1- or L2-accented speech, as a function of the strength of the prior beliefs for the category means and variances. First consider the top left panel where both $\kappa_{0,c}$s and $\nu_{0,c}$ have very high values. This simulates a extremely slow learner who has strong prior beliefs for both category means and variances such that the small number of tokens heard during exposure phase has minimal influence on subsequent perception of the test tokens. Therefore, the performance from both L1- and L2-accented exposure conditions are highly similar (or identical, if even slower learning rates are applied), reflecting how a listener would categorize based on their long-term prior experience predominantly. 
@@ -611,7 +614,7 @@ best_performing_case.bias.both <- d.AA.bias %>%
 (ref:AA-result-changes-in-decision-making) Predictions of a model that derives accent adaptation as changes in decision-making. Predicted categorization responses are shown for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda_{posterior}$). The highlighted panel corresponds to the combination of $\beta_{\pi}$ and $\lambda_{posterior}$ resulting in the best overall accuracy.
 
 ```{r plot-AA-results-decision-making-functions}
-Make_results_plot_decision_making <- function(data, data_best){
+make_results_plot_decision_making <- function(data, data_best){
   p.AA.results.bias <- data %>%
   filter(category == Item.Intended_category) %>% # show the response for intended category
   ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
@@ -658,9 +661,7 @@ p.AA.results.bias +
 
 
 ```{r AA-result-changes-in-decision-making, fig.width= base.width * 5, fig.height= base.height * 5 +.5, fig.cap="(ref:AA-result-changes-in-decision-making)", warning=FALSE}
-
-p.AA.bias <- Make_results_plot_decision_making(d.AA.bias, best_performing_case.bias)
-p.AA.bias
+make_results_plot_decision_making(d.AA.bias, best_performing_case.bias)
 ```
 
 Figure \@ref(fig:AA-result-changes-in-decision-making) shows the effects of changes in decision-making, depending on the rate at which response biases change $\beta_{\pi}$ and the lapse rate $\lambda$. For L1-accented exposure, we again see that /d/ test tokens are categorized substantially less accurately than /t/ test tokens, regardless of the specific value of ($\beta_{\pi}$). The second signature result---improved accuracy after L2-accented exposure for /d/---is obtained for sufficiently large $\beta_{\pi}$. As $\beta_{\pi}$ increases, the overall recognition accuracy first increases and then plateaus. The largest improvements are found for the smallest lapse rates and fast-enough change rates (gray panel in Figure \@ref(fig:AA-result-changes-in-decision-making)).
@@ -759,13 +760,12 @@ best_performing_case.normalization.both <- d.AA.normalization %>%
   filter(prior_kappa.normalization == best_performing_case.normalization$prior_kappa.normalization) %>%
   group_by(Condition, Subject, prior_kappa.normalization) %>%
   summarise(mAcc = mean(response)) 
-
 ```
 
 (ref:AA-result-changes-in-normalization) Predictions of a model that derives accent adaptation from changes in normalization, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure. The highlighted panel corresponds to the $\kappa_0$ resulting in the best overall accuracy.
 
 ```{r plot-AA-results-normalization-functions}
-Make_results_plot_normalization <- function(data, data_best){
+make_results_plot_normalization <- function(data, data_best){
   p.AA.results.normalization <- 
   ggplot(data = data %>%
   filter(category == Item.Intended_category) %>% # show the response for intended category
@@ -810,14 +810,11 @@ Make_results_plot_normalization <- function(data, data_best){
         ) +
        scale_fill_manual(breaks = c(T, F), values = c("darkgray", "white")) +
     guides(fill = "none")
-
 }
 ```
 
 ```{r AA-result-changes-in-normalization, fig.width= base.width * 5, fig.height= base.height + 1.5, fig.cap="(ref:AA-result-changes-in-normalization)", warning=FALSE}
-
-p.AA.normalization <- Make_results_plot_normalization(d.AA.normalization, best_performing_case.normalization)
-p.AA.normalization
+make_results_plot_normalization(d.AA.normalization, best_performing_case.normalization)
 ```
 
 ## Summary
@@ -946,17 +943,16 @@ construct_three_best_models <- function(
   best_performing_case.normalization <- d.AA.normalization.rank[1,]
 
   # plot the predicted results for all parameterization and save plots
-  p.AA.representations <- Make_results_plot_representations(d.AA.representations, best_performing_case.representations)
+  p.AA.representations <- make_results_plot_representations(d.AA.representations, best_performing_case.representations)
   ggsave(paste0('../figures/plotly/AA_cases/', example_label, '_representations.png'), plot = p.AA.representations, width = 2*(base.width*length(levels(factor(d.AA.representations$prior_kappa))) + .5), height = 2*(base.height*length(levels(factor(d.AA.representations$prior_nu))) + .5), dpi = 300)
   
-  p.AA.bias <- Make_results_plot_decision_making(d.AA.bias, best_performing_case.bias)
+  p.AA.bias <- make_results_plot_decision_making(d.AA.bias, best_performing_case.bias)
   ggsave(paste0('../figures/plotly/AA_cases/', example_label, '_bias.png'), plot = p.AA.bias, width = 2*(base.width*length(levels(factor(d.AA.bias$beta_pi))) + .5), height = 2*(base.height*length(levels(factor(d.AA.bias$posterior.lapse_rate))) + .5), dpi = 300)
   
-  p.AA.normalization <- Make_results_plot_normalization(d.AA.normalization, best_performing_case.normalization)
+  p.AA.normalization <- make_results_plot_normalization(d.AA.normalization, best_performing_case.normalization)
   ggsave(paste0('../figures/plotly/AA_cases/', example_label, '_normalization.png'), plot = p.AA.normalization, width = 2*(base.width*length(levels(factor(d.AA.normalization$prior_kappa.normalization))) + .5), height = 2*(base.height + .5), dpi = 300)
 
   # select the parameter combination for each model that results in the best overall accuracy
-  
   d <- bind_rows(
     d.AA.representations %>% 
       filter(category == Item.Intended_category & prior_kappa == best_performing_case.representations$prior_kappa & prior_nu == best_performing_case.representations$prior_nu) %>% 
@@ -968,7 +964,6 @@ construct_three_best_models <- function(
       filter(category == Item.Intended_category & normalization == "centered based\non exposure" & prior_kappa.normalization == best_performing_case.normalization$prior_kappa.normalization) %>%
       mutate(ModelType = "normalization")) %>%
     mutate(ModelType = factor(ModelType, levels = c("representations", "decision making", "normalization")))
-
 
   return(d)
 }
@@ -999,6 +994,7 @@ shift.cue2 <- 0
 var.ratio = 1
 d.AA.results.best.contrast_collapse  <- construct_three_best_models(example_label = "contrast_collapse", experimenter.ideal_observer = m.io.VOT_f0.AA)
 ```
+
 ```{r AA-result-comparison-best-three-models-contrast-shift, warning=FALSE}
 # Examine a new scenario: contrast shift
 min_VOT = -100 # allows negative VOT when generating exposure and test data

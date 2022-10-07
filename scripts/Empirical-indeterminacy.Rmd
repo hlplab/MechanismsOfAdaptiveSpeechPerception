@@ -78,6 +78,7 @@ header-includes:
  - \subsubsectionfont{\color{black}}
  - \usepackage{setspace}\doublespacing
  - \usepackage{subfig}
+ - \usepackage{hyperref}
 
 documentclass     : "apa6"
 classoption       : "man"

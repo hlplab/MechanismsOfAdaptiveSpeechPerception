@@ -1,7 +1,7 @@
 \newpage
 \setcounter{page}{1}
 \renewcommand{\thesection}{\S \arabic{section}}
-\renewcommand{\theHsection}{sisection.\S \arabic{section}}
+\renewcommand{\theHsection}{sisection. \arabic{section}}
 
 
 # Supplementary information for *Xie, Jaeger, & Kurumada (2022). What we do (not) know about the mechanisms underlying adaptive speech perception* {-}

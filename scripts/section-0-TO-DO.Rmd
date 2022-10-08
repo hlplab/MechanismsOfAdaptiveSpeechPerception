@@ -5,12 +5,9 @@ Let's delete to-dos after they have been addressed, and post in Slack what we've
     * Think about where comment about parameter space partitioning could go.
     * Should we either use 1\$\beta$ of 1\$\kappa$ etc. to conceptually make all parameters either 'confidence' / weight of prior knowledge OR learning rates? 
     * What's going on with "talker-related" vs. "talker-specific". I guess the former was introduced by someone to NOT assume talker-specific. That's the type of terminological change that one should make others aware of to make sure we are consistent throughout the paper. 
-    * In 6.1, make sure that we're clear whether e.g., norris et al (and other findings) that can't be accounted for by normalization can be accounted for by decision-making? 
-    * Also in 6.1, about the sine tone experiment, how is that ever going to allow us to investigate whether adaptation to natural variability is due to just normalization? These paradigms cannot be scaled to study how multiple mechanisms come together.
-    * Be sure to integrate "parameter space partioning" comment by reviewer.
 
   * **Xin:**
-    * Missing Figure in discussion
+    * Missing Figure in final section of SI
     * Are you ok with removing footnote 2? It seems not that important? Will anyone miss it? error correction seems sufficiently different from what we're doing?
     
   * **Chigusa:**

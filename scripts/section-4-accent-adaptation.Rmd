@@ -993,38 +993,41 @@ d.AA.results.best.contrast_shift_var  <- construct_three_best_models(example_lab
 min_VOT = 5
 var.ratio = 1
 # simulating a case of contrast reduction
-d.AA.exposure.target.contrast.reduction <- make_accent_adaptation_exposure_design(
-  experimenter.ideal_observer = m.io.VOT_f0.AA, 
-  category_dist_ratio1 = 0.5, 
-  category_dist_ratio2 = 0, 
-  shift_mean_1 = 0, 
-  shift_mean_2 = 0, 
-  exposure.tokens.L1.n = 5000, 
-  exposure.tokens.L2.n = 5000)
+d.AA.exposure.target.contrast.reduction <- 
+  make_accent_adaptation_exposure_design(
+    experimenter.ideal_observer = m.io.VOT_f0.AA, 
+    category_dist_ratio1 = 0.5, 
+    category_dist_ratio2 = 0, 
+    shift_mean_1 = 0, 
+    shift_mean_2 = 0, 
+    exposure.tokens.L1.n = 5000, 
+    exposure.tokens.L2.n = 5000)
 
 # simulating a case of contrast collapse
 min_VOT = -100
 var.ratio = 1
-d.AA.exposure.target.contrast.collapse <-  make_accent_adaptation_exposure_design(
-  experimenter.ideal_observer = m.io.VOT_f0.AA, 
-  category_dist_ratio1 = 0,
-  category_dist_ratio2 = 0,
-  shift_mean_1 = -0.6,
-  shift_mean_2 = 0,
-  exposure.tokens.L1.n = 5000, 
-  exposure.tokens.L2.n = 5000) 
+d.AA.exposure.target.contrast.collapse <-  
+  make_accent_adaptation_exposure_design(
+    experimenter.ideal_observer = m.io.VOT_f0.AA, 
+    category_dist_ratio1 = 0,
+    category_dist_ratio2 = 0,
+    shift_mean_1 = -0.6,
+    shift_mean_2 = 0,
+    exposure.tokens.L1.n = 5000, 
+    exposure.tokens.L2.n = 5000) 
 
 # simulating a case of contrast shift: like French-accented English stops, so allowing negative VOTs
 min_VOT = -100
 var.ratio = 1
-d.AA.exposure.target.contrast.shift <- make_accent_adaptation_exposure_design(
-  experimenter.ideal_observer = m.io.VOT_f0.AA, 
-  category_dist_ratio1 = 1, 
-  category_dist_ratio2 = 0, 
-  shift_mean_1 = -1.2, 
-  shift_mean_2 = 0, 
-  exposure.tokens.L1.n = 5000, 
-  exposure.tokens.L2.n = 5000)
+d.AA.exposure.target.contrast.shift <- 
+  make_accent_adaptation_exposure_design(
+    experimenter.ideal_observer = m.io.VOT_f0.AA, 
+    category_dist_ratio1 = 1, 
+    category_dist_ratio2 = 0, 
+    shift_mean_1 = -1.2, 
+    shift_mean_2 = 0, 
+    exposure.tokens.L1.n = 5000, 
+    exposure.tokens.L2.n = 5000)
 
 # simulating a case of contrast shift + variance increase
 # min_VOT = -100

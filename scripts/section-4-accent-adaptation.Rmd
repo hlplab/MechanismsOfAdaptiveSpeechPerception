@@ -46,35 +46,6 @@ dist.L2_category.cue2 <- 0.7
 shift.cue1 <- 0
 shift.cue2 <- 0
 
-# Case 2 -- contrast reduction: no cue-weighting, but greater category overlap due to reduced distance (e.g., e.g., vowels in Spanish-accented English)
-# min_VOT = 5
-# dist.L2_category.cue1 <- 0.5
-# dist.L2_category.cue2 <- 0
-# shift.cue1 <- 0
-# shift.cue2 <- 0
-
-# Case 3 -- contrast shift: no cue-weighting, no change in category overlap, but a general shift along the primary cue dimension (e.g., word-initial stops in French-accented English)
-# min_VOT = -100
-# dist.L2_category.cue1 <- 1
-# dist.L2_category.cue2 <- 0
-# shift.cue1 <- -1.2
-# shift.cue2 <- 0
-
-# Case 4 -- contrast collapse: two categories are collapsed into one (i.e., here implemented as having the same category mean, e.g., s-th in Mandarin-accented English)
-# min_VOT = -100
-# dist.L2_category.cue1 <- 0
-# dist.L2_category.cue2 <- 0
-# shift.cue1 <- -0.6
-# shift.cue2 <- 0
-
-# Case 5 -- contrast shift + variance increase 
-# min_VOT = -100
-# dist.L2_category.cue1 <- 1
-# dist.L2_category.cue2 <- 0
-# shift.cue1 <- -1.2
-# shift.cue2 <- 0
-# var.ratio = 3
-
 # arbitrarily assume that the variance of the speech stimuli in the experiment is $\frac{1}{`r my_experimenter.variability_reduction`}$th of that observed in natural productions (applying to L1-accented speech only)
 my_experimenter.variability_reduction <- 1
 
@@ -97,13 +68,9 @@ m.io.VOT_f0.AA <-
 m.ia.VOT_f0.AA <-
   crossing(
     prior_kappa = 4^(1:6),
-    prior_nu = 4^(1:6)
-    # prior_kappa = c(4, 8, 16, 32, 64),
-    # prior_nu = 4^(1:6)
-    ) %>%
+    prior_nu = 4^(1:6)) %>%
   rowwise() %>%
-  mutate(
-    ideal_adaptor = map2(prior_kappa, prior_nu, ~ make_stop_VOTf0_ideal_adaptor(m = m.io.VOT_f0.AA, kappa = .x, nu = .y))) %>%
+  mutate(ideal_adaptor = map2(prior_kappa, prior_nu, ~ make_stop_VOTf0_ideal_adaptor(m = m.io.VOT_f0.AA, kappa = .x, nu = .y))) %>%
   unnest(ideal_adaptor) %>%
   arrange(category)
 ```
@@ -192,8 +159,6 @@ make_accent_adaptation_exposure_design = function(
   if (!quiet) message(
     paste0("Making exposure design with ", exposure.tokens.L1.n, " L1-accented tokens and ", exposure.tokens.L2.n, " L2-accented tokens."))
 
-
-
   d.model.both <- get_parameters_phonetic_contrast.AA(experimenter.ideal_observer,
                                                       category_dist_ratio1,
                                                       category_dist_ratio2,
@@ -210,8 +175,7 @@ make_accent_adaptation_exposure_design = function(
   tibble(
     Phase = "exposure",
     ItemID = as.character(1:(exposure.tokens.L1.n + exposure.tokens.L2.n)),
-    Item.Type = factor(c(rep("L1-accented", exposure.tokens.L1.n), rep("L2-accented", exposure.tokens.L2.n)))
-  ) %>%
+    Item.Type = factor(c(rep("L1-accented", exposure.tokens.L1.n), rep("L2-accented", exposure.tokens.L2.n)))) %>%
     # Add all unique design combinations
     crossing(
       Item.Category = factor(experimenter.ideal_observer$category)) %>%
@@ -227,13 +191,12 @@ make_accent_adaptation_exposure_design = function(
           .x == "L1-accented" & .y == experimenter.ideal_observer$category[[1]] ~ rmvnorm(1, d.model.native$mu[[1]], d.model.native$Sigma[[1]] / experimenter.variability_reduction),
           .x == "L1-accented" & .y == experimenter.ideal_observer$category[[2]] ~ rmvnorm(1, d.model.native$mu[[2]], d.model.native$Sigma[[2]] / experimenter.variability_reduction),
           T ~ NA_real_))) %>%
-# mutate(VOT = map(x, ~ .x[1]) %>% unlist(), f0_Mel = map(x, ~ .x[2]) %>% unlist()) %>%
     mutate(VOT = unlist(map(x, ~max(min_VOT, .x[1]))), # cue 1
         f0_Mel = unlist(map(x, ~max(min_f0_Mel, .x[2]))), # cue 2 %>%  
         x = map2(VOT, f0_Mel, ~ c(.x, .y)))
 }
 
-#<!--remove this function if already existed in main file; leaving it here now so that this section can be knitted independently--!>
+#<!--TO DO remove this function if already existed in main file; leaving it here now so that this section can be knitted independently--!>
 add_subjects_to_exposure <- function(
   d,
   n.subject,
@@ -287,7 +250,6 @@ make_accent_adaptation_test_design = function(
   test.n_block = n.test_block,
   n_test = n.test.token     # Number of test blocks (total)
 ) {
-
   d.model.both <- get_parameters_phonetic_contrast.AA(experimenter.ideal_observer,
                                                       category_dist_ratio1,
                                                       category_dist_ratio2 ,
@@ -297,7 +259,6 @@ make_accent_adaptation_test_design = function(
   ## --------------------------------------------------------------------------------
   # create a *natural* non-native test set
   ## --------------------------------------------------------------------------------
-
   x <- rbind(
     rmvnorm(
       n_test,
@@ -407,15 +368,13 @@ make_exposure_test_plot <- function(exposure.data, test.data){
   # extract a legend that is laid out horizontally
   legend_prow <- get_legend(
     p.AA.exposure +
-      guides(color = guide_legend(title.position = "left", nrow = 1))
-  )
+      guides(color = guide_legend(title.position = "left", nrow = 1)))
 
   p.output <-  plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.1, 1))
   return(p.output)
 }
 
 appender <- function(string, prefix = "Changes in\n") paste0(prefix, string)
-
 ```
 
 ```{r study-AA-exposure-test-plot, fig.width=base.width*3 + .5, fig.height=base.height + .5, fig.cap="(ref:study-AA-exposure-test-plot)"}

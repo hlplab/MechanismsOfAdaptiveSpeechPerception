@@ -358,7 +358,7 @@ d.AA.test <- make_accent_adaptation_test_design(d.AA.exposure, experimenter.idea
 
 ```{r plot-AA-exposure-test-functions}
 # Function to plot exposure and test data
-Make_exposure_test_plot <- function(exposure.data, test.data){
+make_exposure_test_plot <- function(exposure.data, test.data){
   p.AA.exposure <- exposure.data %>%
     mutate(Condition = paste0("Exposure: ", Condition)) %>%
     ggplot(aes(x = VOT, y = f0_Mel, color = Item.Category)) +
@@ -419,7 +419,7 @@ appender <- function(string, prefix = "Changes in\n") paste0(prefix, string)
 ```
 
 ```{r study-AA-exposure-test-plot, fig.width=base.width*3 + .5, fig.height=base.height + .5, fig.cap="(ref:study-AA-exposure-test-plot)"}
-Make_exposure_test_plot(exposure.data = d.AA.exposure, test.data = d.AA.test)
+make_exposure_test_plot(exposure.data = d.AA.exposure, test.data = d.AA.test)
 ```
 
 ```{r add-subjects-AA-exposure-test-data}

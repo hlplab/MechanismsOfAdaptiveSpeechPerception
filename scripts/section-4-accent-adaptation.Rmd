@@ -394,11 +394,17 @@ Paralleling Case Study 1, we ask which of the three change models can account fo
 
 Below we focus on whether each change model can *qualitatively* account for these signature results, rather than the specific magnitude of accuracy improvements. We do so, because the predicted improvements do not only depend on each change model's parameters, but also the statistics of the L2-accented exposure and test tokens. For a different set of (real or simulated) stimuli, the predicted magnitude of accuracy improvements after L2-accented exposure can thus differ. This is an important consideration to keep in mind, and we return to it in the discussion. 
 
-As in Case Study 1, we first model changes in representations, and then compare them against change models in decision-making and normalization. We consider a larger range of parameterizations than in Case Study 1, because the models with the highest accuracy for L2-accented exposure (henceforth, the best-performing parameterization) in some cases fell outside of the range of parameter values considered in Case Study 1. These best-performing parameterizations were determined by bounded quasi-Newton optimization of the recognition accuracy during test after L2-accented exposure [@byrd1995, implemented in function \texttt{optim()} in R], and are indicated in all result plots we present below.
+As in Case Study 1, we first model changes in representations, and then compare them against change models in decision-making and normalization. We consider a larger range of parameterizations than in Case Study 1, because the models with the highest accuracy for L2-accented exposure (henceforth, the best-performing parameterization) in some cases fell outside of the range of parameter values considered in Case Study 1. These best-performing parameterizations were determined by bounded quasi-Newton optimization of the recognition accuracy during test after L2-accented exposure [@byrd1995, implemented in function \texttt{optim()} in R], and are indicated in all result plots we present below. Table \@ref(tab:XXX) summarizes the parameter ranges considered by the optimization algorithm.
+
+<!-- TO DO: have a table here that summarizes the five parameters for the three change models, along with the min and max values considered for them. -->
+<!-- For changes in representations, the optimization procedure searched values from the smallest possible value (1 for $\kappa_{0,c}$ and 4 for $\nu_{0,c}$) to 10000 (virtually no changes in representations). -->
 
 ### Changes in representations
 
 ```{r study-AA-models-changes-in-representations}
+range.prior_kappa <- c(1, 10000)
+range.prior_nu <- c(4, 10000) 
+
 d.AA.representations <- 
   d.AA.exposure %>%
   add_prior_and_get_posterior_beliefs_based_on_exposure(prior = m.ia.VOT_f0.AA) %>%
@@ -457,15 +463,18 @@ best_performing_parameters.representations <-
     # The only method that works for multiple parameters with bounds
     method = "L-BFGS-B",
     # Stop searching outside of those bounds
-    lower = c(log(1), log(4)),
-    upper = c(log(10000), log(10000)), 
+    lower = c(log(min(range.prior_kappa)), log(min(range.prior_nu))),
+    upper = c(log(max(range.prior_kappa)), log(max(range.prior_nu))), 
     control = list(
       trace = 1, 
       fnscale = -1,   # negative scale since we are seeking to maximize accuracy
       factr = 10^11)) # larger factr means higher optimum but slower convergence
+
+# Transform parameters back into counts (from log counts)
+best_performing_parameters.representations$par <- exp(best_performing_parameters.representations$par)
 ```
 
-(ref:AA-result-changes-in-representations) Predictions of a learning model that derives accent adaptation as changes in category representations. Predicted categorization accuracies for the L2-accented test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, as a function of the strength of the prior beliefs in category means ($\kappa_{0,c}$) and covariances ($\nu_{0,c}$). The average accuracy across /d/ and /t/ is shown above the bars for each exposure condition. Error bars show 95% bootstrapped confidence intervals. The highlighted panel is the one closest to the best-performing parameterization ($\kappa_{0,c} = `r exp(best_performing_parameters.representations$par[1])`$; $\nu_{0,c}=`r exp(best_performing_parameters.representations$par[2])`$; overall accuracy $=`r best_performing_parameters.representations$value`$).
+(ref:AA-result-changes-in-representations) Predictions of a learning model that derives accent adaptation as changes in category representations. Predicted categorization accuracies for the L2-accented test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, as a function of the strength of the prior beliefs in category means ($\kappa_{0,c}$) and covariances ($\nu_{0,c}$). The average accuracy across /d/ and /t/ is shown above the bars for each exposure condition. Error bars show 95% bootstrapped confidence intervals. The highlighted panel is the one closest to the best-performing parameterization ($\kappa_{0,c} = `r best_performing_parameters.representations$par[1]`$; $\nu_{0,c}=`r best_performing_parameters.representations$par[2]`$; overall accuracy $=`r best_performing_parameters.representations$value`$). 
 
 ```{r plot-AA-results-representations-functions}
 basic_AA_result_plot <- function(data) {
@@ -515,10 +524,10 @@ make_results_plot_representations <- function(data, data_best) {
           mutate(
             highlight = 
               ifelse(
-                prior_kappa == prior_kappa[which.min(abs(prior_kappa - data_best$par[1]))] & 
-                  prior_nu == prior_nu[which.min(abs(prior_nu - data_best$par[2]))],
+                prior_kappa %in% prior_kappa[which.min(abs(as.numeric(as.character(prior_kappa)) - data_best$par[1]))] & 
+                  prior_nu %in% prior_nu[which.min(abs(as.numeric(as.character(prior_nu)) - data_best$par[2]))],
                 T, F)),
-        aes(fill = highlight), alpha = .1, inherit.aes = F,
+        aes(fill = highlight), alpha = .2, inherit.aes = F,
         xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf)) +
   scale_fill_manual(breaks = c(T, F), values = c("darkgray", "white")) +
   guides(fill = "none")
@@ -526,7 +535,7 @@ make_results_plot_representations <- function(data, data_best) {
 ```
 
 ```{r AA-result-changes-in-representations, fig.width= base.width * 5, fig.height= base.height * 5 + 1, fig.cap="(ref:AA-result-changes-in-representations)", warning=FALSE}
-make_results_plot_representations(d.AA.representations, best_performing_parameters.representations)
+make_results_plot_representations(data = d.AA.representations, data_best = best_performing_parameters.representations)
 ```
 
 Figure \@ref(fig:AA-result-changes-in-representations) shows the predicted categorization accuracy after exposure to L1- or L2-accented speech, as a function of the strength of the prior beliefs for the category means and variances. First consider the top left panel where both $\kappa_{0,c}$s and $\nu_{0,c}$ have very high values. This simulates a extremely slow learner who has strong prior beliefs for both category means and variances such that the small number of tokens heard during exposure phase has minimal influence on subsequent perception of the test tokens. Therefore, the performance from both L1- and L2-accented exposure conditions are highly similar (or identical, if even slower learning rates are applied), reflecting how a listener would categorize based on their long-term prior experience predominantly. 
@@ -578,6 +587,9 @@ add_prior_and_posterior_with_changed_response_biases_based_on_exposure.AA <- fun
 ```
 
 ```{r study-AA-models-changes-in-decision-making}
+range.lapse_rate <- c(0, 1)
+range.beta_pi <- c(10^-3, 10^2) 
+
 d.AA.bias <- 
   d.AA.exposure %>%
   mutate(nrow = row_number()) %>%
@@ -599,13 +611,14 @@ get_accuracy_from_updated_bias <- function(
 ) {
   max_kappa_nu <- 10000
   
+  # TO DO: this might have to be run 20-100 times while scrambling exposure to get a mean accuracy?
   suppressWarnings(
     update_NIW_response_bias_incrementally(
       prior = model %>% 
         mutate(lapse_rate = lapse_rate) %>%
         droplevels() %>%
         lift_MVG_ideal_observer_to_NIW_ideal_adaptor(kappa = max_kappa_nu, nu = max_kappa_nu),
-      beta = log_beta_pi,
+      beta = exp(log_beta_pi),
       exposure = exposure,
       exposure.category = "Item.Category",
       exposure.cues = c("VOT", "f0_Mel"),
@@ -630,20 +643,22 @@ get_accuracy_from_updated_bias <- function(
 best_performing_parameters.bias <- 
   optim(
     # Parameters are lapse_rate, beta_pi
-    par = c(0, log(.1)), 
+    par = c(mean(range.lapse_rate), log(mean(range.beta_pi))), 
     fn = get_accuracy_from_updated_bias,
     # The only method that works for multiple parameters with bounds
     method = "L-BFGS-B",
     # Stop searching outside of those bounds
-    lower = c(0, log(10^-6)),
-    upper = c(1, log(10)), 
+    lower = c(min(range.lapse_rate), log(min(range.beta_pi))),
+    upper = c(max(range.lapse_rate), log(max(range.beta_pi))), 
     control = list(
       trace = 1, 
       fnscale = -1,   # negative scale since we are seeking to maximize accuracy
       factr = 10^12)) # larger factr means higher optimum but slower convergence
+
+best_performing_parameters.bias$par <- c(best_performing_parameters.bias$par[1], exp(best_performing_parameters.bias$par[2]))
 ```
 
-(ref:AA-result-changes-in-decision-making) Predictions of a model that derives accent adaptation as changes in decision-making. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda_{posterior}$). The highlighted panel is the one closest to the best-performing parameterization ($\beta_{\pi} = `r best_performing_parameters.bias$par[1]`$; $\lambda_{posterior}=`r exp(best_performing_parameters.bias$par[2])`$; overall accuracy$=`r best_performing_parameters.bias$value`$).
+(ref:AA-result-changes-in-decision-making) Predictions of a model that derives accent adaptation as changes in decision-making. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda_{posterior}$). The highlighted panel is the one closest to the best-performing parameterization ($\beta_{\pi} = `r best_performing_parameters.bias$par[1]`$; $\lambda_{posterior}=`r best_performing_parameters.bias$par[2]`$; overall accuracy$=`r best_performing_parameters.bias$value`$).
 
 ```{r plot-AA-results-decision-making-functions}
 make_results_plot_decision_making <- function(data, data_best){
@@ -666,13 +681,15 @@ make_results_plot_decision_making <- function(data, data_best){
         data = data %>%
           filter(category == Item.Intended_category) %>%
           distinct(posterior.lapse_rate, beta_pi) %>%
-          mutate(highlight = 
-                   ifelse(
-                     posterior.lapse_rate == posterior.lapse_rate[which.min(abs(posterior.lapse_rate - data_best$par[1]))] & 
-                       beta_pi == beta_pi[which.min(abs(beta_pi - data_best$par[2]))],
-                     T, F)),
+          ungroup() %>%
+          mutate(
+            highlight = 
+              ifelse(
+                posterior.lapse_rate %in% posterior.lapse_rate[which.min(abs(posterior.lapse_rate - data_best$par[1]))] & 
+                  beta_pi %in% beta_pi[which.min(abs(beta_pi - data_best$par[2]))],
+                T, F)),
         aes(fill = highlight), alpha = .1, inherit.aes = F,
-        xmin = -Inf,xmax = Inf, ymin = -Inf,ymax = Inf)
+        xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf)
     ) +
     scale_fill_manual(breaks = c(T, F), values = c("darkgray", "white")) +
     guides(fill = "none")
@@ -680,7 +697,7 @@ make_results_plot_decision_making <- function(data, data_best){
 ```
 
 ```{r AA-result-changes-in-decision-making, fig.width= base.width * 5, fig.height= base.height * 5 + 1, fig.cap="(ref:AA-result-changes-in-decision-making)", warning=FALSE}
-make_results_plot_decision_making(d.AA.bias, best_performing_parameterization.bias)
+make_results_plot_decision_making(data = d.AA.bias, data_best = best_performing_parameters.bias)
 ```
 
 Figure \@ref(fig:AA-result-changes-in-decision-making) shows the effects of changes in decision-making, depending on the rate at which response biases change $\beta_{\pi}$ and the lapse rate $\lambda$. For L1-accented exposure, we again see that /d/ test tokens are categorized substantially less accurately than /t/ test tokens, regardless of the specific value of ($\beta_{\pi}$). The second signature result---improved accuracy after L2-accented exposure for /d/---is obtained for sufficiently large $\beta_{\pi}$. As $\beta_{\pi}$ increases, the overall recognition accuracy first increases and then plateaus. The largest improvements are found for the smallest lapse rates and fast-enough change rates (gray panel in Figure \@ref(fig:AA-result-changes-in-decision-making)).
@@ -782,7 +799,7 @@ best_performing_case.normalization.both <-
   summarise(mAcc = mean(response)) 
 ```
 
-(ref:AA-result-changes-in-normalization) Predictions of a model that derives accent adaptation from changes in normalization. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure. The highlighted panel is the one closest to the best-performing parameterization ($\kappa_0$ = `r exp(best_performing_parameters.normalization$par[1])`$; overall accuracy $=`r best_performing_parameters.normalization$value`$).
+(ref:AA-result-changes-in-normalization) Predictions of a model that derives accent adaptation from changes in normalization. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure. The highlighted panel is the one closest to the best-performing parameterization ($\kappa_0$ = `r best_performing_parameters.normalization$par[1]`$; overall accuracy $=`r best_performing_parameters.normalization$value`$).
 
 ```{r plot-AA-results-normalization-functions}
 make_results_plot_normalization <- function(data, data_best){
@@ -808,7 +825,7 @@ make_results_plot_normalization <- function(data, data_best){
           distinct(prior_kappa.normalization) %>%
           mutate(highlight = 
                    ifelse(
-                     prior_kappa.normalization == prior_kappa.normalization[which.min(abs(prior_kappa.normalization - data_best$par[1]))],
+                     prior_kappa.normalization %in% prior_kappa.normalization[which.min(abs(as.numeric(as.character(prior_kappa.normalization)) - data_best$par[1]))],
                      T, F)),
         aes(fill = highlight), alpha = .1, inherit.aes = F,
         xmin = -Inf,xmax = Inf, ymin = -Inf,ymax = Inf)) +

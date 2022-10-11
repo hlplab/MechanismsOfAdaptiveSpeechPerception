@@ -14,6 +14,7 @@ Let's delete to-dos after they have been addressed, and post in Slack what we've
     * There are a handful of new references. Could you add them?
 
   * Florian: 
+    * for the decision-making model, run multiple instances of each version and take the average. unlike the other models it is not order invariant, and especially for large beta_pi it can depend a lot on the last exposure token.
     * CHECK OUT WHETHER CHANGES IN NORMALIZATION CAN LEAD TO NON-LINEAR CHANGES *DESPITE THE FACT THAT WE'RE USING SIMPLE LINEAR INTERPOLATION*
 
 ## Things to perhaps do later:

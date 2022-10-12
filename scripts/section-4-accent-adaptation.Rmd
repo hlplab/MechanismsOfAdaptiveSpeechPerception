@@ -159,11 +159,14 @@ make_accent_adaptation_exposure_design = function(
   if (!quiet) message(
     paste0("Making exposure design with ", exposure.tokens.L1.n, " L1-accented tokens and ", exposure.tokens.L2.n, " L2-accented tokens."))
 
-  d.model.both <- get_parameters_phonetic_contrast.AA(experimenter.ideal_observer,
-                                                      category_dist_ratio1,
-                                                      category_dist_ratio2,
-                                                      shift_mean_1,
-                                                      shift_mean_2)
+  d.model.both <- 
+    get_parameters_phonetic_contrast.AA(
+      experimenter.ideal_observer,
+      category_dist_ratio1,
+      category_dist_ratio2,
+      shift_mean_1,
+      shift_mean_2)
+  
   d.model.native <- d.model.both %>%
     filter(speech == "native") %>%
     droplevels()
@@ -191,9 +194,10 @@ make_accent_adaptation_exposure_design = function(
           .x == "L1-accented" & .y == experimenter.ideal_observer$category[[1]] ~ rmvnorm(1, d.model.native$mu[[1]], d.model.native$Sigma[[1]] / experimenter.variability_reduction),
           .x == "L1-accented" & .y == experimenter.ideal_observer$category[[2]] ~ rmvnorm(1, d.model.native$mu[[2]], d.model.native$Sigma[[2]] / experimenter.variability_reduction),
           T ~ NA_real_))) %>%
-    mutate(VOT = unlist(map(x, ~max(min_VOT, .x[1]))), # cue 1
-        f0_Mel = unlist(map(x, ~max(min_f0_Mel, .x[2]))), # cue 2 %>%  
-        x = map2(VOT, f0_Mel, ~ c(.x, .y)))
+    mutate(
+      VOT = unlist(map(x, ~ max(min_VOT, .x[1]))), 
+      f0_Mel = unlist(map(x, ~ max(min_f0_Mel, .x[2]))),  
+      x = map2(VOT, f0_Mel, ~ c("VOT" = .x, "f0_Mel" = .y)))
 }
 
 #<!--TO DO remove this function if already existed in main file; leaving it here now so that this section can be knitted independently--!>
@@ -250,12 +254,14 @@ make_accent_adaptation_test_design = function(
   test.n_block = n.test_block,
   n_test = n.test.token     # Number of test blocks (total)
 ) {
-  d.model.both <- get_parameters_phonetic_contrast.AA(experimenter.ideal_observer,
-                                                      category_dist_ratio1,
-                                                      category_dist_ratio2 ,
-                                                      shift_mean_1,
-                                                      shift_mean_2)
-
+  d.model.both <- 
+    get_parameters_phonetic_contrast.AA(
+      experimenter.ideal_observer,
+      category_dist_ratio1,
+      category_dist_ratio2 ,
+      shift_mean_1,
+      shift_mean_2)
+  
   ## --------------------------------------------------------------------------------
   # create a *natural* non-native test set
   ## --------------------------------------------------------------------------------
@@ -273,11 +279,9 @@ make_accent_adaptation_test_design = function(
     d.test <-
       tibble(
         Item.Intended_category = sort(rep(c("A", "B"), n_test)),
-        # VOT = x[,1], # cue 1
-        # f0_Mel = x[,2], # cue 2
-        VOT = unlist(map(x[,1], ~max(min_VOT, .x))), # cue 1
-        f0_Mel = unlist(map(x[,2], ~max(min_f0_Mel, .x))), # cue 2
-        x = map2(VOT, f0_Mel, ~ c(.x, .y))) %>%
+        VOT = unlist(map(x[,1], ~ max(min_VOT, .x))), # cue 1
+        f0_Mel = unlist(map(x[,2], ~ max(min_f0_Mel, .x))), # cue 2
+        x = map2(VOT, f0_Mel, ~ c("VOT" = .x, "f0_Mel" =  .y))) %>%
       mutate(
         Item.Intended_category = ifelse(Item.Intended_category == "A", "/d/", "/t/"),
         Phase = "test",
@@ -308,7 +312,6 @@ add_subjects_to_test <- function(
     select(Condition, Subject, Phase, ItemID, Item.Category,Item.Intended_category, Item.Type, x, everything()) %>%
     ungroup()
 }
-
 ```
 
 ```{r study-AA-test-make-data}
@@ -422,18 +425,22 @@ d.AA.representations <-
       select(x, Item.Intended_category), by = "x") %>%
   distinct()
 
+# Assumes one exposure from one subject
 get_accuracy_from_updated_representations <- function(
-    log_kappa = 4, 
-    log_nu = 4, 
+    pars,
     model = m.io.VOT_f0.AA,
-    exposure = d.AA.exposure %>% filter(Condition == "L2-accented"), 
-    test = d.AA.test %>% filter(Condition == "/d/_L2-accented")
+    exposure = d.AA.exposure %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1")), 
+    test = d.AA.test %>% filter(Condition == "/d/_L2-accented", Subject == paste0(Condition, ".1"))
 ) {
+  kappa = exp(pars[1])
+  nu = exp(pars[2])
+  
   suppressWarnings(
     update_NIW_ideal_adaptor_incrementally(
       prior = model %>% 
+        mutate(lapse_rate = lapse_rate) %>%
         droplevels() %>%
-        lift_MVG_ideal_observer_to_NIW_ideal_adaptor(kappa = exp(log_kappa), nu = exp(log_nu)),
+        lift_MVG_ideal_observer_to_NIW_ideal_adaptor(kappa = kappa, nu = nu),
       exposure = exposure,
       exposure.category = "Item.Category",
       exposure.cues = c("VOT", "f0_Mel"),
@@ -444,7 +451,6 @@ get_accuracy_from_updated_representations <- function(
       keep.exposure_data = FALSE) %>%
       nest(posterior = everything()) %>%
       add_test_tokens(test) %>%
-      mutate(posterior.categorization = map(posterior, ~ get_categorization_function_from_NIW_ideal_adaptor(.x, logit = TRUE))) %>%
       add_categorization() %>%
       # Keep only posterior of intended category
       left_join(
@@ -458,17 +464,17 @@ get_accuracy_from_updated_representations <- function(
 best_performing_parameters.representations <- 
   optim(
     # Parameters are kappa, nu
-    par = c(log(10), log(40)), 
+    par = c(mean(log(range.prior_kappa)), mean(log(range.prior_nu))), 
     fn = get_accuracy_from_updated_representations,
     # The only method that works for multiple parameters with bounds
     method = "L-BFGS-B",
     # Stop searching outside of those bounds
-    lower = c(log(min(range.prior_kappa)), log(min(range.prior_nu))),
-    upper = c(log(max(range.prior_kappa)), log(max(range.prior_nu))), 
+    lower = c(min(log(range.prior_kappa)), min(log(range.prior_nu))),
+    upper = c(max(log(range.prior_kappa)), max(log(range.prior_nu))), 
     control = list(
       trace = 1, 
       fnscale = -1,   # negative scale since we are seeking to maximize accuracy
-      factr = 10^11)) # larger factr means higher optimum but slower convergence
+      factr = 10^8))  # smaller factr means higher optimum but slower convergence
 
 # Transform parameters back into counts (from log counts)
 best_performing_parameters.representations$par <- exp(best_performing_parameters.representations$par)
@@ -602,13 +608,15 @@ d.AA.bias <-
   left_join(., d.AA.test %>% select(x, Item.Intended_category), by = "x") %>%
   distinct()
 
+# Assumes one exposure from one subject
 get_accuracy_from_updated_bias <- function(
-    lapse_rate = 0, 
-    log_beta_pi = .5, 
+    pars,
     model = m.io.VOT_f0.AA,
-    exposure = d.AA.exposure %>% filter(Condition == "L2-accented"), 
-    test = d.AA.test %>% filter(Condition == "/d/_L2-accented")
+    exposure = d.AA.exposure %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1")), 
+    test = d.AA.test %>% filter(Condition == "/d/_L2-accented", Subject == paste0(Condition, ".1"))
 ) {
+  lapse_rate <- pars[1]
+  beta_pi <- exp(pars[2])
   max_kappa_nu <- 10000
   
   # TO DO: this might have to be run 20-100 times while scrambling exposure to get a mean accuracy?
@@ -618,7 +626,7 @@ get_accuracy_from_updated_bias <- function(
         mutate(lapse_rate = lapse_rate) %>%
         droplevels() %>%
         lift_MVG_ideal_observer_to_NIW_ideal_adaptor(kappa = max_kappa_nu, nu = max_kappa_nu),
-      beta = exp(log_beta_pi),
+      beta = beta_pi,
       exposure = exposure,
       exposure.category = "Item.Category",
       exposure.cues = c("VOT", "f0_Mel"),
@@ -629,7 +637,6 @@ get_accuracy_from_updated_bias <- function(
       keep.exposure_data = FALSE) %>%
       nest(posterior = everything()) %>%
       add_test_tokens(test) %>%
-      mutate(posterior.categorization = map(posterior, ~ get_categorization_function_from_NIW_ideal_adaptor(.x, logit = TRUE))) %>%
       add_categorization() %>%
       # Keep only posterior of intended category
       left_join(
@@ -642,18 +649,15 @@ get_accuracy_from_updated_bias <- function(
 
 best_performing_parameters.bias <- 
   optim(
-    # Parameters are lapse_rate, beta_pi
-    par = c(mean(range.lapse_rate), log(mean(range.beta_pi))), 
+    par = c(mean(range.lapse_rate), mean(log(range.beta_pi))), 
     fn = get_accuracy_from_updated_bias,
-    # The only method that works for multiple parameters with bounds
     method = "L-BFGS-B",
-    # Stop searching outside of those bounds
-    lower = c(min(range.lapse_rate), log(min(range.beta_pi))),
-    upper = c(max(range.lapse_rate), log(max(range.beta_pi))), 
+    lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
+    upper = c(max(range.lapse_rate), max(log(range.beta_pi))), 
     control = list(
       trace = 1, 
-      fnscale = -1,   # negative scale since we are seeking to maximize accuracy
-      factr = 10^12)) # larger factr means higher optimum but slower convergence
+      fnscale = -1,   
+      factr = 10^9))
 
 best_performing_parameters.bias$par <- c(best_performing_parameters.bias$par[1], exp(best_performing_parameters.bias$par[2]))
 ```
@@ -750,6 +754,8 @@ add_prior_and_normalize_test_tokens_based_on_exposure.AA <- function(data.exposu
 Finally, we compare models that normalize test tokens based on the phonetic inputs experienced during exposure to models that continue to apply normalization based on previous long-term L1 experience. Figure \@ref(fig:AA-result-changes-in-normalization) shows the predicted categorization accuracy following changes in normalization in L1- and L2-accented exposure conditions. We again obtain both signature results of experiments on accent adaptation. For L1-accented exposure, we continue to see that /d/ test tokens are categorized substantially less accurately than /t/ test tokens. For L2-accented exposure, recognition accuracy is improved for /d/ test tokens without the cost of equivalent decreases in recognition accuracy for /t/. That is, like the other two change models, normalization can predict *overall* improvements in recognition accuracy after L2-accented exposure. 
 
 ```{r study-AA-models-normalization}
+range.prior_kappa.normalization <- c(1, 10000)
+
 d.AA.normalization <-
   d.AA.exposure %>%
   add_prior_and_normalize_test_tokens_based_on_exposure.AA(
@@ -761,8 +767,7 @@ d.AA.normalization <-
   add_categorization() %>%
   distinct() %>%
   ungroup() %>%
-  mutate(
-    prior_kappa.normalization = factor(as.character(prior_kappa.normalization), levels = as.character(rev(sort(unique(prior_kappa.normalization))))))
+  mutate(prior_kappa.normalization = factor(as.character(prior_kappa.normalization), levels = as.character(rev(sort(unique(prior_kappa.normalization))))))
 
 # get ItemID for normalized cue values so that the intended_category is known
 pair.ItemID.observationID <- 
@@ -778,25 +783,66 @@ d.AA.normalization %<>%
   left_join(d.AA.test %>% select(Item.Intended_category, ItemID), by = "ItemID") %>%
   distinct()
 
-# examine best-performing parameterization
-d.AA.normalization.rank <- 
-  d.AA.normalization %>%
-  filter(category == Item.Intended_category) %>%
-  filter(normalization == "centered based\non exposure") %>%
-  mutate(prior_kappa.normalization = as.numeric(as.character(prior_kappa.normalization))) %>%
-  group_by(Condition, prior_kappa.normalization) %>%
-  summarise(mAcc = mean(response)) %>%
-  arrange(-mAcc, -prior_kappa.normalization) %>%
-  filter(Condition == "L2-accented")
-best_performing_case.normalization <- d.AA.normalization.rank[1,]
+# Assumes one exposure from one subject
+get_accuracy_from_updated_normalization <- function(
+    par, 
+    mu_0 = prior_marginal_VOT_f0_stats$x_mean[[1]],
+    model = m.io.VOT_f0.AA,
+    exposure = d.AA.exposure %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1")), 
+    test = d.AA.test %>% filter(Condition == "/d/_L2-accented", Subject == paste0(Condition, ".1"))
+) {
+  kappa.normalization <- exp(par[1])
+  max_kappa_nu <- 10000
+  
+  # Get normalization parameters for exposure data
+  exposure.normalization <- 
+    exposure %>%
+    summarise(
+      x_N = length(x),
+      x_mean = list(colMeans(reduce(x, rbind))),
+      x_cov = list(cov(reduce(x, rbind))))
+  
+  mu_inferred <- 1 / 
+            (kappa.normalization + exposure.normalization$x_N[[1]]) * 
+            (kappa.normalization * mu_0 + exposure.normalization$x_N[[1]] * exposure.normalization$x_mean[[1]])
+  
+  test %<>%
+    mutate(x = map(x, ~ .x - (mu_inferred - mu_0)))
+  
+  suppressWarnings(
+    test %>%
+      distinct(x) %>%
+      nest(x = x) %>%
+      # Categorize
+      mutate(
+        posterior = list(
+          model %>% 
+            mutate(lapse_rate = lapse_rate) %>%
+            droplevels() %>%
+            lift_MVG_ideal_observer_to_NIW_ideal_adaptor(kappa = max_kappa_nu, nu = max_kappa_nu))) %>%
+      add_categorization() %>%
+      # Keep only posterior of intended category
+      left_join(
+        test %>%
+          select(x, Item.Intended_category), by = "x") %>%
+      filter(category == Item.Intended_category) %>%
+      pull(response) %>%
+      mean())
+}
 
-best_performing_case.normalization.both <- 
-  d.AA.normalization %>%
-  filter(category == Item.Intended_category) %>%
-  filter(normalization == "centered based\non exposure") %>%
-  filter(prior_kappa.normalization == best_performing_case.normalization$prior_kappa.normalization) %>%
-  group_by(Condition, Subject, prior_kappa.normalization) %>%
-  summarise(mAcc = mean(response)) 
+best_performing_parameters.normalization <- 
+  optim(
+    par = log(mean(range.prior_kappa.normalization)), 
+    fn = get_accuracy_from_updated_normalization,
+    method = "L-BFGS-B",
+    lower = log(min(range.prior_kappa.normalization)),
+    upper = log(max(range.prior_kappa.normalization)), 
+    control = list(
+      trace = 1, 
+      fnscale = -1,
+      factr = 10^9))
+
+best_performing_parameters.normalization$par <- exp(best_performing_parameters.normalization$par[1])
 ```
 
 (ref:AA-result-changes-in-normalization) Predictions of a model that derives accent adaptation from changes in normalization. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure. The highlighted panel is the one closest to the best-performing parameterization ($\kappa_0$ = `r best_performing_parameters.normalization$par[1]`$; overall accuracy $=`r best_performing_parameters.normalization$value`$).

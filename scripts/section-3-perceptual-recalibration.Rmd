@@ -427,7 +427,7 @@ Finally, Figure \@ref(fig:PR-result-changes-in-representations) shows that distr
 ### Changes in decision-making
 Next, we model the effects of changes in decision-making. Such changes have rarely been considered as an explanation for boundary shifts [but see @clarkedavidson2008]. In addition to varying the rate at which response biases change $\beta_{\pi}$, we also vary the lapse rate parameter $\lambda$. Normalization and representations did not change based on exposure ($\kappa_0 = \kappa_{0,c} = \nu_{0,c} = \infty$). 
 
-(ref:PR-result-changes-in-decision-making) Predictions of a model that derives perceptual recalibration as changes in decision-making. Predicted categorization responses are shown for the `r length(test_locations)` test locations after `r paste(categories.PR, collapse = "- and")`-shifted exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda_{posterior}$). The response biases towards `r categories.PR[1]` that results from $\beta_{\pi}$ are shown in the bottom row for each of the two exposure conditions, and are identical within each column (when all trials are lapses, as in the bottom row, the response distribution is identical to the response biases). 
+(ref:PR-result-changes-in-decision-making) Predictions of a model that derives perceptual recalibration as changes in decision-making. Predicted categorization responses are shown for the `r length(test_locations)` test locations after `r paste(categories.PR, collapse = "- and")`-shifted exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda$). The response biases towards `r categories.PR[1]` that results from $\beta_{\pi}$ are shown in the bottom row for each of the two exposure conditions, and are identical within each column (when all trials are lapses, as in the bottom row, the response distribution is identical to the response biases). 
 
 ```{r PR-result-changes-in-decision-making, fig.width= base.width * 5, fig.height= base.height * 5 +.5, fig.cap="(ref:PR-result-changes-in-decision-making)"}
 d.PR <- d.PR.exposure %>%
@@ -465,7 +465,7 @@ p.PR.results %+%
     posterior.lapse_rate ~ beta_pi, 
     labeller = label_bquote(
       cols = beta[pi] == .(beta_pi),
-      rows = lambda[posterior] == ~.(posterior.lapse_rate))) +
+      rows = lambda == ~.(posterior.lapse_rate))) +
   myGplot.defaults(base_size = 14, set_theme = F)
 
 # p.PR.results %+% 

@@ -404,7 +404,7 @@ As in Case Study 1, we first model changes in representations, and then compare 
 
 ### Changes in representations
 
-```{r study-AA-models-changes-in-representations}
+```{r study-AA-models-changes-in-representations, echo=FALSE, message=FALSE, warning=FALSE}
 range.prior_kappa <- c(1, 10000)
 range.prior_nu <- c(4, 10000) 
 
@@ -592,7 +592,7 @@ add_prior_and_posterior_with_changed_response_biases_based_on_exposure.AA <- fun
 }
 ```
 
-```{r study-AA-models-changes-in-decision-making}
+```{r study-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE}
 range.lapse_rate <- c(0, 1)
 range.beta_pi <- c(10^-3, 10^2) 
 
@@ -662,7 +662,7 @@ best_performing_parameters.bias <-
 best_performing_parameters.bias$par <- c(best_performing_parameters.bias$par[1], exp(best_performing_parameters.bias$par[2]))
 ```
 
-(ref:AA-result-changes-in-decision-making) Predictions of a model that derives accent adaptation as changes in decision-making. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda_{posterior}$). The highlighted panel is the one closest to the best-performing parameterization ($\beta_{\pi} = `r best_performing_parameters.bias$par[1]`$; $\lambda_{posterior}=`r best_performing_parameters.bias$par[2]`$; overall accuracy$=`r best_performing_parameters.bias$value`$).
+(ref:AA-result-changes-in-decision-making) Predictions of a model that derives accent adaptation as changes in decision-making. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda$). The highlighted panel is the one closest to the best-performing parameterization ($\beta_{\pi} = `r best_performing_parameters.bias$par[1]`$; $\lambda=`r best_performing_parameters.bias$par[2]`$; overall accuracy$=`r best_performing_parameters.bias$value`$).
 
 ```{r plot-AA-results-decision-making-functions}
 make_results_plot_decision_making <- function(data, data_best){
@@ -676,7 +676,7 @@ make_results_plot_decision_making <- function(data, data_best){
       posterior.lapse_rate ~ beta_pi,
       labeller = label_bquote(
         cols = beta[pi] == .(beta_pi),
-        rows = lambda[posterior] == ~.(posterior.lapse_rate))) 
+        rows = lambda == ~.(posterior.lapse_rate))) 
 
   p.results +
     ggnewscale::new_scale_fill() +
@@ -753,7 +753,7 @@ add_prior_and_normalize_test_tokens_based_on_exposure.AA <- function(data.exposu
 
 Finally, we compare models that normalize test tokens based on the phonetic inputs experienced during exposure to models that continue to apply normalization based on previous long-term L1 experience. Figure \@ref(fig:AA-result-changes-in-normalization) shows the predicted categorization accuracy following changes in normalization in L1- and L2-accented exposure conditions. We again obtain both signature results of experiments on accent adaptation. For L1-accented exposure, we continue to see that /d/ test tokens are categorized substantially less accurately than /t/ test tokens. For L2-accented exposure, recognition accuracy is improved for /d/ test tokens without the cost of equivalent decreases in recognition accuracy for /t/. That is, like the other two change models, normalization can predict *overall* improvements in recognition accuracy after L2-accented exposure. 
 
-```{r study-AA-models-normalization}
+```{r study-AA-models-normalization, echo=FALSE, message=FALSE, warning=FALSE}
 range.prior_kappa.normalization <- c(1, 10000)
 
 d.AA.normalization <-
@@ -845,7 +845,7 @@ best_performing_parameters.normalization <-
 best_performing_parameters.normalization$par <- exp(best_performing_parameters.normalization$par[1])
 ```
 
-(ref:AA-result-changes-in-normalization) Predictions of a model that derives accent adaptation from changes in normalization. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure. The highlighted panel is the one closest to the best-performing parameterization ($\kappa_0$ = `r best_performing_parameters.normalization$par[1]`$; overall accuracy $=`r best_performing_parameters.normalization$value`$).
+(ref:AA-result-changes-in-normalization) Predictions of a model that derives accent adaptation from changes in normalization. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure. The highlighted panel is the one closest to the best-performing parameterization ($\kappa_0 = `r best_performing_parameters.normalization$par[1]`$; overall accuracy $=`r best_performing_parameters.normalization$value`$).
 
 ```{r plot-AA-results-normalization-functions}
 make_results_plot_normalization <- function(data, data_best){

@@ -941,6 +941,11 @@ make_results_plot_normalization <- function(data, data_best){
     geom_text(
       inherit.aes = FALSE, 
       data = . %>%
+        # TO DO: Xin, somehow we're ending up with different accuracies from your way of calculating accuracy
+        # and my (recently added) way of doing it. I'd like to understand why. One possibility is that it has 
+        # to do with my questions about the distinct() statement in the code above but there are many other 
+        # reasons this could happen. (this is nto specific to normalization but I'm putting this comment here
+        # so that we don't forget.)
         group_by(Condition, normalization, prior_kappa.normalization) %>%
         summarise(mAcc = round(mean(response), digits = 2)), 
       mapping = aes(label = mAcc, x = Condition, y = 1), 

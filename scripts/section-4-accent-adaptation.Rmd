@@ -412,7 +412,7 @@ Below we focus on whether each change model can *qualitatively* account for thes
 
 As in Case Study 1, we first model changes in representations, and then compare them against change models in decision-making and normalization. We consider a larger range of parameterizations than in Case Study 1, because the models with the highest accuracy for L2-accented exposure (henceforth, the best-performing parameterization) in some cases fell outside of the range of parameter values considered in Case Study 1. These best-performing parameterizations were determined by bounded quasi-Newton optimization of the recognition accuracy during test after L2-accented exposure [@byrd1995, implemented in function \texttt{optim()} in R], and are indicated in all result plots we present below. Table \@ref(tab:XXX) summarizes the parameter ranges considered by the optimization algorithm.
 
-<!-- TO DO: have a table here that summarizes the five parameters for the three change models, along with the min and max values considered for them. -->
+<!-- TO DO: Xin, have a table here that summarizes the five parameters for the three change models, along with the min and max values considered for them. -->
 <!-- For changes in representations, the optimization procedure searched values from the smallest possible value (1 for $\kappa_{0,c}$ and 4 for $\nu_{0,c}$) to 10000 (virtually no changes in representations). -->
 
 ### Changes in representations
@@ -515,7 +515,7 @@ best_performing_parameters.representations <-
     lower = c(min(log(range.prior_kappa)), min(log(range.prior_nu))),
     upper = c(max(log(range.prior_kappa)), max(log(range.prior_nu))), 
     control = list(
-      trace = 1, 
+      # trace = 1, 
       fnscale = -1,   # negative scale since we are seeking to maximize accuracy
       factr = 10^8))  # smaller factr means higher optimum but slower convergence
 
@@ -547,6 +547,8 @@ d.AA.representations <-
 ```
 
 (ref:AA-result-changes-in-representations) Predictions of a learning model that derives accent adaptation as changes in category representations. Predicted categorization accuracies for the L2-accented test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, as a function of the strength of the prior beliefs in category means ($\kappa_{0,c}$) and covariances ($\nu_{0,c}$). The average accuracy across /d/ and /t/ is shown above the bars for each exposure condition. Error bars show 95% bootstrapped confidence intervals. The highlighted panel is the one closest to the best-performing parameterization ($\kappa_{0,c} = `r best_performing_parameters.representations$par[1]`$; $\nu_{0,c}=`r best_performing_parameters.representations$par[2]`$; overall accuracy $=`r best_performing_parameters.representations$value`$). 
+<!-- TO DO: Xin, let's increase the distance between the text label and top of graph (i.e., increase y-range a bit)
+     also some of the plots have panel labels that need to be smaller to fit (might apply to PR section, too) -->
 
 ```{r plot-AA-results-representations-functions}
 basic_AA_result_plot <- function(data) {
@@ -720,9 +722,8 @@ best_performing_parameters.bias <-
     lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
     upper = c(max(range.lapse_rate), max(log(range.beta_pi))), 
     control = list(
-      trace = 1, 
       fnscale = -1,   
-      factr = 10^9))
+      factr = 10^8))
 
 best_performing_parameters.bias$par <- c(best_performing_parameters.bias$par[1], exp(best_performing_parameters.bias$par[2]))
 
@@ -771,7 +772,7 @@ make_results_plot_decision_making <- function(data, data_best){
                 posterior.lapse_rate %in% posterior.lapse_rate[which.min(abs(posterior.lapse_rate - data_best$par[1]))] & 
                   beta_pi %in% beta_pi[which.min(abs(beta_pi - data_best$par[2]))],
                 T, F)),
-        aes(fill = highlight), alpha = .1, inherit.aes = F,
+        aes(fill = highlight), alpha = .2, inherit.aes = F,
         xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf)
     ) +
     scale_fill_manual(breaks = c(T, F), values = c("darkgray", "white")) +
@@ -896,9 +897,8 @@ best_performing_parameters.normalization <-
     lower = log(min(range.prior_kappa.normalization)),
     upper = log(max(range.prior_kappa.normalization)), 
     control = list(
-      trace = 1, 
       fnscale = -1,
-      factr = 10^9))
+      factr = 10^8))
 
 best_performing_parameters.normalization$par <- exp(best_performing_parameters.normalization$par[1])
 
@@ -939,9 +939,12 @@ make_results_plot_normalization <- function(data, data_best){
   p.results <- 
     basic_AA_result_plot(data) +
     geom_text(
-      inherit.aes = FALSE, data = . %>%
+      inherit.aes = FALSE, 
+      data = . %>%
         group_by(Condition, normalization, prior_kappa.normalization) %>%
-        summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
+        summarise(mAcc = round(mean(response), digits = 2)), 
+      mapping = aes(label = mAcc, x = Condition, y = 1), 
+      size = geom_text.size) +
     facet_grid(
       . ~ prior_kappa.normalization,
       labeller = label_bquote(
@@ -954,21 +957,23 @@ make_results_plot_normalization <- function(data, data_best){
         data = 
           data %>%
           filter(category == Item.Intended_category) %>%
-          filter(normalization == "centered based\non exposure") %>%
           distinct(prior_kappa.normalization) %>%
-          mutate(highlight = 
-                   ifelse(
-                     prior_kappa.normalization %in% prior_kappa.normalization[which.min(abs(as.numeric(as.character(prior_kappa.normalization)) - data_best$par[1]))],
-                     T, F)),
-        aes(fill = highlight), alpha = .1, inherit.aes = F,
-        xmin = -Inf,xmax = Inf, ymin = -Inf,ymax = Inf)) +
+          mutate(
+            highlight = 
+              ifelse(
+                prior_kappa.normalization %in% prior_kappa.normalization[which.min(abs(as.numeric(as.character(prior_kappa.normalization)) - data_best$par[1]))],
+                T, F)),
+        aes(fill = highlight), alpha = .2, inherit.aes = F,
+        xmin = -Inf, xmax = Inf, ymin = -Inf ,ymax = Inf)) +
     scale_fill_manual(breaks = c(T, F), values = c("darkgray", "white")) +
     guides(fill = "none")
 }
 ```
 
 ```{r AA-result-changes-in-normalization, fig.width= base.width * 5, fig.height= base.height + 1.75, fig.cap="(ref:AA-result-changes-in-normalization)", warning=FALSE}
-make_results_plot_normalization(d.AA.normalization, best_performing_parameters.normalization)
+make_results_plot_normalization(
+  d.AA.normalization %>% filter(normalization == "centered based\non exposure"), 
+  best_performing_parameters.normalization)
 ```
 
 ## Summary

@@ -238,7 +238,7 @@ colnames(population_var) = c("category", "cue", "prior_variance")
 ```
 
 ### Test phase
-During test, listeners from both exposure conditions hear the same recordings from the same L2-accented talker used in the L2-accented exposure condition. 60 test tokens are randomly sampled from the distribution of each L2-accented category (Figure \@ref(fig:study-AA-exposure-test-plot)B).
+During test, listeners from both exposure conditions hear the same recordings from the same L2-accented talker used in the L2-accented exposure condition. 60 test tokens are randomly sampled from the distribution of each L2-accented category, half from the /d/ category and half from the /t/ category (Figure \@ref(fig:study-AA-exposure-test-plot)B).
 
 ```{r study-AA-test-functions}
 # TO DO: Xin, why do the test conditions have a different name than the exposure conditions? 

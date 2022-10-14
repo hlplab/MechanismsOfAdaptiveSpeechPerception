@@ -401,10 +401,8 @@ make_exposure_test_plot(exposure.data = d.AA.exposure, test.data = d.AA.test)
 ```
 
 ```{r add-subjects-AA-exposure-test-data}
-d.AA.exposure %<>%
-  add_subjects_to_exposure(n.subject = n.subject)
-d.AA.test %<>%
-  add_subjects_to_test(n.subject = n.subject)
+d.AA.exposure %<>% add_subjects_to_exposure(n.subject = n.subject)
+d.AA.test %<>% add_subjects_to_test(n.subject = n.subject)
 ```
 
 
@@ -687,27 +685,36 @@ add_prior_and_posterior_with_changed_response_biases_based_on_exposure.AA <- fun
 ```{r study-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE}
 range.lapse_rate <- c(0, 1)
 range.beta_pi <- c(10^-3, 10^2) 
+n.simulations_per_update <- 25
 
 update_bias_and_categorize_test <- function(
   prior,
   beta_pi,
   exposure,
   test,
-  cues = c("VOT", "f0_Mel")
+  cues = c("VOT", "f0_Mel"),
+  n.simulations = n.simulations_per_update
 ) {
-  update_NIW_response_bias_incrementally(
-    prior = prior,
-    beta = beta_pi,
-    exposure = exposure,
-    exposure.category = "Item.Category",
-    exposure.cues = cues,
-    decision_rule = "proportional",
-    noise_treatment = "marginalize",
-    lapse_treatment = "marginalize",
-    keep.update_history = FALSE,
-    keep.exposure_data = FALSE) %>%
-    nest(posterior = everything()) %>%
-    add_test_and_categorize(test)
+  lapply(
+    X = as_list(1:n.simulations),
+    FUN = function(x) 
+      update_NIW_response_bias_incrementally(
+        prior = prior,
+        beta = beta_pi,
+        exposure = exposure %>% sample_frac(1, replace = F),
+        exposure.category = "Item.Category",
+        exposure.cues = cues,
+        decision_rule = "proportional",
+        noise_treatment = "marginalize",
+        lapse_treatment = "marginalize",
+        keep.update_history = FALSE,
+        keep.exposure_data = FALSE) %>%
+      nest(posterior = everything()) %>%
+      mutate(sim = x) %>%
+      add_test_and_categorize(test)) %>%
+    reduce(bind_rows) %>% 
+    group_by(!!! syms(setdiff(names(.), "response"))) %>% 
+    summarise(response = mean(response), response.se = sd(response) / sqrt(sum(is.na(response))))
 }
 
 get_accuracy_from_updated_bias <- function(
@@ -747,7 +754,7 @@ best_performing_parameters.bias <-
     upper = c(max(range.lapse_rate), max(log(range.beta_pi))), 
     control = list(
       fnscale = -1,   
-      factr = 10^8))
+      factr = 10^9))
 
 best_performing_parameters.bias$par <- c(best_performing_parameters.bias$par[1], exp(best_performing_parameters.bias$par[2]))
 

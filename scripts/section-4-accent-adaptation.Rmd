@@ -233,8 +233,7 @@ population_var <- data.frame(
   c("/d/", "/d/", "/t/", "/t/"),
   c("VOT", "f0", "VOT", "f0"),
   c(m.VOT_f0_MVG$Sigma[2][[1]][1], m.VOT_f0_MVG$Sigma[2][[1]][4],
-    m.VOT_f0_MVG$Sigma[6][[1]][1], m.VOT_f0_MVG$Sigma[6][[1]][4])
-)
+    m.VOT_f0_MVG$Sigma[6][[1]][1], m.VOT_f0_MVG$Sigma[6][[1]][4]))
 colnames(population_var) = c("category", "cue", "prior_variance")
 ```
 
@@ -350,6 +349,10 @@ make_exposure_test_plot <- function(exposure.data, test.data){
 
   p.AA.test <- 
     test.data %>%
+    # TO DO: Xin, this looks like you are plotting the points for both test conditions 
+    # (whatever the heck they are, which I still don't understand), and then are plotting
+    # the ellipses for just the L2-accented test condition. If we remove the L1-accented 
+    # test condition to begin with, I think we can simplify this code (and likely elsewhere below).
     mutate(Speech = ifelse(grepl("L1", Condition), "L1-accented", "L2-accented")) %>%
     filter(Speech == "L2-accented") %>%
     mutate(Speech = paste0("Test: ", Speech)) %>%
@@ -486,7 +489,7 @@ update_representations_and_categorize_test <- function(
 get_accuracy_from_updated_representations <- function(
     pars,
     model = m.io.VOT_f0.AA,
-    exposure = d.AA.exposure %>% filter(Condition == "L1-accented", Subject == paste0(Condition, ".1")), 
+    exposure = d.AA.exposure %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1")), 
     test = d.AA.test %>% filter(Condition == "/d/_L2-accented", Subject == paste0(Condition, ".1"))
 ) {
   kappa <- exp(pars[1])
@@ -544,6 +547,24 @@ d.AA.representations <-
     d.AA.test %>%
       select(x, Item.Intended_category), by = "x") %>%
   distinct() # TO DO: Xin, why is there a distinct() here?
+
+ d.AA.exposure %>%
+  add_prior_and_get_posterior_beliefs_based_on_exposure(prior = m.ia.VOT_f0.AA %>% filter(prior_kappa == 64, prior_nu == 256)) %>%
+  add_test_tokens(d.AA.test) %>%
+  # TO DO: Xin, why are you adding the cat functions? It seems you never use them? (unlike in PR section)
+  add_categorization_functions() %>% 
+  group_by(Condition, Subject, prior_kappa, prior_nu) %>%
+  add_categorization() %>%
+  ungroup() %>%
+  mutate_at(
+    vars(starts_with("prior_")),
+    ~ factor(as.character(.x), levels = as.character(rev(sort(unique(.x)))))) %>%
+  distinct() %>%
+  left_join(
+    d.AA.test %>%
+      select(x, Item.Intended_category), by = "x") %>%
+  distinct() %>% 
+   get_accuracy()
 ```
 
 (ref:AA-result-changes-in-representations) Predictions of a learning model that derives accent adaptation as changes in category representations. Predicted categorization accuracies for the L2-accented test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, as a function of the strength of the prior beliefs in category means ($\kappa_{0,c}$) and covariances ($\nu_{0,c}$). The average accuracy across /d/ and /t/ is shown above the bars for each exposure condition. Error bars show 95% bootstrapped confidence intervals. The highlighted panel is the one closest to the best-performing parameterization ($\kappa_{0,c} = `r best_performing_parameters.representations$par[1]`$; $\nu_{0,c}=`r best_performing_parameters.representations$par[2]`$; overall accuracy $=`r best_performing_parameters.representations$value`$). 
@@ -579,9 +600,12 @@ make_results_plot_representations <- function(data, data_best) {
   p.results <- 
     basic_AA_result_plot(data) +
     geom_text(
-      inherit.aes = FALSE, data = . %>%
+      inherit.aes = FALSE, 
+      data = . %>%
         group_by(Condition, prior_nu, prior_kappa) %>%
-        summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
+        summarise(mAcc = round(mean(response), digits = 2)), 
+      mapping = aes(label = mAcc, x = Condition, y = 1.05), 
+      size = geom_text.size) +
     facet_grid(
       prior_nu ~ prior_kappa,
       labeller = label_bquote(

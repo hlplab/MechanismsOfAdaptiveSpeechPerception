@@ -688,9 +688,9 @@ add_prior_and_posterior_with_changed_response_biases_based_on_exposure.AA <- fun
 ```{r study-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE}
 range.lapse_rate <- c(0, 1)
 range.beta_pi <- c(10^-3, 10^2) 
-min_n_simulations_for_bias_update <- 20
+min_n_simulations_for_bias_update <- 10
 max_n_simulations_for_bias_update <- 150
-step_n_simulations_for_bias_update <- 10
+step_n_simulations_for_bias_update <- 1
 target_se_for_bias_update <- .01
 
 update_bias_and_categorize_test <- function(
@@ -714,6 +714,7 @@ update_bias_and_categorize_test <- function(
       update_NIW_response_bias_incrementally(
         prior = prior,
         beta = beta_pi,
+        # Reshuffle expose on each run
         exposure = exposure %>% sample_frac(1, replace = F),
         exposure.category = "Item.Category",
         exposure.cues = cues,
@@ -737,6 +738,9 @@ update_bias_and_categorize_test <- function(
     summarise(response.mean = mean(response)) %>%
     ungroup() %>%
     summarise(
+      n.sims_so_far = max(sim),
+      lapse_rate = first(prior$lapse_rate),
+      beta_pi = .env$beta_pi,
       response.mean.mean = mean(response.mean),
       response.mean.se = sd(response.mean)) %>%
     print()
@@ -788,7 +792,7 @@ get_accuracy_from_updated_bias <- function(
   
   prior <- 
     model %>% 
-    mutate(lapse_rate = lapse_rate) %>%
+    mutate(lapse_rate = .env$lapse_rate) %>%
     droplevels() %>%
     lift_MVG_ideal_observer_to_NIW_ideal_adaptor(kappa = max_kappa_nu, nu = max_kappa_nu)
   
@@ -830,6 +834,10 @@ d.AA.bias <-
   distinct() # TO DO: Xin, why is there a distinct() here?
 ```
 
+<!-- Here we need to decide whether we a) state that this is just one simulation (which might, however, become confusing if those sims conflict with the optimal results) or b) run a sufficiently high number of sims per parameterization(I suspect that 10-20 is enough). Either way, the caption needs to state what we're doing and the text needs to briefly state why (order-sensitivity of this model). 
+
+NB: we might need to start doing this in the PR section. and introduce the reason there. -->
+
 (ref:AA-result-changes-in-decision-making) Predictions of a model that derives accent adaptation as changes in decision-making. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda$). The highlighted panel is the one closest to the best-performing parameterization ($\beta_{\pi} = `r best_performing_parameters.bias$par[1]`$; $\lambda=`r best_performing_parameters.bias$par[2]`$; overall accuracy$=`r best_performing_parameters.bias$value`$).
 
 ```{r plot-AA-results-decision-making-functions}
@@ -869,10 +877,7 @@ make_results_plot_decision_making <- function(data, data_best){
 ```
 
 ```{r AA-result-changes-in-decision-making, fig.width= base.width * 5, fig.height= base.height * 5 + 1, fig.cap="(ref:AA-result-changes-in-decision-making)", warning=FALSE}
-
-
 make_results_plot_decision_making(data = d.AA.bias, data_best = best_performing_parameters.bias)
-
 ```
 
 Figure \@ref(fig:AA-result-changes-in-decision-making) shows the effects of changes in decision-making, depending on the rate at which response biases change $\beta_{\pi}$ and the lapse rate $\lambda$. For L1-accented exposure, we again see that /d/ test tokens are categorized substantially less accurately than /t/ test tokens, regardless of the specific value of ($\beta_{\pi}$). The second signature result---improved accuracy after L2-accented exposure for /d/---is obtained for sufficiently large $\beta_{\pi}$. As $\beta_{\pi}$ increases, the overall recognition accuracy first increases and then plateaus. The largest improvements are found for the smallest lapse rates and fast-enough change rates (gray panel in Figure \@ref(fig:AA-result-changes-in-decision-making)).

@@ -806,11 +806,6 @@ best_performing_parameters.bias <-
     par = c(mean(range.lapse_rate), mean(log(range.beta_pi))), 
     fn = get_accuracy_from_updated_bias,
     verbose = TRUE,
-    control = list(
-      min.simulations = 1, 
-      max.simulations = 10, 
-      increment = 1,
-      target_se = .01),
     method = "L-BFGS-B",
     lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
     upper = c(max(range.lapse_rate), max(log(range.beta_pi))), 

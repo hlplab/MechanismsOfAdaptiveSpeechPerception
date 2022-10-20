@@ -94,7 +94,6 @@ get_parameters_phonetic_contrast.AA <- function(ideal.observer,
 
    # nonnative categories
    mu_nonnative_B <- mu_native_B
- #  Sigma_nonnative_B <- Sigma_native_B
    Sigma_nonnative_B <- matrix(c(Sigma_native_B[1]*var.ratio, Sigma_native_B[2], Sigma_native_B[3], Sigma_native_B[4]), nrow=2)
 
    # The larger the category_dist_ratio, the greater distance along that cue dimension (1 = VOT, 2 = f0) between the two categories in the L2 accent.
@@ -105,7 +104,6 @@ get_parameters_phonetic_contrast.AA <- function(ideal.observer,
 
    Omega_native_A <- cov2cor(Sigma_native_A)
    Omega_nonnative_A <- matrix(c(Omega_native_A[1], Omega_native_A[2], Omega_native_A[3], Omega_native_A[4]), nrow=2) # change omega if orientation of category dispersion changes
- #  Sigma_nonnative_A <- cor2cov(Omega_nonnative_A, sqrt(diag(Sigma_native_A)))
    Sigma_nonnative_A <- cor2cov(Omega_nonnative_A, sqrt(diag(Sigma_native_A))*var.ratio)
     
    # Allow a shift of nonnative category means
@@ -254,8 +252,8 @@ make_accent_adaptation_test_design = function(
   category_dist_ratio2 = dist.L2_category.cue2,
   shift_mean_1 = 0,
   shift_mean_2 = 0,
-  test.n_block = n.test_block,
-  n_test = n.test.token     # Number of test blocks (total)
+  test.n_block = n.test_block, 
+  n_test = n.test.token     
 ) {
   d.model.both <- 
     get_parameters_phonetic_contrast.AA(
@@ -293,9 +291,10 @@ make_accent_adaptation_test_design = function(
       Item.Category = NA,
     ) %>%
     crossing(  
-      Condition = factor(paste0(paste0(.$Item.Intended_category, "_"), d$Condition)),
-      Block = 1:1) %>%
-    filter((Item.Intended_category == "/d/" & grepl("/d/", Condition)) | (Item.Intended_category == "/t/" & grepl("/t/", Condition))) %>%
+     # Condition = factor(paste0(paste0(.$Item.Intended_category, "_"), d$Condition)),
+       Condition = factor(d$Condition),
+      Block = 1:test.n_block) %>%
+    # filter((Item.Intended_category == "/d/" & grepl("/d/", Condition)) | (Item.Intended_category == "/t/" & grepl("/t/", Condition))) %>%
     droplevels()
 }
 
@@ -631,7 +630,11 @@ make_results_plot_representations <- function(data, data_best) {
 ```
 
 ```{r AA-result-changes-in-representations, fig.width= base.width * 5, fig.height= base.height * 5 + 1, fig.cap="(ref:AA-result-changes-in-representations)", warning=FALSE}
+
+
 make_results_plot_representations(data = d.AA.representations, data_best = best_performing_parameters.representations)
+
+
 ```
 
 Figure \@ref(fig:AA-result-changes-in-representations) shows the predicted categorization accuracy after exposure to L1- or L2-accented speech, as a function of the strength of the prior beliefs for the category means and variances. First consider the top left panel where both $\kappa_{0,c}$s and $\nu_{0,c}$ have very high values. This simulates a extremely slow learner who has strong prior beliefs for both category means and variances such that the small number of tokens heard during exposure phase has minimal influence on subsequent perception of the test tokens. Therefore, the performance from both L1- and L2-accented exposure conditions are highly similar (or identical, if even slower learning rates are applied), reflecting how a listener would categorize based on their long-term prior experience predominantly. 
@@ -871,7 +874,10 @@ make_results_plot_decision_making <- function(data, data_best){
 ```
 
 ```{r AA-result-changes-in-decision-making, fig.width= base.width * 5, fig.height= base.height * 5 + 1, fig.cap="(ref:AA-result-changes-in-decision-making)", warning=FALSE}
+
+
 make_results_plot_decision_making(data = d.AA.bias, data_best = best_performing_parameters.bias)
+
 ```
 
 Figure \@ref(fig:AA-result-changes-in-decision-making) shows the effects of changes in decision-making, depending on the rate at which response biases change $\beta_{\pi}$ and the lapse rate $\lambda$. For L1-accented exposure, we again see that /d/ test tokens are categorized substantially less accurately than /t/ test tokens, regardless of the specific value of ($\beta_{\pi}$). The second signature result---improved accuracy after L2-accented exposure for /d/---is obtained for sufficiently large $\beta_{\pi}$. As $\beta_{\pi}$ increases, the overall recognition accuracy first increases and then plateaus. The largest improvements are found for the smallest lapse rates and fast-enough change rates (gray panel in Figure \@ref(fig:AA-result-changes-in-decision-making)).
@@ -1066,9 +1072,13 @@ make_results_plot_normalization <- function(data, data_best){
 ```
 
 ```{r AA-result-changes-in-normalization, fig.width= base.width * 5, fig.height= base.height + 1.75, fig.cap="(ref:AA-result-changes-in-normalization)", warning=FALSE}
+
+
 make_results_plot_normalization(
   d.AA.normalization %>% filter(normalization == "centered based\non exposure"), 
   best_performing_parameters.normalization)
+
+
 ```
 
 ## Summary

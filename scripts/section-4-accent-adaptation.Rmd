@@ -334,15 +334,13 @@ make_exposure_test_plot <- function(exposure.data, test.data){
                  group_by(Condition, Item.Category) %>%
                  summarise(VOT = mean(VOT), f0_Mel = mean(f0_Mel)), show.legend = FALSE) +
     scale_x_continuous(expression("VOT (ms)"), 
-                        expand = expansion(mult = .1, add = 0)
-                        ) +
+                        expand = expansion(mult = .1, add = 0)) +
     scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0), breaks=seq(0, 500, by = 100)) +
-     coord_cartesian(
-    ylim = c(0, 500)) +
+    coord_cartesian(ylim = c(0, 500)) +
     scale_color_manual("Category", breaks = categories.AA, values = colors.category) +
     scale_fill_manual("Category", breaks = categories.AA, values = colors.category) +
     facet_grid(~ Condition)
-
+  
   limits <- get_plot_limits(p.AA.exposure)
   breaks <- get_plot_breaks(p.AA.exposure)
 
@@ -487,7 +485,7 @@ get_accuracy_from_updated_representations <- function(
     pars,
     model = m.io.VOT_f0.AA,
     exposure = d.AA.exposure %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1")), 
-    test = d.AA.test %>% filter(Condition == "/d/_L2-accented", Subject == paste0(Condition, ".1"))
+    test = d.AA.test %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1"))
 ) {
   kappa <- exp(pars[1])
   nu <- exp(pars[2])
@@ -630,11 +628,7 @@ make_results_plot_representations <- function(data, data_best) {
 ```
 
 ```{r AA-result-changes-in-representations, fig.width= base.width * 5, fig.height= base.height * 5 + 1, fig.cap="(ref:AA-result-changes-in-representations)", warning=FALSE}
-
-
 make_results_plot_representations(data = d.AA.representations, data_best = best_performing_parameters.representations)
-
-
 ```
 
 Figure \@ref(fig:AA-result-changes-in-representations) shows the predicted categorization accuracy after exposure to L1- or L2-accented speech, as a function of the strength of the prior beliefs for the category means and variances. First consider the top left panel where both $\kappa_{0,c}$s and $\nu_{0,c}$ have very high values. This simulates a extremely slow learner who has strong prior beliefs for both category means and variances such that the small number of tokens heard during exposure phase has minimal influence on subsequent perception of the test tokens. Therefore, the performance from both L1- and L2-accented exposure conditions are highly similar (or identical, if even slower learning rates are applied), reflecting how a listener would categorize based on their long-term prior experience predominantly. 
@@ -783,7 +777,7 @@ get_accuracy_from_updated_bias <- function(
     pars,
     model = m.io.VOT_f0.AA,
     exposure = d.AA.exposure %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1")), 
-    test = d.AA.test %>% filter(Condition == "/d/_L2-accented", Subject == paste0(Condition, ".1")),
+    test = d.AA.test %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1")),
     verbose = FALSE
 ) {
   lapse_rate <- pars[1]
@@ -805,6 +799,9 @@ get_accuracy_from_updated_bias <- function(
     get_accuracy()
 }
 
+# TO DO: add if statement here: if RESET_MODELS == T or if file does not exist, then
+# run and store in models/
+# else load rds into best_performing_parameters.bias
 best_performing_parameters.bias <- 
   optim(
     par = c(mean(range.lapse_rate), mean(log(range.beta_pi))), 
@@ -965,7 +962,7 @@ get_accuracy_from_updated_normalization <- function(
     par, 
     model = m.io.VOT_f0.AA,
     exposure = d.AA.exposure %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1")), 
-    test = d.AA.test %>% filter(Condition == "/d/_L2-accented", Subject == paste0(Condition, ".1"))
+    test = d.AA.test %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1"))
 ) {
   kappa.normalization <- exp(par[1])
   max_kappa_nu <- 10000

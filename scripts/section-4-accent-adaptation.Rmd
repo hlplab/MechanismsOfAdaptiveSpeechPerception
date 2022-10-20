@@ -685,7 +685,10 @@ add_prior_and_posterior_with_changed_response_biases_based_on_exposure.AA <- fun
 ```{r study-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE}
 range.lapse_rate <- c(0, 1)
 range.beta_pi <- c(10^-3, 10^2) 
-n.simulations_per_update <- 25
+min_n_simulations_for_bias_update <- 20
+max_n_simulations_for_bias_update <- 150
+step_n_simulations_for_bias_update <- 10
+target_se_for_bias_update <- .01
 
 update_bias_and_categorize_test <- function(
   prior,
@@ -693,10 +696,17 @@ update_bias_and_categorize_test <- function(
   exposure,
   test,
   cues = c("VOT", "f0_Mel"),
-  n.simulations = n.simulations_per_update
+  control = list(
+    min.simulations = min_n_simulations_for_bias_update, 
+    max.simulations = max_n_simulations_for_bias_update, 
+    increment = step_n_simulations_for_bias_update,
+    target_se = target_se_for_bias_update),
+  add_updates = NULL,
+  verbose = FALSE
 ) {
-  lapply(
-    X = as_list(1:n.simulations),
+  u <- 
+    lapply(
+    X = as_list(1:control[["min.simulations"]]),
     FUN = function(x) 
       update_NIW_response_bias_incrementally(
         prior = prior,
@@ -712,25 +722,67 @@ update_bias_and_categorize_test <- function(
       nest(posterior = everything()) %>%
       mutate(sim = x) %>%
       add_test_and_categorize(test)) %>%
-    reduce(bind_rows) %>% 
+    reduce(bind_rows) 
+  
+  # If existing updates were provided add them to the ones just created before
+  # checking whether one of the convergence criteria is reached.
+  if (!is.null(add_updates)) u %<>% bind_rows(add_updates)
+  
+  if (verbose) 
+    u %>% 
+    group_by(sim) %>% 
+    summarise(response.mean = mean(response)) %>%
+    ungroup() %>%
+    summarise(
+      response.mean.mean = mean(response.mean),
+      response.mean.se = sd(response.mean)) %>%
+    print()
+  
+  # If max simulations not yet reached AND target_se not yet reached, run more 
+  # simulations.
+  if (control[["min.simulations"]] < control[["max.simulations"]]) 
+    if(u %>% 
+       group_by(sim) %>% 
+       summarise(response.mean = mean(response)) %>%
+       ungroup() %>%
+       summarise(response.mean.se = sd(response.mean)) %>%
+       pull(response.mean.se) %>%
+       { . < control[["target_se"]]}) {
+      u <-
+        update_bias_and_categorize_test(
+          prior = prior,
+          beta_pi = beta_pi,
+          exposure = exposure,
+          test = test,
+          cues = cues,
+          control = list(
+            min.simulations = control[["increment"]], 
+            max.simulations = control[["max.simulations"]] - control[["min.simulation"]], 
+            increment = control[["increment"]],
+            target_se = control[["target_se"]]),
+          add_updates = u) 
+      }
+  
+  # Return average predicted accuracy (and its SE) for each item across all simulations  
+  u %>% 
     group_by(!!! syms(setdiff(names(.), "response"))) %>% 
-    summarise(response = mean(response), response.se = sd(response) / sqrt(sum(is.na(response))))
+    summarise(
+      response = mean(response), 
+      response.n_sims = n_distinct(sim),
+      response.se = sd(response) / sqrt(n_distinct(response, na.rm = T)))
 }
 
 get_accuracy_from_updated_bias <- function(
     pars,
     model = m.io.VOT_f0.AA,
     exposure = d.AA.exposure %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1")), 
-    test = d.AA.test %>% filter(Condition == "/d/_L2-accented", Subject == paste0(Condition, ".1"))
+    test = d.AA.test %>% filter(Condition == "/d/_L2-accented", Subject == paste0(Condition, ".1")),
+    verbose = FALSE
 ) {
   lapse_rate <- pars[1]
   beta_pi <- exp(pars[2])
   max_kappa_nu <- 10000
   
-  # TO DO: we should repeat this at least 20-100 times while shuffling exposure, in order deal with 
-  # the fact that this updating mechanism is random (we could do so for the plot, too). This might 
-  # also mean that we should save this result and load it unless override == T since it will likely
-  # take quite some time to run.
   prior <- 
     model %>% 
     mutate(lapse_rate = lapse_rate) %>%
@@ -741,7 +793,8 @@ get_accuracy_from_updated_bias <- function(
     prior = prior,
     beta_pi = beta_pi,
     exposure = exposure,
-    test = test) %>%
+    test = test,
+    verbose = verbose) %>%
     get_accuracy()
 }
 
@@ -749,6 +802,12 @@ best_performing_parameters.bias <-
   optim(
     par = c(mean(range.lapse_rate), mean(log(range.beta_pi))), 
     fn = get_accuracy_from_updated_bias,
+    verbose = TRUE,
+    control = list(
+      min.simulations = 1, 
+      max.simulations = 10, 
+      increment = 1,
+      target_se = .01),
     method = "L-BFGS-B",
     lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
     upper = c(max(range.lapse_rate), max(log(range.beta_pi))), 

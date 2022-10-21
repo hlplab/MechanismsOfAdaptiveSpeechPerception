@@ -696,8 +696,8 @@ update_bias_and_categorize_test <- function(
   control = list(
     min.simulations = min_n_simulations_for_bias_update, 
     max.simulations = max_n_simulations_for_bias_update, 
-    increment = step_n_simulations_for_bias_update,
-    target_se = target_se_for_bias_update),
+    step.simulations = step_n_simulations_for_bias_update,
+    target_accuracy_se = target_se_for_bias_update),
   add_updates = NULL,
   verbose = FALSE
 ) {
@@ -709,7 +709,7 @@ update_bias_and_categorize_test <- function(
         prior = prior,
         beta = beta_pi,
         # Reshuffle expose on each run
-        exposure = exposure %>% sample_frac(1, replace = F), #< --------------- is this not randomizing?
+        exposure = exposure %>% sample_frac(1, replace = F), 
         exposure.category = "Item.Category",
         exposure.cues = cues,
         decision_rule = "proportional",
@@ -726,7 +726,7 @@ update_bias_and_categorize_test <- function(
   # checking whether one of the convergence criteria is reached.
   if (!is.null(add_updates)) 
     u %<>% 
-    mutate(sim = max(add_updates$sim) + sim) %>%
+    mutate(sim = sim + max(add_updates$sim)) %>%
     bind_rows(add_updates)
   
   if (verbose) 
@@ -751,7 +751,7 @@ update_bias_and_categorize_test <- function(
        ungroup() %>%
        summarise(response.mean.se = sd(response.mean)) %>%
        pull(response.mean.se) %>%
-       { . > control[["target_se"]]}) {
+       { . > control[["target_accuracy_se"]]}) {
       u <-
         update_bias_and_categorize_test(
           prior = prior,
@@ -760,10 +760,10 @@ update_bias_and_categorize_test <- function(
           test = test,
           cues = cues,
           control = list(
-            min.simulations = control[["increment"]], 
-            max.simulations = control[["max.simulations"]] - control[["min.simulation"]], 
-            increment = control[["increment"]],
-            target_se = control[["target_se"]]),
+            min.simulations = control[["step.simuluations"]], 
+            max.simulations = control[["max.simulations"]] - control[["min.simulations"]], 
+            step.simulations = control[["step.simulations"]],
+            target_accuracy_se = control[["target_accuracy_se"]]),
           add_updates = u) 
       }
   
@@ -805,7 +805,7 @@ get_accuracy_from_updated_bias <- function(
     get_accuracy()
 }
 
-# TO DO: add if statement here: if RESET_MODELS == T or if file does not exist, then
+# TO DO: Xin, add if statement here: if RESET_MODELS == T or if file does not exist, then
 # run and store in models/
 # else load rds into best_performing_parameters.bias
 best_performing_parameters.bias <- 

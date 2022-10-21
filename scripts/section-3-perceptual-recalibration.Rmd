@@ -430,7 +430,8 @@ Next, we model the effects of changes in decision-making. Such changes have rare
 (ref:PR-result-changes-in-decision-making) Predictions of a model that derives perceptual recalibration as changes in decision-making. Predicted categorization responses are shown for the `r length(test_locations)` test locations after `r paste(categories.PR, collapse = "- and")`-shifted exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda$). The response biases towards `r categories.PR[1]` that results from $\beta_{\pi}$ are shown in the bottom row for each of the two exposure conditions, and are identical within each column (when all trials are lapses, as in the bottom row, the response distribution is identical to the response biases). 
 
 ```{r PR-result-changes-in-decision-making, fig.width= base.width * 5, fig.height= base.height * 5 +.5, fig.cap="(ref:PR-result-changes-in-decision-making)"}
-d.PR <- d.PR.exposure %>%
+d.PR <- 
+  d.PR.exposure %>%
   add_prior_and_posterior_with_changed_response_biases_based_on_exposure(prior = m.ia.VOT_f0.PR) %>%
   add_test_tokens(d.PR.test) %>%
   add_categorization_functions() %>%

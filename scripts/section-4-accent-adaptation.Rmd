@@ -684,7 +684,7 @@ range.lapse_rate <- c(0, 1)
 range.beta_pi <- c(10^-3, 10^2) 
 min_n_simulations_for_bias_update <- 10
 max_n_simulations_for_bias_update <- 150
-step_n_simulations_for_bias_update <- 1
+step_n_simulations_for_bias_update <- 2
 target_se_for_bias_update <- .01
 
 update_bias_and_categorize_test <- function(
@@ -709,7 +709,7 @@ update_bias_and_categorize_test <- function(
         prior = prior,
         beta = beta_pi,
         # Reshuffle expose on each run
-        exposure = exposure %>% sample_frac(1, replace = F),
+        exposure = exposure %>% sample_frac(1, replace = F), #< --------------- is this not randomizing?
         exposure.category = "Item.Category",
         exposure.cues = cues,
         decision_rule = "proportional",
@@ -724,7 +724,10 @@ update_bias_and_categorize_test <- function(
   
   # If existing updates were provided add them to the ones just created before
   # checking whether one of the convergence criteria is reached.
-  if (!is.null(add_updates)) u %<>% bind_rows(add_updates)
+  if (!is.null(add_updates)) 
+    u %<>% 
+    mutate(sim = max(add_updates$sim) + sim) %>%
+    bind_rows(add_updates)
   
   if (verbose) 
     u %>% 
@@ -748,7 +751,7 @@ update_bias_and_categorize_test <- function(
        ungroup() %>%
        summarise(response.mean.se = sd(response.mean)) %>%
        pull(response.mean.se) %>%
-       { . < control[["target_se"]]}) {
+       { . > control[["target_se"]]}) {
       u <-
         update_bias_and_categorize_test(
           prior = prior,
@@ -766,11 +769,14 @@ update_bias_and_categorize_test <- function(
   
   # Return average predicted accuracy (and its SE) for each item across all simulations  
   u %>% 
-    group_by(!!! syms(setdiff(names(.), "response"))) %>% 
-    summarise(
-      response = mean(response), 
-      response.n_sims = n_distinct(sim),
-      response.se = sd(response) / sqrt(n_distinct(response, na.rm = T)))
+  group_by(!!! syms(setdiff(names(.), c("sim", "posterior", "response")))) %>% 
+  summarise(
+    response.n_sims = n_distinct(sim),
+    response.se = sd(response) / sqrt(response.n_sims),
+    response = mean(response)) %>%
+  relocate(
+    !!! syms(setdiff(names(.), c("response", "response.se", "response.n_sims"))), 
+    response, response.se, response.n_sims)
 }
 
 get_accuracy_from_updated_bias <- function(

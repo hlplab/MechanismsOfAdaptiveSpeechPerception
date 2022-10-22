@@ -997,6 +997,7 @@ update_normalization_and_categorize_test <- function(
 }
 
 # This function is intended for the optimization run right below it
+history.optimization_normalization <- tibble(.rows = 0)
 get_accuracy_from_updated_normalization <- function(
     par, 
     model = m.io.VOT_f0.AA,
@@ -1011,7 +1012,8 @@ get_accuracy_from_updated_normalization <- function(
     droplevels() %>%
     lift_MVG_ideal_observer_to_NIW_ideal_adaptor(kappa = max_kappa_nu, nu = max_kappa_nu)
   
-  update_normalization_and_categorize_test(
+  u <- 
+    update_normalization_and_categorize_test(
     prior = prior, 
     kappa.normalization = kappa.normalization,
     exposure = exposure,
@@ -1019,6 +1021,13 @@ get_accuracy_from_updated_normalization <- function(
     # Don't add test again since it's already in the data
     add_test_and_categorize(test = NULL) %>%
     get_accuracy()
+  
+  history.optimization_normalization <- 
+    bind_rows(
+      history.optimization_normalization, 
+      tibble(kappa = kappa, accuracy = u))
+  
+  return(u)
 }
 
 best_performing_parameters.normalization <- 
@@ -1108,13 +1117,9 @@ make_results_plot_normalization <- function(data, data_best){
 ```
 
 ```{r AA-result-changes-in-normalization, fig.width= base.width * 5, fig.height= base.height + 1.75, fig.cap="(ref:AA-result-changes-in-normalization)", warning=FALSE}
-
-
 make_results_plot_normalization(
   d.AA.normalization %>% filter(normalization == "centered based\non exposure"), 
   best_performing_parameters.normalization)
-
-
 ```
 
 ## Summary
@@ -1447,15 +1452,17 @@ p.results.best.cases <- d.AA.results.best.cases %>%
   facet_grid(Case ~ ModelType) +
   theme(legend.position = "top", strip.text.y = element_blank(), panel.grid.major.x = element_blank())
 
-prow <- plot_grid(p.AA.exposure, p.results.best.cases + theme(legend.position="none"), 
-                  labels = c('A)', 'B)'), 
-                  ncol = 2, 
-                  rel_widths = c(1.5,3.3))
+prow <- 
+  plot_grid(
+    p.AA.exposure, 
+    p.results.best.cases + theme(legend.position="none"), 
+    labels = c('A)', 'B)'), 
+    ncol = 2, 
+    rel_widths = c(1.5,3.3))
 
 # extract a legend that is laid out horizontally
 legend_prow <- get_legend(p.results.best.cases)
-
-  plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.2, 1)) 
+plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.2, 1)) 
 ```
 
 The four different accent scenarios differ in terms of the difficulty they are predicted to pose for L1 listeners prior to exposure (see L1-accented exposure condition in Panel B of Figure \@ref(fig:AA-plot-results-additional-cases)). Contrast reduction (first row), for example, resembles the scenario considered in Case Study 2: without informative exposure, L1 listeners unfamiliar with the accent are predicted to exhibit substantially more difficulty with the recognition of /d/ than the recognition of /t/. The opposite is observed for our example of contrast collapse (second row) and contrast shift (bottom two rows). This illustrates how differences in the realization of L2 vs. L1 accents can give rise to starkly different perceptual consequences for L1 listeners. 

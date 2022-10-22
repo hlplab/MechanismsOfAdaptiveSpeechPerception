@@ -459,6 +459,42 @@ For the test phase, we randomly sample 60 tokens per category from the L2-accent
 
 <!-- We therefore recommend designs with a small number of within-subject tests, each sufficiently short compared to the length of exposure, and exposure phases that are shared by a sufficiently large number of participants (so that their effect can be reliably estimated). In recent work, we have approached the question of what constitutes “sufficient” through a combination of power analyses and pilot experiments [@burchill-jaeger2021]---an admittedly time- and resource-consuming approach that has, however, yielded a much better understanding of our data. [XX11]Finally, whenever possible, test and exposure phases should transition seamlessly into each other. Alternatively, instructions should use accessible language to highlight whether the upcoming stimuli come from the same source. -->
 
+# Optimization steps for Case Study 2
+Figure \@ref(fig:optimization results) summarizes the effects of parameterizations for each of the three change models on the overall accuracy for L2-accented speech after L2-accented exposure in Case Study 2.
+
+(ref:optimization results) Parameter space explored by the search for the best-performing parameterizations of the three different change models in Case Study 2.
+
+```{r optimzation-results, fig.width=base.width*3 + .5, fig.height=base.height*1 + .5, fig.cap = "(ref:optimization-results)"}
+p.representations <-
+  history.optimization_representations %>%
+  ggplot(aes(x = kappa, y = nu, fill = accuracy)) +
+  geom_point(size = 2) +
+  scale_fill_gradient2(midpoint = .5) + 
+  theme(legend.position = "none")
+
+p.bias <- 
+  p.representations %+%
+  history.optimization_bias +
+  aes(x = lapse_rate, y = beta_pi) +
+  theme(legend.position = "top")
+
+p.normalization <- 
+  p.normalization %+%
+  (history.optimization_normalization %>%
+     crossing(lapse_rate = 0)) +
+  aes(y = lapse_rate) +
+  theme(legend.position = "none")
+
+prow <- 
+  plot_grid(
+    p.representations , 
+    p.bias,
+    p.normalization,
+    labels = c('A)', 'B)', 'C)'), 
+    align = "hv", axis = "btlr",
+    ncol = 3, rel_widths = c(1/3, 1/3, 1/3))
+```
+
 # Computational limitations of change models afford qualitative tests of their *sufficiency* {#sec:SI-sufficiency}
 The three change models---as well as the three general hypotheses that they aim to implement---differ in their computational assumptions. Given these assumptions, it is possible to conduct experiments that can decisively test the *(in)sufficient* of any of the three mechanisms. Indeed, though not necessarily framed as such, some previous findings already speak to the (in)sufficiency of the three mechanisms. Here we summarize some of those key findings, and describe possible extensions to them. We note, however, that---as we outlined in the general discussion---we do not believe that such (in)sufficiency tests are themselves sufficient to advance research on adaptive speech perception.
 

@@ -481,6 +481,8 @@ update_representations_and_categorize_test <- function(
 }
 
 # This function is intended for the optimization run right below it
+# (we also store the history of the optimizers search)
+history.optimization_representations <- tibble(.rows = 0)
 get_accuracy_from_updated_representations <- function(
     pars,
     model = m.io.VOT_f0.AA,
@@ -495,14 +497,23 @@ get_accuracy_from_updated_representations <- function(
     droplevels() %>%
     lift_MVG_ideal_observer_to_NIW_ideal_adaptor(kappa = kappa, nu = nu)
   
-  update_representations_and_categorize_test(
+  u <-
+    update_representations_and_categorize_test(
     prior = prior,
     exposure = exposure,
     test = test) %>%
     get_accuracy()
+  
+  history.optimization_representations <- 
+    bind_rows(
+      history.optimization_representations, 
+      tibble(kappa = kappa, nu = nu, accuracy = u))
+  
+  return(u)
 }
 
-best_performing_parameters.representations <- 
+if (RESET_MODELS || !file.exists(get_path("../models/best_performing_parameters.representations.rds"))) {
+  best_performing_parameters.representations <- 
   optim(
     # Parameters are kappa, nu
     par = c(mean(log(range.prior_kappa)), mean(log(range.prior_nu))), 
@@ -517,8 +528,11 @@ best_performing_parameters.representations <-
       fnscale = -1,   # negative scale since we are seeking to maximize accuracy
       factr = 10^8))  # smaller factr means higher optimum but slower convergence
 
-# Transform parameters back into counts (from log counts)
-best_performing_parameters.representations$par <- exp(best_performing_parameters.representations$par)
+  best_performing_parameters.representations$par <- exp(best_performing_parameters.representations$par)
+  saveRDS(best_performing_parameters.representations, get_path("../models/best_performing_parameters.representations.rds"))
+} else {
+  best_performing_parameters.representations <- readRDS(get_path("../models/best_performing_parameters.representations.rds"))
+}
 
 # TO DO: Xin, I think we can consolidate some parts of this and the functions right below it.
 # specifically, I think we can use the function update_representations_and_categorize_test 
@@ -735,7 +749,7 @@ update_bias_and_categorize_test <- function(
     summarise(response.mean = mean(response)) %>%
     ungroup() %>%
     summarise(
-      n.sims_so_far = max(sim),
+      n.sims_so_far = n_distinct(sim),
       lapse_rate = first(prior$lapse_rate),
       beta_pi = .env$beta_pi,
       response.mean.mean = mean(response.mean),
@@ -760,7 +774,7 @@ update_bias_and_categorize_test <- function(
           test = test,
           cues = cues,
           control = list(
-            min.simulations = control[["step.simuluations"]], 
+            min.simulations = control[["step.simulations"]], 
             max.simulations = control[["max.simulations"]] - control[["min.simulations"]], 
             step.simulations = control[["step.simulations"]],
             target_accuracy_se = control[["target_accuracy_se"]]),
@@ -779,6 +793,7 @@ update_bias_and_categorize_test <- function(
     response, response.se, response.n_sims)
 }
 
+history.optimization_bias <- tibble(.rows = 0)
 get_accuracy_from_updated_bias <- function(
     pars,
     model = m.io.VOT_f0.AA,
@@ -796,7 +811,8 @@ get_accuracy_from_updated_bias <- function(
     droplevels() %>%
     lift_MVG_ideal_observer_to_NIW_ideal_adaptor(kappa = max_kappa_nu, nu = max_kappa_nu)
   
-  update_bias_and_categorize_test(
+  u <- 
+    update_bias_and_categorize_test(
     prior = prior,
     beta_pi = beta_pi,
     exposure = exposure,
@@ -805,9 +821,16 @@ get_accuracy_from_updated_bias <- function(
     control = list(
       min.simulations = min(10, max(3, (1 + beta_pi * 2)^2)), 
       max.simulations = max_n_simulations_for_bias_update, 
-      step.simulations = 1,
+      step.simulations = 2,
       target_accuracy_se = .01)) %>%
     get_accuracy()
+  
+  history.optimization_bias <- 
+    bind_rows(
+      history.optimization_bias, 
+      tibble(lapse_rate = lapse_rate, beta_pi = beta_pi, accuracy = u))
+  
+  return(u)
 }
 
 if (RESET_MODELS || !file.exists(get_path("../models/best_performing_parameters.bias.rds"))) {

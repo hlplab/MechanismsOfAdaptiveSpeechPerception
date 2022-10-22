@@ -740,7 +740,7 @@ update_bias_and_categorize_test <- function(
   # checking whether one of the convergence criteria is reached.
   if (!is.null(add_updates)) 
     u %<>% 
-    mutate(sim = sim + max(add_updates$sim)) %>%
+    mutate(sim = sim + n_distinct(add_updates$sim)) %>%
     bind_rows(add_updates)
   
   if (verbose) 
@@ -758,7 +758,7 @@ update_bias_and_categorize_test <- function(
   
   # If max simulations not yet reached AND target_se not yet reached, run more 
   # simulations.
-  if (control[["min.simulations"]] < control[["max.simulations"]]) 
+  if (control[["min.simulations"]] < control[["max.simulations"]]) {
     if(u %>% 
        group_by(sim) %>% 
        summarise(response.mean = mean(response)) %>%
@@ -779,18 +779,21 @@ update_bias_and_categorize_test <- function(
             step.simulations = control[["step.simulations"]],
             target_accuracy_se = control[["target_accuracy_se"]]),
           add_updates = u) 
-      }
+    }
+  } else {
+    # Get average predicted accuracy (and its SE) for each item across all simulations  
+    u %<>% 
+      group_by(!!! syms(setdiff(names(.), c("sim", "posterior", "response")))) %>% 
+      summarise(
+        response.n_sims = n_distinct(sim),
+        response.se = sd(response) / sqrt(response.n_sims),
+        response = mean(response)) %>%
+      relocate(
+        !!! syms(setdiff(names(.), c("response", "response.se", "response.n_sims"))), 
+        response, response.se, response.n_sims)
+  }
   
-  # Return average predicted accuracy (and its SE) for each item across all simulations  
-  u %>% 
-  group_by(!!! syms(setdiff(names(.), c("sim", "posterior", "response")))) %>% 
-  summarise(
-    response.n_sims = n_distinct(sim),
-    response.se = sd(response) / sqrt(response.n_sims),
-    response = mean(response)) %>%
-  relocate(
-    !!! syms(setdiff(names(.), c("response", "response.se", "response.n_sims"))), 
-    response, response.se, response.n_sims)
+  return(u)
 }
 
 history.optimization_bias <- tibble(.rows = 0)

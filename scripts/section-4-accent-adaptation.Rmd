@@ -801,27 +801,37 @@ get_accuracy_from_updated_bias <- function(
     beta_pi = beta_pi,
     exposure = exposure,
     test = test,
-    verbose = verbose) %>%
+    verbose = verbose, 
+    control = list(
+      min.simulations = min(10, max(3, (1 + beta_pi * 2)^2)), 
+      max.simulations = max_n_simulations_for_bias_update, 
+      step.simulations = 1,
+      target_accuracy_se = .01)) %>%
     get_accuracy()
 }
 
-# TO DO: Xin, add if statement here: if RESET_MODELS == T or if file does not exist, then
-# run and store in models/
-# else load rds into best_performing_parameters.bias
-best_performing_parameters.bias <- 
-  optim(
-    par = c(mean(range.lapse_rate), mean(log(range.beta_pi))), 
-    fn = get_accuracy_from_updated_bias,
-    verbose = TRUE,
-    method = "L-BFGS-B",
-    lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
-    upper = c(max(range.lapse_rate), max(log(range.beta_pi))), 
-    control = list(
-      fnscale = -1,   
-      factr = 10^9))
+if (RESET_MODELS || !file.exists(get_path("../models/best_performing_parameters.bias.rds"))) {
+  best_performing_parameters.bias <- 
+    optim(
+      par = c(mean(range.lapse_rate), mean(log(range.beta_pi))), 
+      fn = get_accuracy_from_updated_bias,
+      verbose = TRUE,
+      method = "L-BFGS-B",
+      lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
+      upper = c(max(range.lapse_rate), max(log(range.beta_pi))), 
+      control = list(
+        fnscale = -1,   
+        factr = 10^9))
+  
+  best_performing_parameters.bias$par <- c(best_performing_parameters.bias$par[1], exp(best_performing_parameters.bias$par[2]))
+  saveRDS(best_performing_parameters.bias, get_path("../models/best_performing_parameters.bias.rds"))
+} else {
+  best_performing_parameters.bias <- readRDS(get_path("../models/best_performing_parameters.bias.rds"))
+}
+```
 
-best_performing_parameters.bias$par <- c(best_performing_parameters.bias$par[1], exp(best_performing_parameters.bias$par[2]))
 
+```{r}
 # TO DO: Xin, see comments about representational model and how to consolidate code
 # Once that is integrated we might not need the wieldy function in the preceding chunk?
 d.AA.bias <- 

@@ -467,22 +467,43 @@ Figure \@ref(fig:optimization results) summarizes the effects of parameterizatio
 ```{r optimzation-results, fig.width=base.width*3 + .5, fig.height=base.height*1 + .5, fig.cap = "(ref:optimization-results)"}
 p.representations <-
   history.optimization_representations %>%
-  ggplot(aes(x = kappa, y = nu, fill = accuracy)) +
-  geom_point(size = 2) +
+  ggplot(aes(x = kappa, y = nu, color = accuracy)) +
+  geom_point(size = 2, shape = "square") +
+  scale_x_continuous(
+    name = ~kappa[0~","~c], 
+    breaks = 10^(0:log10(range.prior_kappa[2]))) +
+  scale_y_continuous(
+    name = ~nu[0~","~c],
+    breaks = 10^(0:log10(range.prior_nu[2]))) +
   scale_fill_gradient2(midpoint = .5) + 
+  coord_trans(x = "log10", y = "log10") +
   theme(legend.position = "none")
 
 p.bias <- 
   p.representations %+%
   history.optimization_bias +
   aes(x = beta_pi, y = lapse_rate) +
+  scale_x_continuous(
+    name = ~beta[pi], 
+    breaks = 10^(0:log10(range.prior_kappa.normalization[2]))) +
+  scale_y_continuous(
+    name = ~lambda,
+    breaks = seq(0, 1, .1)) +
   theme(legend.position = "top")
 
 p.normalization <- 
-  p.normalization %+%
+  p.representations %+%
   (history.optimization_normalization %>%
      crossing(lapse_rate = 0)) +
   aes(x = kappa.normalization, y = lapse_rate) +
+  scale_x_continuous(
+    name = ~kappa[0], 
+    breaks = 10^(0:log10(range.prior_kappa.normalization[2]))) +
+  scale_y_continuous(
+    name = ~lambda,
+    breaks = seq(0, 1, .1),
+    limits = c(0, 1)) +
+  coord_trans(x = "log10") +
   theme(legend.position = "none")
 
 prow <- 

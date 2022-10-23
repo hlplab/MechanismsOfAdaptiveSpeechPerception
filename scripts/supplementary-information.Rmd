@@ -475,14 +475,14 @@ p.representations <-
 p.bias <- 
   p.representations %+%
   history.optimization_bias +
-  aes(x = lapse_rate, y = beta_pi) +
+  aes(x = beta_pi, y = lapse_rate) +
   theme(legend.position = "top")
 
 p.normalization <- 
   p.normalization %+%
   (history.optimization_normalization %>%
      crossing(lapse_rate = 0)) +
-  aes(y = lapse_rate) +
+  aes(x = kappa.normalization, y = lapse_rate) +
   theme(legend.position = "none")
 
 prow <- 

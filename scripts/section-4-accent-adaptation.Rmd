@@ -504,7 +504,7 @@ get_accuracy_from_updated_representations <- function(
     test = test) %>%
     get_accuracy()
   
-  history.optimization_representations <- 
+  history.optimization_representations <<- 
     bind_rows(
       history.optimization_representations, 
       tibble(kappa = kappa, nu = nu, accuracy = u))
@@ -825,10 +825,10 @@ get_accuracy_from_updated_bias <- function(
       min.simulations = min(10, max(3, (1 + beta_pi * 2)^2)), 
       max.simulations = max_n_simulations_for_bias_update, 
       step.simulations = 2,
-      target_accuracy_se = .01)) %>%
+      target_accuracy_se = .001)) %>%
     get_accuracy()
   
-  history.optimization_bias <- 
+  history.optimization_bias <<- 
     bind_rows(
       history.optimization_bias, 
       tibble(lapse_rate = lapse_rate, beta_pi = beta_pi, accuracy = u))
@@ -1025,10 +1025,10 @@ get_accuracy_from_updated_normalization <- function(
     add_test_and_categorize(test = NULL) %>%
     get_accuracy()
   
-  history.optimization_normalization <- 
+  history.optimization_normalization <<- 
     bind_rows(
       history.optimization_normalization, 
-      tibble(kappa = kappa, accuracy = u))
+      tibble(kappa.normalization = kappa.normalization, accuracy = u))
   
   return(u)
 }

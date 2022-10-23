@@ -94,48 +94,13 @@ always_allow_html: true
 
 \setcounter{secnumdepth}{5}
 
-```{r libraries, include=FALSE, message=FALSE}
-library(curl)               # Check availability of internet for install of remote libraries
-if (has_internet()) devtools::install_github("crsh/papaja", ref = "devel")
-library(papaja)             # APA formatted ms
-
-library(tidyverse)
-library(magrittr)           # pipes
-library(rlang)              # quosures (in functions)
-library(assertthat)         # asserts (in functions)
-
-library(data.table)
-
-library(linguisticsdown)    # IPA symbols
-library(latexdiffr)         # track changes
-library(cowplot)            # combining plots
-library(gganimate)          # animations
-library(plotly)             # 3D plots
-library(processx)           # interface to orca (for plotly)
-library(tufte)              # for quotes
-
-library(lme4)               # for C-CuRE normalization through regression
-library(mixtools)           # for drawing ellipses in the 3D plots
-library(modelr)
-library(diptest)            # test for bimodality
-
-if (has_internet()) devtools::install_github("hlplab/MVBeliefUpdatr")
-library(MVBeliefUpdatr)     # for ideal observers and adaptors 
-library(LaplacesDemon)      # for additional density distributions (e.g., inverse-Wishart, W^-1)
-```
-
-```{r constants-general, include=FALSE}
-colors.voicing = c("blue", "red")
-```
-
-```{r functions-general, include=FALSE}
+```{r functions-general, include=FALSE, message=FALSE}
 get_path <- function(filename) return(paste0("", filename))
 
+source("libraries.R")
 source("functions.R")
 source("functions_plot_3D.R")
-
-# For plotting
-myGplot.defaults("paper")
+source("constants.R")
 
 # Get citation information
 r_refs(file = "latex-stuff/r-references.bib")
@@ -156,15 +121,6 @@ knitr::knit_hooks$set(document = function(x) {sub('\\usepackage[]{color}', '\\us
 color_block = function(color) { function(x, options) sprintf('\\color{%s}\\begin{verbatim}%s\\end{verbatim}\\color{black}', color, x) }
 knitr::knit_hooks$set(error = color_block('red'))
 knitr::knit_hooks$set(warning = color_block('orange'))
-
-options(width = 200, digits = 2, OutDec = ".", tinytex.verbose = TRUE)
-base.width = 2.15
-base.height = 2.15
-
-animate = T         # switch on/off to replace animations with facets (not yet implemented for all instances)
-TODO = T            # switch on/off to get to do list.
-RESET_MODELS = T    # switch on/off whether models/optimization that exist as files are regenerated
-RESET_FIGURES = T   # switch on/off whether figures that exist as files are regenerated
 ```
 
 ```{r analysis-preferences}

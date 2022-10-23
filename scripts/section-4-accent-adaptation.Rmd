@@ -696,10 +696,6 @@ add_prior_and_posterior_with_changed_response_biases_based_on_exposure.AA <- fun
 ```{r study-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE}
 range.lapse_rate <- c(0, 1)
 range.beta_pi <- c(10^-3, 10^2) 
-min_n_simulations_for_bias_update <- 10
-max_n_simulations_for_bias_update <- 150
-step_n_simulations_for_bias_update <- 2
-target_se_for_bias_update <- .01
 
 update_bias_and_categorize_test <- function(
   prior,
@@ -708,10 +704,10 @@ update_bias_and_categorize_test <- function(
   test,
   cues = c("VOT", "f0_Mel"),
   control = list(
-    min.simulations = min_n_simulations_for_bias_update, 
-    max.simulations = max_n_simulations_for_bias_update, 
-    step.simulations = step_n_simulations_for_bias_update,
-    target_accuracy_se = target_se_for_bias_update),
+    min.simulations = 5, 
+    max.simulations = 10, 
+    step.simulations = 1,
+    target_accuracy_se = .005),
   add_updates = NULL,
   verbose = FALSE
 ) {
@@ -743,27 +739,30 @@ update_bias_and_categorize_test <- function(
     mutate(sim = sim + n_distinct(add_updates$sim)) %>%
     bind_rows(add_updates)
   
-  if (verbose) 
+  u.test <-
     u %>% 
     group_by(sim) %>% 
     summarise(response.mean = mean(response)) %>%
     ungroup() %>%
     summarise(
       n.sims_so_far = n_distinct(sim),
-      lapse_rate = first(prior$lapse_rate),
+      min.additional_simulations = .env$control[["min.simulations"]], 
+      max.additional_simulations = .env$control[["max.simulations"]] - min.additional_simulations, 
+      step.simulations = .env$control[["step.simulations"]],
+      target_accuracy_se = .env$control[["target_accuracy_se"]],
+      lapse_rate = first(.env$prior$lapse_rate),
       beta_pi = .env$beta_pi,
       response.mean.mean = mean(response.mean),
-      response.mean.se = sd(response.mean)) %>%
+      response.mean.se = sd(response.mean) / sqrt(n_distinct(sim)))
+  
+  if (verbose) 
+    u.test %>%
     print()
   
   # If max simulations not yet reached AND target_se not yet reached, run more 
   # simulations.
   if (control[["min.simulations"]] < control[["max.simulations"]]) {
-    if(u %>% 
-       group_by(sim) %>% 
-       summarise(response.mean = mean(response)) %>%
-       ungroup() %>%
-       summarise(response.mean.se = sd(response.mean)) %>%
+    if(u.test %>%
        pull(response.mean.se) %>%
        { . > control[["target_accuracy_se"]]}) {
       u <-
@@ -773,6 +772,7 @@ update_bias_and_categorize_test <- function(
           exposure = exposure,
           test = test,
           cues = cues,
+          verbose = verbose,
           control = list(
             min.simulations = control[["step.simulations"]], 
             max.simulations = control[["max.simulations"]] - control[["min.simulations"]], 
@@ -823,9 +823,9 @@ get_accuracy_from_updated_bias <- function(
     verbose = verbose, 
     control = list(
       min.simulations = min(10, max(3, (1 + beta_pi * 2)^2)), 
-      max.simulations = max_n_simulations_for_bias_update, 
+      max.simulations = 100, 
       step.simulations = 2,
-      target_accuracy_se = .001)) %>%
+      target_accuracy_se = .002)) %>%
     get_accuracy()
   
   history.optimization_bias <<- 

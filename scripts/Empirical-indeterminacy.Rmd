@@ -99,7 +99,6 @@ get_path <- function(filename) return(paste0("", filename))
 
 source("libraries.R")
 source("functions.R")
-source("functions_plot_3D.R")
 source("constants.R")
 
 # Get citation information

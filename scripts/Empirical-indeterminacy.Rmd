@@ -126,6 +126,8 @@ knitr::knit_hooks$set(warning = color_block('orange'))
 # Seed for random number generation
 set.seed(42007)
 knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+
+SET_SEED = T    # switch on/off whether the same seed is set every time a randomization procedure is called
 ```
 
 ```{r, child="section-0-TO-DO.Rmd", eval= if (TODO) TRUE else FALSE}

@@ -41,10 +41,10 @@ var.ratio = 1
 # e.g., dist.L2_category.cue1  -- The ratio of category mean difference along the primary cue in L2 to that in L1 (the primary cue does not have to be the same cue dimension across accents); 1 means the distance is equal to that in L1 accent.
 
 # Case 1: presented in the main text, with clear cue-weighting (e.g., word-initial stops in Korean-accented English).
-dist.L2_category.cue1 <- 0.5
-dist.L2_category.cue2 <- 0.7
-shift.cue1 <- 0
-shift.cue2 <- 0
+dist.L2_category.cue1 <- 1
+dist.L2_category.cue2 <- 0.22
+shift.cue1 <- 0.5
+shift.cue2 <- 0.22
 
 # arbitrarily assume that the variance of the speech stimuli in the experiment is $\frac{1}{`r my_experimenter.variability_reduction`}$th of that observed in natural productions (applying to L1-accented speech only)
 my_experimenter.variability_reduction <- 1
@@ -239,9 +239,6 @@ colnames(population_var) = c("category", "cue", "prior_variance")
 During test, listeners from both exposure conditions hear the same recordings from the same L2-accented talker used in the L2-accented exposure condition. 60 test tokens are randomly sampled from the distribution of each L2-accented category, half from the /d/ category and half from the /t/ category (Figure \@ref(fig:study-AA-exposure-test-plot)B).
 
 ```{r study-AA-test-functions}
-# TO DO: Xin, why do the test conditions have a different name than the exposure conditions? 
-# also, why are there even two test conditions?? 
-# (this an other questions might need to be revisited for the PR section, too, but that section also has other requirements)
 
 # make the design of an test phase
 make_accent_adaptation_test_design = function(
@@ -346,13 +343,8 @@ make_exposure_test_plot <- function(exposure.data, test.data){
 
   p.AA.test <- 
     test.data %>%
-    # TO DO: Xin, this looks like you are plotting the points for both test conditions 
-    # (whatever the heck they are, which I still don't understand), and then are plotting
-    # the ellipses for just the L2-accented test condition. If we remove the L1-accented 
-    # test condition to begin with, I think we can simplify this code (and likely elsewhere below).
-    mutate(Speech = ifelse(grepl("L1", Condition), "L1-accented", "L2-accented")) %>%
-    filter(Speech == "L2-accented") %>%
-    mutate(Speech = paste0("Test: ", Speech)) %>%
+    filter(Condition == "L2-accented") %>%
+    mutate(SpeechLabel = "Test: L2-accented") %>%
     ggplot(aes(x = VOT, y = f0_Mel, label = as.numeric(factor(ItemID)))) +
     geom_point(aes(color = Item.Intended_category), alpha = 0.5) +
     stat_ellipse(
@@ -374,7 +366,7 @@ make_exposure_test_plot <- function(exposure.data, test.data){
     scale_color_manual("Category", values = colors.category) +
     scale_fill_manual("Category", values = colors.category, guide = "none") +
     coord_cartesian(xlim = c(limits$xmin, limits$xmax), ylim = c(limits$ymin, limits$ymax), expand = FALSE) +
-    facet_grid(~ Speech)
+    facet_grid(~ SpeechLabel)
 
   prow = plot_grid(
     p.AA.exposure + theme(legend.position="none"),
@@ -543,8 +535,8 @@ d.AA.representations <-
   d.AA.exposure %>%
   add_prior_and_get_posterior_beliefs_based_on_exposure(prior = m.ia.VOT_f0.AA) %>%
   add_test_tokens(d.AA.test) %>%
-  # TO DO: Xin, why are you adding the cat functions? It seems you never use them? (unlike in PR section)
-  add_categorization_functions() %>% 
+  # # TO DO: Xin, why are you adding the cat functions? It seems you never use them? (unlike in PR section) COME BACK HERE
+ # add_categorization_functions() %>% 
   group_by(Condition, Subject, prior_kappa, prior_nu) %>%
   add_categorization() %>%
   ungroup() %>%

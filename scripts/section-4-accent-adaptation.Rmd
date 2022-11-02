@@ -531,41 +531,51 @@ if (RESET_MODELS || !file.exists(get_path("../models/best_performing_parameters.
 # and group_map it onto the grouping structure that the code chunk right below this uses 
 # (e.g, with group_map(...) %>% reduce(bind_rows) %>% ...). And we can do the same for all
 # other updating procedures.
-d.AA.representations <- 
+d.AA.representations <-
   d.AA.exposure %>%
   add_prior_and_get_posterior_beliefs_based_on_exposure(prior = m.ia.VOT_f0.AA) %>%
   add_test_tokens(d.AA.test) %>%
-  # # TO DO: Xin, why are you adding the cat functions? It seems you never use them? (unlike in PR section) COME BACK HERE
- # add_categorization_functions() %>% 
   group_by(Condition, Subject, prior_kappa, prior_nu) %>%
   add_categorization() %>%
   ungroup() %>%
   mutate_at(
     vars(starts_with("prior_")),
     ~ factor(as.character(.x), levels = as.character(rev(sort(unique(.x)))))) %>%
-  distinct() %>%
   left_join(
     d.AA.test %>%
-      select(x, Item.Intended_category), by = "x") %>%
-  distinct() # TO DO: Xin, why is there a distinct() here?
+      distinct(x, Item.Intended_category), by = "x")
 
- d.AA.exposure %>%
-  add_prior_and_get_posterior_beliefs_based_on_exposure(prior = m.ia.VOT_f0.AA %>% filter(prior_kappa == 64, prior_nu == 256)) %>%
-  add_test_tokens(d.AA.test) %>%
-  # TO DO: Xin, why are you adding the cat functions? It seems you never use them? (unlike in PR section)
-  add_categorization_functions() %>% 
+d.AA.representations2 <- d.AA.exposure %>%
+  nest(data = -c(Condition, Subject)) %>%
+      crossing(
+        m.ia.VOT_f0.AA %>%
+          nest(prior = -c(prior_kappa, prior_nu))) %>%
   group_by(Condition, Subject, prior_kappa, prior_nu) %>%
-  add_categorization() %>%
-  ungroup() %>%
+  group_modify(~ update_representations_and_categorize_test(prior = .x$prior[[1]], exposure = .x$data[[1]], test = d.AA.test %>% filter(Condition == "L2-accented")), .keep = TRUE) %>%
   mutate_at(
     vars(starts_with("prior_")),
-    ~ factor(as.character(.x), levels = as.character(rev(sort(unique(.x)))))) %>%
-  distinct() %>%
-  left_join(
-    d.AA.test %>%
-      select(x, Item.Intended_category), by = "x") %>%
-  distinct() %>% 
-   get_accuracy()
+    ~ factor(as.character(.x), levels = as.character(rev(sort(unique(.x)))))) 
+
+d.AA.representations3 <- d.AA.representations2 %>%
+  mutate_at(
+    vars(starts_with("prior_")),
+    ~ factor(as.character(.x), levels = as.character(rev(sort(unique(.x))))))
+  
+# # sanity check
+#  d.AA.exposure %>%
+#   add_prior_and_get_posterior_beliefs_based_on_exposure(prior = m.ia.VOT_f0.AA %>% filter(prior_kappa == 64, prior_nu == 256)) %>%
+#   add_test_tokens(d.AA.test) %>%
+#   group_by(Condition, Subject, prior_kappa, prior_nu) %>%
+#   add_categorization() %>%
+#   ungroup() %>%
+#   mutate_at(
+#     vars(starts_with("prior_")),
+#     ~ factor(as.character(.x), levels = as.character(rev(sort(unique(.x)))))) %>%
+#   distinct() %>%
+#   left_join(
+#     d.AA.test %>%
+#       distinct(x, Item.Intended_category), by = "x") %>%
+#    get_accuracy()
 ```
 
 (ref:AA-result-changes-in-representations) Predictions of a learning model that derives accent adaptation as changes in category representations. Predicted categorization accuracies for the L2-accented test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, as a function of the strength of the prior beliefs in category means ($\kappa_{0,c}$) and covariances ($\nu_{0,c}$). The average accuracy across /d/ and /t/ is shown above the bars for each exposure condition. Error bars show 95% bootstrapped confidence intervals. The highlighted panel is the one closest to the best-performing parameterization ($\kappa_{0,c} = `r best_performing_parameters.representations$par[1]`$; $\nu_{0,c}=`r best_performing_parameters.representations$par[2]`$; overall accuracy $=`r best_performing_parameters.representations$value`$). 
@@ -594,7 +604,9 @@ basic_AA_result_plot <- function(data) {
       xlab("Exposure condition"),
       ylab("Predicted categorization accuracy"),
       myGplot.defaults(base_size = 14, set_theme = F),
-      theme(legend.position = "top", panel.grid.major.x = element_blank(), axis.text.x = element_text(angle = 22.5, hjust = 1)))
+      theme(legend.position = "top", 
+            axis.text.x = element_text(angle = 22.5, hjust = 1),
+      panel.grid.major.x = element_blank()))
 }
 
 make_results_plot_representations <- function(data, data_best) {
@@ -633,8 +645,8 @@ make_results_plot_representations <- function(data, data_best) {
 }
 ```
 
-```{r AA-result-changes-in-representations, fig.width= base.width * 5, fig.height= base.height * 5 + 1, fig.cap="(ref:AA-result-changes-in-representations)", warning=FALSE}
-make_results_plot_representations(data = d.AA.representations, data_best = best_performing_parameters.representations)
+```{r AA-result-changes-in-representations, fig.width= base.width * 6, fig.height= base.height * 6 + 1, fig.cap="(ref:AA-result-changes-in-representations)", warning=FALSE}
+make_results_plot_representations(data = d.AA.representations2, data_best = best_performing_parameters.representations)
 ```
 
 Figure \@ref(fig:AA-result-changes-in-representations) shows the predicted categorization accuracy after exposure to L1- or L2-accented speech, as a function of the strength of the prior beliefs for the category means and variances. First consider the top left panel where both $\kappa_{0,c}$s and $\nu_{0,c}$ have very high values. This simulates a extremely slow learner who has strong prior beliefs for both category means and variances such that the small number of tokens heard during exposure phase has minimal influence on subsequent perception of the test tokens. Therefore, the performance from both L1- and L2-accented exposure conditions are highly similar (or identical, if even slower learning rates are applied), reflecting how a listener would categorize based on their long-term prior experience predominantly. 

@@ -41,10 +41,10 @@ var.ratio = 1
 # e.g., dist.L2_category.cue1  -- The ratio of category mean difference along the primary cue in L2 to that in L1 (the primary cue does not have to be the same cue dimension across accents); 1 means the distance is equal to that in L1 accent.
 
 # Case 1: presented in the main text, with clear cue-weighting (e.g., word-initial stops in Korean-accented English).
-dist.L2_category.cue1 <- 0.5
-dist.L2_category.cue2 <- 0.7
-shift.cue1 <- 0
-shift.cue2 <- 0
+dist.L2_category.cue1 <- 1
+dist.L2_category.cue2 <- 0.22
+shift.cue1 <- 0.5
+shift.cue2 <- 0.22
 
 # arbitrarily assume that the variance of the speech stimuli in the experiment is $\frac{1}{`r my_experimenter.variability_reduction`}$th of that observed in natural productions (applying to L1-accented speech only)
 my_experimenter.variability_reduction <- 1
@@ -239,9 +239,6 @@ colnames(population_var) = c("category", "cue", "prior_variance")
 During test, listeners from both exposure conditions hear the same recordings from the same L2-accented talker used in the L2-accented exposure condition. 60 test tokens are randomly sampled from the distribution of each L2-accented category, half from the /d/ category and half from the /t/ category (Figure \@ref(fig:study-AA-exposure-test-plot)B).
 
 ```{r study-AA-test-functions}
-# TO DO: Xin, why do the test conditions have a different name than the exposure conditions? 
-# also, why are there even two test conditions?? 
-# (this an other questions might need to be revisited for the PR section, too, but that section also has other requirements)
 
 # make the design of an test phase
 make_accent_adaptation_test_design = function(
@@ -346,13 +343,8 @@ make_exposure_test_plot <- function(exposure.data, test.data){
 
   p.AA.test <- 
     test.data %>%
-    # TO DO: Xin, this looks like you are plotting the points for both test conditions 
-    # (whatever the heck they are, which I still don't understand), and then are plotting
-    # the ellipses for just the L2-accented test condition. If we remove the L1-accented 
-    # test condition to begin with, I think we can simplify this code (and likely elsewhere below).
-    mutate(Speech = ifelse(grepl("L1", Condition), "L1-accented", "L2-accented")) %>%
-    filter(Speech == "L2-accented") %>%
-    mutate(Speech = paste0("Test: ", Speech)) %>%
+    filter(Condition == "L2-accented") %>%
+    mutate(SpeechLabel = "Test: L2-accented") %>%
     ggplot(aes(x = VOT, y = f0_Mel, label = as.numeric(factor(ItemID)))) +
     geom_point(aes(color = Item.Intended_category), alpha = 0.5) +
     stat_ellipse(
@@ -374,7 +366,7 @@ make_exposure_test_plot <- function(exposure.data, test.data){
     scale_color_manual("Category", values = colors.category) +
     scale_fill_manual("Category", values = colors.category, guide = "none") +
     coord_cartesian(xlim = c(limits$xmin, limits$xmax), ylim = c(limits$ymin, limits$ymax), expand = FALSE) +
-    facet_grid(~ Speech)
+    facet_grid(~ SpeechLabel)
 
   prow = plot_grid(
     p.AA.exposure + theme(legend.position="none"),
@@ -401,7 +393,6 @@ make_exposure_test_plot(exposure.data = d.AA.exposure, test.data = d.AA.test)
 d.AA.exposure %<>% add_subjects_to_exposure(n.subject = n.subject)
 d.AA.test %<>% add_subjects_to_test(n.subject = n.subject)
 ```
-
 
 ## Results
 Paralleling Case Study 1, we ask which of the three change models can account for the signature results of accent adaptation experiments. Specifically, we assess for each change model whether it can explain the two types of signature results observed in, for example, Xie et al. [-@xie2016jep]: (1) for L1-accented exposure, /d/ test tokens are recognized with lower accuracy than /t/ test tokens, since the difference between the two accents is more pronounced for /d/ than for /t/, creating a larger deviation from L1 listeners' expectations; and (2) L2-accented exposure should lead to a significant increase in recognition accuracy for /d/ test tokens without an equivalent decrease in the accuracy for /t/ test tokens, resulting in increased overall accuracy. 
@@ -534,46 +525,18 @@ if (RESET_MODELS || !file.exists(get_path("../models/best_performing_parameters.
   best_performing_parameters.representations <- readRDS(get_path("../models/best_performing_parameters.representations.rds"))
 }
 
-# TO DO: Xin, I think we can consolidate some parts of this and the functions right below it.
-# specifically, I think we can use the function update_representations_and_categorize_test 
-# and group_map it onto the grouping structure that the code chunk right below this uses 
-# (e.g, with group_map(...) %>% reduce(bind_rows) %>% ...). And we can do the same for all
-# other updating procedures.
-d.AA.representations <- 
-  d.AA.exposure %>%
-  add_prior_and_get_posterior_beliefs_based_on_exposure(prior = m.ia.VOT_f0.AA) %>%
-  add_test_tokens(d.AA.test) %>%
-  # TO DO: Xin, why are you adding the cat functions? It seems you never use them? (unlike in PR section)
-  add_categorization_functions() %>% 
-  group_by(Condition, Subject, prior_kappa, prior_nu) %>%
-  add_categorization() %>%
-  ungroup() %>%
-  mutate_at(
-    vars(starts_with("prior_")),
-    ~ factor(as.character(.x), levels = as.character(rev(sort(unique(.x)))))) %>%
-  distinct() %>%
-  left_join(
-    d.AA.test %>%
-      select(x, Item.Intended_category), by = "x") %>%
-  distinct() # TO DO: Xin, why is there a distinct() here?
 
- d.AA.exposure %>%
-  add_prior_and_get_posterior_beliefs_based_on_exposure(prior = m.ia.VOT_f0.AA %>% filter(prior_kappa == 64, prior_nu == 256)) %>%
-  add_test_tokens(d.AA.test) %>%
-  # TO DO: Xin, why are you adding the cat functions? It seems you never use them? (unlike in PR section)
-  add_categorization_functions() %>% 
+d.AA.representations <- d.AA.exposure %>%
+  nest(data = -c(Condition, Subject)) %>%
+      crossing(
+        m.ia.VOT_f0.AA %>%
+          nest(prior = -c(prior_kappa, prior_nu))) %>%
   group_by(Condition, Subject, prior_kappa, prior_nu) %>%
-  add_categorization() %>%
-  ungroup() %>%
-  mutate_at(
-    vars(starts_with("prior_")),
-    ~ factor(as.character(.x), levels = as.character(rev(sort(unique(.x)))))) %>%
-  distinct() %>%
-  left_join(
-    d.AA.test %>%
-      select(x, Item.Intended_category), by = "x") %>%
-  distinct() %>% 
-   get_accuracy()
+  group_modify(~ update_representations_and_categorize_test(prior = .x$prior[[1]], exposure = .x$data[[1]], test = d.AA.test %>% filter(Condition == "L2-accented")), .keep = TRUE) %>%
+  mutate_at(vars(starts_with("prior_")), ~factor(.x)) %>%
+  mutate_at(vars(starts_with("prior_")), fct_rev) %>%
+  ungroup()
+
 ```
 
 (ref:AA-result-changes-in-representations) Predictions of a learning model that derives accent adaptation as changes in category representations. Predicted categorization accuracies for the L2-accented test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, as a function of the strength of the prior beliefs in category means ($\kappa_{0,c}$) and covariances ($\nu_{0,c}$). The average accuracy across /d/ and /t/ is shown above the bars for each exposure condition. Error bars show 95% bootstrapped confidence intervals. The highlighted panel is the one closest to the best-performing parameterization ($\kappa_{0,c} = `r best_performing_parameters.representations$par[1]`$; $\nu_{0,c}=`r best_performing_parameters.representations$par[2]`$; overall accuracy $=`r best_performing_parameters.representations$value`$). 
@@ -602,7 +565,9 @@ basic_AA_result_plot <- function(data) {
       xlab("Exposure condition"),
       ylab("Predicted categorization accuracy"),
       myGplot.defaults(base_size = 14, set_theme = F),
-      theme(legend.position = "top", panel.grid.major.x = element_blank(), axis.text.x = element_text(angle = 22.5, hjust = 1)))
+      theme(legend.position = "top", 
+            axis.text.x = element_text(angle = 22.5, hjust = 1),
+      panel.grid.major.x = element_blank()))
 }
 
 make_results_plot_representations <- function(data, data_best) {
@@ -641,7 +606,7 @@ make_results_plot_representations <- function(data, data_best) {
 }
 ```
 
-```{r AA-result-changes-in-representations, fig.width= base.width * 5, fig.height= base.height * 5 + 1, fig.cap="(ref:AA-result-changes-in-representations)", warning=FALSE}
+```{r AA-result-changes-in-representations, fig.width= base.width * 6, fig.height= base.height * 6 + 1, fig.cap="(ref:AA-result-changes-in-representations)", warning=FALSE}
 make_results_plot_representations(data = d.AA.representations, data_best = best_performing_parameters.representations)
 ```
 
@@ -655,47 +620,10 @@ Taken together, these results show that changes in representation can generally 
 
 ### Changes in decision-making
 
-```{r study-AA-models-changes-in-decision-making-functions}
-add_prior_and_posterior_with_changed_response_biases_based_on_exposure.AA <- function(
-  data.exposure,
-  prior,
-  idealized = T,
-  decision_rule = if (idealized) "proportional" else "sample",
-  keep.update_history = FALSE,
-  keep.exposure_data = FALSE
-) {
-  suppressWarnings(data.exposure %>%
-    nest(data = -c(Condition, Subject)) %>%
-    crossing(
-      posterior.lapse_rate = c(.0005, .005, .05, .5, 1),
-      beta_pi = c(0, .1, .8, 2, 4, 8, 16)) %>%
-    crossing(
-      prior %>%
-        filter(prior_kappa == max(prior_kappa), prior_nu == max(prior_nu)) %>%
-        nest(prior = everything())) %>%
-    group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
-    mutate(
-      posterior = pmap(
-        .l = list(data, prior, posterior.lapse_rate, beta_pi),
-        .f = function(.data, .prior, .posterior.lapse_rate, .beta_pi)
-          update_NIW_response_bias_incrementally(
-            prior = .prior,
-            exposure = .data,
-            exposure.category = "Item.Category",
-            exposure.cues = c("VOT", "f0_Mel"),
-            beta = .beta_pi,
-            decision_rule = decision_rule,
-            noise_treatment = if (idealized) "marginalize" else "sample",
-            lapse_treatment = if (idealized) "marginalize" else "sample",
-            keep.update_history = keep.update_history,
-            keep.exposure_data = keep.exposure_data) %>%
-        mutate(lapse_rate = .posterior.lapse_rate))))
-}
-```
-
 ```{r study-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE}
 range.lapse_rate <- c(0, 1)
-range.beta_pi <- c(10^-3, 10^2) 
+range.beta_pi <- c(10^-3, 1) 
+#range.beta_pi <- c(10^-3, 10^2) 
 
 update_bias_and_categorize_test <- function(
   prior,
@@ -858,19 +786,23 @@ if (RESET_MODELS || !file.exists(get_path("../models/best_performing_parameters.
 
 
 ```{r}
-# TO DO: Xin, see comments about representational model and how to consolidate code
-# Once that is integrated we might not need the wieldy function in the preceding chunk?
-d.AA.bias <- 
-  d.AA.exposure %>%
-  mutate(nrow = row_number()) %>% # TO DO: Xin, what is this for?
-  add_prior_and_posterior_with_changed_response_biases_based_on_exposure.AA(prior = m.ia.VOT_f0.AA) %>%
-  add_test_tokens(d.AA.test) %>%
-  add_categorization_functions() %>%
-  group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
-  add_categorization() %>%
-  distinct() %>%
-  left_join(., d.AA.test %>% select(x, Item.Intended_category), by = "x") %>%
-  distinct() # TO DO: Xin, why is there a distinct() here?
+d.AA.bias <- d.AA.exposure %>%
+  nest(data = -c(Condition, Subject)) %>%
+    crossing(
+      lapse_rate = c(.05),
+      beta_pi = c(0, .1)) %>%
+    crossing(
+      m.ia.VOT_f0.AA %>%
+        filter(prior_kappa == max(prior_kappa), prior_nu == max(prior_nu)) %>%
+        nest(prior = everything())) %>%
+    group_by(Condition, Subject, lapse_rate, beta_pi) %>%
+  group_modify(~ update_bias_and_categorize_test(prior = .x$prior[[1]], 
+                                                 beta_pi = .x$beta_pi,
+                                                 exposure = .x$data[[1]], 
+                                                 test = d.AA.test %>% filter(Condition == "L2-accented")), .keep = TRUE) %>%
+  mutate_at(vars(starts_with("prior_")), ~factor(.x)) %>%
+  mutate_at(vars(starts_with("prior_")), fct_rev) %>%
+  ungroup()
 ```
 
 <!-- Here we need to decide whether we a) state that this is just one simulation (which might, however, become confusing if those sims conflict with the optimal results) or b) run a sufficiently high number of sims per parameterization(I suspect that 10-20 is enough). Either way, the caption needs to state what we're doing and the text needs to briefly state why (order-sensitivity of this model). 
@@ -885,13 +817,13 @@ make_results_plot_decision_making <- function(data, data_best){
     basic_AA_result_plot(data) +
     geom_text(
       inherit.aes = FALSE, data = . %>%
-        group_by(Condition,posterior.lapse_rate,beta_pi) %>%
+        group_by(Condition,lapse_rate,beta_pi) %>%
         summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
     facet_grid(
-      posterior.lapse_rate ~ beta_pi,
+      lapse_rate ~ beta_pi,
       labeller = label_bquote(
         cols = beta[pi] == .(beta_pi),
-        rows = lambda == ~.(posterior.lapse_rate))) 
+        rows = lambda == ~.(lapse_rate))) 
 
   p.results +
     ggnewscale::new_scale_fill() +
@@ -899,12 +831,12 @@ make_results_plot_decision_making <- function(data, data_best){
       geom_rect(
         data = data %>%
           filter(category == Item.Intended_category) %>%
-          distinct(posterior.lapse_rate, beta_pi) %>%
+          distinct(lapse_rate, beta_pi) %>%
           ungroup() %>%
           mutate(
             highlight = 
               ifelse(
-                posterior.lapse_rate %in% posterior.lapse_rate[which.min(abs(posterior.lapse_rate - data_best$par[1]))] & 
+                lapse_rate %in% lapse_rate[which.min(abs(lapse_rate - data_best$par[1]))] & 
                   beta_pi %in% beta_pi[which.min(abs(beta_pi - data_best$par[2]))],
                 T, F)),
         aes(fill = highlight), alpha = .2, inherit.aes = F,
@@ -1048,18 +980,37 @@ best_performing_parameters.normalization$par <- exp(best_performing_parameters.n
 
 # TO DO: Xin, see comments on other change models about consolidating code.
 # This might also mean we don't need the code in the preceding chunk?
-d.AA.normalization <-
-  d.AA.exposure %>%
-  add_prior_and_normalize_test_tokens_based_on_exposure.AA(
-    data.test = d.AA.test,
-    prior.normalization = prior_marginal_VOT_f0_stats,
-    prior.categories = m.ia.VOT_f0.AA) %>%
-  group_by(Condition, Subject, prior_kappa.normalization, normalization) %>%
-  add_categorization_functions() %>%
-  add_categorization() %>%
-  distinct() %>%
-  ungroup() %>%
-  mutate(prior_kappa.normalization = factor(as.character(prior_kappa.normalization), levels = as.character(rev(sort(unique(prior_kappa.normalization))))))
+# d.AA.normalization <-
+#   d.AA.exposure %>%
+#   add_prior_and_normalize_test_tokens_based_on_exposure.AA(
+#     data.test = d.AA.test,
+#     prior.normalization = prior_marginal_VOT_f0_stats,
+#     prior.categories = m.ia.VOT_f0.AA) %>%
+#   group_by(Condition, Subject, prior_kappa.normalization, normalization) %>%
+#   add_categorization_functions() %>%
+#   add_categorization() %>%
+#   distinct() %>%
+#   ungroup() %>%
+#   mutate(prior_kappa.normalization = factor(as.character(prior_kappa.normalization), levels = as.character(rev(sort(unique(prior_kappa.normalization))))))
+
+
+d.AA.normalization <- d.AA.exposure %>% # COME BACK HERE
+  nest(data = -c(Condition, Subject)) %>%
+  crossing(
+      prior_kappa.normalization = c(1, 4, 16, 64, 256, 1024),
+      m.ia.VOT_f0.AA %>%
+        filter(prior_kappa == max(prior_kappa) & prior_nu == max(prior_nu)) %>%
+        nest(prior = everything())) %>%
+    group_by(Condition, Subject, prior_kappa.normalization) %>%
+  group_modify(~ update_normalization_and_categorize_test(prior = .x$prior[[1]], 
+                                                 kappa.normalization = .x$prior_kappa.normalization,
+                                                 exposure = .x$data[[1]], 
+                                                 test = d.AA.test %>% filter(Condition == "L2-accented")), .keep = TRUE) %>%
+  mutate_at(vars(starts_with("prior_")), ~factor(.x)) %>%
+  mutate_at(vars(starts_with("prior_")), fct_rev) %>%
+  ungroup()
+
+
 
 # get ItemID for normalized cue values so that the intended_category is known
 pair.ItemID.observationID <- 

@@ -88,20 +88,20 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
         filter(category == Item.Intended_category) %>%
         filter(prior_kappa == prior_kappa.selected & prior_nu == prior_nu.selected) %>%
         droplevels() %>%
-        distinct(Condition, Subject, data, prior_kappa, prior_nu, prior, posterior, posterior.categorization) %>%
+        distinct(Condition, Subject, prior_kappa, prior_nu, posterior) %>%
         mutate(model = "Representations"),
       data2 %>%
         filter(category == Item.Intended_category) %>%
-        filter(posterior.lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected) %>%
+        filter(lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected) %>%
         droplevels() %>%
-        distinct(Condition, Subject, data, posterior.lapse_rate, beta_pi, prior, posterior, posterior.categorization) %>%
+        distinct(Condition, Subject, lapse_rate, beta_pi, posterior) %>%
         mutate(model = "Decision_making"),
       data3 %>%
         filter(category == Item.Intended_category) %>% 
         filter(normalization == "centered based\non exposure") %>%
         filter(prior_kappa.normalization == prior_kappa.normalization.selected) %>%
         droplevels() %>%
-        distinct(Condition, Subject, data, prior_kappa.normalization, mu_inferred, prior, posterior, posterior.categorization) %>%
+        distinct(Condition, Subject, prior_kappa.normalization, mu_inferred, prior, posterior) %>%
         mutate(model = "Normalization"))
   
   
@@ -172,7 +172,7 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
     
     p.accuracy2 <- data2 %>%
       filter(category == Item.Intended_category) %>%
-      filter(posterior.lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected) %>%
+      filter(lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected) %>%
   ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
   stat_summary(fun = mean,
                geom="bar", position = pos,
@@ -188,13 +188,13 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
   xlab("Exposure condition") +
   ylab("Predicted categorization accuracy") +
   geom_text(inherit.aes = FALSE, data = . %>%
-               group_by(Condition,posterior.lapse_rate,beta_pi) %>%
+               group_by(Condition,lapse_rate,beta_pi) %>%
                summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
   facet_grid(
-    posterior.lapse_rate ~ beta_pi,
+    lapse_rate ~ beta_pi,
     labeller = label_bquote(
       cols = beta[pi] == .(beta_pi),
-      rows = lambda[posterior] == ~.(posterior.lapse_rate))) +
+      rows = lambda[posterior] == ~.(lapse_rate))) +
   myGplot.defaults(base_size = 14, set_theme = F) +
   theme(legend.position = "top", panel.grid.major.x = element_blank())
     
@@ -284,10 +284,11 @@ output.AA <- prepare_3D.categorization_from_results(d.temp, d.AA.exposure, d.AA.
 output.AA[[1]]$d_prop
 output.AA[[2]]$d_prop
 
+#change the parameters below depending on simulation outcomes
 prior_kappa.selected = 1024
 prior_nu.selected = 1024
-posterior.lapse_rate.selected = min(d.AA.bias$posterior.lapse_rate)
-beta_pi.selected = 0.8
+posterior.lapse_rate.selected = min(d.AA.bias$lapse_rate)
+beta_pi.selected = 0.1
 prior_kappa.normalization.selected = 64
 compare_model_label = "similar-accuracy"
 
@@ -301,7 +302,7 @@ p.AA.bias
 # select the model parameters to be illustrated as an example where all three models predict a similar overall accuracy
 prior_kappa.selected = 1024
 prior_nu.selected = 1024
-posterior.lapse_rate.selected = min(d.AA.bias$posterior.lapse_rate)
+posterior.lapse_rate.selected = min(d.AA.bias$lapse_rate)
 beta_pi.selected = 0.1
 prior_kappa.normalization.selected = 64
 compare_model_label = "similar-accuracy"
@@ -321,8 +322,8 @@ make_plot_compare_models.AA(compare_model_label = "similar-accuracy")
 # select the model parameters to be illustrated as an example where all three models predict a similar overall accuracy
 prior_kappa.selected = 4
 prior_nu.selected = 4096
-posterior.lapse_rate.selected = min(d.AA.bias$posterior.lapse_rate)
-beta_pi.selected = 4
+posterior.lapse_rate.selected = min(d.AA.bias$lapse_rate)
+beta_pi.selected = 0.1
 prior_kappa.normalization.selected = 4
 compare_model_label = "best-performing"
 

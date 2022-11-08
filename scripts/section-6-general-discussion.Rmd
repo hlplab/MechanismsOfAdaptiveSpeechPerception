@@ -94,7 +94,7 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
         filter(category == Item.Intended_category) %>%
         filter(lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected) %>%
         droplevels() %>%
-        distinct(Condition, Subject, lapse_rate, beta_pi, posterior) %>%
+        distinct(Condition, Subject, lapse_rate, beta_pi, posterior, sim) %>%
         mutate(model = "Decision_making"),
       data3 %>%
         filter(category == Item.Intended_category) %>% 
@@ -113,7 +113,7 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
       output.AA <- prepare_3D.categorization_from_results(data, d.AA.exposure, d.AA.test, VOT_range, f0_range, n_points)
       
       df.resp = output.AA[[i]]
-      
+
       p.3d.categorization <- plot_3D.categorization(df.resp) %>%
         layout(
           margin = margin,

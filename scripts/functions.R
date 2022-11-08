@@ -993,17 +993,37 @@ prepare_3D.categorization_from_results <- function(data, exposure.data, test.dat
     }
     ##----------------
     
-    d.output <- data %>%
+    d.output.step1 <- data %>%
       crossing(temp2 %>% distinct(x)) %>%
       nest(x = c(x)) %>%
       add_categorization() %>%
-      filter(Condition == conditions.AA[i] & category == "/d/") %>%
+      filter(Condition == conditions.AA[i] & category == "/d/")
+    
+    ##----------------
+    #For the bias model, get the average response predictions from multiple simulations
+    if("Decision_making" %in% levels(factor(data$model))){
+    d.output.step1%<>%
+      group_by(!!! syms(setdiff(names(.), c("sim", "posterior", "response")))) %>% 
+      summarise(
+        response.n_sims = n_distinct(sim),
+        response.se = sd(response) / sqrt(response.n_sims),
+        response = mean(response)) %>%
+      relocate(
+        !!! syms(setdiff(names(.), c("response", "response.se", "response.n_sims"))), 
+        response, response.se, response.n_sims) 
+    }
+    ##----------------
+    
+    d.output <- d.output.step1 %>%
       group_by(Condition) %>%
       unnest(x) %>%
       mutate(nrow = row_number(),
              cue_name = ifelse((nrow %% 2) == 0, "f0", "VOT")) %>%
       select(-nrow) %>%
       pivot_wider(values_from = x, names_from = cue_name)
+    
+    
+    
     
     df.resp = list()
     df.resp$x = x

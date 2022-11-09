@@ -288,10 +288,8 @@ make_accent_adaptation_test_design = function(
       Item.Category = NA,
     ) %>%
     crossing(  
-     # Condition = factor(paste0(paste0(.$Item.Intended_category, "_"), d$Condition)),
        Condition = factor(d$Condition),
       Block = 1:test.n_block) %>%
-    # filter((Item.Intended_category == "/d/" & grepl("/d/", Condition)) | (Item.Intended_category == "/t/" & grepl("/t/", Condition))) %>%
     droplevels()
 }
 
@@ -403,13 +401,7 @@ As in Case Study 1, we first model changes in representations, and then compare 
 
 <!-- TO DO: Xin, have a table here that summarizes the five parameters for the three change models, along with the min and max values considered for them. -->
 <!-- For changes in representations, the optimization procedure searched values from the smallest possible value (1 for $\kappa_{0,c}$ and 4 for $\nu_{0,c}$) to 10000 (virtually no changes in representations). -->
-
-### Changes in representations
-
-```{r study-AA-models-changes-in-representations, echo=FALSE, message=FALSE, warning=FALSE}
-range.prior_kappa <- c(1, 10000)
-range.prior_nu <- c(4, 10000) 
-
+```{r study-AA-models-common-functions}
 # This and the next function collect code chunks that are repeated a few times below
 # (if test is null it won't be added and it's assumed that there already is a nested
 # column of test tokens called  x and another column indicating the mapping from x 
@@ -450,6 +442,14 @@ get_accuracy <- function(categorizations) {
     pull(response) %>%
       mean()
 }
+```
+
+
+### Changes in representations
+
+```{r study-AA-models-changes-in-representations, echo=FALSE, message=FALSE, warning=FALSE}
+range.prior_kappa <- c(1, 10000)
+range.prior_nu <- c(4, 10000) 
 
 update_representations_and_categorize_test <- function(
   prior,
@@ -1068,7 +1068,7 @@ construct_three_best_models <- function(
     add_prior_and_posterior_with_changed_response_biases_based_on_exposure.AA(prior = m.ia.VOT_f0.AA) %>%
     add_test_tokens(test.data) %>%
     add_categorization_functions() %>%
-    group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
+    group_by(Condition, Subject, lapse_rate, beta_pi) %>%
     add_categorization() %>%
     distinct() %>%
     left_join(., test.data %>% select(x, Item.Intended_category), by = "x") %>%
@@ -1114,9 +1114,9 @@ construct_three_best_models <- function(
   
   d.AA.bias.rank <- d.AA.bias %>%
     filter(category == Item.Intended_category) %>%
-    group_by(Condition, posterior.lapse_rate, beta_pi) %>%
+    group_by(Condition, lapse_rate, beta_pi) %>%
     summarise(mAcc = mean(response)) %>%
-    arrange(-mAcc, -posterior.lapse_rate, -beta_pi) %>%
+    arrange(-mAcc, -lapse_rate, -beta_pi) %>%
     filter(Condition == "L2-accented")
   best_performing_case.bias <- d.AA.bias.rank[1,]
 
@@ -1136,7 +1136,7 @@ construct_three_best_models <- function(
   ggsave(paste0('../figures/plotly/AA_cases/', example_label, '_representations.png'), plot = p.AA.representations, width = 2*(base.width*length(levels(factor(d.AA.representations$prior_kappa))) + .5), height = 2*(base.height*length(levels(factor(d.AA.representations$prior_nu))) + .5), dpi = 300)
   
   p.AA.bias <- make_results_plot_decision_making(d.AA.bias, best_performing_case.bias)
-  ggsave(paste0('../figures/plotly/AA_cases/', example_label, '_bias.png'), plot = p.AA.bias, width = 2*(base.width*length(levels(factor(d.AA.bias$beta_pi))) + .5), height = 2*(base.height*length(levels(factor(d.AA.bias$posterior.lapse_rate))) + .5), dpi = 300)
+  ggsave(paste0('../figures/plotly/AA_cases/', example_label, '_bias.png'), plot = p.AA.bias, width = 2*(base.width*length(levels(factor(d.AA.bias$beta_pi))) + .5), height = 2*(base.height*length(levels(factor(d.AA.bias$lapse_rate))) + .5), dpi = 300)
   
   p.AA.normalization <- make_results_plot_normalization(d.AA.normalization, best_performing_case.normalization)
   ggsave(paste0('../figures/plotly/AA_cases/', example_label, '_normalization.png'), plot = p.AA.normalization, width = 2*(base.width*length(levels(factor(d.AA.normalization$prior_kappa.normalization))) + .5), height = 2*(base.height + .5), dpi = 300)
@@ -1147,7 +1147,7 @@ construct_three_best_models <- function(
       filter(category == Item.Intended_category & prior_kappa == best_performing_case.representations$prior_kappa & prior_nu == best_performing_case.representations$prior_nu) %>% 
       mutate(ModelType = "representations"),
     d.AA.bias %>% 
-      filter(category == Item.Intended_category & posterior.lapse_rate == best_performing_case.bias$posterior.lapse_rate & beta_pi == best_performing_case.bias$beta_pi) %>%
+      filter(category == Item.Intended_category & lapse_rate == best_performing_case.bias$lapse_rate & beta_pi == best_performing_case.bias$beta_pi) %>%
       mutate(ModelType = "decision making"),
     d.AA.normalization %>%
       filter(category == Item.Intended_category & normalization == "centered based\non exposure" & prior_kappa.normalization == best_performing_case.normalization$prior_kappa.normalization) %>%
@@ -1308,7 +1308,7 @@ d.AA.results.best.cases <- rbind(
   mutate(Case = factor(Case, levels = c("Contrast reduction", "Contrast collapse", "Contrast shift"))) %>%  #, "Shift + var increase"
   mutate(parameterization = case_when(
    ModelType == "representations" ~ paste0("kappa = ", prior_kappa, ", nu = ", prior_nu),
-   ModelType == "decision making" ~ paste0("lambda = ", posterior.lapse_rate, ", beta = ", beta_pi),
+   ModelType == "decision making" ~ paste0("lambda = ", lapse_rate, ", beta = ", beta_pi),
    ModelType == "normalization" ~ paste0("kappa = ", prior_kappa.normalization)))
 
 p.results.best.cases <- d.AA.results.best.cases %>%

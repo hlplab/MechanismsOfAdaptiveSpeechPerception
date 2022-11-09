@@ -268,10 +268,10 @@ make_plot_compare_models.AA <- function(compare_model_label){
 <!--TO DO: fix the figure size; make sure the caption show in the same page--> 
 (ref:show-model-categorization-3D-plots-similar-accuracy) The three change models predict different categorization functions when applied to the data from Case Study 2, despite achieving a similar level of overall recognition accuracy. From **left to right:** predictions for in changes in representations, decision making, and normalization. **Top:** Predicted categorization functions after L1-accented exposure. **Middle:** Same but after L2-accented exposure. **Bottom:** Differences in predicted posterior log-odds of /d/ between the two exposure conditions. Blue indicates higher predicted posterior log-odds of /d/ in the L2-accented exposure condition, relative to the L1-accented exposure condition. Red indicates the opposite. Gray indicates a difference of 0. The three models make distinct predictions about how exposure affects the perception of specific tokens across the VOT-f0 space.
 ```{r compare-AA-models-results-bias-debug, eval = FALSE}
-d.temp <- d.AA.bias %>% filter(posterior.lapse_rate == 5e-04 & beta_pi == .8) %>% filter(category == Item.Intended_category) %>% distinct(Condition, Subject, data, posterior.lapse_rate, beta_pi, prior, posterior, posterior.categorization)
+d.temp <- d.AA.bias %>% filter(lapse_rate == 5e-04 & beta_pi == .8) %>% filter(category == Item.Intended_category) %>% distinct(Condition, Subject, data, lapse_rate, beta_pi, prior, posterior, posterior.categorization)
 
 d.temp.results <- d.AA.bias %>% 
-  filter(posterior.lapse_rate == 5e-04 & beta_pi == .8) %>% 
+  filter(lapse_rate == 5e-04 & beta_pi == .8) %>% 
   filter(category == Item.Intended_category) %>%
   select(Condition, category, response, x, observationID) %>%
   group_by(Condition, category) %>%

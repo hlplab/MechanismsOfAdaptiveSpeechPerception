@@ -216,7 +216,7 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
       ylab("Predicted categorization accuracy") +
       scale_x_discrete(labels= c("L1-\naccented", "L2-\naccented")) +
       geom_text(inherit.aes = FALSE, data = . %>%
-                   group_by(Condition, normalization, prior_kappa.normalization) %>%
+                   group_by(Condition, prior_kappa.normalization) %>%
                    summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
       facet_grid(
         . ~ prior_kappa.normalization,

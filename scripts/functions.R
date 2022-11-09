@@ -981,16 +981,27 @@ prepare_3D.categorization_from_results <- function(data, exposure.data, test.dat
     #convert cue values based on the mu_inferred for the current parameter of prior_kappa.normalization
 
     if("Normalization" %in% levels(factor(data$model))){
-      d.AA.normalization.step0 <- exposure.data %>%
-        add_prior_and_normalize_test_tokens_based_on_exposure.AA(data.test = test.data, prior.normalization = prior_marginal_VOT_f0_stats, prior.categories = m.ia.VOT_f0.AA) %>%
+      # d.AA.normalization.step0 <- exposure.data %>%
+      #   add_prior_and_normalize_test_tokens_based_on_exposure.AA(data.test = test.data, prior.normalization = prior_marginal_VOT_f0_stats, prior.categories = m.ia.VOT_f0.AA) %>%
+      #   filter(prior_kappa.normalization  == prior_kappa.normalization.selected) %>%
+      #   filter(Condition == conditions.AA[i]) %>%
+      #   droplevels()
+     
+      # temp2 %<>%
+      #   mutate(mu_inferred = d.AA.normalization.step0$mu_inferred[1],
+      #          x = map2(x, mu_inferred, ~ .x - (.y - prior_marginal_VOT_f0_stats$x_mean[[1]])))
+      
+      d.AA.normalization.step0 <- d.AA.normalization %>%
         filter(prior_kappa.normalization  == prior_kappa.normalization.selected) %>%
         filter(Condition == conditions.AA[i]) %>%
-        droplevels()
-
+        droplevels() %>%
+        mutate(mu_inferred = map2(x_unnormalized, x, ~ .x - (.y - prior_marginal_VOT_f0_stats$x_mean[[1]])))
       temp2 %<>%
         mutate(mu_inferred = d.AA.normalization.step0$mu_inferred[1],
                x = map2(x, mu_inferred, ~ .x - (.y - prior_marginal_VOT_f0_stats$x_mean[[1]])))
     }
+    
+
     ##----------------
     
     d.output.step1 <- data %>%
@@ -1021,10 +1032,7 @@ prepare_3D.categorization_from_results <- function(data, exposure.data, test.dat
              cue_name = ifelse((nrow %% 2) == 0, "f0", "VOT")) %>%
       select(-nrow) %>%
       pivot_wider(values_from = x, names_from = cue_name)
-    
-    
-    
-    
+
     df.resp = list()
     df.resp$x = x
     df.resp$y = y

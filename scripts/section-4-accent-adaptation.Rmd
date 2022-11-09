@@ -40,11 +40,17 @@ var.ratio = 1
 # How separable the categories are in the L2 accent?
 # e.g., dist.L2_category.cue1  -- The ratio of category mean difference along the primary cue in L2 to that in L1 (the primary cue does not have to be the same cue dimension across accents); 1 means the distance is equal to that in L1 accent.
 
-# Case 1: presented in the main text, with clear cue-weighting (e.g., word-initial stops in Korean-accented English).
+# # Case 1: presented in the main text, with clear cue-weighting (e.g., word-initial stops in Korean-accented English).
 dist.L2_category.cue1 <- 1
 dist.L2_category.cue2 <- 0.22
 shift.cue1 <- 0.5
 shift.cue2 <- 0.22
+
+# Case 2: pure shift
+# dist.L2_category.cue1 <- 1
+# dist.L2_category.cue2 <- 0
+# shift.cue1 <- -1.2
+# shift.cue2 <- 0
 
 # arbitrarily assume that the variance of the speech stimuli in the experiment is $\frac{1}{`r my_experimenter.variability_reduction`}$th of that observed in natural productions (applying to L1-accented speech only)
 my_experimenter.variability_reduction <- 1
@@ -218,6 +224,10 @@ add_subjects_to_exposure <- function(
 ```
 
 ```{r study-AA-exposure-make-data, message=FALSE}
+if(SET_SEED){
+  set.seed(42007)
+}
+
 d.AA.exposure <- make_accent_adaptation_exposure_design(experimenter.ideal_observer = m.io.VOT_f0.AA, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
 
 # calculate sample variance along each cue dimension for each exposure condition
@@ -312,6 +322,9 @@ add_subjects_to_test <- function(
 ```
 
 ```{r study-AA-test-make-data}
+if(SET_SEED){
+  set.seed(42007)
+}
 d.AA.test <- make_accent_adaptation_test_design(d.AA.exposure, experimenter.ideal_observer = m.io.VOT_f0.AA, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
 ```
 
@@ -384,7 +397,7 @@ appender <- function(string, prefix = "Changes in\n") paste0(prefix, string)
 ```
 
 ```{r study-AA-exposure-test-plot, fig.width=base.width*3 + .5, fig.height=base.height + .5, fig.cap="(ref:study-AA-exposure-test-plot)"}
-make_exposure_test_plot(exposure.data = d.AA.exposure, test.data = d.AA.test)
+make_exposure_test_plot(exposure.data = d.AA.exposure, test.data = d.AA.test) #COME BACK HERE TO CHECK WHY F0 is shifted too
 ```
 
 ```{r add-subjects-AA-exposure-test-data}
@@ -441,6 +454,32 @@ get_accuracy <- function(categorizations) {
   categorizations %>%
     pull(response) %>%
       mean()
+}
+
+basic_AA_result_plot <- function(data) {
+  data %>%
+    # Show the response only for intended category
+    filter(category == Item.Intended_category) %>% 
+    ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
+    list(
+      stat_summary(
+        fun = mean,
+        geom = "bar", position = pos, width = 0.6),
+      stat_summary(
+        aes(color = Item.Intended_category),
+        fun.data = mean_cl_boot,
+        geom = "uperrorbar",
+        position = pos, width = 0.2),
+      coord_cartesian(ylim =  c(0,1)),
+      scale_color_manual("Category", values = colors.category, aesthetics = c("color", "fill")),
+      scale_alpha_discrete(range = c(0.2, 1), guide = "none"),
+      scale_x_discrete(labels= c("L1-accented", "L2-accented")),
+      xlab("Exposure condition"),
+      ylab("Predicted categorization accuracy"),
+      myGplot.defaults(base_size = 14, set_theme = F),
+      theme(legend.position = "top", 
+            axis.text.x = element_text(angle = 22.5, hjust = 1),
+      panel.grid.major.x = element_blank()))
 }
 ```
 
@@ -544,31 +583,6 @@ d.AA.representations <- d.AA.exposure %>%
      also some of the plots have panel labels that need to be smaller to fit (might apply to PR section, too) -->
 
 ```{r plot-AA-results-representations-functions}
-basic_AA_result_plot <- function(data) {
-  data %>%
-    # Show the response only for intended category
-    filter(category == Item.Intended_category) %>% 
-    ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
-    list(
-      stat_summary(
-        fun = mean,
-        geom = "bar", position = pos, width = 0.6),
-      stat_summary(
-        aes(color = Item.Intended_category),
-        fun.data = mean_cl_boot,
-        geom = "uperrorbar",
-        position = pos, width = 0.2),
-      coord_cartesian(ylim =  c(0,1)),
-      scale_color_manual("Category", values = colors.category, aesthetics = c("color", "fill")),
-      scale_alpha_discrete(range = c(0.2, 1), guide = "none"),
-      scale_x_discrete(labels= c("L1-accented", "L2-accented")),
-      xlab("Exposure condition"),
-      ylab("Predicted categorization accuracy"),
-      myGplot.defaults(base_size = 14, set_theme = F),
-      theme(legend.position = "top", 
-            axis.text.x = element_text(angle = 22.5, hjust = 1),
-      panel.grid.major.x = element_blank()))
-}
 
 make_results_plot_representations <- function(data, data_best) {
   p.results <- 
@@ -883,11 +897,13 @@ update_normalization_and_categorize_test <- function(
             (kappa.normalization * mu_0 + exposure.normalization$x_N[[1]] * exposure.normalization$x_mean[[1]])
 
   test %<>%
-    mutate(x = map(x, ~ .x - (mu_inferred - mu_0)))
+    mutate(
+      x_unnormalized = x,
+      x = map(x, ~ .x - (mu_inferred - mu_0)))
   
   test %>%
-    select(x, Item.Intended_category) %>%
-    nest(x = x, Item.Intended_category = c(x, Item.Intended_category)) %>%
+    select(x_unnormalized, x, Item.Intended_category) %>%
+    nest(x = x, Item.Intended_category = c(x, Item.Intended_category, x_unnormalized)) %>%
     mutate(posterior = list(prior)) %>%
     # Don't add test again since it's already in the data
     add_test_and_categorize(test = NULL) 
@@ -940,7 +956,7 @@ best_performing_parameters.normalization <-
 best_performing_parameters.normalization$par <- exp(best_performing_parameters.normalization$par[1])
 
 
-d.AA.normalization <- d.AA.exposure %>% # COME BACK HERE
+d.AA.normalization <- d.AA.exposure %>% 
   nest(data = -c(Condition, Subject)) %>%
   crossing(
       prior_kappa.normalization = c(1, 4, 16, 64, 256, 1024),

@@ -98,10 +98,9 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
         mutate(model = "Decision_making"),
       data3 %>%
         filter(category == Item.Intended_category) %>% 
-        filter(normalization == "centered based\non exposure") %>%
         filter(prior_kappa.normalization == prior_kappa.normalization.selected) %>%
         droplevels() %>%
-        distinct(Condition, Subject, prior_kappa.normalization, mu_inferred, prior, posterior) %>%
+        distinct(Condition, Subject, prior_kappa.normalization, posterior) %>%
         mutate(model = "Normalization"))
   
   
@@ -200,7 +199,6 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
     
     p.accuracy3 <- data3 %>%
       filter(category == Item.Intended_category) %>%
-      filter(normalization == "centered based\non exposure") %>%
       filter(prior_kappa.normalization == prior_kappa.normalization.selected) %>%
       ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
       stat_summary(fun = mean,

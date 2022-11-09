@@ -857,47 +857,6 @@ Figure \@ref(fig:AA-result-changes-in-decision-making) also shows that changes i
 
 ### Changes in normalization
 
-```{r study-AA-models-normalization-functions}
-add_prior_and_normalize_test_tokens_based_on_exposure.AA <- function(data.exposure, data.test, prior.normalization, prior.categories) {
-  # Get prior mean
-  mu_0 <- prior.normalization$x_mean[[1]]
-
-  # Get normalization parameters for exposure data
-  exposure.normalization <- data.exposure %>%
-    group_by(Condition, Subject) %>%
-    summarise(
-      x_N = length(x),
-      x_mean = list(colMeans(reduce(x, rbind))),
-      x_cov = list(cov(reduce(x, rbind))))
-
-  data.exposure %>%
-    nest(data = -c(Condition, Subject)) %>%
-    crossing(
-      normalization = factor(c("no normalization", "centered based\non exposure"), levels = c("no normalization", "centered based\non exposure")),
-      prior_kappa.normalization = c(1, 4, 16, 64, 256, 1024),
-      prior.categories %>%
-        filter(prior_kappa == max(prior_kappa) & prior_nu == max(prior_nu)) %>%
-        nest(prior = everything())) %>%
-    group_by(Condition, Subject, prior_kappa.normalization) %>%
-    mutate(posterior = prior) %>%
-    crossing(data.test %>% distinct(x)) %>%
-    # Normalize test tokens
-    mutate(
-      # Get inferred mean
-      mu_inferred = pmap(
-        .l = list(Condition, Subject, prior_kappa.normalization),
-        .f = function(currentCondition, currentSubject, currentKappa) {
-          x_N <- exposure.normalization[exposure.normalization$Condition == currentCondition & exposure.normalization$Subject == currentSubject, "x_N"][[1]]
-          x_bar <- exposure.normalization[exposure.normalization$Condition == currentCondition & exposure.normalization$Subject == currentSubject, "x_mean"][[1]][[1]]
-          mu <- 1 / (currentKappa + x_N) * (currentKappa * mu_0 + x_N * x_bar)
-          return(mu)
-        }),
-      x = ifelse(normalization == "no normalization", x, map2(x, mu_inferred, ~ .x - (.y - mu_0)))
-      ) %>%
-    nest(x = c(x))
-}
-```
-
 Finally, we compare models that normalize test tokens based on the phonetic inputs experienced during exposure to models that continue to apply normalization based on previous long-term L1 experience. Figure \@ref(fig:AA-result-changes-in-normalization) shows the predicted categorization accuracy following changes in normalization in L1- and L2-accented exposure conditions. We again obtain both signature results of experiments on accent adaptation. For L1-accented exposure, we continue to see that /d/ test tokens are categorized substantially less accurately than /t/ test tokens. For L2-accented exposure, recognition accuracy is improved for /d/ test tokens without the cost of equivalent decreases in recognition accuracy for /t/. That is, like the other two change models, normalization can predict *overall* improvements in recognition accuracy after L2-accented exposure. 
 
 ```{r study-AA-models-normalization, echo=FALSE, message=FALSE, warning=FALSE}
@@ -922,13 +881,16 @@ update_normalization_and_categorize_test <- function(
   mu_inferred <- 1 / 
             (kappa.normalization + exposure.normalization$x_N[[1]]) * 
             (kappa.normalization * mu_0 + exposure.normalization$x_N[[1]] * exposure.normalization$x_mean[[1]])
+
   test %<>%
     mutate(x = map(x, ~ .x - (mu_inferred - mu_0)))
   
   test %>%
     select(x, Item.Intended_category) %>%
     nest(x = x, Item.Intended_category = c(x, Item.Intended_category)) %>%
-    mutate(posterior = list(prior)) 
+    mutate(posterior = list(prior)) %>%
+    # Don't add test again since it's already in the data
+    add_test_and_categorize(test = NULL) 
 }
 
 # This function is intended for the optimization run right below it
@@ -946,6 +908,7 @@ get_accuracy_from_updated_normalization <- function(
     model %>% 
     droplevels() %>%
     lift_MVG_ideal_observer_to_NIW_ideal_adaptor(kappa = max_kappa_nu, nu = max_kappa_nu)
+
   
   u <- 
     update_normalization_and_categorize_test(
@@ -953,8 +916,6 @@ get_accuracy_from_updated_normalization <- function(
     kappa.normalization = kappa.normalization,
     exposure = exposure,
     test = test) %>%
-    # Don't add test again since it's already in the data
-    add_test_and_categorize(test = NULL) %>%
     get_accuracy()
   
   history.optimization_normalization <<- 
@@ -978,84 +939,22 @@ best_performing_parameters.normalization <-
 
 best_performing_parameters.normalization$par <- exp(best_performing_parameters.normalization$par[1])
 
-# TO DO: Xin, see comments on other change models about consolidating code.
-# This might also mean we don't need the code in the preceding chunk?
-d.AA.normalization <-
-  d.AA.exposure %>%
-  add_prior_and_normalize_test_tokens_based_on_exposure.AA(
-    data.test = d.AA.test,
-    prior.normalization = prior_marginal_VOT_f0_stats,
-    prior.categories = m.ia.VOT_f0.AA) %>%
-  group_by(Condition, Subject, prior_kappa.normalization, normalization) %>%
-  add_categorization_functions() %>%
-  add_categorization() %>%
-  distinct() %>%
-  ungroup() %>%
-  mutate(prior_kappa.normalization = factor(as.character(prior_kappa.normalization), levels = as.character(rev(sort(unique(prior_kappa.normalization))))))
 
-# get ItemID for normalized cue values so that the intended_category is known
-pair.ItemID.observationID <-
-  d.AA.normalization %>%
-  select(observationID, x, category) %>%
-  left_join(., d.AA.test %>% select(x, Item.Intended_category, ItemID), by = "x") %>%
-  ungroup() %>%
-  filter(!is.na(ItemID)) %>%
-  distinct(observationID, ItemID)
-
-d.AA.normalization %<>%
-  left_join(pair.ItemID.observationID) %>%
-  left_join(d.AA.test %>% select(Item.Intended_category, ItemID), by = "ItemID") %>%
-  distinct()
-
-
-
-
-# update_normalization_and_categorize_test2 <- function(
-#   prior,
-#   mu_0 = first(prior_marginal_VOT_f0_stats$x_mean),
-#   kappa.normalization,
-#   exposure,
-#   test
-# ) {
-#   # Get normalization parameters for exposure data
-#   exposure.normalization <- 
-#     exposure %>%
-#     summarise(
-#       x_N = length(x),
-#       x_mean = list(colMeans(reduce(x, rbind))),
-#       x_cov = list(cov(reduce(x, rbind))))
-#   
-#   # Apply normalization based on exposure to test
-#   mu_inferred <- 1 / 
-#             (kappa.normalization + exposure.normalization$x_N[[1]]) * 
-#             (kappa.normalization * mu_0 + exposure.normalization$x_N[[1]] * exposure.normalization$x_mean[[1]])
-#   test %<>%
-#     mutate(x = map(x, ~ .x - (mu_inferred - mu_0)))
-#   
-#   test %>%
-#     select(x, Item.Intended_category) %>%
-#     nest(x = x, Item.Intended_category = c(x, Item.Intended_category)) %>%
-#     mutate(posterior = list(prior)) %>%
-#     add_test_and_categorize(test = NULL)
-# }
-# 
-# 
-# 
-# d.AA.normalization <- d.AA.exposure %>% # COME BACK HERE
-#   nest(data = -c(Condition, Subject)) %>%
-#   crossing(
-#       prior_kappa.normalization = c(1, 4, 16, 64, 256, 1024),
-#       m.ia.VOT_f0.AA %>%
-#         filter(prior_kappa == max(prior_kappa) & prior_nu == max(prior_nu)) %>%
-#         nest(prior = everything())) %>%
-#   group_by(Condition, Subject, prior_kappa.normalization) %>%
-#   group_modify(~ update_normalization_and_categorize_test2(prior = .x$prior[[1]], 
-#                                                  kappa.normalization = .x$prior_kappa.normalization,
-#                                                  exposure = .x$data[[1]], 
-#                                                  test = d.AA.test %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1"))), .keep = TRUE) %>%
-#   mutate_at(vars(starts_with("prior_")), ~factor(.x)) %>%
-#   mutate_at(vars(starts_with("prior_")), fct_rev) %>%
-#   ungroup()
+d.AA.normalization <- d.AA.exposure %>% # COME BACK HERE
+  nest(data = -c(Condition, Subject)) %>%
+  crossing(
+      prior_kappa.normalization = c(1, 4, 16, 64, 256, 1024),
+      m.ia.VOT_f0.AA %>%
+        filter(prior_kappa == max(prior_kappa) & prior_nu == max(prior_nu)) %>%
+        nest(prior = everything())) %>%
+  group_by(Condition, Subject, prior_kappa.normalization) %>%
+  group_modify(~ update_normalization_and_categorize_test(prior = .x$prior[[1]],
+                                                 kappa.normalization = .x$prior_kappa.normalization,
+                                                 exposure = .x$data[[1]],
+                                                 test = d.AA.test %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1"))), .keep = TRUE) %>%
+  mutate_at(vars(starts_with("prior_")), ~factor(.x)) %>%
+  mutate_at(vars(starts_with("prior_")), fct_rev) %>%
+  ungroup()
 ```
 
 (ref:AA-result-changes-in-normalization) Predictions of a model that derives accent adaptation from changes in normalization. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure. The highlighted panel is the one closest to the best-performing parameterization ($\kappa_0 = `r best_performing_parameters.normalization$par[1]`$; overall accuracy $=`r best_performing_parameters.normalization$value`$).

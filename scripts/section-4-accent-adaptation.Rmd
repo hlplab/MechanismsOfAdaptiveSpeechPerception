@@ -9,7 +9,7 @@ Compared to perceptual recalibration paradigms, experiments on accent adaptation
 
 For Case Study 2, we construct a hypothetical experiment that closely follows this type of design. For the sake of continuity, we focus on the same syllable-initial /d/-/t/ contrast used in Case Study 1. Like in Case Study 1, we analyze the data following the conventions of the field. For experiments on accent adaptation, this typically means that the facilitatory effects of L2-accented exposure are assessed through improvements in categorization accuracy during test.
 
-As in Case Study 1, we ask whether any of the three change mechanisms can *qualitatively* explain the signature results found in @xie2016jep and other similar work. The simulation process requires us to be specific about the properties of the L1 and L2 accents---and therefore their difference---at the level of acoustic-phonetic distributions. These properties---although well characterized in studies on L2 production---are rarely ever reported in the literature on adaptive speech perception, and their predicted consequences for perception are even less commonly modeled (for an exception, see Tan et al., 2021). In the discussion, we consider their influence on the model behaviors and further reflect on how the systematic patterns of differences between L1- and L2-accents provide an opportunity to distinguish between the three change mechanisms.
+As in Case Study 1, we ask whether any of the three change mechanisms can *qualitatively* explain the signature results found in @xie2016jep and other similar work. The simulation process requires us to be specific about the properties of the L1 and L2 accents---and therefore their difference---at the level of acoustic-phonetic distributions. These properties---although well characterized in studies on L2 production---are rarely ever reported in the literature on adaptive speech perception, and their predicted consequences for perception are even less commonly modeled (for an exception, see Tan et al., 2021). In the discussion, we consider their influence on the model behaviors and further reflect on how the systematic patterns of differences between L1- and L2-accents may affect the relative benefit of each of the three change mechanisms.
 
 ## Data
 The stimulus generation procedure is described in detail in the SI (\@ref(sec:SI-AA)).
@@ -41,16 +41,20 @@ var.ratio = 1
 # e.g., dist.L2_category.cue1  -- The ratio of category mean difference along the primary cue in L2 to that in L1 (the primary cue does not have to be the same cue dimension across accents); 1 means the distance is equal to that in L1 accent.
 
 # # Case 1: presented in the main text, with clear cue-weighting (e.g., word-initial stops in Korean-accented English).
-dist.L2_category.cue1 <- 1
-dist.L2_category.cue2 <- 0.22
-shift.cue1 <- 0.5
-shift.cue2 <- 0.22
+# dist.L2_category.cue1 <- 1
+# dist.L2_category.cue2 <- 0.22
+# shift.cue1 <- 0.5
+# shift.cue2 <- 0.22
+# min_VOT = 5 # Set the minimal values for randomly generated test token cue values to make sure it is physiologically possible
+# min_f0_Mel = 20
 
 # Case 2: pure shift
-# dist.L2_category.cue1 <- 1
-# dist.L2_category.cue2 <- 0
-# shift.cue1 <- -1.2
-# shift.cue2 <- 0
+dist.L2_category.cue1 <- 1
+dist.L2_category.cue2 <- 0
+shift.cue1 <- -1.2
+shift.cue2 <- 0
+min_VOT = -100
+min_f0_Mel = 20
 
 # arbitrarily assume that the variance of the speech stimuli in the experiment is $\frac{1}{`r my_experimenter.variability_reduction`}$th of that observed in natural productions (applying to L1-accented speech only)
 my_experimenter.variability_reduction <- 1
@@ -60,9 +64,6 @@ n.test_block <- 1
 # Number of test tokens per category
 n.test.token <- 60
 
-# Set the minimal values for randomly generated test token cue values to make sure it is physiologically possible
-min_VOT = 5
-min_f0_Mel = 20
 
 m.io.VOT_f0.AA <-
   m.VOT_f0_MVG  %>%
@@ -326,6 +327,7 @@ if(SET_SEED){
   set.seed(42007)
 }
 d.AA.test <- make_accent_adaptation_test_design(d.AA.exposure, experimenter.ideal_observer = m.io.VOT_f0.AA, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
+
 ```
 
 (ref:study-AA-exposure-test-plot) **Panel A - Exposure:** Distribution of the stimuli used during the exposure phase of the accent adaptation experiment (`r n.exposure.token` tokens each of `r conditions.AA[1]` and `r conditions.AA[2]` `r paste(categories.AA, collapse = " and ")`, respectively). **Panel B - Test:**  Distribution of the stimuli used during the test phase of the accent adaptation experiment. The test tokens come from L2-accented speech (`r n.test.token` tokens per category) and are identical for the two exposure conditions. Ellipses show the 95% probability mass for the two categories in L2-accented exposure speech.
@@ -397,7 +399,8 @@ appender <- function(string, prefix = "Changes in\n") paste0(prefix, string)
 ```
 
 ```{r study-AA-exposure-test-plot, fig.width=base.width*3 + .5, fig.height=base.height + .5, fig.cap="(ref:study-AA-exposure-test-plot)"}
-make_exposure_test_plot(exposure.data = d.AA.exposure, test.data = d.AA.test) #COME BACK HERE TO CHECK WHY F0 is shifted too
+make_exposure_test_plot(exposure.data = d.AA.exposure, test.data = d.AA.test)
+
 ```
 
 ```{r add-subjects-AA-exposure-test-data}
@@ -778,6 +781,9 @@ get_accuracy_from_updated_bias <- function(
   return(u)
 }
 
+if(SET_SEED){
+  set.seed(42007)
+}
 if (RESET_MODELS || !file.exists(get_path("../models/best_performing_parameters.bias.rds"))) {
   best_performing_parameters.bias <- 
     optim(
@@ -800,11 +806,14 @@ if (RESET_MODELS || !file.exists(get_path("../models/best_performing_parameters.
 
 
 ```{r}
+if(SET_SEED){
+  set.seed(42007)
+}
 d.AA.bias <- d.AA.exposure %>%
   nest(data = -c(Condition, Subject)) %>%
     crossing(
-      lapse_rate = c(.05),
-      beta_pi = c(0, .1)) %>% # specify what parameters to plot
+      lapse_rate = c(0, .05, 1),
+      beta_pi = c(0, .1, 0.5, 1)) %>% # specify what parameters to plot
     crossing(
       m.ia.VOT_f0.AA %>%
         filter(prior_kappa == max(prior_kappa), prior_nu == max(prior_nu)) %>%
@@ -831,7 +840,7 @@ make_results_plot_decision_making <- function(data, data_best){
     basic_AA_result_plot(data) +
     geom_text(
       inherit.aes = FALSE, data = . %>%
-        group_by(Condition,lapse_rate,beta_pi) %>%
+        group_by(Condition, lapse_rate, beta_pi) %>%
         summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
     facet_grid(
       lapse_rate ~ beta_pi,
@@ -863,6 +872,7 @@ make_results_plot_decision_making <- function(data, data_best){
 
 ```{r AA-result-changes-in-decision-making, fig.width= base.width * 5, fig.height= base.height * 5 + 1, fig.cap="(ref:AA-result-changes-in-decision-making)", warning=FALSE}
 make_results_plot_decision_making(data = d.AA.bias, data_best = best_performing_parameters.bias)
+                              
 ```
 
 Figure \@ref(fig:AA-result-changes-in-decision-making) shows the effects of changes in decision-making, depending on the rate at which response biases change $\beta_{\pi}$ and the lapse rate $\lambda$. For L1-accented exposure, we again see that /d/ test tokens are categorized substantially less accurately than /t/ test tokens, regardless of the specific value of ($\beta_{\pi}$). The second signature result---improved accuracy after L2-accented exposure for /d/---is obtained for sufficiently large $\beta_{\pi}$. As $\beta_{\pi}$ increases, the overall recognition accuracy first increases and then plateaus. The largest improvements are found for the smallest lapse rates and fast-enough change rates (gray panel in Figure \@ref(fig:AA-result-changes-in-decision-making)).

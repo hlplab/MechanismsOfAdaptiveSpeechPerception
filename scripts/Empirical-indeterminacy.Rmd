@@ -8,7 +8,7 @@ author:
     affiliation   : "1,2"
     corresponding : yes    # Define only one corresponding author
     address       : "3151 Social Science Plaza B, University of California, Irvine CA 92697–5100"
-    email         : "xie14@uci.edu"
+    email         : "xxie14@uci.edu"
     # role: 
     #   - Conceptualization
     #   - Writing - Original Draft Preparation

@@ -16,6 +16,7 @@ library(gganimate)          # animations
 library(plotly)             # 3D plots
 library(processx)           # interface to orca (for plotly)
 library(tufte)              # for quotes
+library(kableExtra)         # for tables
 
 library(lme4)               # for C-CuRE normalization through regression
 library(mixtools)           # for drawing ellipses in the 3D plots

@@ -100,7 +100,7 @@ get_path <- function(filename) return(paste0("", filename))
 source("libraries.R")
 source("functions.R")
 source("constants.R")
-
+options(dplyr.summarise.inform = FALSE)
 # Get citation information
 r_refs(file = "latex-stuff/r-references.bib")
 ```

@@ -92,9 +92,9 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
         mutate(model = "Representations"),
       data2 %>%
         filter(category == Item.Intended_category) %>%
-        filter(lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected) %>%
+        filter(posterior.lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected) %>%
         droplevels() %>%
-        distinct(Condition, Subject, lapse_rate, beta_pi, posterior, sim) %>%
+        distinct(Condition, Subject, posterior.lapse_rate, beta_pi, posterior, sim) %>%
         mutate(model = "Decision_making"),
       data3 %>%
         filter(category == Item.Intended_category) %>% 
@@ -171,7 +171,7 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
     
     p.accuracy2 <- data2 %>%
       filter(category == Item.Intended_category) %>%
-      filter(lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected) %>%
+      filter(posterior.lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected) %>%
   ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
   stat_summary(fun = mean,
                geom="bar", position = pos,
@@ -187,13 +187,13 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
   xlab("Exposure condition") +
   ylab("Predicted categorization accuracy") +
   geom_text(inherit.aes = FALSE, data = . %>%
-               group_by(Condition,lapse_rate,beta_pi) %>%
+               group_by(Condition,posterior.lapse_rate,beta_pi) %>%
                summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
   facet_grid(
-    lapse_rate ~ beta_pi,
+    posterior.lapse_rate ~ beta_pi,
     labeller = label_bquote(
       cols = beta[pi] == .(beta_pi),
-      rows = lambda[posterior] == ~.(lapse_rate))) +
+      rows = lambda[posterior] == ~.(posterior.lapse_rate))) +
   myGplot.defaults(base_size = 14, set_theme = F) +
   theme(legend.position = "top", panel.grid.major.x = element_blank())
     
@@ -243,10 +243,10 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
 }
 
 
-make_plot_compare_models.AA <- function(compare_model_label){
+make_plot_compare_models.AA <- function(
+    model_names = c("Representations", "Decision_making", "Normalization"),
+    compare_model_label){
   filename = c()
-  model_names = c("Representations", "Decision_making", "Normalization")
-  compare_model_label = "best-performing"
   for (p in 1:length(model_names)) {
     filename[p] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L1-accented', '_', compare_model_label, '.png'))
   }
@@ -270,9 +270,9 @@ make_plot_compare_models.AA <- function(compare_model_label){
 
 ```{r compare-AA-models-results-across-three-mechanisms-similar-accuracy, warning=FALSE}
 # select the model parameters to be illustrated as an example where all three models predict a similar overall accuracy
-prior_kappa.selected = 1024 #TO-DO CHANGE THIS TO AUTOMATICALLY USE the parameters from the simulations
+prior_kappa.selected = 1024 #DEBUG CHANGE THIS TO AUTOMATICALLY USE the parameters from the simulations
 prior_nu.selected = 1024
-posterior.lapse_rate.selected = min(d.AA.bias$lapse_rate)
+posterior.lapse_rate.selected = min(d.AA.bias$posterior.lapse_rate)
 beta_pi.selected = 0.1
 prior_kappa.normalization.selected = 64
 compare_model_label = "similar-accuracy"
@@ -282,7 +282,6 @@ compare_models.AA(d.AA.representations, d.AA.bias, d.AA.normalization, d.AA.expo
 
 <!--TO DO: change the size of the bar graph at the top-->
 ```{r show-model-categorization-3D-plots-similar-accuracy, fig.ncol = 3, fig.show='hold',fig.align='center',out.width= c("99%",rep("33%",9)), out.height=c("20%",rep("20%",4)), fig.cap="(ref:show-model-categorization-3D-plots-similar-accuracy)", fig.subcap=c('Model predictions in accuracy','Representations: L1-accented', 'Decision making: L1-accented', 'Normalization: L1-accented', 'Representations: L2-accented', 'Decision making: L2-accented', 'Normalization: L2-accented', 'Representations: difference', 'Decision making: difference', 'Normalization: difference')}
-
 make_plot_compare_models.AA(compare_model_label = "similar-accuracy")
 ```
 
@@ -292,7 +291,7 @@ make_plot_compare_models.AA(compare_model_label = "similar-accuracy")
 # select the model parameters to be illustrated as an example where all three models predict a similar overall accuracy
 prior_kappa.selected = 4
 prior_nu.selected = 4096
-posterior.lapse_rate.selected = min(d.AA.bias$lapse_rate)
+posterior.lapse_rate.selected = min(d.AA.bias$posterior.lapse_rate)
 beta_pi.selected = 0.1
 prior_kappa.normalization.selected = 4
 compare_model_label = "best-performing"

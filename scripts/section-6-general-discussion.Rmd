@@ -94,7 +94,8 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
         filter(category == Item.Intended_category) %>%
         filter(posterior.lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected) %>%
         droplevels() %>%
-        distinct(Condition, Subject, posterior.lapse_rate, beta_pi, posterior, sim) %>%
+       # distinct(Condition, Subject, posterior.lapse_rate, beta_pi, posterior, sim) %>% #DEBUG
+        distinct(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
         mutate(model = "Decision_making"),
       data3 %>%
         filter(category == Item.Intended_category) %>% 
@@ -270,11 +271,11 @@ make_plot_compare_models.AA <- function(
 
 ```{r compare-AA-models-results-across-three-mechanisms-similar-accuracy, warning=FALSE}
 # select the model parameters to be illustrated as an example where all three models predict a similar overall accuracy
-prior_kappa.selected = 1024 #DEBUG CHANGE THIS TO AUTOMATICALLY USE the parameters from the simulations
-prior_nu.selected = 1024
+prior_kappa.selected = 256 #DEBUG CHANGE THIS TO AUTOMATICALLY USE the parameters from the simulations
+prior_nu.selected = 64
 posterior.lapse_rate.selected = min(d.AA.bias$posterior.lapse_rate)
 beta_pi.selected = 0.1
-prior_kappa.normalization.selected = 64
+prior_kappa.normalization.selected = 256
 compare_model_label = "similar-accuracy"
 
 compare_models.AA(d.AA.representations, d.AA.bias, d.AA.normalization, d.AA.exposure, d.AA.test, VOT_range, f0_range, n_points)
@@ -287,19 +288,19 @@ make_plot_compare_models.AA(compare_model_label = "similar-accuracy")
 
 (ref:show-model-categorization-3D-plots-best-performing) Using the best-performing parameterization for each model, the three change models predict different categorization functions when applied to the data from Case Study 2. From **left to right:** predictions for in changes in representations, decision making, and normalization. **Top:** Predicted categorization functions after L1-accented exposure. **Middle:** Same but after L2-accented exposure. **Bottom:** Differences in predicted posterior log-odds of /d/ between the two exposure conditions. Blue indicates higher predicted posterior log-odds of /d/ in the L2-accented exposure condition, relative to the L1-accented exposure condition. Red indicates the opposite. Gray indicates a difference of 0. The three models make distinct predictions about how exposure affects the perception of specific tokens across the VOT-f0 space.
 
-```{r compare-AA-models-results-across-three-mechanisms-best-performing, warning=FALSE, eval = TRUE}
+```{r compare-AA-models-results-across-three-mechanisms-best-performing, warning=FALSE}
 # select the model parameters to be illustrated as an example where all three models predict a similar overall accuracy
 prior_kappa.selected = 4
-prior_nu.selected = 4096
+prior_nu.selected = 4
 posterior.lapse_rate.selected = min(d.AA.bias$posterior.lapse_rate)
-beta_pi.selected = 0.1
-prior_kappa.normalization.selected = 4
+beta_pi.selected = 1
+prior_kappa.normalization.selected = 1
 compare_model_label = "best-performing"
 
 compare_models.AA(d.AA.representations, d.AA.bias, d.AA.normalization, d.AA.exposure, d.AA.test, VOT_range, f0_range, n_points)
 ```
 
-```{r show-model-categorization-3D-plots-best-performing, fig.ncol = 3, fig.show='hold',fig.align='center',out.width= c("99%",rep("33%",9)), out.height=c("20%",rep("20%",4)), fig.cap="(ref:show-model-categorization-3D-plots-best-performing)", fig.subcap=c('Model predictions in accuracy','Representations: L1-accented', 'Decision making: L1-accented', 'Normalization: L1-accented', 'Representations: L2-accented', 'Decision making: L2-accented', 'Normalization: L2-accented', 'Representations: difference', 'Decision making: difference', 'Normalization: difference'), eval = TRUE}
+```{r show-model-categorization-3D-plots-best-performing, fig.ncol = 3, fig.show='hold',fig.align='center',out.width= c("99%",rep("33%",9)), out.height=c("20%",rep("20%",4)), fig.cap="(ref:show-model-categorization-3D-plots-best-performing)", fig.subcap=c('Model predictions in accuracy','Representations: L1-accented', 'Decision making: L1-accented', 'Normalization: L1-accented', 'Representations: L2-accented', 'Decision making: L2-accented', 'Normalization: L2-accented', 'Representations: difference', 'Decision making: difference', 'Normalization: difference')}
 
 make_plot_compare_models.AA(compare_model_label = "best-performing")
 ```

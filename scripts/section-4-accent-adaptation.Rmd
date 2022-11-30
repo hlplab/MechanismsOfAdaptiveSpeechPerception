@@ -416,7 +416,7 @@ d.AA.test %<>% add_subjects_to_test(n.subject = n.subject)
 ## Results
 Paralleling Case Study 1, we ask which of the three change models can account for the signature results of accent adaptation experiments. Specifically, we assess for each change model whether it can explain the two types of signature results observed in, for example, Xie et al. [-@xie2016jep]: (1) for L1-accented exposure, /d/ test tokens are recognized with lower accuracy than /t/ test tokens, since the categories are shifted towards /t/ along VOT, creating a deviation from L1 listeners' expectations; and (2) L2-accented exposure should lead to a significant increase in recognition accuracy for /d/ test tokens without an equivalent decrease in the accuracy for /t/ test tokens, resulting in increased overall accuracy. 
 
-Below we focus on whether each change model can *qualitatively* account for these signature results, rather than the specific magnitude of accuracy improvements. We do so, because the predicted improvements do not only depend on each change model's parameters, but also the statistics of the L2-accented exposure and test tokens. For a different set of (real or simulated) stimuli, the predicted magnitude of accuracy improvements after L2-accented exposure can thus differ. This is an important consideration to keep in mind, and we return to it in the discussion. 
+<!--Below we focus on whether each change model can *qualitatively* account for these signature results, rather than the specific magnitude of accuracy improvements. We do so, because the predicted improvements do not only depend on each change model's parameters, but also the statistics of the L2-accented exposure and test tokens. For a different set of (real or simulated) stimuli, the predicted magnitude of accuracy improvements after L2-accented exposure can thus differ. This is an important consideration to keep in mind, and we return to it in the discussion.--> 
 
 As in Case Study 1, we first model changes in representations, and then compare them against change models in decision-making and normalization. We consider a larger range of parameterizations than in Case Study 1, because the models with the highest accuracy for L2-accented exposure (henceforth, the best-performing parameterization) in some cases fell outside of the range of parameter values considered in Case Study 1. These best-performing parameterizations were determined by bounded quasi-Newton optimization of the recognition accuracy during test after L2-accented exposure [@byrd1995, implemented in function \texttt{optim()} in R], and are indicated in all result plots we present below. Table \@ref(tab:AA-table-models-parameter-setting) summarizes the parameter ranges considered by the optimization algorithm.
 
@@ -577,7 +577,7 @@ get_accuracy_from_updated_representations <- function(
     test = test) %>%
     get_accuracy()
   
-  history.optimization_representations <<- #TO DO: history.optimization_representations does not get saved and check why?
+  history.optimization_representations <<- 
     bind_rows(
       history.optimization_representations, 
       tibble(kappa = kappa, nu = nu, accuracy = u))
@@ -606,13 +606,17 @@ find_best_model.representations.AA <- function(){
         factr = 10^8))  # smaller factr means higher optimum but slower convergence
   
     best_performing_parameters.representations$par <- exp(best_performing_parameters.representations$par)
+    
     saveRDS(best_performing_parameters.representations, get_path(paste0("../models/best_performing_parameters.representations_", example_label,".rds")))
+    
+     # saveRDS(history.optimization_representations, get_path(paste0("../models/d.AA.history.optimization.representations_", example_label,".rds")))
+     
   } else {
     best_performing_parameters.representations <- readRDS(get_path(paste0("../models/best_performing_parameters.representations_", example_label,".rds")))
+    # history.optimization_representations <- readRDS(get_path(paste0("../models/d.AA.history.optimization.representations_", example_label,".rds")))
   }
   return(best_performing_parameters.representations)
 }
-
 
 plot_sample_model.representations.AA <- function(
     prior_kappa = prior_kappa,
@@ -750,10 +754,10 @@ make_results_plot_representations <- function(data, data_best) {
 make_results_plot_representations(data = d.AA.representations, data_best = best_performing_parameters.representations)
 ```
 
-Figure \@ref(fig:AA-result-changes-in-representations) shows the predicted categorization accuracy after exposure to L1- or L2-accented speech, as a function of the strength of the prior beliefs for the category means and variances. First consider the top left panel where both $\kappa_{0,c}$s and $\nu_{0,c}$ have very high values. This simulates a extremely slow learner who has strong prior beliefs for both category means and variances such that the small number of tokens heard during exposure phase has minimal influence on subsequent perception of the test tokens. Therefore, the performance from both L1- and L2-accented exposure conditions are highly similar (or identical, if even slower learning rates are applied), reflecting how a listener would categorize based on their long-term prior experience predominantly. 
+Figure \@ref(fig:AA-result-changes-in-representations) shows the predicted categorization accuracy after exposure to L1- or L2-accented speech, as a function of the strength of the prior beliefs for the category means and variances. First consider the top left panel where both $\kappa_{0,c}$s and $\nu_{0,c}$ have very high values. This simulates a extremely slow learner who has strong prior beliefs for both category means and variances such that the small number of tokens heard during exposure phase has minimal influence on subsequent perception of the test tokens. Therefore, the performance from both L1- and L2-accented exposure conditions are identical, reflecting how a listener would categorize based on their long-term prior experience predominantly. 
 
 As $\kappa_{0,c}$s and $\nu_{0,c}$ get smaller (i.e., weaker prior beliefs), the effects of exposure conditions become more noticeable. Both signature results described above can be predicted by changes in category representations. First, for L1-accented exposure, the accuracy is always predicted to be lower for /d/ than for /t/, indicating that /d/ is often misheard as /t/. Second, L2-accented exposure is predicted to improve recognition accuracy of /d/ compared to L1-accented exposure, and this improvement occurs without equivalent decreases in the recognition accuracy of /t/. 
-Looking across the distinct $\kappa_{0,c}$s and $\nu_{0,c}$ values, we make two more observations. First, faster learning of category means is generally beneficial under the current scenario. When listeners' beliefs about category covariances are held constant (i.e., looking within each row), smaller $\kappa_{0,c}$ values yield higher categorization accuracy. This is a straightforward consequence of the fact that the mean of the /d/ category is shifted in the L2 accents, as shown in Figure \@ref(fig:study-AA-exposure-test-plot). Adapting to the L2 accent thus hinges primarily on learning the new category mean for the /d/ category. Second, rapid updating of beliefs about the _variance_ is also beneficial, as seen by comparing panels within each column. This benefit is present throughout, albeit more obvious at slower rates of category mean updating (i.e., see the left four column). In the current scenario, the _true_ underlying variance is slightly increased along VOT and reduced along f0 in the L2 accent, compared to that in the L1 accent. Therefore, fast learning of category covariance is helpful, although its effect is not as pronounced as the learning of category means.
+Looking across the distinct $\kappa_{0,c}$s and $\nu_{0,c}$ values, we make two more observations. First, faster learning of category means is generally beneficial under the current scenario. When listeners' beliefs about category covariances are held constant (i.e., looking within each row), smaller $\kappa_{0,c}$ values yield higher categorization accuracy. This is a straightforward consequence of the fact that the mean of the /d/ category is shifted in the L2 accents, as shown in Figure \@ref(fig:study-AA-exposure-test-plot). Adapting to the L2 accent thus hinges primarily on learning the new category mean for the /d/ category. Second, rapid updating of beliefs about the _variance_ is also beneficial, as seen by comparing panels within each column. This benefit is present throughout, albeit more detectable at slower rates of category mean updating (i.e., see the left four column). In the current scenario, the _true_ underlying variance is slightly increased along VOT and reduced along f0 in the L2 accent, compared to that in the L1 accent. Therefore, fast learning of category covariance is helpful, although its effect is not as pronounced as the learning of category means.
 
 Taken together, these results show that changes in representation can generally explain the types of results that are considered the signature of accent adaptation [e.g., @bradlow-bent2008; @clarke-garrett2004; @sidaras2009; @xie2016].
 
@@ -820,10 +824,10 @@ update_bias_and_categorize_test <- function(
       response.mean.mean = mean(response.mean),
       response.mean.se = sd(response.mean) / sqrt(n_distinct(sim)))
   
-  print(paste0("response.mean.se is",u.test$response.mean.se))
-  print(paste0("u test n sims is", u.test$n.sims_so_far))
+  # print(paste0("response.mean.se is",u.test$response.mean.se)) #DEBUG
+  # print(paste0("u test n sims is", u.test$n.sims_so_far))
 
-  if (verbose) # TO D0: check here why setting verbose = T when calling this function does not print out the u.test
+  if (verbose)
     u.test %>%
     print()
   
@@ -834,7 +838,7 @@ update_bias_and_categorize_test <- function(
     pull(response.mean.se) %>%
     { . > control[["target_accuracy_se"]]})) {
 
-    print("part1")
+   # print("part1") #DEBUG
    # print(paste0("u.test is", u.test %>% pull(response.mean.se)))
    #
 
@@ -854,10 +858,15 @@ update_bias_and_categorize_test <- function(
          target_accuracy_se = control[["target_accuracy_se"]]),
        add_updates = u)
 
-   print("part2")
+  # print("part2") #DEBUG
 
- } else {print("routing else")
+ } else {
+   #print("routing else") #DEBUG
  # # Get average predicted accuracy (and its SE) for each item across all simulations
+   u.bySim <<- u %>%
+     mutate(Condition = .env$Condition)
+  # saveRDS(u.bySim, get_path(paste0("../models/d.AA.bias.bySim.rds")))
+   
    u %<>%
      group_by(!!! syms(setdiff(names(.), c("sim","posterior","response")))) %>%
      summarise(
@@ -875,7 +884,7 @@ history.optimization_bias <- tibble(.rows = 0)
 get_accuracy_from_updated_bias <- function(
     pars,
     model = m.io.VOT_f0.AA,
-    exposure = d.AA.exposure %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1")),
+    exposure = d.AA.exposure %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1")), # find the best-performing parameterization for the L2-accented condition
     test = d.AA.test %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1")),
     verbose = FALSE
 ) {
@@ -889,26 +898,32 @@ get_accuracy_from_updated_bias <- function(
     droplevels() %>%
     lift_MVG_ideal_observer_to_NIW_ideal_adaptor(kappa = max_kappa_nu, nu = max_kappa_nu)
   
-
+  # print(paste0("current lapse rate is", lapse_rate)) #DEBUG
+  # print(paste0("current beta pi is", beta_pi)) #DEBUG
+  # 
   u <-
     update_bias_and_categorize_test(
     prior = prior,
-    lapse_rate = lapse_rate,
+    lapse_rate = lapse_rate, #DEBUG: this is not necessary for the current calling of update_bias_categorize_test because the lapse_rate in prior has been assigned the value of the lapse_rate used in the current optimization search (i.e., pars[1])
     beta_pi = beta_pi,
     exposure = exposure,
     test = test,
     verbose = verbose,
     control = list(
       min.simulations = min(10, max(3, (1 + beta_pi * 2)^2)),
-      max.simulations = 100, #100 #DEBUG
+      max.simulations = 12, #100 #DEBUG
       step.simulations = 2, #2 #DEBUG
-      target_accuracy_se = .002)) %>%
+      target_accuracy_se = .002)) %>% # .002 #DEBUG
     get_accuracy()
 
 history.optimization_bias <<-
   bind_rows(
     history.optimization_bias,
     tibble(lapse_rate = lapse_rate, beta_pi = beta_pi, accuracy = u))
+  # 
+  # print(paste0("current lapse rate after updating is", lapse_rate)) #DEBUG
+  # print(paste0("current beta pi after updating is", beta_pi)) #DEBUG
+  # print(paste0("current accuracy after updating is", u)) #DEBUG
 
   return(u)
 }
@@ -923,21 +938,6 @@ history.optimization_bias <<-
 # 
 # make_exposure_test_plot(exposure.data = d.AA.exposure, test.data = d.AA.test2)
 # 
-# bias.pred7 <- d.AA.exposure %>%
-#         nest(data = -c(Condition, Subject)) %>%
-#         crossing(
-#           posterior.lapse_rate = c(0, 1),
-#           beta_pi = c(0, 0.1, 1)) %>% # specify what parameters to plot
-#         crossing(
-#           m.ia.VOT_f0.AA %>%
-#             filter(prior_kappa == max(prior_kappa), prior_nu == max(prior_nu)) %>%
-#             nest(prior = everything())) %>%
-#           group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
-#           group_modify(~ update_bias_and_categorize_test(prior = .x$prior[[1]],
-#                                                      lapse_rate = .x$posterior.lapse_rate,
-#                                                      beta_pi = .x$beta_pi,
-#                                                      exposure = .x$data[[1]],
-#                                                      test = d.AA.test2 %>% filter(Condition == "L2-accented")), .keep = TRUE, verbose = T)
 
 ```
 
@@ -948,22 +948,29 @@ find_best_model.bias.AA <- function(){
       set.seed(42007)
       }
   if (RESET_MODELS || !file.exists(get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))) {
+    
     best_performing_parameters.bias <-
       optim(
         par = c(mean(range.lapse_rate), mean(log(range.beta_pi))),
         fn = get_accuracy_from_updated_bias,
-        verbose = TRUE,
         method = "L-BFGS-B",
         lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
         upper = c(max(range.lapse_rate), max(log(range.beta_pi))),
         control = list(
-          fnscale = -1,
-          factr = 10^9))
+          fnscale = -1, # DEBUG:turns the optimization problem into a maximization problem (i.e., maximizing accuracy)
+          factr = 10^8)) # DEBUG:controls the convergence of the "L-BFGS-B" method
 
   best_performing_parameters.bias$par <- c(best_performing_parameters.bias$par[1], exp(best_performing_parameters.bias$par[2]))
+  
   saveRDS(best_performing_parameters.bias, get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
+  # saveRDS(history.optimization_bias, get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds")))
   } else {
+  # temp1  <- readRDS(get_path(paste0("../models/best_performing_parameters.bias_", example_label,"_old.rds"))) #DEBUG
+  # temp2  <- readRDS(get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
+  # temp1$par == temp2$par
+  #  temp3 <- readRDS(get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
   best_performing_parameters.bias <- readRDS(get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
+  # history.optimization_bias <- readRDS(get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds")))
   }
   return(best_performing_parameters.bias)
 }
@@ -1019,8 +1026,6 @@ plot_sample_model.bias.AA <- function(
 # d.AA.bias <- run_model.bias.AA()$visualization
 # best_performing_parameters.bias <- run_model.bias.AA()$best
 
-
-
 posterior.lapse_rate.plot = c(0, 0.005, 0.05, 0.5, 1) # DEBUG change
 beta_pi.plot = c(0, 0.1, 0.5, 1, 4) # specify what parameters to plot
   
@@ -1028,32 +1033,36 @@ d.AA.bias <- plot_sample_model.bias.AA(
   lapse_rate = posterior.lapse_rate.plot,
   beta_pi = beta_pi.plot
 )
+
 best_performing_parameters.bias <- find_best_model.bias.AA()
 
 ## DEBUG
+# best_performing_parameters.bias.debug1 <- find_best_model.bias.AA()
+# temp <- readRDS(get_path("../models/nov27/best_performing_parameters.bias_Cue_reweighting.rds"))
+
 # d.AA.bias2 <- plot_sample_model.bias.AA(
 #   lapse_rate = best_performing_parameters.bias$par[1],
 #   beta_pi = best_performing_parameters.bias$par[2]
 # )
 
-# bias.pred8 <- d.AA.exposure %>%
-#         nest(data = -c(Condition, Subject)) %>%
-#         crossing(
-#           posterior.lapse_rate = best_performing_parameters.bias$par[1],
-#           beta_pi = best_performing_parameters.bias$par[2]) %>%
-#         crossing(
-#           m.ia.VOT_f0.AA %>%
-#             filter(prior_kappa == max(prior_kappa), prior_nu == max(prior_nu)) %>%
-#             nest(prior = everything())) %>%
-#           group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
-#           group_modify(~ update_bias_and_categorize_test(prior = .x$prior[[1]],
-#                                                      lapse_rate = .x$posterior.lapse_rate,
-#                                                      beta_pi = .x$beta_pi,
-#                                                      exposure = .x$data[[1]],
-#                                                      test = d.AA.test %>% filter(Condition == "L2-accented")), .keep = TRUE, verbose = T) %>%
-#           mutate_at(vars(starts_with("prior_")), ~factor(.x)) %>%
-#           mutate_at(vars(starts_with("prior_")), fct_rev) %>%
-#           ungroup()
+bias.pred8 <- d.AA.exposure %>%
+        nest(data = -c(Condition, Subject)) %>%
+        crossing(
+          posterior.lapse_rate = best_performing_parameters.bias$par[1],
+          beta_pi = best_performing_parameters.bias$par[2]) %>%
+        crossing(
+          m.ia.VOT_f0.AA %>%
+            filter(prior_kappa == max(prior_kappa), prior_nu == max(prior_nu)) %>%
+            nest(prior = everything())) %>%
+          group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
+          group_modify(~ update_bias_and_categorize_test(prior = .x$prior[[1]],
+                                                     lapse_rate = .x$posterior.lapse_rate,
+                                                     beta_pi = .x$beta_pi,
+                                                     exposure = .x$data[[1]],
+                                                     test = d.AA.test %>% filter(Condition == "L2-accented")), .keep = TRUE, verbose = T) %>%
+          mutate_at(vars(starts_with("prior_")), ~factor(.x)) %>%
+          mutate_at(vars(starts_with("prior_")), fct_rev) %>%
+          ungroup()
 
 ```
 
@@ -1061,7 +1070,7 @@ best_performing_parameters.bias <- find_best_model.bias.AA()
 
 NB: we might need to start doing this in the PR section. and introduce the reason there. -->
 
-(ref:AA-result-changes-in-decision-making) Predictions of a model that derives accent adaptation as changes in decision-making. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda$). The highlighted panel is the one closest to the best-performing parameterization ($\beta_{\pi} = `r best_performing_parameters.bias$par[1]`$; $\lambda=`r best_performing_parameters.bias$par[2]`$; overall accuracy$=`r best_performing_parameters.bias$value`$).
+(ref:AA-result-changes-in-decision-making) Predictions of a model that derives accent adaptation as changes in decision-making. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda$). For each parameterization, multiple simulations are run until the standard error of the mean of the predicted response accuracy reaches a pre-set threshold or pre-set maximal simulations are reached. Predictions averaged across all simulations are shown. The highlighted panel is the one closest to the best-performing parameterization ($\beta_{\pi} = `r best_performing_parameters.bias$par[1]`$; $\lambda=`r best_performing_parameters.bias$par[2]`$; overall accuracy$=`r best_performing_parameters.bias$value`$).
 
 ```{r plot-AA-results-decision-making-functions}
 make_results_plot_decision_making <- function(data, data_best){
@@ -1156,7 +1165,7 @@ make_results_plot_decision_making <- function(data, data_best){
 make_results_plot_decision_making(data = d.AA.bias, data_best = best_performing_parameters.bias)
 
 # make_results_plot_decision_making(data = d.AA.bias2, data_best = best_performing_parameters.bias) # DEBUG
-# make_results_plot_decision_making(data = bias.pred8, data_best = best_performing_parameters.bias)
+# make_results_plot_decision_making(data = bias.pred.ver1, data_best = best_performing_parameters.bias)
 ```
 
 Figure \@ref(fig:AA-result-changes-in-decision-making) shows the effects of changes in decision-making, depending on the rate at which response biases change $\beta_{\pi}$ and the lapse rate $\lambda$. For L1-accented exposure, we again see that /d/ test tokens are categorized substantially less accurately than /t/ test tokens, regardless of the specific value of ($\beta_{\pi}$). The second signature result---improved accuracy after L2-accented exposure for /d/---is obtained for sufficiently large $\beta_{\pi}$. As $\beta_{\pi}$ increases, the overall recognition accuracy first increases and then plateaus. The largest improvements are found for the smallest lapse rates and fast-enough change rates (gray panel in Figure \@ref(fig:AA-result-changes-in-decision-making)).
@@ -1230,7 +1239,7 @@ get_accuracy_from_updated_normalization <- function(
   history.optimization_normalization <<- 
     bind_rows(
       history.optimization_normalization, 
-      tibble(kappa.normalization = kappa.normalization, accuracy = u))
+      tibble(kappa.normalization = kappa.normalization, accuracy = u, example_label = .env$example_label)) #DEBUG remove the recording of example_label
   
   return(u)
 }
@@ -1254,9 +1263,12 @@ find_best_model.normalization.AA <- function(){
           fnscale = -1,
           factr = 10^8))
     best_performing_parameters.normalization$par <- exp(best_performing_parameters.normalization$par[1])
+    
     saveRDS(best_performing_parameters.normalization, get_path(paste0("../models/best_performing_parameters.normalization_", example_label,".rds")))
+    # saveRDS(history.optimization_normalization, get_path(paste0("../models/d.AA.history.optimization.normalization_", example_label,".rds"))) 
     } else {
     best_performing_parameters.normalization <- readRDS(get_path(paste0("../models/best_performing_parameters.normalization_", example_label,".rds")))
+    # history.optimization_normalization <- readRDS(get_path(paste0("../models/d.AA.history.optimization.normalization_", example_label,".rds")))
     }
   return(best_performing_parameters.normalization)
 }
@@ -1282,7 +1294,6 @@ plot_sample_model.normalization.AA <- function(
       ungroup()
      
      saveRDS(normalization.pred, get_path(paste0("../models/d.AA.results.normalization_", example_label,".rds")))
-     
    } else {
      normalization.pred <- readRDS(get_path(paste0("../models/d.AA.results.normalization_", example_label,".rds")))
    }
@@ -1291,10 +1302,10 @@ plot_sample_model.normalization.AA <- function(
 
 prior_kappa.normalization.plot = c(1, 4, 16, 64, 256, 1024) # specify what parameters to plot
 
+best_performing_parameters.normalization <- find_best_model.normalization.AA()
 d.AA.normalization <- plot_sample_model.normalization.AA(
   prior_kappa.normalization= prior_kappa.normalization.plot
 )
-best_performing_parameters.normalization <- find_best_model.normalization.AA()
 
 # run_model.normalization.AA <- function(){
 #   if (RESET_MODELS || !file.exists(get_path(paste0("../models/best_performing_parameters.normalization_", example_label,".rds")))) {
@@ -1443,39 +1454,36 @@ construct_three_models <- function(
   p.exposure_test <- make_exposure_test_plot(d.AA.exposure, d.AA.test)
   ggsave(paste0('../figures/plotly/AA_cases/exposure_test_distribution_', example_label, '.png'), plot = p.exposure_test, width = base.width*3 + .5, height = base.height + .5, dpi = 300)
 
-  # representations.res <- run_model.representations.AA()
-  # bias.res <- run_model.bias.AA()
-  # normalization.res <- run_model.normalization.AA()
-  # 
-  # representations.pred <- representations.res$visualization
-  # bias.pred <- bias.res$visualization
-  # normalization.pred <- normalization.res$visualization
-  
+
+  history.optimization_representations <<- tibble(.rows = 0)
   best_performing_parameters.representations <- find_best_model.representations.AA()
   representations.pred <- plot_sample_model.representations.AA(
     prior_kappa = round(best_performing_parameters.representations$par[1], digits =0), # here one can select to plot just the best-performing parameterization or to visualize a range of parameters by specifying the values assigned to prior_kappa and prior_nu
     prior_nu = round(best_performing_parameters.representations$par[2], digits = 0)
   )
-  
+
+  history.optimization_bias <<- tibble(.rows = 0)
   best_performing_parameters.bias <- find_best_model.bias.AA()
   bias.pred <- plot_sample_model.bias.AA(
     lapse_rate = round(best_performing_parameters.bias$par[1], digits = 2), # here one can select to plot just the best-performing parameterization or to visualize a range of parameters by specifying the values assigned to lapse_rate and beta_pi
     beta_pi = round(best_performing_parameters.bias$par[2], digits = 2)
   )
-
+  
+  history.optimization_normalization <<- tibble(.rows = 0)
   best_performing_parameters.normalization <- find_best_model.normalization.AA()
   normalization.pred <- plot_sample_model.normalization.AA(
     prior_kappa.normalization = round(best_performing_parameters.normalization$par[1], digits = 0)
   )
+
   
   # plot the predicted results for all parameterization and save plots
-  p.AA.representations <- make_results_plot_representations(data = representations.pred, data_best = representations.res$best)
+  p.AA.representations <- make_results_plot_representations(data = representations.pred, data_best = best_performing_parameters.representations)
   ggsave(paste0('../figures/plotly/AA_cases/representations_', example_label, '.png'), plot = p.AA.representations, width = 2*(base.width*length(levels(factor(representations.pred$prior_kappa))) + .5), height = 2*(base.height*length(levels(factor(representations.pred$prior_nu))) + .5), dpi = 300)
 
   p.AA.bias <- make_results_plot_decision_making(data = bias.pred, data_best = best_performing_parameters.bias)
   ggsave(paste0('../figures/plotly/AA_cases/bias_', example_label, '.png'), plot = p.AA.bias, width = 2*(base.width*length(levels(factor(bias.pred$beta_pi))) + .5), height = 2*(base.height*length(levels(factor(bias.pred$posterior.lapse_rate))) + .5), dpi = 300)
 
-  p.AA.normalization <- make_results_plot_normalization(normalization.pred, normalization.res$best)
+  p.AA.normalization <- make_results_plot_normalization(normalization.pred, best_performing_parameters.normalization)
   ggsave(paste0('../figures/plotly/AA_cases/normalization_', example_label, '.png'), plot = p.AA.normalization, width = 2*(base.width*length(levels(factor(normalization.pred$prior_kappa.normalization))) + .5), height = 2*(base.height + .5), dpi = 300)
 
    d <- bind_rows(
@@ -1486,33 +1494,11 @@ construct_three_models <- function(
     normalization.pred %>%
             mutate(ModelType = "normalization")) %>%
     mutate(ModelType = factor(ModelType, levels = c("representations", "decision-making", "normalization")))
-  
+
   return(d)
 }
 
-# select the parameter combination for each model that results in the best overall accuracy
-# select_three_best_models <- function(d, example_label = "Cue_reweighting"){
-#   data_best1 <- readRDS(get_path(paste0("../models/best_performing_parameters.representations_", example_label,".rds")))
-#   data_best2 <- readRDS(get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
-#   data_best3 <- readRDS(get_path(paste0("../models/best_performing_parameters.normalization_", example_label,".rds")))
-#   
-#   d.best <- bind_rows(
-#     d %>%
-#       filter(ModelType == "representations") %>%
-#       filter(category == Item.Intended_category & prior_kappa %in% prior_kappa[which.min(abs(as.numeric(as.character(prior_kappa)) - data_best1$par[1]))] & #select the parameters (within the plotted range) that are closest to the best performing parameterization
-#                   prior_nu %in% prior_nu[which.min(abs(as.numeric(as.character(prior_nu)) - data_best1$par[2]))]),
-#     d %>% 
-#       filter(ModelType == "decision-making") %>%
-#       filter(category == Item.Intended_category & posterior.lapse_rate %in% posterior.lapse_rate[which.min(abs(posterior.lapse_rate - data_best2$par[1]))] & 
-#                   beta_pi %in% beta_pi[which.min(abs(beta_pi - data_best2$par[2]))]),
-#     d %>%
-#       filter(ModelType == "normalization") %>%
-#       filter(category == Item.Intended_category & prior_kappa.normalization %in% prior_kappa.normalization[which.min(abs(as.numeric(as.character(prior_kappa.normalization)) - data_best3$par[1]))])) %>%
-#     mutate(ModelType = factor(ModelType, levels = c("representations", "decision-making", "normalization"))) %>%
-#     mutate(Case = example_label)
-# 
-#   return(d.best)
-# }
+
 
 ```
 
@@ -1555,15 +1541,65 @@ shift.cue1 <- 0
 shift.cue2 <- 0
 var.ratio <- 1
 example_label = "Contrast_collapse" #COME BACK HERE AND FIX IT FOR get_parameters_phonetic_contrast.AA
+
 d.AA.results.contrast_collapse.best  <- construct_three_models(example_label = "Contrast_collapse", experimenter.ideal_observer = m.io.VOT_f0.AA)
 
 # d.AA.results.contrast_collapse.best <- select_three_best_models(d.AA.results.contrast_collapse, example_label = "Contrast_collapse")
 # rm(example_label) # CHANGE this when example_label called by get_parameters_phonetic_contrast.AA is fixed
 ```
 
+```{r AA-result-comparison-best-three-models-cue-reweighting-DEBUG, warning=FALSE, eval= FALSE}
+# Examine a new scenario: contrast collapse
+dist.L2_category.cue1 <- 1
+dist.L2_category.cue2 <- 0.22
+shift.cue1 <- 0.5
+shift.cue2 <- 0.22
+var.ratio = 1 # Multiple category variance by a constant; var.ratio = 1 means no change in category variance
+
+min_VOT = 5 # Set the minimal values for randomly generated test token cue values to make sure it is physiologically possible
+min_f0_Mel = 20
+example_label = "Cue_reweighting"
+
+d.AA.results.cue_reweighting.best  <- construct_three_models(example_label = "Cue_reweighting", experimenter.ideal_observer = m.io.VOT_f0.AA)
+
+```
+
+```{r AA-result-comparison-additional-cases-history-DEBUG, warning=FALSE, eval = FALSE}
+## DEBUG
+ 
+cases = c("Cue_reweighting", "Contrast_shift", "Contrast_reduction", "Contrast_collapse")
+history.optimization.representations.all = data.frame()
+history.optimization.bias.all = data.frame()
+history.optimization.normalization.all = data.frame()
+for (i in 1:length(cases)){
+  example_label = cases[i]
+  
+  #load history of optimization for representations model
+  history.optimization.representations.current <- readRDS(get_path(paste0("../models/d.AA.history.optimization.representations_", example_label,".rds"))) %>%
+    mutate(Case = example_label) 
+  history.optimization.representations.all <- bind_rows(history.optimization.representations.all, history.optimization.representations.current)
+ rm(history.optimization.representations.current)
+ 
+  #load history of optimization for bias model
+  history.optimization.bias.current <- readRDS(get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds"))) %>%
+    mutate(Case = example_label) 
+  history.optimization.bias.all <- bind_rows(history.optimization.bias.all, history.optimization.bias.current)
+  rm(history.optimization.bias.current)
+  
+  #load history of optimization for normalization model
+  history.optimization.normalization.current <- readRDS(get_path(paste0("../models/d.AA.history.optimization.normalization_", example_label,".rds")))
+  
+  history.optimization.normalization.all <- bind_rows(history.optimization.normalization.all, history.optimization.normalization.current)
+  rm(history.optimization.normalization.current)
+
+}
+```
+
+
+
 ```{r AA-result-comparison-additional-cases, warning=FALSE}
 
-cases = c("Contrast_shift", "Contrast_reduction", "Contrast_collapse")
+cases = c("Contrast_reduction", "Contrast_shift", "Contrast_collapse", "Cue_reweighting")
 best_performing_parameters.representations.par = data.frame()
 best_performing_parameters.bias.par = data.frame()
 best_performing_parameters.normalization.par = data.frame()
@@ -1643,7 +1679,7 @@ d.AA.exposure.target.cases <- rbind(
     mutate(Case = "Contrast collapse"),
   d.AA.exposure.target.contrast.shift %>%
     mutate(Case = "Contrast shift")) %>%
-  mutate(Case = factor(Case, levels = c("Contrast shift", "Contrast reduction", "Contrast collapse")))
+  mutate(Case = factor(Case, levels = c("Contrast reduction", "Contrast shift", "Contrast collapse")))
 
 # plot ellipses for actual exposure
 p.AA.exposure <- d.AA.exposure.target.cases %>%
@@ -1677,7 +1713,7 @@ d.AA.results.best.cases <- bind_rows(
   d.AA.results.contrast_shift.best %>%
     mutate(Case = "Contrast shift") 
 ) %>%
-  mutate(Case = factor(Case, levels = c("Contrast shift", "Contrast reduction", "Contrast collapse"))) %>%  
+  mutate(Case = factor(Case, levels = c("Contrast reduction", "Contrast shift", "Contrast collapse"))) %>%  
   mutate(parameterization = case_when(
    ModelType == "representations" ~ paste0("kappa = ", prior_kappa, ", nu = ", prior_nu),
    ModelType == "decision-making" ~ paste0("lambda = ", posterior.lapse_rate, ", beta = ", beta_pi),

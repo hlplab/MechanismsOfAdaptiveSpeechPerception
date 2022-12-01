@@ -270,7 +270,7 @@ make_plot_compare_models.AA <- function(
 
 ```{r compare-AA-models-results-across-three-mechanisms-similar-accuracy, warning=FALSE}
 # select the model parameters to be illustrated as an example where all three models predict a similar overall accuracy
-prior_kappa.selected = 256 #DEBUG CHANGE THIS TO AUTOMATICALLY USE the parameters from the simulations
+prior_kappa.selected = 256 #TO DO: CHANGE THIS TO AUTOMATICALLY USE the parameters from the simulations
 prior_nu.selected = 64
 posterior.lapse_rate.selected = min(d.AA.bias$posterior.lapse_rate)
 beta_pi.selected = 0.1

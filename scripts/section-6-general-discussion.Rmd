@@ -90,12 +90,11 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
         droplevels() %>%
         distinct(Condition, Subject, prior_kappa, prior_nu, posterior) %>%
         mutate(model = "Representations"),
-      data2 %>%
+     temp <- data2 %>%
         filter(category == Item.Intended_category) %>%
         filter(posterior.lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected) %>%
         droplevels() %>%
-       # distinct(Condition, Subject, posterior.lapse_rate, beta_pi, posterior, sim) %>% #DEBUG
-        distinct(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
+        distinct(Condition, Subject, posterior.lapse_rate, beta_pi, posterior, sim) %>%
         mutate(model = "Decision_making"),
       data3 %>%
         filter(category == Item.Intended_category) %>% 
@@ -242,7 +241,7 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
     ggsave(paste0('../figures/plotly/p.model_comparison_', compare_model_label, '.png'), plot = p.output, width = 2*(base.width*3 + .5), height = 2*(base.height + .5), dpi = 300)
 
 }
-
+#
 
 make_plot_compare_models.AA <- function(
     model_names = c("Representations", "Decision_making", "Normalization"),

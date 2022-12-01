@@ -465,6 +465,10 @@ Figure \@ref(fig:optimization results) summarizes the effects of parameterizatio
 (ref:optimization results) Parameter space explored by the search for the best-performing parameterizations of the three different change models in Case Study 2.
 
 ```{r optimzation-results, fig.width=base.width*3 + .5, fig.height=base.height*1 + .5, fig.cap = "(ref:optimization-results)"}
+history.optimization_representations <- readRDS(get_path(paste0("../models/d.AA.history.optimization.representations_Cue_reweighting.rds")))
+history.optimization_bias <- readRDS(get_path(paste0("../models/d.AA.history.optimization.bias_Cue_reweighting.rds")))
+history.optimization_normalization <- readRDS(get_path(paste0("../models/d.AA.history.optimization.normalization_Cue_reweighting.rds")))
+
 p.representations <-
   history.optimization_representations %>%
   ggplot(aes(x = kappa, y = nu, color = accuracy)) +

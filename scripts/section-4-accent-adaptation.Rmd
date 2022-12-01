@@ -416,8 +416,6 @@ d.AA.test %<>% add_subjects_to_test(n.subject = n.subject)
 ## Results
 Paralleling Case Study 1, we ask which of the three change models can account for the signature results of accent adaptation experiments. Specifically, we assess for each change model whether it can explain the two types of signature results observed in, for example, Xie et al. [-@xie2016jep]: (1) for L1-accented exposure, /d/ test tokens are recognized with lower accuracy than /t/ test tokens, since the categories are shifted towards /t/ along VOT, creating a deviation from L1 listeners' expectations; and (2) L2-accented exposure should lead to a significant increase in recognition accuracy for /d/ test tokens without an equivalent decrease in the accuracy for /t/ test tokens, resulting in increased overall accuracy. 
 
-<!--Below we focus on whether each change model can *qualitatively* account for these signature results, rather than the specific magnitude of accuracy improvements. We do so, because the predicted improvements do not only depend on each change model's parameters, but also the statistics of the L2-accented exposure and test tokens. For a different set of (real or simulated) stimuli, the predicted magnitude of accuracy improvements after L2-accented exposure can thus differ. This is an important consideration to keep in mind, and we return to it in the discussion.--> 
-
 As in Case Study 1, we first model changes in representations, and then compare them against change models in decision-making and normalization. We consider a larger range of parameterizations than in Case Study 1, because the models with the highest accuracy for L2-accented exposure (henceforth, the best-performing parameterization) in some cases fell outside of the range of parameter values considered in Case Study 1. These best-performing parameterizations were determined by bounded quasi-Newton optimization of the recognition accuracy during test after L2-accented exposure [@byrd1995, implemented in function \texttt{optim()} in R], and are indicated in all result plots we present below. Table \@ref(tab:AA-table-models-parameter-setting) summarizes the parameter ranges considered by the optimization algorithm.
 
 ```{r AA-table-models-parameter-setting, fig.width=base.width*3 + .5, fig.height=base.height + .5, fig.cap="(ref:study-AA-exposure-test-plot)", warning=FALSE}
@@ -609,11 +607,11 @@ find_best_model.representations.AA <- function(){
     
     saveRDS(best_performing_parameters.representations, get_path(paste0("../models/best_performing_parameters.representations_", example_label,".rds")))
     
-     # saveRDS(history.optimization_representations, get_path(paste0("../models/d.AA.history.optimization.representations_", example_label,".rds")))
+    saveRDS(history.optimization_representations, get_path(paste0("../models/d.AA.history.optimization.representations_", example_label,".rds")))
      
   } else {
     best_performing_parameters.representations <- readRDS(get_path(paste0("../models/best_performing_parameters.representations_", example_label,".rds")))
-    # history.optimization_representations <- readRDS(get_path(paste0("../models/d.AA.history.optimization.representations_", example_label,".rds")))
+    history.optimization_representations <- readRDS(get_path(paste0("../models/d.AA.history.optimization.representations_", example_label,".rds")))
   }
   return(best_performing_parameters.representations)
 }
@@ -860,25 +858,42 @@ update_bias_and_categorize_test <- function(
 
   # print("part2") #DEBUG
 
- } else {
-   #print("routing else") #DEBUG
- # # Get average predicted accuracy (and its SE) for each item across all simulations
-   u.bySim <<- u %>%
-     mutate(Condition = .env$Condition)
-  # saveRDS(u.bySim, get_path(paste0("../models/d.AA.bias.bySim.rds")))
-   
-   u %<>%
-     group_by(!!! syms(setdiff(names(.), c("sim","posterior","response")))) %>%
-     summarise(
-     response.n_sims = n_distinct(sim),
-     response.se = sd(response) / sqrt(response.n_sims),
-     response = mean(response)) %>%
-   relocate(
-     !!! syms(setdiff(names(.), c("response", "response.se", "response.n_sims"))),
-     response, response.se, response.n_sims)
-   }
+ } 
+ #  else {
+ #   #print("routing else") #DEBUG
+ # # # Get average predicted accuracy (and its SE) for each item across all simulations
+ #   
+ #   # u %<>%
+ #   #   group_by(!!! syms(setdiff(names(.), c("sim","posterior","response")))) %>%
+ #   #   mutate( #DEBUG:change summarise to mutate
+ #   #   response.n_sims = n_distinct(sim),
+ #   #   response.se = sd(response) / sqrt(response.n_sims),
+ #   #   response = mean(response)) %>%
+ #   # relocate(
+ #   #   !!! syms(setdiff(names(.), c("response", "response.se", "response.n_sims"))),
+ #   #   response, response.se, response.n_sims)
+ #   }
   return(u)
 }
+
+
+get_average_bias_results_across_simulations <- function(data){
+  output <- data %>%
+    group_by(!!! syms(setdiff(names(.), c("sim","posterior","response")))) %>%
+    summarise( #DEBUG:change summarise to mutate
+      response.n_sims = n_distinct(sim),
+      response.se = sd(response) / sqrt(response.n_sims),
+      response = mean(response)) %>%
+    relocate(
+     !!! syms(setdiff(names(.), c("response", "response.se", "response.n_sims"))),
+     response, response.se, response.n_sims) %>%
+    ungroup()
+  
+  return(output)
+}
+
+
+
 
 history.optimization_bias <- tibble(.rows = 0)
 get_accuracy_from_updated_bias <- function(
@@ -913,7 +928,9 @@ get_accuracy_from_updated_bias <- function(
       min.simulations = min(10, max(3, (1 + beta_pi * 2)^2)),
       max.simulations = 12, #100 #DEBUG
       step.simulations = 2, #2 #DEBUG
-      target_accuracy_se = .002)) %>% # .002 #DEBUG
+      target_accuracy_se = .002)) # .002 #DEBUG
+  
+  u <- get_average_bias_results_across_simulations(u) %>%
     get_accuracy()
 
 history.optimization_bias <<-
@@ -963,14 +980,10 @@ find_best_model.bias.AA <- function(){
   best_performing_parameters.bias$par <- c(best_performing_parameters.bias$par[1], exp(best_performing_parameters.bias$par[2]))
   
   saveRDS(best_performing_parameters.bias, get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
-  # saveRDS(history.optimization_bias, get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds")))
+  saveRDS(history.optimization_bias, get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds")))
   } else {
-  # temp1  <- readRDS(get_path(paste0("../models/best_performing_parameters.bias_", example_label,"_old.rds"))) #DEBUG
-  # temp2  <- readRDS(get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
-  # temp1$par == temp2$par
-  #  temp3 <- readRDS(get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
   best_performing_parameters.bias <- readRDS(get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
-  # history.optimization_bias <- readRDS(get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds")))
+  history.optimization_bias <- readRDS(get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds")))
   }
   return(best_performing_parameters.bias)
 }
@@ -987,8 +1000,8 @@ plot_sample_model.bias.AA <- function(
       bias.pred <- d.AA.exposure %>%
         nest(data = -c(Condition, Subject)) %>%
         crossing(
-          posterior.lapse_rate = lapse_rate,
-          beta_pi = beta_pi) %>%
+          posterior.lapse_rate = lapse_rate, 
+          beta_pi = beta_pi) %>% 
         crossing(
           m.ia.VOT_f0.AA %>%
             filter(prior_kappa == max(prior_kappa), prior_nu == max(prior_nu)) %>%
@@ -1044,36 +1057,37 @@ best_performing_parameters.bias <- find_best_model.bias.AA()
 #   lapse_rate = best_performing_parameters.bias$par[1],
 #   beta_pi = best_performing_parameters.bias$par[2]
 # )
+# 
+# bias.pred8.no.transformation <- d.AA.exposure %>%
+#         nest(data = -c(Condition, Subject)) %>%
+#         crossing(
+#           posterior.lapse_rate = best_performing_parameters.bias$par[1],
+#           beta_pi = best_performing_parameters.bias$par[2]) %>%
+#         crossing(
+#           m.ia.VOT_f0.AA %>%
+#             filter(prior_kappa == max(prior_kappa), prior_nu == max(prior_nu)) %>%
+#             nest(prior = everything())) %>%
+#           group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
+#           group_modify(~ update_bias_and_categorize_test(prior = .x$prior[[1]],
+#                                                      lapse_rate = .x$posterior.lapse_rate,
+#                                                      beta_pi = .x$beta_pi,
+#                                                      exposure = .x$data[[1]],
+#                                                      test = d.AA.test %>% filter(Condition == "L2-accented")), .keep = TRUE, verbose = T) %>%
+#           mutate_at(vars(starts_with("prior_")), ~factor(.x)) %>%
+#           mutate_at(vars(starts_with("prior_")), fct_rev) %>%
+#           ungroup()
 
-bias.pred8 <- d.AA.exposure %>%
-        nest(data = -c(Condition, Subject)) %>%
-        crossing(
-          posterior.lapse_rate = best_performing_parameters.bias$par[1],
-          beta_pi = best_performing_parameters.bias$par[2]) %>%
-        crossing(
-          m.ia.VOT_f0.AA %>%
-            filter(prior_kappa == max(prior_kappa), prior_nu == max(prior_nu)) %>%
-            nest(prior = everything())) %>%
-          group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
-          group_modify(~ update_bias_and_categorize_test(prior = .x$prior[[1]],
-                                                     lapse_rate = .x$posterior.lapse_rate,
-                                                     beta_pi = .x$beta_pi,
-                                                     exposure = .x$data[[1]],
-                                                     test = d.AA.test %>% filter(Condition == "L2-accented")), .keep = TRUE, verbose = T) %>%
-          mutate_at(vars(starts_with("prior_")), ~factor(.x)) %>%
-          mutate_at(vars(starts_with("prior_")), fct_rev) %>%
-          ungroup()
 
 ```
 
-<!-- Here we need to decide whether we a) state that this is just one simulation (which might, however, become confusing if those sims conflict with the optimal results) or b) run a sufficiently high number of sims per parameterization(I suspect that 10-20 is enough). Either way, the caption needs to state what we're doing and the text needs to briefly state why (order-sensitivity of this model). 
+<!-- NB: we might need to start doing this (i.e., running multiple simulations) in the PR section. and introduce the reason there. -->
 
-NB: we might need to start doing this in the PR section. and introduce the reason there. -->
-
-(ref:AA-result-changes-in-decision-making) Predictions of a model that derives accent adaptation as changes in decision-making. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda$). For each parameterization, multiple simulations are run until the standard error of the mean of the predicted response accuracy reaches a pre-set threshold or pre-set maximal simulations are reached. Predictions averaged across all simulations are shown. The highlighted panel is the one closest to the best-performing parameterization ($\beta_{\pi} = `r best_performing_parameters.bias$par[1]`$; $\lambda=`r best_performing_parameters.bias$par[2]`$; overall accuracy$=`r best_performing_parameters.bias$value`$).
+(ref:AA-result-changes-in-decision-making) Predictions of a model that derives accent adaptation as changes in decision-making. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda$). For each parameterization, multiple simulations are run until the standard error of the predicted mean accuracy of the `r conditions.AA[2]` condition reaches a pre-set threshold or pre-set maximal number of simulations are reached. We set the maximal number of simulations to 12 although most of the time a convergence is reached within this limit. Predictions averaged across all simulations are shown. The highlighted panel is the one closest to the best-performing parameterization ($\beta_{\pi} = `r best_performing_parameters.bias$par[1]`$; $\lambda=`r best_performing_parameters.bias$par[2]`$; overall accuracy$=`r best_performing_parameters.bias$value`$).
 
 ```{r plot-AA-results-decision-making-functions}
+
 make_results_plot_decision_making <- function(data, data_best){
+  
   p.results <- 
     basic_AA_result_plot(data) +
     coord_cartesian(ylim = c(0, 1.1)) +
@@ -1162,19 +1176,22 @@ make_results_plot_decision_making <- function(data, data_best){
 ```
 
 ```{r AA-result-changes-in-decision-making, fig.width= base.width * 5, fig.height= base.height * 5 + 1, fig.cap="(ref:AA-result-changes-in-decision-making)", warning=FALSE}
-make_results_plot_decision_making(data = d.AA.bias, data_best = best_performing_parameters.bias)
+make_results_plot_decision_making(data = get_average_bias_results_across_simulations(d.AA.bias), data_best = best_performing_parameters.bias)
 
 # make_results_plot_decision_making(data = d.AA.bias2, data_best = best_performing_parameters.bias) # DEBUG
-# make_results_plot_decision_making(data = bias.pred.ver1, data_best = best_performing_parameters.bias)
+# temp <- get_average_bias_results_across_simulations(bias.pred8.no.transformation)
+# make_results_plot_decision_making(data = get_average_bias_results_across_simulations(bias.pred8.no.transformation), data_best = best_performing_parameters.bias)
+
+
 ```
 
-Figure \@ref(fig:AA-result-changes-in-decision-making) shows the effects of changes in decision-making, depending on the rate at which response biases change $\beta_{\pi}$ and the lapse rate $\lambda$. For L1-accented exposure, we again see that /d/ test tokens are categorized substantially less accurately than /t/ test tokens, regardless of the specific value of ($\beta_{\pi}$). The second signature result---improved accuracy after L2-accented exposure for /d/---is obtained for sufficiently large $\beta_{\pi}$. As $\beta_{\pi}$ increases, the overall recognition accuracy first increases and then plateaus. The largest improvements are found for the smallest lapse rates and fast-enough change rates (gray panel in Figure \@ref(fig:AA-result-changes-in-decision-making)).
+Because response biases are updated when only a predictor error is observed (that is, parameter updating does not necessarily occur after every single token), the updating of this model is sensitive to the order of exposure items. Due to the this order-sensitivity, we run a sufficiently large number of simulations for each parameterization of $\beta_{\pi}$ and $\lambda$. Figure \@ref(fig:AA-result-changes-in-decision-making) shows the effects of changes in decision-making as a function of the rate at which response biases change $\beta_{\pi}$ and the lapse rate $\lambda$, averaged across all simulations for each parameterization. For L1-accented exposure, we again see that /d/ test tokens are categorized substantially less accurately than /t/ test tokens, regardless of the specific value of ($\beta_{\pi}$). The second signature result---improved accuracy after L2-accented exposure for /d/---is obtained for sufficiently large $\beta_{\pi}$. As $\beta_{\pi}$ increases, the overall recognition accuracy first increases and then plateaus. The largest improvements are found for the smallest lapse rates and fast-enough change rates (gray panel in Figure \@ref(fig:AA-result-changes-in-decision-making)). Importantly, the largest improvements are similar in magnitude to that from the representational change model, which is computationally more complex.
 
 Figure \@ref(fig:AA-result-changes-in-decision-making) also shows that changes in response biases do not necessarily result in the type of zero-sum trade-off that is sometimes attributed to them---accuracy improving by some degree for one category while decreasing by the same degree for the other category. Rather, L2-accented exposure can predict improvements in the *overall* recognition accuracy across both categories (e.g., top right panel). Indeed, zero-sum trade-offs are only expected under the highly implausible assumptions that responses are entirely independent of stimulus properties (bottom row of Figure \@ref(fig:AA-result-changes-in-decision-making)).
 
 ### Changes in normalization
 
-Finally, we compare models that normalize test tokens based on the phonetic inputs experienced during exposure to models that continue to apply normalization based on previous long-term L1 experience. Figure \@ref(fig:AA-result-changes-in-normalization) shows the predicted categorization accuracy following changes in normalization in L1- and L2-accented exposure conditions. We again obtain both signature results of experiments on accent adaptation. For L1-accented exposure, we continue to see that /d/ test tokens are categorized substantially less accurately than /t/ test tokens. For L2-accented exposure, recognition accuracy is improved for /d/ test tokens without the cost of equivalent decreases in recognition accuracy for /t/. That is, like the other two change models, normalization can predict *overall* improvements in recognition accuracy after L2-accented exposure. 
+Finally, we compare models that normalize test tokens based on the phonetic inputs experienced during exposure to models that continue to apply normalization based on previous long-term L1 experience. Figure \@ref(fig:AA-result-changes-in-normalization) shows the predicted categorization accuracy following changes in normalization in L1- and L2-accented exposure conditions. We again obtain both signature results of experiments on accent adaptation. For L1-accented exposure, we continue to see that /d/ test tokens are categorized substantially less accurately than /t/ test tokens. For L2-accented exposure, recognition accuracy is improved for /d/ test tokens without the cost of equivalent decreases in recognition accuracy for /t/. That is, like the other two change models, normalization can predict *overall* improvements in recognition accuracy after L2-accented exposure. And again, with fast-enough updating rate, this computationally simpler model yields similar amount of improvements to that predicted by the representational change model. 
 
 ```{r study-AA-models-normalization-functions, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -1239,7 +1256,7 @@ get_accuracy_from_updated_normalization <- function(
   history.optimization_normalization <<- 
     bind_rows(
       history.optimization_normalization, 
-      tibble(kappa.normalization = kappa.normalization, accuracy = u, example_label = .env$example_label)) #DEBUG remove the recording of example_label
+      tibble(kappa.normalization = kappa.normalization, accuracy = u)) 
   
   return(u)
 }
@@ -1265,10 +1282,10 @@ find_best_model.normalization.AA <- function(){
     best_performing_parameters.normalization$par <- exp(best_performing_parameters.normalization$par[1])
     
     saveRDS(best_performing_parameters.normalization, get_path(paste0("../models/best_performing_parameters.normalization_", example_label,".rds")))
-    # saveRDS(history.optimization_normalization, get_path(paste0("../models/d.AA.history.optimization.normalization_", example_label,".rds"))) 
+    saveRDS(history.optimization_normalization, get_path(paste0("../models/d.AA.history.optimization.normalization_", example_label,".rds")))
     } else {
     best_performing_parameters.normalization <- readRDS(get_path(paste0("../models/best_performing_parameters.normalization_", example_label,".rds")))
-    # history.optimization_normalization <- readRDS(get_path(paste0("../models/d.AA.history.optimization.normalization_", example_label,".rds")))
+    history.optimization_normalization <- readRDS(get_path(paste0("../models/d.AA.history.optimization.normalization_", example_label,".rds")))
     }
   return(best_performing_parameters.normalization)
 }
@@ -1402,9 +1419,9 @@ make_results_plot_normalization(d.AA.normalization, best_performing_parameters.n
 ## Summary
 Paralleling Case Study 1 on perceptual recalibration, we find that any of the three change mechanisms can qualitatively explain the signature results of experiments on accent adaptation. Even non-representational mechanisms---normalization and decision-making---can explain improvements in the perception of L2 accents that differ in complex ways from L1 listeners’ prior expectations. And, contrary to common assumptions, changes in decision-making can lead to _overall_ improvements in recognition accuracy, rather than only zero-sum trade-offs. Overall improvements in accuracy after exposure to an unfamiliar accent are thus _not_ diagnostic of listeners' adaptation to L2-specific category realizations. This supports the conclusion of Case Study 1: at the level of analysis that is commonly applied in previous work (and thus here), experiments on accent adaptation do not decisively rule out any of the three mechanisms as a driver of the facilitatory effects of exposure.
 
-Beyond the similarity in their qualitative predictions, the three change models exhibit quantitative differences. For the hypothetical L2 accent considered in Case Study 2, the maximal benefits of L2-accented exposure are predicted to be largest for the representational change model (overall improvements from `r get_accuracy_from_updated_representations(log(best_performing_parameters.representations$par), exposure = d.AA.exposure %>% filter(Condition == "L1-accented", Subject == paste0(Condition, ".1")))` to `r best_performing_parameters.representations$value`), followed by the decision-making change model (from `r get_accuracy_from_updated_bias(c(best_performing_parameters.bias$par[1], log(best_performing_parameters.bias$par[2])), exposure = d.AA.exposure %>% filter(Condition == "L1-accented", Subject == paste0(Condition, ".1")))` to `r best_performing_parameters.bias$value`) <!-- TO DO: this will need to be fixed since it's currently selecting a really large beta_pi value --> and smallest in the normalization change model (`r get_accuracy_from_updated_normalization(log(best_performing_parameters.normalization$par), exposure = d.AA.exposure %>% filter(Condition == "L1-accented", Subject == paste0(Condition, ".1")))` to `r best_performing_parameters.normalization$value`). <!-- TO DO: this will need to be changed if we use the new optimization method --> However, these differences do not mean that the representational change model will _always_ perform better than the other two change models. Rather, the quantitative results of Case Study 2 illustrate a critical insight of the ASP framework: the specific predicted benefit of L2-accented exposure under each mechanism depends on the statistics of the exposure and test stimuli, relative to L1 listeners’ prior expectations. For experiments that employ naturally accented exposure and test tokens, this also means that the results are predicted to depend on how exactly the acoustic-phonetic distributions of an L2 accent deviate from those of the L1 accent.
+It is noteworthy that for the hypothetical L2 accent considered in Case Study 2, the three models are not only similar in their qualitative predictions, but they also yield highly comparable quantitative results in terms of the maximal benefits of L2-accented exposure (compare the highlighted panels across Figure \@ref(fig:AA-result-changes-in-representations)-\@ref(fig:AA-result-changes-in-normalization)). It is not always the case. Rather, the process by which these quantitative results of Case Study 2 are obtained illustrates a critical insight of the ASP framework: the specific predicted benefit of L2-accented exposure under each mechanism depends on the statistics of the exposure and test stimuli, relative to L1 listeners’ prior expectations. For experiments that employ naturally accented exposure and test tokens, this also means that the results are predicted to depend on how exactly the acoustic-phonetic distributions of an L2 accent deviate from those of the L1 accent.
 
-To further illustrate this point, we simulated four additional scenarios of adaptation to an L2 accent (Panel A in Figure \@ref(fig:AA-plot-results-additional-cases)). Each of these scenarios is representative of attested L2-accents, selected to illustrate some of the dynamics of the different mechanisms and their dependence on exposure and test statistics. The first row of Figure \@ref(fig:AA-plot-results-additional-cases) shows an example of *contrast reduction*, in which the L2 accent shows a greater category overlap than the L1 accent. Here it is simulated by shifting /d/ category towards /t/ along VOT while keeping the latter unchanged [as qualitatively attested for, e.g., vowels in Spanish-accented English, @wade2007]. The second row of Figure \@ref(fig:AA-plot-results-additional-cases) shows a more extreme example, exhibiting almost complete *contrast collapse* [similar to the loss of the [s]-[`r linguisticsdown::cond_cmpl("θ")`] contrast that can occur in Mandarin-accented English, @zheng-samuel2020]. Here it is simulated by shifting both /d/ and /t/ towards a common mean. The third and four rows show examples of *contrast shift*, where two categories in L2-accented speech are shifted along one or more of the cue dimensions as compared to L1-accented speech. Here it is simulated by shifting both /d/ and /t/ categories towards lower VOT [qualitatively attested for, e.g., word-initial stops in French-accented English, @Sumner2011a]. The only difference between these two scenarios is that the bottom scenario includes an increase in category variance in addition to a shift in the category means.
+To further illustrate this point, we simulated three additional scenarios of adaptation to an L2 accent (Panel A in Figure \@ref(fig:AA-plot-results-additional-cases)). Each of these scenarios is representative of attested L2-accents, selected to illustrate some of the dynamics of the different mechanisms and their dependence on exposure and test statistics. The top row of Figure \@ref(fig:AA-plot-results-additional-cases) shows an example of *contrast reduction*, in which the L2 accent shows a greater category overlap than the L1 accent. Here it is simulated by shifting /d/ category towards /t/ along VOT while keeping the latter unchanged [as qualitatively attested for, e.g., vowels in Spanish-accented English, @wade2007]. The middle row shows an example of *contrast shift*, where two categories in L2-accented speech are shifted along one or more of the cue dimensions as compared to L1-accented speech. Here it is simulated by shifting both /d/ and /t/ categories towards lower VOT [qualitatively attested for, e.g., word-initial stops in French-accented English, @Sumner2011a]. The bottom row of Figure \@ref(fig:AA-plot-results-additional-cases) shows a more extreme example, exhibiting almost complete *contrast collapse* [similar to the loss of the [s]-[`r linguisticsdown::cond_cmpl("θ")`] contrast that can occur in Mandarin-accented English, @zheng-samuel2020]. Here it is simulated by making /d/ identical to /t/. 
 
 ```{r compare-AA-models-best-three-functions}
 # Function to construct change model of each type and select the best performing parameter combination
@@ -1441,7 +1458,6 @@ construct_three_models <- function(
     }
   d.AA.test <<- 
     make_accent_adaptation_test_design(
-   #   d.AA.exposure, 
       experimenter.ideal_observer = m.io.VOT_f0.AA, 
       test.n_block = n.test_block, 
       n_test = n.test.token, 
@@ -1469,13 +1485,14 @@ construct_three_models <- function(
     beta_pi = round(best_performing_parameters.bias$par[2], digits = 2)
   )
   
+  bias.pred %<>% get_average_bias_results_across_simulations() # average predictions across simulations for the bias model
+  
   history.optimization_normalization <<- tibble(.rows = 0)
   best_performing_parameters.normalization <- find_best_model.normalization.AA()
   normalization.pred <- plot_sample_model.normalization.AA(
     prior_kappa.normalization = round(best_performing_parameters.normalization$par[1], digits = 0)
   )
 
-  
   # plot the predicted results for all parameterization and save plots
   p.AA.representations <- make_results_plot_representations(data = representations.pred, data_best = best_performing_parameters.representations)
   ggsave(paste0('../figures/plotly/AA_cases/representations_', example_label, '.png'), plot = p.AA.representations, width = 2*(base.width*length(levels(factor(representations.pred$prior_kappa))) + .5), height = 2*(base.height*length(levels(factor(representations.pred$prior_nu))) + .5), dpi = 300)
@@ -1502,7 +1519,7 @@ construct_three_models <- function(
 
 ```
 
-(ref:AA-plot-results-additional-cases) Predicted adaptation for three types of L2 accents, from top to bottom: contrast reduction, contrast collapse, contrast shift without variance change, contrast shift with variance increase. Predictions were derived for one random experiment of the same number of exposure and test stimuli as in Case Study 2. **Panel A - Distributions of L1-accented and L2-accented categories:** L1-accented categories, represented in light shades, are kept constant across the three scenarios and identical to that in the main scenario above; L2-accented categories, represented by solid ellipses, are varied across scenarios. **Panel B - Change model predictions:** Predicted categorization accuracies for the L2-accented test tokens after L1-accented and L2-accented exposure, for the parameters that are closest to the best-performing parameterizations of each change models (cf. highlighted panels in Figure \@ref(fig:AA-result-changes-in-representations)-\@ref(fig:AA-result-changes-in-normalization)). The average accuracy across all test tokens for each condition is shown above the bars. Error bars show 95% bootstrapped confidence intervals. The the best-performing parameterizations are listed in \@ref(tab:AA-table-best-performing-parameterization).
+(ref:AA-plot-results-additional-cases) Predicted adaptation for three types of L2 accents, from top to bottom: contrast reduction, contrast shift and contrast collapse. Predictions were derived for one random experiment of the same number of exposure and test stimuli as in Case Study 2. Multiple simulations were performed following the same procedure described in the main scenario above. **Panel A - Distributions of L1-accented and L2-accented categories:** L1-accented categories, represented in light shades, are kept constant across the three scenarios and identical to that in the main scenario above; L2-accented categories, represented by solid ellipses, are varied across scenarios. **Panel B - Change model predictions:** Predicted categorization accuracies for the L2-accented test tokens after L1-accented and L2-accented exposure, for the best-performing parameterizations of each change model (cf. highlighted panels in Figure \@ref(fig:AA-result-changes-in-representations)-\@ref(fig:AA-result-changes-in-normalization)). The average accuracy across all test tokens for each condition is shown above the bars. Error bars show 95% bootstrapped confidence intervals.
 
 ```{r AA-result-comparison-best-three-models-contrast-shift, warning=FALSE}
 # Examine a new scenario: contrast shift
@@ -1546,6 +1563,12 @@ d.AA.results.contrast_collapse.best  <- construct_three_models(example_label = "
 
 # d.AA.results.contrast_collapse.best <- select_three_best_models(d.AA.results.contrast_collapse, example_label = "Contrast_collapse")
 # rm(example_label) # CHANGE this when example_label called by get_parameters_phonetic_contrast.AA is fixed
+#DEBUG
+# history.optimization.bias.yes <- readRDS("../models/d.AA.history.optimization/d.AA.history.optimization.bias_Contrast_collapse.rds")
+# d.AA.bias.yes <- readRDS("../models/temp_here/d.AA.results.bias_Contrast_collapse.rds")
+# d.AA.bias.now <- get_average_bias_results_across_simulations(d.AA.results.contrast_collapse.best)     
+# best_performing_parameters.bias.yes <- readRDS("../models/temp_here/best_performing_parameters.bias_Contrast_collapse.rds")
+# best_performing_parameters.bias.now <- readRDS("../models/best_performing_parameters.bias_Contrast_collapse.rds")
 ```
 
 ```{r AA-result-comparison-best-three-models-cue-reweighting-DEBUG, warning=FALSE, eval= FALSE}
@@ -1757,15 +1780,17 @@ legend_prow <- get_legend(p.results.best.cases)
 plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.2, 1)) 
 ```
 
-The four different accent scenarios differ in terms of the difficulty they are predicted to pose for L1 listeners prior to exposure (see L1-accented exposure condition in Panel B of Figure \@ref(fig:AA-plot-results-additional-cases)). Contrast reduction (first row), for example, resembles the scenario considered in Case Study 2: without informative exposure, L1 listeners unfamiliar with the accent are predicted to exhibit substantially more difficulty with the recognition of /d/ than the recognition of /t/. The opposite is observed for our example of contrast collapse (second row) and contrast shift (bottom two rows). This illustrates how differences in the realization of L2 vs. L1 accents can give rise to starkly different perceptual consequences for L1 listeners. 
+Figure \@ref(fig:AA-plot-results-additional-cases) also shows the model predictions using the best-performing parameterization (following the same procedures described in the main scenario) that yields the maximal benefit for the L2-accented exposure condition for each change model. The best-performing parameterizations are listed in \@ref(tab:AA-table-best-performing-parameterization). The three accent scenarios differ in terms of the difficulty they are predicted to pose for L1 listeners prior to exposure (see L1-accented exposure condition in Panel B of Figure \@ref(fig:AA-plot-results-additional-cases)). Contrast reduction (top row) and contrast collapse (bottom row), for example, resemble the scenario considered in Case Study 2: without informative exposure, L1 listeners unfamiliar with the accent are predicted to exhibit substantially more difficulty with the recognition of /d/ than the recognition of /t/. The opposite is observed for our example of contrast shift (middle row). This illustrates how differences in the realization of L2 vs. L1 accents can give rise to starkly different perceptual consequences for L1 listeners. 
 
-The four scenarios also differ in the extent to which exposure to the L2 accent can improve recognition accuracy---here illustrated for the best-performing parameterizations of each change model. We describe three aspects of this. First, confirming the point we raised above, changes of representations do not always outperform the other two mechanisms. For the case of contrast reduction (top row), changes in decision-making and normalization perform as well as, or better than, changes in category representations (for the parameter values considered here). This shows that the computational complexity afforded for the representational change model does not always result in higher recognition accuracy than the other two mechanisms.
+The three scenarios also differ in the maximal extent to which exposure to the L2 accent can improve recognition accuracy. We describe three aspects of this. First, confirming the point we raised above, changes of representations do not always outperform the other two mechanisms. For the case of contrast reduction (top row), changes in decision-making and normalization perform as well as, or better than, changes in category representations. This shows that the computational complexity afforded for the representational change model does not always result in higher recognition accuracy than the other two mechanisms.
 
-Second, the predicted benefits of L2-accented exposure vary depending on the L2 accent. This is true even if one compares the best model for each accent scenario---i.e., our best estimate of how well a listener could possibly do under any of the three change mechanisms if confronted with that particular L2 accent. For example, _none_ of the change models predicts significant benefits from L2-accented exposure for contrast collapse (second row). This highlights an important, yet often under-appreciated, insight: sometimes null results are _predicted_ for exposure-test experiment, because of the specific stimulus statistics [see @tan2021; @zheng-samuel2020]. Put differently, an absence of improvements does not _necessarily_ constitute evidence against accent adaptation or any of the three mechanisms.^[This also means that individual differences in accent adaptation around such a null effect are likely _not_ indicative of the individual’s ability to adapt to L2-accented speech but instead are likely to reflect random noise [under-mining the central argument made in, e.g., @zheng-samuel2020].] 
+Second, the same change model can support more or less overall accuracy improvements (comparing the panels within each column), depending on the specific differences between the L2 and L1 accent. Consider the case of contrast shift (second row). While changes in representations and normalization both predict large improvements in overall recognition accuracy in the L2-accented exposure, changes in decision-making do not (i.e., the difference in the predicted accuracy across L1- and L2-accented exposure conditions is negligible). This outcome aligns with the zero-sum trade-offs often attributed to this change mechanism (i.e., The recognition of /d/ improves at the cost of the recognition of /t/). The heterogeneity of the results across the three scenarios makes it clear that the trade-off is not an inherent property of the decision-making mechanism. It is instead a possible outcome arising from a combination of the specific change model and properties of the L2 accent (or L1-L2 accent differences). 
 
-Third, the same change model can support more or less overall accuracy improvements, depending on the specific differences between the L2 and L1 accent. Consider the case of contrast shift (third row). While changes in representations and normalization both predict large improvements in overall recognition accuracy in the L2-accented exposure, changes in decision-making do not (i.e., the difference in the predicted accuracy across L1- and L2-accented exposure conditions is negligible). This outcome aligns with the zero-sum trade-offs often attributed to this change mechanism (i.e., The recognition of /d/ improves at the cost of the recognition of /t/). The heterogeneity of the results across the three scenarios makes it clear that the trade-off is not an inherent property of the decision-making mechanism. It is instead a possible outcome arising from a combination of the specific change model and properties of the L2 accent (or L1-L2 accent differences). 
+Third, <!--the predicted benefits of L2-accented exposure vary depending on the L2 accent. This is true even if one compares the best-performing model for each accent scenario---i.e., our best estimate of how well a listener could possibly do under any of the three change mechanisms if confronted with that particular L2 accent. For example, -->_none_ of the change models predicts significant benefits from L2-accented exposure for contrast collapse (bottom row). This highlights an important, yet often under-appreciated, insight: sometimes null results are _predicted_ for exposure-test experiment, because of the specific stimulus statistics [see @tan2021; @zheng-samuel2020]. Put differently, an absence of improvements does not _necessarily_ constitute evidence against accent adaptation or any of the three mechanisms.^[This also means that individual differences in accent adaptation around such a null effect are likely _not_ indicative of the individual’s ability to adapt to L2-accented speech but instead are likely to reflect random noise [under-mining the central argument made in, e.g., @zheng-samuel2020].] 
 
-While the scenarios considered here cover only a small subset of the cross-accent differences that exists in the world, they serve as an initial illustration of a general challenge to adaptive speech perception: different types of cross-talker differences (including L2 accents) constitute different adaptive challenges, and benefit from different _rates_ and _types_ of adaptation. Since the properties of unfamiliar accents are not _a priori_ known to listeners, this means that the optimal level of flexibility is achieved if the neural and cognitive systems underlying adaptive speech perception may adjust based on the properties of the input [see discussion of the trade-off between flexibility and stability in @kleinschmidt-jaeger2015, pp. 180-182]. In Figure \@ref(fig:AA-plot-results-additional-cases) (Panel B), this is reflected in the fact that the best-performing parameterizations vary across the different accent scenarios. Beyond the accent scenarios examined here, naturally produced L2 accents exhibit substantial variations: L2-accented categories often deviate from L1-accented categories not only in terms of their means (as simulated here), <!-- TO DO: might change --> but also in variances and/or covariances [the category-specific correlation between cues, e.g., @smith2019; @wade2007; @vaughn2019; @xie-jaeger2020]. These arguably more complex differences can pose difficulties to L1-listeners and researchers alike. At the same time, they also offer a unique and fertile ground to test the relative engagement of each change mechanism. Because the three change mechanisms would predict distinct perceptual outcomes depending on the properties of the exposure and test stimuli, these differences can be used to distinguish between model predictions. In the general discussion, we explore how such tests are possible.
+While the scenarios considered here cover only a small subset of the cross-accent differences that exists in the world, they serve as an initial illustration of a general challenge to adaptive speech perception: different types of cross-talker differences (including L2 accents) constitute different adaptive challenges, and benefit from different _rates_ and _types_ of adaptation. Since the properties of unfamiliar accents are not _a priori_ known to listeners, this means that the optimal level of flexibility is achieved if the neural and cognitive systems underlying adaptive speech perception may adjust based on the properties of the input [see discussion of the trade-off between flexibility and stability in @kleinschmidt-jaeger2015, pp. 180-182]. In Figure \@ref(fig:AA-plot-results-additional-cases) (Panel B), this is reflected in the fact that the best-performing parameterizations vary across the different accent scenarios (see Table \@ref(tab:AA-table-best-performing-parameterization)). 
+
+In summary, benefits of L2-accented exposure expected under each change mechanism hinges on the specifics of L2-accented categories. Beyond the accent scenarios examined here (cue-reweighting, contrast reduction, contrast shift, and contrast collapse), naturally produced L2 accents exhibit substantial variations in complex ways, which can pose difficulties to L1-listeners and researchers alike. At the same time, they also offer a unique and fertile ground to test the relative engagement of each change mechanism. Because the three change mechanisms would predict distinct perceptual outcomes depending on the properties of the exposure and test stimuli, these differences can be used to distinguish between model predictions. In the general discussion below, we explore how such tests are possible.
 
 <!--TO DO: tidy up the table and add caption-->
 ```{r AA-table-best-performing-parameterization}

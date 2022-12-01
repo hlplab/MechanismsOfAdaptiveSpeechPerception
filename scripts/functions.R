@@ -731,7 +731,7 @@ add_prior_and_normalize_test_tokens_based_on_exposure <- function(data.exposure,
 save_figure_or_not <- function(figure, filename, override = RESET_FIGURES) {
   require(processx)
   
-  if (override || !file.exists(file.path(get_path('../figures/plotly/'), filename))) {
+  if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), filename))) {
     orca(figure, file = file.path(get_path('../figures/plotly/'), filename))
   }
 }

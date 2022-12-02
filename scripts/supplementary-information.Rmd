@@ -522,7 +522,7 @@ plot_grid(
   ncol = 3, rel_widths = c(1/3, 1/3, 1/3))
 ```
 
-# Computational limitations of change models afford qualitative tests of their *sufficiency* {#sec:SI-sufficiency}
+# Computational limitations of change models afford qualitative tests of their *sufficiency* {#sec:sufficiency}
 The three change models---as well as the three general hypotheses that they aim to implement---differ in their computational assumptions. Given these assumptions, it is possible to conduct experiments that can decisively test the *(in)sufficient* of any of the three mechanisms. Indeed, though not necessarily framed as such, some previous findings already speak to the (in)sufficiency of the three mechanisms. Here we summarize some of those key findings, and describe possible extensions to them. We note, however, that---as we outlined in the general discussion---we do not believe that such (in)sufficiency tests are themselves sufficient to advance research on adaptive speech perception.
 
 ## Normalization vs. changes in category representations

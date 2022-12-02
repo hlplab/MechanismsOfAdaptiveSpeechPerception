@@ -1196,16 +1196,8 @@ construct_three_models <- function(
     test.n_block = n.test_block,
     n_test = n.test.token
   ) {
-
-  if(exists("d.AA.exposure")){
-    rm(d.AA.exposure)
-  }
-  if(exists("d.AA.test")){
-    rm(d.AA.test)
-  }
-  if(SET_SEED){
-  set.seed(42007)
-    }
+  if(SET_SEED) set.seed(42007)
+  
   d.AA.exposure <<-
     make_accent_adaptation_exposure_design(
       experimenter.ideal_observer = m.io.VOT_f0.AA, 
@@ -1214,9 +1206,7 @@ construct_three_models <- function(
       shift_mean_1 = shift.cue1, 
       shift_mean_2 = shift.cue2) %>%
     add_subjects_to_exposure(n.subject = n.subject)
-  if(SET_SEED){
-  set.seed(42007)
-    }
+
   d.AA.test <<- 
     make_accent_adaptation_test_design(
       experimenter.ideal_observer = m.io.VOT_f0.AA, 
@@ -1229,7 +1219,7 @@ construct_three_models <- function(
     add_subjects_to_test(n.subject = n.subject)
   
   p.exposure_test <- make_exposure_test_plot(d.AA.exposure, d.AA.test)
-  ggsave(paste0('../figures/plotly/AA_cases/exposure_test_distribution_', example_label, '.png'), plot = p.exposure_test, width = base.width*3 + .5, height = base.height + .5, dpi = 300)
+  ggsave(paste0('../figures/plotly/exposure_test_distribution_', example_label, '.png'), plot = p.exposure_test, width = base.width*3 + .5, height = base.height + .5, dpi = 300)
 
 
   history.optimization_representations <<- tibble(.rows = 0)
@@ -1255,14 +1245,38 @@ construct_three_models <- function(
   )
 
   # plot the predicted results for all parameterization and save plots
-  p.AA.representations <- make_results_plot_representations(data = representations.pred, data_best = best_performing_parameters.representations)
-  ggsave(paste0('../figures/plotly/AA_cases/representations_', example_label, '.png'), plot = p.AA.representations, width = 2*(base.width*length(levels(factor(representations.pred$prior_kappa))) + .5), height = 2*(base.height*length(levels(factor(representations.pred$prior_nu))) + .5), dpi = 300)
+  p.AA.representations <- 
+    make_results_plot_representations(
+      data = representations.pred, 
+      data_best = best_performing_parameters.representations)
+  ggsave(
+    paste0('../figures/plotly/representations_', example_label, '.png'), 
+    plot = p.AA.representations, 
+    width = 2*(base.width*length(levels(factor(representations.pred$prior_kappa))) + .5), 
+    height = 2*(base.height*length(levels(factor(representations.pred$prior_nu))) + .5), 
+    dpi = 300)
 
-  p.AA.bias <- make_results_plot_decision_making(data = bias.pred, data_best = best_performing_parameters.bias)
-  ggsave(paste0('../figures/plotly/AA_cases/bias_', example_label, '.png'), plot = p.AA.bias, width = 2*(base.width*length(levels(factor(bias.pred$beta_pi))) + .5), height = 2*(base.height*length(levels(factor(bias.pred$posterior.lapse_rate))) + .5), dpi = 300)
+  p.AA.bias <- 
+    make_results_plot_decision_making(
+      data = bias.pred, 
+      data_best = best_performing_parameters.bias)
+  ggsave(
+    paste0('../figures/plotly/bias_', example_label, '.png'), 
+    plot = p.AA.bias, 
+    width = 2*(base.width*length(levels(factor(bias.pred$beta_pi))) + .5), 
+    height = 2*(base.height*length(levels(factor(bias.pred$posterior.lapse_rate))) + .5), 
+    dpi = 300)
 
-  p.AA.normalization <- make_results_plot_normalization(normalization.pred, best_performing_parameters.normalization)
-  ggsave(paste0('../figures/plotly/AA_cases/normalization_', example_label, '.png'), plot = p.AA.normalization, width = 2*(base.width*length(levels(factor(normalization.pred$prior_kappa.normalization))) + .5), height = 2*(base.height + .5), dpi = 300)
+  p.AA.normalization <- 
+    make_results_plot_normalization(
+      normalization.pred, 
+      best_performing_parameters.normalization)
+  ggsave(
+    paste0('../figures/plotly/normalization_', example_label, '.png'), 
+    plot = p.AA.normalization, 
+    width = 2*(base.width*length(levels(factor(normalization.pred$prior_kappa.normalization))) + .5), 
+    height = 2*(base.height + .5), 
+    dpi = 300)
 
    d <- bind_rows(
     representations.pred %>%
@@ -1336,38 +1350,42 @@ cases = c("Cue_reweighting", "Contrast_shift", "Contrast_reduction", "Contrast_c
 history.optimization.representations.all = data.frame()
 history.optimization.bias.all = data.frame()
 history.optimization.normalization.all = data.frame()
+
 for (i in 1:length(cases)){
   example_label = cases[i]
   
   #load history of optimization for representations model
-  history.optimization.representations.current <- readRDS(get_path(paste0("../models/d.AA.history.optimization.representations_", example_label,".rds"))) %>%
+  history.optimization.representations.current <- 
+    readRDS(get_path(paste0("../models/d.AA.history.optimization.representations_", example_label,".rds"))) %>%
     mutate(Case = example_label) 
-  history.optimization.representations.all <- bind_rows(history.optimization.representations.all, history.optimization.representations.current)
- rm(history.optimization.representations.current)
- 
+  history.optimization.representations.all <- 
+    bind_rows(history.optimization.representations.all, history.optimization.representations.current)
+  rm(history.optimization.representations.current)
+  
   #load history of optimization for bias model
-  history.optimization.bias.current <- readRDS(get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds"))) %>%
+  history.optimization.bias.current <- 
+    readRDS(get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds"))) %>%
     mutate(Case = example_label) 
-  history.optimization.bias.all <- bind_rows(history.optimization.bias.all, history.optimization.bias.current)
+  history.optimization.bias.all <- 
+    bind_rows(history.optimization.bias.all, history.optimization.bias.current)
   rm(history.optimization.bias.current)
   
   #load history of optimization for normalization model
-  history.optimization.normalization.current <- readRDS(get_path(paste0("../models/d.AA.history.optimization.normalization_", example_label,".rds")))
+  history.optimization.normalization.current <- 
+    readRDS(get_path(paste0("../models/d.AA.history.optimization.normalization_", example_label,".rds")))
   
-  history.optimization.normalization.all <- bind_rows(history.optimization.normalization.all, history.optimization.normalization.current)
+  history.optimization.normalization.all <- 
+    bind_rows(history.optimization.normalization.all, history.optimization.normalization.current)
   rm(history.optimization.normalization.current)
-
 }
 ```
 
-
-
 ```{r AA-result-comparison-additional-cases, warning=FALSE}
-
 cases = c("Contrast_reduction", "Contrast_shift", "Contrast_collapse", "Cue_reweighting")
 best_performing_parameters.representations.par = data.frame()
 best_performing_parameters.bias.par = data.frame()
 best_performing_parameters.normalization.par = data.frame()
+
 for (i in 1:length(cases)){
   example_label = cases[i]
   #load best-performing parameters for representation model

@@ -18,22 +18,16 @@ Let's delete to-dos after they have been addressed, and post in Slack what we've
 ## TO DOs identified in lab mtg
 
   * Bump up decision-making references and description paragraph in introduction (Shawn)
-  * Distinguish between episodic and exemplar (Maryann)
-  * Move the part about ASP not being a new model to the top of the intro. It may help to signal that we’re aiming to summarize what is known. (Seth)
 
   * In section 2: 
-    * try to be clearer that ASP is a *framework*, a skeleton that different parts can be plugged in. (Rachel) And consider reminding readers of that in the general discussion. 
-    * (Shawn) should you highlight “how far can you push normalization before it becomes changes in representations”? (I’m inclined not to get into these nuances in this paper).
     * Perhaps explain that we’re focusing on the case of ‘supervised’ learning but that the ASP framework is more general (the supervised logic is also implicit in Figure 3, which colors inputs by categories).
     * Think about a version of Figure 4 that signals how parameters incrementally change with exposure.
   * Eng of section 2: 
     * be clearer that we compare all three mechanisms. And be clear that the point is not to say that all results are ambiguous but that often results that are thought to be informative are, in fact, not (Seth).
-    * Edit the parts saying that all three mechanisms will be needed. Be clearer what we will end up saying about all three mechanisms mattering and coming together. That was not sufficiently. 
+    * Edit the parts saying that all three mechanisms will be needed. Be clearer what we will end up saying about all three mechanisms mattering and coming together. That was not sufficientlyclear. 
   * Can we be clearer that even if one agrees on the three mechanisms, we need to figure out how these mechanisms work. But how do we communicate this? Essentially, it became abundantly clear to us that even minute details can make a big difference in the predictions a model ends up making, so that it’s important to actually implement models. The difference between theory and model. Could go to end of intro or beginning of section 2.
   * When we get to general discussion, be perhaps even clearer what brain-imaging cannot answer. Not only what computations but also that activation evidence has to be interpreted with caution. (perhaps also bring up that imaging doesn’t compare competing accounts of the same type: e.g. no normalization comparison. Why? Too noisy)
   * Liked: auditory-linguistic-cognitive distinction for the three mechanisms (Shawn)
-Figure 1 and 3: be clearer about “processing” / “recognition” (the “what is being said”) vs. “adaptation” (the “how is it being”).
-  * Mention” visual analogues”  (bob & effi) and “discrimination” tasks
 
  * Send paper out to emily myers and james mcqueen and ask whether they’d be willing to read this in their lab?
 
@@ -42,4 +36,5 @@ Figure 1 and 3: be clearer about “processing” / “recognition” (the “wh
   * Florian
     * make a wrapper for categorization function (through optional argument) that makes the functions monotonic. do the math.
 
-
+  * Move the part about ASP not being a new model to the top of the intro. It may help to signal that we’re aiming to summarize what is known. (Seth)
+  * (Shawn) should you highlight “how far can you push normalization before it becomes changes in representations”? (I’m inclined not to get into these nuances in this paper).

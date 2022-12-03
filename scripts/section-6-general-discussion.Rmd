@@ -130,89 +130,49 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
   }
   
     # show the bar graph demonstrating the model parameters and recognition accuracy for each model
-    p.accuracy1 <- data1 %>%
+    p.accuracy1 <- basic_AA_result_plot(data1 %>%
       filter(category == Item.Intended_category) %>%
-      filter(prior_kappa == prior_kappa.selected & prior_nu == prior_nu.selected) %>%
-      ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
-    stat_summary(fun = mean,
-                 geom = "bar", position = pos, width = 0.6) +
-    stat_summary(aes(color = Item.Intended_category),
-                 fun.data = mean_cl_boot,
-                 geom = "uperrorbar",
-                 position = pos, width = 0.2) +
-    coord_cartesian(ylim =  c(0,1)) +
-    scale_color_manual("Category", values = colors.category) +
-    scale_fill_manual("Category", values = colors.category) +
-    scale_alpha_discrete(range = c(0.2, 1), guide = "none") +
-    scale_x_discrete(labels= c("L1-\naccented", "L2-\naccented")) +
-    xlab("Exposure condition") +
-    ylab("Predicted categorization accuracy") +
-    geom_text(inherit.aes = FALSE, data = . %>%
-                 group_by(Condition,prior_nu,prior_kappa) %>%
-                summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
+      filter(prior_kappa == prior_kappa.selected & prior_nu == prior_nu.selected)) + 
+      geom_text(
+      inherit.aes = FALSE, 
+      data = . %>%
+        group_by(Condition, prior_nu, prior_kappa) %>%
+        summarise(mAcc = round(mean(response), digits = 2)), 
+      mapping = aes(label = mAcc, x = Condition, y = 1.05), 
+      size = geom_text.size) +
     facet_grid(
       prior_nu ~ prior_kappa,
       labeller = label_bquote(
         cols = {kappa[0~","~ .(categories.AA[1])] == kappa[0~","~ .(categories.AA[2])]} == .(as.character(prior_kappa)),
-        rows = {nu[0~","~ .(categories.AA[1])] == nu[0~","~ .(categories.AA[2])]} == .(as.character(prior_nu)))) + # as.table = T doesn't seem to work
-    myGplot.defaults(base_size = 14, set_theme = F) +
-    theme(legend.position = "top", panel.grid.major.x = element_blank())
+        rows = {nu[0~","~ .(categories.AA[1])] == nu[0~","~ .(categories.AA[2])]} == .(as.character(prior_nu)))) 
     
-    p.accuracy2 <- data2 %>%
+    p.accuracy2 <- basic_AA_result_plot(data2 %>%
       filter(category == Item.Intended_category) %>%
-      filter(posterior.lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected) %>%
-  ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
-  stat_summary(fun = mean,
-               geom="bar", position = pos,
-               width = 0.6) +
-  stat_summary(aes(color = Item.Intended_category),fun.data = mean_cl_boot,
-               geom = "uperrorbar",
-               position = pos, width = 0.2) +
-  coord_cartesian(ylim =  c(0,1)) +
-  scale_color_manual("Category", values = colors.category) +
-  scale_fill_manual("Category", values = colors.category) +
-  scale_alpha_discrete(range = c(0.2, 1), guide = "none") +
-  scale_x_discrete(labels= c("L1-\naccented", "L2-\naccented")) +
-  xlab("Exposure condition") +
-  ylab("Predicted categorization accuracy") +
-  geom_text(inherit.aes = FALSE, data = . %>%
-               group_by(Condition,posterior.lapse_rate,beta_pi) %>%
-               summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
-  facet_grid(
-    posterior.lapse_rate ~ beta_pi,
-    labeller = label_bquote(
-      cols = beta[pi] == .(beta_pi),
-      rows = lambda[posterior] == ~.(posterior.lapse_rate))) +
-  myGplot.defaults(base_size = 14, set_theme = F) +
-  theme(legend.position = "top", panel.grid.major.x = element_blank())
+      filter(posterior.lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected)) + 
+      geom_text(
+      inherit.aes = FALSE, data = . %>%
+        group_by(Condition, posterior.lapse_rate, beta_pi) %>%
+        summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1.05), size = geom_text.size) +
+    facet_grid(
+      posterior.lapse_rate ~ beta_pi,
+      labeller = label_bquote(
+        cols = beta[pi] == .(beta_pi),
+        rows = lambda == ~.(posterior.lapse_rate))) 
     
-    p.accuracy3 <- data3 %>%
+    p.accuracy3 <- basic_AA_result_plot(data3 %>%
       filter(category == Item.Intended_category) %>%
-      filter(prior_kappa.normalization == prior_kappa.normalization.selected) %>%
-      ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
-      stat_summary(fun = mean,
-                   geom="bar", position = pos,
-                   width = 0.6) +
-      stat_summary(aes(color = Item.Intended_category),
-                   fun.data = mean_cl_boot,
-                   geom = "uperrorbar",
-                   position = pos, width = 0.2) +
-      coord_cartesian(ylim =  c(0,1)) +
-      scale_color_manual("Category", values = colors.category) +
-      scale_fill_manual("Category", values = colors.category) +
-      scale_alpha_discrete(range = c(0.2, 1), guide = "none") +
-      xlab("Exposure condition") +
-      ylab("Predicted categorization accuracy") +
-      scale_x_discrete(labels= c("L1-\naccented", "L2-\naccented")) +
-      geom_text(inherit.aes = FALSE, data = . %>%
-                   group_by(Condition, prior_kappa.normalization) %>%
-                   summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
-      facet_grid(
-        . ~ prior_kappa.normalization,
-        labeller = label_bquote(
-          cols = ~kappa[0] == .(as.character(prior_kappa.normalization)))) +
-      myGplot.defaults(base_size = 14, set_theme = F) +
-      theme(legend.position = "top", panel.grid.major.x = element_blank())
+      filter(prior_kappa.normalization == prior_kappa.normalization.selected)) + 
+      geom_text(
+      inherit.aes = FALSE, 
+      data = . %>%
+        group_by(Condition, prior_kappa.normalization) %>%
+        summarise(mAcc = round(mean(response), digits = 2)), 
+      mapping = aes(label = mAcc, x = Condition, y = 1.05), 
+      size = geom_text.size) +
+    facet_grid(
+      . ~ prior_kappa.normalization,
+      labeller = label_bquote(
+        cols = ~kappa[0] == .(as.character(prior_kappa.normalization))))
         
         prow = plot_grid(p.accuracy1 + theme(legend.position="none"),
                          p.accuracy2 + theme(legend.position="none"),
@@ -259,7 +219,7 @@ make_plot_compare_models.AA <- function(
 
 ```{r compare-AA-models-results-across-three-mechanisms-similar-accuracy, warning=FALSE}
 # select the model parameters to be illustrated as an example where all three models predict a similar overall accuracy
-prior_kappa.selected = 256 #TO DO: CHANGE THIS TO AUTOMATICALLY USE the parameters from the simulations
+prior_kappa.selected = 256
 prior_nu.selected = 64
 posterior.lapse_rate.selected = min(d.AA.bias$posterior.lapse_rate)
 beta_pi.selected = 0.1
@@ -270,7 +230,7 @@ compare_models.AA(d.AA.representations, d.AA.bias, d.AA.normalization, d.AA.expo
 ```
 
 <!--TO DO: change the size of the bar graph at the top-->
-```{r show-model-categorization-3D-plots-similar-accuracy, fig.ncol = 3, fig.show='hold',fig.align='center',out.width= c("99%",rep("33%",9)), out.height=c("20%",rep("20%",4)), fig.cap="(ref:show-model-categorization-3D-plots-similar-accuracy)", fig.subcap=c('Model predictions in accuracy','Representations: L1-accented', 'Decision making: L1-accented', 'Normalization: L1-accented', 'Representations: L2-accented', 'Decision making: L2-accented', 'Normalization: L2-accented', 'Representations: difference', 'Decision making: difference', 'Normalization: difference')}
+```{r show-model-categorization-3D-plots-similar-accuracy, fig.ncol = 3, fig.show='hold',fig.align='center',out.width= c("99%",rep("33%",9)), out.height=c("15%",rep("15%",4)), fig.cap="(ref:show-model-categorization-3D-plots-similar-accuracy)", fig.subcap=c('Model predictions in accuracy','Representations: L1-accented', 'Decision making: L1-accented', 'Normalization: L1-accented', 'Representations: L2-accented', 'Decision making: L2-accented', 'Normalization: L2-accented', 'Representations: difference', 'Decision making: difference', 'Normalization: difference')}
 make_plot_compare_models.AA(compare_model_label = "similar-accuracy")
 ```
 

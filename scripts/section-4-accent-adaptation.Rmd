@@ -328,9 +328,9 @@ add_subjects_to_test <- function(
 ```
 
 ```{r study-AA-test-make-data}
-if(SET_SEED){
-  set.seed(42007)
-}
+# if(SET_SEED){
+#   set.seed(42007)
+# } #DEBUG
 d.AA.test <- make_accent_adaptation_test_design(
  # d.AA.exposure, 
   experimenter.ideal_observer = m.io.VOT_f0.AA, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
@@ -368,7 +368,7 @@ make_exposure_test_plot <- function(exposure.data, test.data){
     geom_point(aes(color = Item.Intended_category), alpha = 0.5) +
     stat_ellipse(
       data = 
-        exposure.data %>% 
+        exposure.data %>%
         filter(Condition == "L2-accented"), 
       mapping = aes(fill = Item.Category), 
       level = .95, alpha = 0.3, geom = "polygon") +
@@ -442,19 +442,18 @@ range.beta_pi <- c(10^-3, 10^2)
 range.prior_kappa.normalization <- c(1, 10000)
 
 d.parameters <- data.frame(c("Changes in representations", "Changes in representations", "Changes in decision-making", "Changes in decision-making", "Changes in normalization"),
-  c("$\\kappa_{c,0}$", "$\\nu_{c,0}$", "$\\lambda$", "$\\pi_c$", "$\\kappa_0$"),
-                           c(c(paste0(range.prior_kappa[1], ", " ,range.prior_kappa[2])),
-                           c(paste0(range.prior_nu[1], ", " ,range.prior_nu[2])),
-                           c(paste0(range.lapse_rate[1], ", " ,range.lapse_rate[2])),
-                           c(paste0(range.beta_pi[1], ", " ,range.beta_pi[2])),
+  c("$\\kappa_{c,0}$", "$\\nu_{c,0}$", "$\\lambda$", "$\\beta_\\pi$", "$\\kappa_0$"),
+                           c(c(paste0(range.prior_kappa[1], " to " ,range.prior_kappa[2])),
+                           c(paste0(range.prior_nu[1], " to " ,range.prior_nu[2])),
+                           c(paste0(range.lapse_rate[1], " to " ,range.lapse_rate[2])),
+                           c(paste0(range.beta_pi[1], " to " ,range.beta_pi[2])),
                            c(paste0(range.prior_kappa.normalization[1], ", " ,range.prior_kappa.normalization[2]))))
 colnames(d.parameters) = c("Model","Parameters", "Range")
 
-knitr::kable(d.parameters %>% collapse_rows_df(Model), caption = "Parameter range considered for each change model", booktabs = TRUE) %>%
+knitr::kable(d.parameters %>% collapse_rows_df(Model), caption = "Parameter range considered for each change model", booktabs = TRUE, escape = FALSE) %>%
   collapse_rows(1, latex_hline = "major", valign = "middle") %>% 
-#  row_spec(5, hline_after = T) %>% TO-DO: fix the formatting of the table
+#  row_spec(5, hline_after = T) %>% 
   kable_styling()
-
 
 ```
 
@@ -515,7 +514,8 @@ basic_AA_result_plot <- function(data) {
         fun.data = mean_cl_boot,
         geom = "uperrorbar",
         position = pos, width = 0.2),
-      coord_cartesian(ylim =  c(0,1)),
+      coord_cartesian(ylim = c(0, 1.1)),
+      scale_y_continuous(breaks = c(0, 0.25, 0.5, 0.75, 1)),
       scale_color_manual("Category", values = colors.category, aesthetics = c("color", "fill")),
       scale_alpha_discrete(range = c(0.2, 1), guide = "none"),
       scale_x_discrete(labels= c("L1-accented", "L2-accented")),
@@ -664,8 +664,6 @@ best_performing_parameters.representations <- find_best_model.representations.AA
 make_results_plot_representations <- function(data, data_best) {
   p.results <- 
     basic_AA_result_plot(data) +
-    coord_cartesian(ylim = c(0, 1.1)) +
-    scale_y_continuous(breaks = c(0, 0.25, 0.5, 0.75, 1)) +
     geom_text(
       inherit.aes = FALSE, 
       data = . %>%
@@ -706,7 +704,7 @@ make_results_plot_representations(data = d.AA.representations, data_best = best_
 Figure \@ref(fig:AA-result-changes-in-representations) shows the predicted categorization accuracy after exposure to L1- or L2-accented speech, as a function of the strength of the prior beliefs for the category means and variances. First consider the top left panel, where both $\kappa_{0,c}$s and $\nu_{0,c}$ have very high values. This simulates a extremely slow learner who has strong prior beliefs for both category means and variances such that the small number of tokens heard during exposure phase has minimal influence on subsequent perception of the test tokens. Therefore, the performance from both L1- and L2-accented exposure conditions are identical, reflecting how a listener would categorize based on their long-term prior experience predominantly. 
 
 As $\kappa_{0,c}$s and $\nu_{0,c}$ get smaller (i.e., weaker prior beliefs), the effects of exposure conditions become more noticeable. Both of the signature results described above can be predicted by changes in category representations. First, for L1-accented exposure, the accuracy is always predicted to be lower for /d/ than for /t/, indicating that /d/ is often misheard as /t/. Second, L2-accented exposure is predicted to improve recognition accuracy of /d/ compared to L1-accented exposure, and this improvement occurs without equivalent decreases in the recognition accuracy of /t/. 
-Looking across the distinct $\kappa_{0,c}$s and $\nu_{0,c}$ values, we make two more observations. First, faster learning of category means is generally beneficial under the current scenario. When listeners' beliefs about category covariances are held constant (i.e., looking within each row), smaller $\kappa_{0,c}$ values yield higher categorization accuracy. This straightforwardly follows from the fact that the mean of the /d/ category is shifted in the L2 accents, as shown in Figure \@ref(fig:study-AA-exposure-test-plot). <!--[ck] currently both of the category means are shifted. Should we be clearer about that?--> Adapting to the L2 accent thus hinges primarily on learning the new category mean for the /d/ category. Second, rapid updating of beliefs about the _variance_ is also beneficial, as seen by comparing panels within each column. This benefit is present throughout, albeit more detectable at slower rates of category mean updating (i.e., see the left three columns). In the current scenario, the _true_ underlying variance is slightly increased along VOT and reduced along f0 in the L2 accent, compared to that in the L1 accent. Therefore, fast learning of category covariance is helpful, although its effect is not as pronounced as the learning of category means.
+Looking across the distinct $\kappa_{0,c}$s and $\nu_{0,c}$ values, we make two more observations. First, faster learning of category means is generally beneficial under the current scenario. When listeners' beliefs about category covariances are held constant (i.e., looking within each row), smaller $\kappa_{0,c}$ values yield higher categorization accuracy. This straightforwardly follows from the fact that the mean of both /d/ and /t/ are shifted in the L2 accents, as shown in Figure \@ref(fig:study-AA-exposure-test-plot). Adapting to the L2 accent thus hinges primarily on learning the new category mean for the /d/ category. Second, rapid updating of beliefs about the _variance_ is also beneficial, as seen by comparing panels within each column. This benefit is present throughout, albeit more detectable at slower rates of category mean updating (i.e., see the left three columns). In the current scenario, the _true_ underlying variance is slightly increased along VOT and reduced along f0 in the L2 accent, compared to that in the L1 accent. Therefore, fast learning of category covariance is helpful, although its effect is not as pronounced as the learning of category means.
 
 Taken together, these results show that changes in representation can generally explain the types of results that are considered the signature of accent adaptation [e.g., @bradlow-bent2008; @clarke-garrett2004; @sidaras2009; @xie2016].
 
@@ -818,9 +816,6 @@ get_average_bias_results_across_simulations <- function(data){
   
   return(output)
 }
-
-
-
 
 history.optimization_bias <- tibble(.rows = 0)
 get_accuracy_from_updated_bias <- function(
@@ -956,12 +951,10 @@ make_results_plot_decision_making <- function(data, data_best){
   
   p.results <- 
     basic_AA_result_plot(data) +
-    coord_cartesian(ylim = c(0, 1.1)) +
-    scale_y_continuous(breaks = c(0, 0.25, 0.5, 0.75, 1)) +
     geom_text(
       inherit.aes = FALSE, data = . %>%
         group_by(Condition, posterior.lapse_rate, beta_pi) %>%
-        summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
+        summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1.05), size = geom_text.size) +
     facet_grid(
       posterior.lapse_rate ~ beta_pi,
       labeller = label_bquote(
@@ -1073,9 +1066,6 @@ get_accuracy_from_updated_normalization <- function(
 ```
 
 ```{r study-AA-models-normalization, echo=FALSE, message=FALSE, warning=FALSE}
-  ##------------------------------------------
-  # normalization model
-  ##------------------------------------------
 
 find_best_model.normalization.AA <- function(){
   if (RESET_MODELS || !file.exists(get_path(paste0("../models/best_performing_parameters.normalization_", example_label,".rds")))) {
@@ -1127,6 +1117,10 @@ plot_sample_model.normalization.AA <- function(
   return(normalization.pred)
 }
 
+  ##------------------------------------------
+  # normalization model
+  ##------------------------------------------
+
 prior_kappa.normalization.plot = c(1, 4, 16, 64, 256, 1024) # specify what parameters to plot
 
 best_performing_parameters.normalization <- find_best_model.normalization.AA()
@@ -1146,7 +1140,7 @@ make_results_plot_normalization <- function(data, data_best){
       data = . %>%
         group_by(Condition, prior_kappa.normalization) %>%
         summarise(mAcc = round(mean(response), digits = 2)), 
-      mapping = aes(label = mAcc, x = Condition, y = 1), 
+      mapping = aes(label = mAcc, x = Condition, y = 1.05), 
       size = geom_text.size) +
     facet_grid(
       . ~ prior_kappa.normalization,
@@ -1331,6 +1325,7 @@ d.AA.results.contrast_collapse.best  <- construct_three_models(example_label = "
 ```
 
 ```{r AA-result-comparison-best-three-models-cue-reweighting-DEBUG, warning=FALSE, eval= FALSE}
+#DEBUG remove if done
 # Examine a new scenario: contrast collapse
 dist.L2_category.cue1 <- 1
 dist.L2_category.cue2 <- 0.22
@@ -1346,6 +1341,7 @@ d.AA.results.cue_reweighting.best  <- construct_three_models(example_label = "Cu
 ```
 
 ```{r AA-result-comparison-additional-cases-history-DEBUG, warning=FALSE, eval = FALSE}
+#DEBUG remove if done
 cases = c("Cue_reweighting", "Contrast_shift", "Contrast_reduction", "Contrast_collapse")
 history.optimization.representations.all = data.frame()
 history.optimization.bias.all = data.frame()
@@ -1525,7 +1521,9 @@ p.results.best.cases <- d.AA.results.best.cases %>%
                  summarise(mAcc = round(mean(response), digits = 2)),
             aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
   facet_grid(Case ~ ModelType) +
-  theme(legend.position = "top", strip.text.y = element_blank(), panel.grid.major.x = element_blank())
+  theme(legend.position = "top", 
+        strip.text.y = element_blank(),
+        panel.grid.major.x = element_blank())
 
 prow <- 
   plot_grid(
@@ -1533,7 +1531,7 @@ prow <-
     p.results.best.cases + theme(legend.position="none"), 
     labels = c('A)', 'B)'), 
     ncol = 2, 
-    rel_widths = c(1.5,3.3))
+    rel_widths = c(1.2,3.3))
 
 # extract a legend that is laid out horizontally
 legend_prow <- get_legend(p.results.best.cases)
@@ -1557,9 +1555,9 @@ In summary, benefits of L2-accented exposure expected under each change mechanis
 parameters.results.best.cases <- bind_rows(best_performing_parameters.representations.par,                      best_performing_parameters.bias.par, best_performing_parameters.normalization.par) %>%
   mutate(Case = gsub("_", " ", Case)) %>%
   mutate(parameterization = case_when(
-   ModelType == "representations" ~ paste0("kappa = ", round(prior_kappa, digits = 0), ", nu = ", round(prior_nu, digits = 0)),
-   ModelType == "decision-making" ~ paste0("lambda = ", round(lapse_rate, digits = 2),   ", beta = ", round(beta_pi, digits = 2)),
-   ModelType == "normalization" ~ paste0("kappa = ", round(prior_kappa, digits = 0)))) %>%
+   ModelType == "representations" ~ paste0("$\\kappa_{c,0}$ = ", round(prior_kappa, digits = 0), ", $\\nu_{c,0}$ = ", round(prior_nu, digits = 0)),
+   ModelType == "decision-making" ~ paste0("$\\lambda$ = ", round(lapse_rate, digits = 2),   ", $\\beta_\\pi$ = ", round(beta_pi, digits = 2)),
+   ModelType == "normalization" ~ paste0("$\\kappa_0$ = ", round(prior_kappa, digits = 0)))) %>%
    mutate(
       ModelType = factor(paste0("Changes in ", ModelType), levels = c("Changes in representations", "Changes in decision-making", "Changes in normalization"))) %>%
     select(Case, ModelType, parameterization) %>%
@@ -1569,8 +1567,7 @@ parameters.results.best.cases <- bind_rows(best_performing_parameters.representa
 
 colnames(parameters.results.best.cases) = c("L2 accent scenario", "Changes in representations", "Changes in decision-making", "Changes in normalization")
 
-knitr::kable(parameters.results.best.cases, caption = "Best-performing parameters across different accent scenarios", align = 'l', booktabs = TRUE) %>%
+knitr::kable(parameters.results.best.cases, caption = "Best-performing parameters across different accent scenarios", align = 'l', booktabs = TRUE, escape = FALSE) %>%
     kable_styling(latex_options = "scale_down")
-
 ```
 

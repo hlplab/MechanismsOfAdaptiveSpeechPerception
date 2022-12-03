@@ -19,7 +19,7 @@ d.production_to_perception <-
 p <- 
   d.production_to_perception %>%
   ggplot(aes(x = VOT_centered, y = f0_Mel_centered)) +
-  scale_x_continuous(expression("VOT (ms)")) +
+  scale_x_continuous(expression("VOT (ms)"), breaks = c(10, 30, 50, 70)) +
   scale_y_continuous(expression("f0 (Mel)")) +
   theme(legend.position = "top")
 
@@ -30,19 +30,22 @@ p2 <-
   theme(legend.position = "top", legend.box="horizontal", panel.grid = element_blank()) +
   aes(x = VOT, y = f0_Mel, fill = is_voiced * 100) +
   geom_tile() +
-  scale_y_continuous(NULL) +
+  scale_y_continuous(NULL, breaks = c(150, 180, 210, 240)) +
   scale_fill_gradient2("Percent /d/-\nresponses", midpoint = 50, low = "red", high = "blue", guide = "colourbar", ) +
   guides(fill = guide_colorbar(title.position = "left", reverse = T))
 
 limits <- get_plot_limits(p2)
 p2 <- 
   p2 +
-  coord_fixed(expand = F, ratio = (limits$xmax - limits$xmin) / (limits$ymax - limits$ymin))
+  coord_fixed(
+    xlim = c(limits$xmin, limits$xmax), 
+    ylim = c(limits$ymin, limits$ymax), 
+    expand = F, ratio = (limits$xmax - limits$xmin) / (limits$ymax - limits$ymin))
 
 p1 <- 
   p + 
   geom_point(aes(color = voicing), alpha = .05) +
-  geom_density_2d(aes(color = voicing), size = .1) +
+  geom_density_2d(aes(color = voicing), linewidth = .1) +
   scale_color_manual("Category", breaks = c("yes", "no"), labels = c("/d/", "/t/"), values = colors.voicing) +
   guides(colour = guide_legend(override.aes = list(alpha = 1))) +
   coord_fixed(
@@ -171,7 +174,14 @@ for (j in 1:length(levels(factor(d.chodroff_wilson$poa)))){
         pi = pi)
     
     if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.density.panel_', j,'.png')))) { 
-      p.3d.density <- plot_3D.density(output$d.bivn, output$t.bivn, output$d.ellipse, output$t.ellipse, output$color, width = 700, height = 700) %>% layout(margin = margin)
+      p.3d.density <- 
+        plot_3D.density(
+          d.bivn = output$d.bivn, 
+          t.bivn = output$t.bivn, 
+          d.ellipse = output$d.ellipse, 
+          t.ellipse = output$t.ellipse, 
+          color = output$color, 
+          width = 700, height = 700) %>% layout(margin = margin)
       save_3Dfigure(p.3d.density, paste0('p.3d.density.panel_', j,'.png'))
     }
     

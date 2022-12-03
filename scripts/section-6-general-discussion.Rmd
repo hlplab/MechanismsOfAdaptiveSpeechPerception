@@ -51,7 +51,6 @@ We illustrate this point in Figure \@ref(fig:show-model-categorization-3D-plots-
 
 
 ```{r set-3D-plot-parameters, warning=FALSE}
-# Set parameters
 p.current <- d.AA.exposure %>%
     mutate(Condition = paste0("Exposure: ", Condition)) %>%
     ggplot(aes(x = VOT, y = f0_Mel, color = Item.Category)) +
@@ -73,7 +72,7 @@ p_height = 900
 
 ```{r compare-AA-models-results-functions, warning=FALSE}
 compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT_range, f0_range, n_points) {
-    d.model.compare <- 
+  d.model.compare <- 
     bind_rows(
       data1 %>%
         filter(category == Item.Intended_category) %>%
@@ -81,7 +80,7 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
         droplevels() %>%
         distinct(Condition, Subject, prior_kappa, prior_nu, posterior) %>%
         mutate(model = "Representations"),
-     temp <- data2 %>%
+      data2 %>%
         filter(category == Item.Intended_category) %>%
         filter(posterior.lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected) %>%
         droplevels() %>%
@@ -94,48 +93,53 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
         distinct(Condition, Subject, prior_kappa.normalization, posterior) %>%
         mutate(model = "Normalization"))
   
-  
-  for (j in 1:length(model_names)){
+  for (j in 1:length(model_names)) {
     data = d.model.compare %>%
       filter(model == model_names[j])
     
-    for (i in 1:length(conditions.AA)){
+    for (i in 1:length(conditions.AA)) {
       output.AA <- prepare_3D.categorization_from_results(data, d.AA.exposure, d.AA.test, VOT_range, f0_range, n_points)
+      df.resp <- output.AA[[i]]
       
-      df.resp = output.AA[[i]]
-
-      p.3d.categorization <- plot_3D.categorization(df.resp, width = p_width, height = p_height) %>%
+      if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[j], '_', conditions.AA[i], '_', compare_model_label, '.png')))) { 
+        p.3d.categorization <- 
+          plot_3D.categorization(df.resp, width = p_width, height = p_height) %>%
+          # select perspective that is good for showing categorization curve
+          layout(
+            margin = margin,
+            scene = list(
+              camera = list(
+                eye = list(x = -0.5, y = -2.5, z = 0.1))))
+        
+        save_3Dfigure(p.3d.categorization, paste0('p.3d.categorization.model_', model_names[j], '_', conditions.AA[i], '_', compare_model_label, '.png'))
+      }
+    }
+    
+    # show differences between exposure conditions in log odds space
+    if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.difference.model_', model_names[j], '_', compare_model_label, '.png')))) { 
+      df.diff = list()
+      df.diff$d_diff = qlogis(output.AA[[2]]$d_prop) - qlogis(output.AA[[1]]$d_prop)
+      df.diff$x = df.resp$x
+      df.diff$y = df.resp$y
+      
+      p.3d.categorization.diff <- 
+        plot_3D.categorization.diff(df.diff, width = p_width, height = p_height) %>%
         layout(
           margin = margin,
           scene = list(
             camera = list(
-              eye = list(x = -0.5, y = -2.5, z = 0.1)) # perspective good for showing categorization curve
-          ))
+              eye = list(x = -0.5, y = -2.5, z = 0.1))))
       
-      save_3Dfigure(p.3d.categorization, paste0('p.3d.categorization.model_', model_names[j], '_', conditions.AA[i], '_', compare_model_label, '.png'))
+      save_3Dfigure(p.3d.categorization.diff, paste0('p.3d.categorization.difference.model_', model_names[j], '_', compare_model_label, '.png'))
     }
-    
-    # show differences between exposure conditions in log odds space
-    df.diff = list()
-    df.diff$d_diff = qlogis(output.AA[[2]]$d_prop) - qlogis(output.AA[[1]]$d_prop)
-    df.diff$x = df.resp$x
-    df.diff$y = df.resp$y
-    
-    p.3d.categorization.diff <- plot_3D.categorization.diff(df.diff, width = p_width, height = p_height) %>%
-      layout(
-        margin = margin,
-        scene = list(
-          camera = list(
-            eye = list(x = -0.5, y = -2.5, z = 0.1))))
-    
-    save_3Dfigure(p.3d.categorization.diff, paste0('p.3d.categorization.difference.model_', model_names[j], '_', compare_model_label, '.png'))
   }
   
-    # show the bar graph demonstrating the model parameters and recognition accuracy for each model
-    p.accuracy1 <- basic_AA_result_plot(data1 %>%
+  # show the bar graph demonstrating the model parameters and recognition accuracy for each model
+  p.accuracy1 <- basic_AA_result_plot(
+    data1 %>%
       filter(category == Item.Intended_category) %>%
       filter(prior_kappa == prior_kappa.selected & prior_nu == prior_nu.selected)) + 
-      geom_text(
+    geom_text(
       inherit.aes = FALSE, 
       data = . %>%
         group_by(Condition, prior_nu, prior_kappa) %>%
@@ -147,11 +151,12 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
       labeller = label_bquote(
         cols = {kappa[0~","~ .(categories.AA[1])] == kappa[0~","~ .(categories.AA[2])]} == .(as.character(prior_kappa)),
         rows = {nu[0~","~ .(categories.AA[1])] == nu[0~","~ .(categories.AA[2])]} == .(as.character(prior_nu)))) 
-    
-    p.accuracy2 <- basic_AA_result_plot(data2 %>%
+  
+  p.accuracy2 <- basic_AA_result_plot(
+    data2 %>%
       filter(category == Item.Intended_category) %>%
       filter(posterior.lapse_rate == posterior.lapse_rate.selected & beta_pi == beta_pi.selected)) + 
-      geom_text(
+    geom_text(
       inherit.aes = FALSE, data = . %>%
         group_by(Condition, posterior.lapse_rate, beta_pi) %>%
         summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1.05), size = geom_text.size) +
@@ -160,11 +165,12 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
       labeller = label_bquote(
         cols = beta[pi] == .(beta_pi),
         rows = lambda == ~.(posterior.lapse_rate))) 
-    
-    p.accuracy3 <- basic_AA_result_plot(data3 %>%
+  
+  p.accuracy3 <- basic_AA_result_plot(
+    data3 %>%
       filter(category == Item.Intended_category) %>%
       filter(prior_kappa.normalization == prior_kappa.normalization.selected)) + 
-      geom_text(
+    geom_text(
       inherit.aes = FALSE, 
       data = . %>%
         group_by(Condition, prior_kappa.normalization) %>%
@@ -175,44 +181,36 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
       . ~ prior_kappa.normalization,
       labeller = label_bquote(
         cols = ~kappa[0] == .(as.character(prior_kappa.normalization))))
-        
-        prow = plot_grid(p.accuracy1 + theme(legend.position="none"),
-                         p.accuracy2 + theme(legend.position="none"),
-                         p.accuracy3 + theme(legend.position="none"),
-                     #  labels = c('A)', 'B)', 'C)'),
-                       nrow = 1, rel_widths = c(1.1, 1.1, 1))
-    
-        legend_prow <- get_legend(
-          p.accuracy1 +
-            guides(color = guide_legend(title.position = "left", nrow = 1))
-        )
   
-    p.output <-  plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.1, 1))
-      
-    ggsave(paste0('../figures/plotly/p.model_comparison_', compare_model_label, '.png'), plot = p.output, width = 2*(base.width*3 + .5), height = 2*(base.height + .5), dpi = 300)
-
+  prow <- 
+    plot_grid(
+      p.accuracy1 + theme(legend.position="none"),
+      p.accuracy2 + theme(legend.position="none"),
+      p.accuracy3 + theme(legend.position="none"),
+      nrow = 1, rel_widths = c(1.1, 1.1, 1))
+  
+  legend_prow <- 
+    get_legend(
+      p.accuracy1 +
+        guides(color = guide_legend(title.position = "left", nrow = 1)))
+  
+  p.output <-  plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.1, 1))
+  ggsave(paste0('../figures/plotly/p.model_comparison_', compare_model_label, '.png'), plot = p.output, width = 2*(base.width*3 + .5), height = 2*(base.height + .5), dpi = 300)
 }
-#
 
 make_plot_compare_models.AA <- function(
     model_names = c("Representations", "Decision_making", "Normalization"),
-    compare_model_label){
+    compare_model_label
+) {
   filename = c()
   for (p in 1:length(model_names)) {
     filename[p] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L1-accented', '_', compare_model_label, '.png'))
-  }
-  
-  for (p in 1:length(model_names)) {
     filename[p + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L2-accented', '_', compare_model_label, '.png'))
-  }
-  
-  for (p in 1:length(model_names)) {
     filename[p + 3 + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.difference.model_', model_names[p], '_', compare_model_label, '.png'))
   }
   
   filename = c(paste0('../figures/plotly/p.model_comparison_', compare_model_label, '.png'), filename)
   knitr::include_graphics(filename)
-
 }
 ```
 

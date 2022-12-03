@@ -728,12 +728,9 @@ add_prior_and_normalize_test_tokens_based_on_exposure <- function(data.exposure,
 }
 
 # 3D FIGURES ------------------------------------------------
-save_figure_or_not <- function(figure, filename, override = RESET_FIGURES) {
+save_3Dfigure <- function(figure, filename) {
   require(processx)
-  
-  if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), filename))) {
-    orca(figure, file = file.path(get_path('../figures/plotly/'), filename))
-  }
+  orca(figure, file = file.path(get_path('../figures/plotly/'), filename))
 }
 
 # Function for bivariate-gaussian-distribution-density
@@ -779,7 +776,7 @@ fix_quadratic_effects <-function(data){
 
 # Function to demonstrate representations in 3D plots
 
-demonstrate_representations_3D <- function(m, n, cue1_range, cue2_range, cue_names, lambda, pi, category_contrasts){
+demonstrate_representations_3D <- function(m, n, cue1_range, cue2_range, cue_names, lambda, pi){
   output = vector(mode = "list", length = 2)
   for(i in 1:length(m$category)){
     mu = m$mu[[i]]
@@ -840,7 +837,6 @@ demonstrate_representations_3D <- function(m, n, cue1_range, cue2_range, cue_nam
   names(df.resp) = c(cue_names, "d_prop")
   
   color <- rep(0, length(df$z))
-  
   
   output<-list(d.bivn, t.bivn, d.ellipse, t.ellipse, df.resp, color)
   names(output) <- c("d.bivn", "t.bivn", "d.ellipse", "t.ellipse", "df.resp", "color")

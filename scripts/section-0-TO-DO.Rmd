@@ -3,11 +3,10 @@ Let's delete to-dos after they have been addressed, and post in Slack what we've
 
   * Everyone: 
     * Should we make all parameters either 'confidence' / weight of prior knowledge OR learning rates? 
-    * What's going on with "talker-related" vs. "talker-specific". I guess the former was introduced by someone to NOT assume talker-specific. That's the type of terminological change that one should make others aware of to make sure we are consistent throughout the paper. 
 
   * **Xin:**
     * Missing Figure in final section of SI
-    * Are you ok with removing footnote 2? It seems not that important? Will anyone miss it? error correction seems sufficiently different from what we're doing?
+
     
   * **Chigusa:**
 

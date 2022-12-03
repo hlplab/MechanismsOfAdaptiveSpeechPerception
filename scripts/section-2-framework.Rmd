@@ -149,32 +149,41 @@ margin <- list(
   r = 0,
   b = 0,
   t = 0,
-  pad = 0 # space between the plotting area and the axis lines; takes a number >=0
-)
+  # space between the plotting area and the axis lines; takes a number >=0
+  pad = 0)
 
-for(j in 1:length(levels(factor(d.chodroff_wilson$poa)))){
-  category.contrasts <- unlist(strsplit(levels(factor(d.chodroff_wilson$poa))[j], "-"))
-
-  
-  model <- 
-    make_MVG_from_data(data = d.chodroff_wilson, cues = c("VOT_centered", "f0_Mel_centered")) %>%
-    filter(category %in% category.contrasts)
-  
-  output <- demonstrate_representations_3D(model, n_points, VOT_range, f0_range, cue_names, lambda, pi)
-  
-  
-  # Set image size
-  p_width = 700
-  p_height = 700
-  p.3d.density <- plot_3D.density(output$d.bivn, output$t.bivn, output$d.ellipse, output$t.ellipse, output$color) %>% layout(margin = margin)
-  
-  # Set image size
-  p_width = 900
-  p_height = 900
-  p.3d.categorization <- plot_3D.categorization(output$df.resp)
-  
-  save_figure_or_not(p.3d.density, paste0('p.3d.density.panel_', j,'.png'))
-  save_figure_or_not(p.3d.categorization, paste0('p.3d.categorization.panel_', j,'.png'))
+for (j in 1:length(levels(factor(d.chodroff_wilson$poa)))){
+  if (RESET_FIGURES || 
+      !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.density.panel_', j,'.png'))) ||
+      !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.panel_', j,'.png')))) {
+    
+    category.contrasts <- unlist(strsplit(levels(factor(d.chodroff_wilson$poa))[j], "-"))
+    output <- 
+      make_MVG_from_data(data = d.chodroff_wilson, cues = c("VOT_centered", "f0_Mel_centered")) %>%
+      filter(category %in% category.contrasts) %>%
+      demonstrate_representations_3D(
+        m = ., 
+        n = n_points, 
+        cue1_range = VOT_range, 
+        cue2_range = f0_range, 
+        cue_names = cue_names, 
+        lambda = lambda, 
+        pi = pi)
+    
+    if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.density.panel_', j,'.png')))) { 
+      p_width = 700
+      p_height = 700
+      p.3d.density <- plot_3D.density(output$d.bivn, output$t.bivn, output$d.ellipse, output$t.ellipse, output$color) %>% layout(margin = margin)
+      save_3Dfigure(p.3d.density, paste0('p.3d.density.panel_', j,'.png'))
+    }
+    
+    if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.panel_', j,'.png')))) {
+      p_width = 900
+      p_height = 900
+      p.3d.categorization <- plot_3D.categorization(output$df.resp)
+      save_3Dfigure(p.3d.categorization, paste0('p.3d.categorization.panel_', j,'.png'))
+    }
+  }
 }
 ```
 
@@ -182,9 +191,6 @@ for(j in 1:length(levels(factor(d.chodroff_wilson$poa)))){
 filename = c()
 for (j in 1:length(levels(factor(d.chodroff_wilson$poa)))) {
   filename[j] = file.path(get_path('../figures/plotly/'), paste0('p.3d.density.panel_', j,'.png'))
-}
-
-for (j in 1: length(levels(factor(d.chodroff_wilson$poa)))) {
   filename[j + 3] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.panel_', j,'.png'))
 }
 
@@ -228,50 +234,54 @@ lambda = c(0, .2)
 pi = c(.1, .9)
 category.contrasts = c("/d/", "/t/")
 
-for(p in 1:length(lambda)){
-  model <- 
-    make_MVG_from_data(data = d.chodroff_wilson, cues = c("VOT_centered", "f0_Mel_centered")) %>%
-    filter(category %in% category.contrasts)
-  
-  output <- demonstrate_representations_3D(model, n_points, VOT_range, f0_range, cue_names, lambda[p], .5)
-  
-  p.3d.categorization <- plot_3D.categorization(output$df.resp) %>%
-    add_surface(
-      z = matrix(rep(max(output[["df.resp"]][["d_prop"]]), 10000), ncol=100),
-      opacity = 0.1, color = "gray") %>% # add ceiling plane
-    add_surface(
-      z = matrix(rep(min(output[["df.resp"]][["d_prop"]]), 10000), ncol=100),
-      opacity = 0.1, color = "gray") %>% # add flooring plane
-    layout(
-      margin = margin,
-      scene = list(
-        camera = list(
-          eye = list(x = -0.5, y = -2.5, z = 0.1)))) # perspective good for showing categorization curve
-  
-  save_figure_or_not(p.3d.categorization, paste0('p.3d.categorization.panel_lambda=', p,'.png'))
+for (p in 1:length(lambda)) {
+  if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.panel_lambda=', p,'.png')))) { 
+    output <- 
+      make_MVG_from_data(data = d.chodroff_wilson, cues = c("VOT_centered", "f0_Mel_centered")) %>%
+      filter(category %in% category.contrasts) %>%
+      demonstrate_representations_3D(m = ., n_points, VOT_range, f0_range, cue_names, lambda[p], .5)
+    
+    p.3d.categorization <- 
+      plot_3D.categorization(output$df.resp) %>%
+      add_surface(
+        z = matrix(rep(max(output[["df.resp"]][["d_prop"]]), 10000), ncol=100),
+        opacity = 0.1, color = "gray") %>% # add ceiling plane
+      add_surface(
+        z = matrix(rep(min(output[["df.resp"]][["d_prop"]]), 10000), ncol=100),
+        opacity = 0.1, color = "gray") %>% # add flooring plane
+      layout(
+        margin = margin,
+        scene = list(
+          camera = list(
+            eye = list(x = -0.5, y = -2.5, z = 0.1)))) # perspective good for showing categorization curve
+    
+    save_3Dfigure(p.3d.categorization, paste0('p.3d.categorization.panel_lambda=', p,'.png'))
+  }
 }
 
-for(p in 1:length(pi)){
-  model <- 
-    make_MVG_from_data(data = d.chodroff_wilson, cues = c("VOT_centered", "f0_Mel_centered")) %>%
-    filter(category %in% c("/d/", "/t/"))
-  
-  output <- demonstrate_representations_3D(model, n_points, VOT_range, f0_range, cue_names, .2, pi[p])
-  
-  p.3d.categorization <- plot_3D.categorization(output$df.resp) %>%
-    add_surface(
-      z = matrix(rep(max(output[["df.resp"]][["d_prop"]]), 10000), ncol=100),
-      opacity = 0.1, color = "gray") %>% # add ceiling plane
-    add_surface(
-      z = matrix(rep(min(output[["df.resp"]][["d_prop"]]), 10000), ncol=100),
-      opacity = 0.1, color = "gray") %>% # add flooring plane
-    layout(
-      margin = margin,
-      scene = list(
-        camera = list(
-          eye = list(x = -0.5, y = -2.5, z = 0.1)))) # perspective good for showing categorization curve
-  
-  save_figure_or_not(p.3d.categorization, paste0('p.3d.categorization.panel_pi=', p,'.png'))
+for (p in 1:length(pi)) {
+  if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.panel_pi=', p,'.png')))) { 
+    output <- 
+      make_MVG_from_data(data = d.chodroff_wilson, cues = c("VOT_centered", "f0_Mel_centered")) %>%
+      filter(category %in% c("/d/", "/t/")) %>%
+      demonstrate_representations_3D(m = ., n_points, VOT_range, f0_range, cue_names, .2, pi[p])
+    
+    p.3d.categorization <- 
+      plot_3D.categorization(output$df.resp) %>%
+      add_surface(
+        z = matrix(rep(max(output[["df.resp"]][["d_prop"]]), 10000), ncol=100),
+        opacity = 0.1, color = "gray") %>% # add ceiling plane
+      add_surface(
+        z = matrix(rep(min(output[["df.resp"]][["d_prop"]]), 10000), ncol=100),
+        opacity = 0.1, color = "gray") %>% # add flooring plane
+      layout(
+        margin = margin,
+        scene = list(
+          camera = list(
+            eye = list(x = -0.5, y = -2.5, z = 0.1)))) # perspective good for showing categorization curve
+    
+    save_3Dfigure(p.3d.categorization, paste0('p.3d.categorization.panel_pi=', p,'.png'))
+  }
 }
 ```
 
@@ -281,7 +291,7 @@ for (p in 1:length(lambda)) {
   filename[p] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.panel_lambda=',p,'.png'))
 }
 
-for (p in 1: length(pi)) {
+for (p in 1:length(pi)) {
   filename[p + length(lambda)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.panel_pi=',p,'.png'))
 }
 

@@ -128,7 +128,9 @@ set.seed(42007)
 knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 
 SET_SEED = T         # switch on/off whether the same seed is set every time a randomization procedure is called
-RESET_MODELS = F     # switch on/off whether model optimization etc. is re-run even if it's already in the repo
+RESET_FIGURES = T    # switch on/off whether time-consuming 3D figures are re-run and overridden
+RESET_MODELS = F     # switch on/off whether model optimization etc. is re-run even if it's already in the repo 
+                     # (this will take a long time to run [many hourse])
 ```
 
 ```{r, child="section-0-TO-DO.Rmd", eval= if (TODO) TRUE else FALSE}

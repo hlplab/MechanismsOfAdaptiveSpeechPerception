@@ -162,7 +162,7 @@ for (j in 1:length(levels(factor(d.chodroff_wilson$poa)))){
       make_MVG_from_data(data = d.chodroff_wilson, cues = c("VOT_centered", "f0_Mel_centered")) %>%
       filter(category %in% category.contrasts) %>%
       demonstrate_representations_3D(
-        m = ., 
+        model = ., 
         n = n_points, 
         cue1_range = VOT_range, 
         cue2_range = f0_range, 
@@ -239,7 +239,7 @@ for (p in 1:length(lambda)) {
     output <- 
       make_MVG_from_data(data = d.chodroff_wilson, cues = c("VOT_centered", "f0_Mel_centered")) %>%
       filter(category %in% category.contrasts) %>%
-      demonstrate_representations_3D(m = ., n_points, VOT_range, f0_range, cue_names, lambda[p], .5)
+      demonstrate_representations_3D(model = ., n_points, VOT_range, f0_range, cue_names, lambda[p], .5)
     
     p.3d.categorization <- 
       plot_3D.categorization(output$df.resp) %>%
@@ -264,7 +264,7 @@ for (p in 1:length(pi)) {
     output <- 
       make_MVG_from_data(data = d.chodroff_wilson, cues = c("VOT_centered", "f0_Mel_centered")) %>%
       filter(category %in% c("/d/", "/t/")) %>%
-      demonstrate_representations_3D(m = ., n_points, VOT_range, f0_range, cue_names, .2, pi[p])
+      demonstrate_representations_3D(model = ., n_points, VOT_range, f0_range, cue_names, .2, pi[p])
     
     p.3d.categorization <- 
       plot_3D.categorization(output$df.resp) %>%

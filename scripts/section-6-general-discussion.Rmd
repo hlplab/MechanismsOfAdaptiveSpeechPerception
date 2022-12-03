@@ -56,6 +56,7 @@ p.current <- d.AA.exposure %>%
     mutate(Condition = paste0("Exposure: ", Condition)) %>%
     ggplot(aes(x = VOT, y = f0_Mel, color = Item.Category)) +
     geom_point(alpha = 0.5)
+
 limits <- get_plot_limits(p.current)
 VOT_range = c(limits$xmin, limits$xmax)
 f0_range = c(limits$ymin, limits$ymax)
@@ -63,6 +64,7 @@ n_points = 100
 cue_names = c("VOT", "f0")
 model_names = c("Representations", "Decision_making", "Normalization")
 category.contrasts = c("/d/", "/t/")
+
 # Set image size
 p_width = 900
 p_height = 900
@@ -102,7 +104,7 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
       
       df.resp = output.AA[[i]]
 
-      p.3d.categorization <- plot_3D.categorization(df.resp) %>%
+      p.3d.categorization <- plot_3D.categorization(df.resp, width = p_width, height = p_height) %>%
         layout(
           margin = margin,
           scene = list(
@@ -110,7 +112,7 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
               eye = list(x = -0.5, y = -2.5, z = 0.1)) # perspective good for showing categorization curve
           ))
       
-      save_figure_or_not(p.3d.categorization, paste0('p.3d.categorization.model_', model_names[j], '_', conditions.AA[i], '_', compare_model_label, '.png'))
+      save_3Dfigure(p.3d.categorization, paste0('p.3d.categorization.model_', model_names[j], '_', conditions.AA[i], '_', compare_model_label, '.png'))
     }
     
     # show differences between exposure conditions in log odds space
@@ -119,14 +121,14 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
     df.diff$x = df.resp$x
     df.diff$y = df.resp$y
     
-    p.3d.categorization.diff <- plot_3D.categorization.diff(df.diff) %>%
+    p.3d.categorization.diff <- plot_3D.categorization.diff(df.diff, width = p_width, height = p_height) %>%
       layout(
         margin = margin,
         scene = list(
           camera = list(
             eye = list(x = -0.5, y = -2.5, z = 0.1))))
     
-    save_figure_or_not(p.3d.categorization.diff, paste0('p.3d.categorization.difference.model_', model_names[j], '_', compare_model_label, '.png'))
+    save_3Dfigure(p.3d.categorization.diff, paste0('p.3d.categorization.difference.model_', model_names[j], '_', compare_model_label, '.png'))
   }
   
     # show the bar graph demonstrating the model parameters and recognition accuracy for each model

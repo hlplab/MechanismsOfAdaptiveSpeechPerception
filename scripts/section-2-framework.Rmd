@@ -171,16 +171,12 @@ for (j in 1:length(levels(factor(d.chodroff_wilson$poa)))){
         pi = pi)
     
     if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.density.panel_', j,'.png')))) { 
-      p_width = 700
-      p_height = 700
-      p.3d.density <- plot_3D.density(output$d.bivn, output$t.bivn, output$d.ellipse, output$t.ellipse, output$color) %>% layout(margin = margin)
+      p.3d.density <- plot_3D.density(output$d.bivn, output$t.bivn, output$d.ellipse, output$t.ellipse, output$color, width = 700, height = 700) %>% layout(margin = margin)
       save_3Dfigure(p.3d.density, paste0('p.3d.density.panel_', j,'.png'))
     }
     
     if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.panel_', j,'.png')))) {
-      p_width = 900
-      p_height = 900
-      p.3d.categorization <- plot_3D.categorization(output$df.resp)
+      p.3d.categorization <- plot_3D.categorization(output$df.resp, width = 900, height = 900)
       save_3Dfigure(p.3d.categorization, paste0('p.3d.categorization.panel_', j,'.png'))
     }
   }
@@ -242,7 +238,7 @@ for (p in 1:length(lambda)) {
       demonstrate_representations_3D(model = ., n_points, VOT_range, f0_range, cue_names, lambda[p], .5)
     
     p.3d.categorization <- 
-      plot_3D.categorization(output$df.resp) %>%
+      plot_3D.categorization(output$df.resp, width = p_width, height = p_height) %>%
       add_surface(
         z = matrix(rep(max(output[["df.resp"]][["d_prop"]]), 10000), ncol=100),
         opacity = 0.1, color = "gray") %>% # add ceiling plane
@@ -267,7 +263,7 @@ for (p in 1:length(pi)) {
       demonstrate_representations_3D(model = ., n_points, VOT_range, f0_range, cue_names, .2, pi[p])
     
     p.3d.categorization <- 
-      plot_3D.categorization(output$df.resp) %>%
+      plot_3D.categorization(output$df.resp, width = p_width, height = p_height) %>%
       add_surface(
         z = matrix(rep(max(output[["df.resp"]][["d_prop"]]), 10000), ncol=100),
         opacity = 0.1, color = "gray") %>% # add ceiling plane

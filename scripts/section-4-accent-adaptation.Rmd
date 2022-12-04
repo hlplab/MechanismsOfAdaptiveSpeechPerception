@@ -674,8 +674,8 @@ make_results_plot_representations <- function(data, data_best) {
     facet_grid(
       prior_nu ~ prior_kappa,
       labeller = label_bquote(
-        cols = {kappa[0~","~ .(categories.AA[1])] == kappa[0~","~ .(categories.AA[2])]} == .(as.character(prior_kappa)),
-        rows = {nu[0~","~ .(categories.AA[1])] == nu[0~","~ .(categories.AA[2])]} == .(as.character(prior_nu)))) 
+        cols = {kappa[.(categories.AA[1])~","~0] == kappa[.(categories.AA[2])~","~0]} == .(as.character(prior_kappa)),
+        rows = {nu[.(categories.AA[1])~","~0] == nu[.(categories.AA[2])~","~0]} == .(as.character(prior_nu)))) 
   
   p.results +
     ggnewscale::new_scale_fill() +

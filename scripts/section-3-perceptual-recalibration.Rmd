@@ -422,7 +422,7 @@ plot_expected_categories_contour2D(
 #   theme(legend.position = "top")
 ```
 
-Finally, Figure \@ref(fig:PR-result-changes-in-representations) shows that distributional learning not only predicts shifts in the category boundary but can also predict changes in the slope of those boundaries. This is evident, for example, in the top-right panel. Although such changes in slopes are often not discussed, they are present in many perceptual recalibration experiments [see @drouin2016; @liu-jaeger2018; @liu-jaeger2019; @myers-mesite2014].
+Finally, Figure \@ref(fig:PR-result-changes-in-representations) shows that distributional learning not only predicts shifts in the category boundary but can also predict changes in the slope of those boundaries. This is evident, for example, in the top-right panel. Although such changes in slopes are often not discussed, they are present in many perceptual recalibration experiments [e.g., @drouin2016; @liu-jaeger2018; @liu-jaeger2019; @myers-mesite2014].
 
 ### Changes in decision-making
 Next, we model the effects of changes in decision-making. Such changes have rarely been considered as an explanation for boundary shifts [but see @clarkedavidson2008]. In addition to varying the rate at which response biases change $\beta_{\pi}$, we also vary the lapse rate parameter $\lambda$. Normalization and representations did not change based on exposure ($\kappa_0 = \kappa_{c,0} = \nu_{c,0} = \infty$). 
@@ -491,7 +491,7 @@ p.PR.results %+%
 #       rows = lambda[posterior] == ~.(posterior.lapse_rate)))
 ```
 
-Figure \@ref(fig:PR-result-changes-in-decision-making) shows the effects of changes in response biases for lapse rates ranging from negligible lapse rates ($\lambda = .0005$, top row) to a scenario in which listeners always lapse ($\lambda = 1$). In the latter---rather implausible---edge case, listeners' responses only reflect response biases and are completely stimulus-independent (bottom row). For reference, lapse rates in an experiment that is sufficiently engaging are typically assumed to fall between 1-10% [e.g., @clayards2008 constrained lapse rates to be $<5$%; @kleinschmidt-jaeger2016cogsci report a best-fitting value of 5%].
+Figure \@ref(fig:PR-result-changes-in-decision-making) shows the effects of changes in response biases for lapse rates ranging from negligible lapse rates ($\lambda = .0005$, top row) to a scenario in which listeners always lapse ($\lambda = 1$). In the latter---rather implausible---edge case, listeners' responses only reflect response biases and are completely stimulus-independent (bottom row). For reference, lapse rates for perception experiments like the ones modeled here typically fall between 1-10% [e.g., @clayards2008 constrained lapse rates to be $<5$%; @kleinschmidt-jaeger2016cogsci report a best-fitting value of 5%].
 
 The primary insight from Figure \@ref(fig:PR-result-changes-in-decision-making) is that changes in response biases can account for the type of boundary shift that is observed in perceptual recalibration experiments. This shows that the signature result of perceptual recalibration experiments is ambiguous between two explanations that evoke very different cognitive architectures. For this case study, perhaps the closest match to the findings from Kraljic and Samuel (2006) is observed for plausible lapse rates up to 5% and small changes in response bias (second or third column, top rows). 
 

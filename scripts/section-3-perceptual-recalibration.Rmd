@@ -355,8 +355,8 @@ p.PR.results <-
   facet_grid(
     prior_nu ~ prior_kappa, 
     labeller = label_bquote(
-      cols = {kappa[0~","~ .(categories.PR[1])] == kappa[0~","~ .(categories.PR[2])]} == .(as.character(prior_kappa)), 
-      rows = {nu[0~","~ .(categories.PR[1])] == nu[0~","~ .(categories.PR[2])]} == .(as.character(prior_nu)))) + # as.table = T doesn't seem to work
+      cols = {kappa[.(categories.PR[1])~","~0] == kappa[.(categories.PR[2])~","~0]} == .(as.character(prior_kappa)), 
+      rows = {nu[.(categories.PR[1])~","~0] == nu[.(categories.PR[2])~","~0]} == .(as.character(prior_nu)))) + # as.table = T doesn't seem to work
   theme(legend.position = "top") +
   myGplot.defaults(base_size = 14, set_theme = F)
 

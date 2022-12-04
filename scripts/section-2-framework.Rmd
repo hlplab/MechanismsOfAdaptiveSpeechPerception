@@ -530,7 +530,7 @@ d.exposure %>%
   facet_grid(
     . ~ prior_kappa,
     labeller = label_bquote(
-      cols = {kappa[0~","~ .(categories.demo[1])] == kappa[0~","~ .(categories.demo[2])]} == .(as.character(prior_kappa)))) +
+      cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)))) +
   theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank()) +
   # ease_aes('linear') +
   # enter_fade() + exit_fade() +
@@ -570,7 +570,7 @@ d.exposure %>%
   facet_grid(
     . ~ prior_kappa,
     labeller = label_bquote(
-      cols = {kappa[0~","~ .(categories.demo[1])] == kappa[0~","~ .(categories.demo[2])]} == .(as.character(prior_kappa)))) +
+      cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)))) +
   theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank()) +
   # ease_aes('linear') +
   # enter_fade() + exit_fade() +

@@ -46,10 +46,10 @@ my_plot_grid <- function(
   labels.top.row = c(
     # example of atop
     # bquote(atop("Prior" ~ kappa[0 ~","~ c] == .(weak), "     " ~ nu[0 ~","~ c] == .(weak))),
-    bquote(~" Prior" ~ { kappa[0*","*c] == nu[0*","*c] } == .(weak)),
-    bquote(~" Prior" ~ kappa[0*","*c] == .(weak) ~ ", " ~ nu[0*","*c] == .(strong)),
-    bquote(~" Prior" ~ kappa[0*","*c] == .(strong) ~ ", " ~ nu[0*","*c] == .(weak)),
-    bquote(~" Prior" ~ { kappa[0*","*c] == nu[0*","*c] } == .(strong))),
+    bquote(~" Prior" ~ { kappa[c*","*0] == nu[c*","*0] } == .(weak)),
+    bquote(~" Prior" ~ kappa[c*","*0] == .(weak) ~ ", " ~ nu[c*","*0] == .(strong)),
+    bquote(~" Prior" ~ kappa[c*","*0] == .(strong) ~ ", " ~ nu[c*","*0] == .(weak)),
+    bquote(~" Prior" ~ { kappa[c*","*0] == nu[c*","*0] } == .(strong))),
   ncols = 4,
   legend.position = "right"
 ) {

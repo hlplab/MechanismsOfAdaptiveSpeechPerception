@@ -736,35 +736,38 @@ save_3Dfigure <- function(figure, filename) {
 # Bivariate Gaussian density function wrapper suitable for use with outer()
 bivariate_density <- function(x, y, mu, Sigma) dmvnorm(cbind(x, y), mu, Sigma)
 
-fix_quadratic_effects <-function(data){
-  data = as.matrix(data)
+make_quadratic_effects_of_cues_monotonic <- function(data){
+  data %<>%
+    as.matrix() %>%
+    data.table()
   
-  # Function to fix the quadratic effects along the cue dimension that is currently listed as a column in the data
-  DT <- data.table(data)
-  DT[, col_max := colnames(.SD)[max.col(.SD, ties.method = "first")]] # get column number that has the maximal value within each row
-  DT$max <- apply(DT[,.SD, .SDcols = !c('col_max')], 1, max) # get the max value within each row
+  data[, col_max := colnames(.SD)[max.col(.SD, ties.method = "first")]] # get column number that has the maximal value within each row
+  data$max <- apply(data[,.SD, .SDcols = !c('col_max')], 1, max) # get the max value within each row
   
-  d.DT <- as.data.frame(DT) %>%
+  data %<>% 
+    as.data.frame() %>%
     rownames_to_column('id') %>%
     pivot_longer(
       cols = starts_with("V"),
       names_to = "col_name",
       values_to = "prob") %>%
+    # criteria to fix the quadratic effect: for each row, if 
+    #     1) the current value is smaller than the max value of the row, and 
+    #     2) the col_num of the current value is smaller (i.e., VOT is smaller) than the col_num of the max value, 
+    # then replace the current value with the max value
     mutate(
-      need_to_fix = as.numeric(gsub("V", "", col_name)) < as.numeric(gsub("V", "",  col_max)), # criteria to fix the quadratic effect: for each row, if 1) the current value is smaller than the max value of the row and 2) the col_num of the current value is smaller (i.e., VOT is smaller) than the col_num of the max value, then replace the current value with the max value
-      prob.fixed = ifelse(need_to_fix, max, prob))
-  
-  resp.prob.fixed <- d.DT %>%
+      need_to_fix = as.numeric(gsub("V", "", col_name)) < as.numeric(gsub("V", "",  col_max)), 
+      prob.fixed = ifelse(need_to_fix, max, prob)) %>%
     select(id, col_name, prob.fixed) %>%
     pivot_wider(names_from = col_name, values_from = prob.fixed) %>%
     select(-id) %>%
     as.matrix()
   
-  return(resp.prob.fixed)
+  return(data)
 }
 
 # Function to demonstrate representations in 3D plots
-demonstrate_representations_3D <- function(model, n, cue1_range, cue2_range, cue_names, lambda, pi) {
+demonstrate_representations_3D <- function(model, n, cue1_range, cue2_range, cue_names, lambda, pi, fix_quadratic_effects = FALSE) {
   x <- seq(cue1_range[1], cue1_range[2], length = n) # generating the vector series cue 1
   y <- seq(cue2_range[1], cue2_range[2], length = n) # generating the vector series cue 2
 
@@ -780,13 +783,14 @@ demonstrate_representations_3D <- function(model, n, cue1_range, cue2_range, cue
     # and add the grid of the two cues (x, y) and density together into a list
     z <- t(outer(x, y, FUN = bivariate_density, mu, Sigma)) 
     bivn[[i]] <- list(x, y, z)
-    names(bivn[[i]]) <- c("x", "y", "z")
+    names(bivn[[i]]) <- c(cue_names, "density")
     
     # add ellipse
     ellipse_data[[i]] <- mixtools::ellipse(mu, Sigma, alpha = .05, npoints = 250, newplot = F, draw = F)
     ellipse_data[[i]] <- cbind(as.data.frame(ellipse_data[[i]][,1]), as.data.frame(ellipse_data[[i]][,2]))
     colnames(ellipse_data[[i]]) <- cue_names
-    ellipse_data[[i]]$z <- 0
+    ellipse_data[[i]]$z <- NULL
+    ellipse_data[[i]]$density <- 0
     
     prob[[i]] <- z
   }
@@ -794,19 +798,19 @@ demonstrate_representations_3D <- function(model, n, cue1_range, cue2_range, cue
   # create categorization surface
   resp.prob <- prob[[1]] / (prob[[1]] + prob[[2]])
   
-  # fix the quadratic effects along cue 1 (i.e., VOT)
-  resp.prob.fixed <- fix_quadratic_effects(resp.prob)
-  
-  # fix the quadratic effects along cue 2 (i.e., f0)
-  resp.prob.fixed <- fix_quadratic_effects(t(resp.prob.fixed))
-  resp.prob.fixed <- t(resp.prob.fixed)
-  
+  # fix the quadratic effects in the categorization function that can result from unequal variances?
+  if (fix_quadratic_effects) {
+    resp.prob <- make_quadratic_effects_of_cues_monotonic(resp.prob)
+    resp.prob <- make_quadratic_effects_of_cues_monotonic(t(resp.prob))
+    resp.prob <- t(resp.prob)
+  }
+
   # add lapse rate and response bias
-  resp.prob.fixed <- (1 - lambda) * resp.prob.fixed + lambda * pi
-  df.resp <- list(x, y, resp.prob.fixed)
-  names(df.resp) <- c(cue_names, "d_prop")
+  resp.prob <- (1 - lambda) * resp.prob + lambda * pi
+  df.resp <- list(x, y, resp.prob)
+  names(df.resp) <- c(cue_names, "proportion_d")
   
-  color <- rep(0, length(bivn[[1]]$z))
+  color <- rep(0, length(bivn[[1]]$density))
   
   output <- list(bivn[[1]], bivn[[2]], ellipse_data[[1]], ellipse_data[[2]], df.resp, color)
   names(output) <- c("d.bivn", "t.bivn", "d.ellipse", "t.ellipse", "df.resp", "color")
@@ -818,7 +822,7 @@ demonstrate_representations_3D <- function(model, n, cue1_range, cue2_range, cue
 plot_3D.density <- function(d.bivn, t.bivn, d.ellipse, t.ellipse, color, width, height){
   plot_ly(width = width, height = height) %>%
     add_surface(
-      x = d.bivn$x, y = d.bivn$y, z = d.bivn$z,
+      x = d.bivn$VOT, y = d.bivn$f0, z = d.bivn$density,
       opacity = 0.2,
       name = category.contrasts[1],
       colors = colors.voicing,
@@ -829,7 +833,7 @@ plot_3D.density <- function(d.bivn, t.bivn, d.ellipse, t.ellipse, color, width, 
       cmin = 0,
       showscale = FALSE) %>%
     add_surface(
-      x = t.bivn$x, y = t.bivn$y, z = t.bivn$z,
+      x = t.bivn$VOT, y = t.bivn$f0, z = t.bivn$density,
       opacity = 0.2,
       name = category.contrasts[2],
       colorscale = list(c(0, 1), c(colors.voicing[2], colors.voicing[2])),
@@ -840,26 +844,27 @@ plot_3D.density <- function(d.bivn, t.bivn, d.ellipse, t.ellipse, color, width, 
       showscale = FALSE) %>%
     # this layer is just used to create the desired legend marker size
     add_trace(
-      x = d.ellipse$VOT, y = d.ellipse$f0, z = t(d.ellipse$z),
+      x = d.ellipse$VOT, y = d.ellipse$f0, z = t(d.ellipse$density),
       type="scatter3d", mode="markers",
       marker = list(size = 10), opacity = 0,
       opacity = 1, color = colors.voicing[1], size = 0.01, showlegend = FALSE) %>% 
     add_trace(
-      x = d.ellipse$VOT, y = d.ellipse$f0, z = t(d.ellipse$z),
+      x = d.ellipse$VOT, y = d.ellipse$f0, z = t(d.ellipse$density),
       type="scatter3d", mode="markers",
       marker = list(size = 2),
       opacity = 1, color = colors.voicing[1], size = 0.01, name=category.contrasts[1]) %>%
     add_trace(
-      x = t.ellipse$VOT, y = t.ellipse$f0, z = t(t.ellipse$z),
+      x = t.ellipse$VOT, y = t.ellipse$f0, z = t(t.ellipse$density),
       type="scatter3d", mode="markers",
       marker = list(size = 2),
       opacity = 1, color = colors.voicing[2], size = 0.01, name=category.contrasts[2]) %>%
     layout(
-      legend = list(itemsizing = "constant",
-                    font = list(size = 22),
-                    orientation = "h",   # show entries horizontally
-                    xanchor = "center",  # use center of legend as anchor
-                    x = 0.5, y = 0.9),   # specify legend position: x, y values between -2 and 3
+      legend = list(
+        itemsizing = "constant",
+        font = list(size = 22),
+        orientation = "h",   # show entries horizontally
+        xanchor = "center",  # use center of legend as anchor
+        x = 0.5, y = 0.9),   # specify legend position: x, y values between -2 and 3
       scene = list(
         aspectratio = list(x = 1.2, y = 1.2, z = 1), # zooming in on the plot, values larger than 0
         camera = list(eye = list(x = -0.5, y = -2.5, z = 0.5),
@@ -874,7 +879,7 @@ plot_3D.categorization <- function(df.resp, width, height){
   # plot categorization surface
   plot_ly(width = width, height = height) %>%
     add_surface(
-      x = df.resp$VOT, y = df.resp$f0, z = df.resp$d_prop,
+      x = df.resp$VOT, y = df.resp$f0, z = df.resp$proportion_d,
       opacity = 0.5,
       showscale = FALSE,
       colorscale = list(c(0, 1), c(colors.voicing[2], colors.voicing[1])),
@@ -901,7 +906,7 @@ plot_3D.categorization <- function(df.resp, width, height){
 plot_3D.categorization.diff <- function(df.resp, width, height){
   plot_ly(width = width, height = height) %>%
     add_surface(
-      x = df.resp$VOT, y = df.resp$f0, z = df.resp$d_diff,
+      x = df.resp$VOT, y = df.resp$f0, z = df.resp$difference_in_logodds_d,
       opacity = 0.5,
       showscale = FALSE,
       colorscale = list(c(0, 0.5, 1), c("red", "lightgrey","blue")),
@@ -926,8 +931,7 @@ plot_3D.categorization.diff <- function(df.resp, width, height){
 }
 
 # Function to make categorization surface in 3D space based on the modeling results from the three change mechanisms
-prepare_3D.categorization_from_results <- function(data, exposure.data, test.data, cue1_range, cue2_range, n){
-  
+prepare_3D.categorization_from_results <- function(data, exposure.data, test.data, cue1_range, cue2_range, n) {
   x<-seq(cue1_range[1], cue1_range[2],length=n)  # generating the vector series cue 1
   y<-seq(cue2_range[1], cue2_range[2],length=n) 
   
@@ -965,7 +969,6 @@ prepare_3D.categorization_from_results <- function(data, exposure.data, test.dat
     
 
     ##----------------
-    
     d.output.step1 <- data %>%
       crossing(temp2 %>% distinct(x)) %>%
       nest(x = c(x)) %>%
@@ -973,7 +976,7 @@ prepare_3D.categorization_from_results <- function(data, exposure.data, test.dat
       filter(Condition == conditions.AA[i] & category == "/d/")
     
     ##----------------
-    #For the bias model, get the average response predictions from multiple simulations
+    # For the bias model, get the average response predictions from multiple simulations
     if("Decision_making" %in% levels(factor(data$model))){
     d.output.step1%<>%
       group_by(!!! syms(setdiff(names(.), c("sim", "posterior", "response")))) %>% 
@@ -985,8 +988,7 @@ prepare_3D.categorization_from_results <- function(data, exposure.data, test.dat
         !!! syms(setdiff(names(.), c("response", "response.se", "response.n_sims"))), 
         response, response.se, response.n_sims) 
     }
-    ##----------------
-    
+
     d.output <- d.output.step1 %>%
       group_by(Condition) %>%
       unnest(x) %>%
@@ -999,22 +1001,20 @@ prepare_3D.categorization_from_results <- function(data, exposure.data, test.dat
     df.resp$x = x
     df.resp$y = y
     
-    
-    df.resp$d_prop = t(matrix(d.output$response, ncol=n))
+    df.resp$proportion_d = t(matrix(d.output$response, ncol=n))
     
     # create categorization surface
-    resp.prob = df.resp$d_prop
+    resp.prob = df.resp$proportion_d
     
-    # fix the quadratic effects along cue 1 (i.e., VOT)
-    resp.prob.fixed <- fix_quadratic_effects(resp.prob)
-    
-    # fix the quadratic effects along cue 2 (i.e., f0)
-    resp.prob.fixed <- fix_quadratic_effects(t(resp.prob.fixed))
+    # fix the quadratic effects along cue 1 (i.e., VOT) and cue 2 (i.e., f0)
+    resp.prob.fixed <- make_quadratic_effects_of_cues_monotonic(resp.prob)
+    resp.prob.fixed <- make_quadratic_effects_of_cues_monotonic(t(resp.prob.fixed))
     resp.prob.fixed = t(resp.prob.fixed)
     
-    df.resp$d_prop <- resp.prob.fixed
+    df.resp$proportion_d <- resp.prob.fixed
     
     output[[i]] = df.resp
   }
+  
   return(output)
 }

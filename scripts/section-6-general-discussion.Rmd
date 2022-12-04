@@ -118,7 +118,7 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
     # show differences between exposure conditions in log odds space
     if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.difference.model_', model_names[j], '_', compare_model_label, '.png')))) { 
       df.diff = list()
-      df.diff$d_diff = qlogis(output.AA[[2]]$d_prop) - qlogis(output.AA[[1]]$d_prop)
+      df.diff$difference_in_logodds_d = qlogis(output.AA[[2]]$proportion_d) - qlogis(output.AA[[1]]$proportion_d)
       df.diff$x = df.resp$x
       df.diff$y = df.resp$y
       

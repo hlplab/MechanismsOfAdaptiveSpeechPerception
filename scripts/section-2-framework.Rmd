@@ -34,13 +34,13 @@ p2 <-
   scale_fill_gradient2("Percent /d/-\nresponses", midpoint = 50, low = "red", high = "blue", guide = "colourbar", ) +
   guides(fill = guide_colorbar(title.position = "left", reverse = T))
 
-limits <- get_plot_limits(p2)
+limits.chodroff <- get_plot_limits(p2)
 p2 <- 
   p2 +
   coord_fixed(
-    xlim = c(limits$xmin, limits$xmax), 
-    ylim = c(limits$ymin, limits$ymax), 
-    expand = F, ratio = (limits$xmax - limits$xmin) / (limits$ymax - limits$ymin))
+    xlim = c(limits.chodroff$xmin, limits.chodroff$xmax), 
+    ylim = c(limits.chodroff$ymin, limits.chodroff$ymax), 
+    expand = F, ratio = (limits.chodroff$xmax - limits.chodroff$xmin) / (limits.chodroff$ymax - limits.chodroff$ymin))
 
 p1 <- 
   p + 
@@ -49,10 +49,10 @@ p1 <-
   scale_color_manual("Category", breaks = c("yes", "no"), labels = c("/d/", "/t/"), values = colors.voicing) +
   guides(colour = guide_legend(override.aes = list(alpha = 1))) +
   coord_fixed(
-    xlim = c(limits$xmin, limits$xmax), 
-    ylim = c(limits$ymin, limits$ymax), 
+    xlim = c(limits.chodroff$xmin, limits.chodroff$xmax), 
+    ylim = c(limits.chodroff$ymin, limits.chodroff$ymax), 
     expand = F, 
-    ratio = (limits$xmax - limits$xmin) / (limits$ymax - limits$ymin)) +
+    ratio = (limits.chodroff$xmax - limits.chodroff$xmin) / (limits.chodroff$ymax - limits.chodroff$ymin)) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
 plot_grid(
@@ -250,10 +250,10 @@ for (p in 1:length(lambda)) {
     p.3d.categorization <- 
       plot_3D.categorization(output$df.resp, width = p_width, height = p_height) %>%
       add_surface(
-        z = matrix(rep(max(output[["df.resp"]][["d_prop"]]), 10000), ncol=100),
+        z = matrix(rep(max(output[["df.resp"]][["proportion_d"]]), 10000), ncol=100),
         opacity = 0.1, color = "gray") %>% # add ceiling plane
       add_surface(
-        z = matrix(rep(min(output[["df.resp"]][["d_prop"]]), 10000), ncol=100),
+        z = matrix(rep(min(output[["df.resp"]][["proportion_d"]]), 10000), ncol=100),
         opacity = 0.1, color = "gray") %>% # add flooring plane
       layout(
         margin = margin,
@@ -275,10 +275,10 @@ for (p in 1:length(pi)) {
     p.3d.categorization <- 
       plot_3D.categorization(output$df.resp, width = p_width, height = p_height) %>%
       add_surface(
-        z = matrix(rep(max(output[["df.resp"]][["d_prop"]]), 10000), ncol=100),
+        z = matrix(rep(max(output[["df.resp"]][["proportion_d"]]), 10000), ncol=100),
         opacity = 0.1, color = "gray") %>% # add ceiling plane
       add_surface(
-        z = matrix(rep(min(output[["df.resp"]][["d_prop"]]), 10000), ncol=100),
+        z = matrix(rep(min(output[["df.resp"]][["proportion_d"]]), 10000), ncol=100),
         opacity = 0.1, color = "gray") %>% # add flooring plane
       layout(
         margin = margin,

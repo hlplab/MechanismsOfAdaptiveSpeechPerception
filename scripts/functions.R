@@ -931,7 +931,7 @@ plot_3D.categorization.diff <- function(df.resp, width, height){
 }
 
 # Function to make categorization surface in 3D space based on the modeling results from the three change mechanisms
-prepare_3D.categorization_from_results <- function(data, exposure.data, test.data, cue1_range, cue2_range, n) {
+prepare_3D.categorization_from_results <- function(data, exposure.data, test.data, cue1_range, cue2_range, n, fix_quadratic_effects = FALSE) {
   x<-seq(cue1_range[1], cue1_range[2],length=n)  # generating the vector series cue 1
   y<-seq(cue2_range[1], cue2_range[2],length=n) 
   
@@ -1001,17 +1001,16 @@ prepare_3D.categorization_from_results <- function(data, exposure.data, test.dat
     df.resp$x = x
     df.resp$y = y
     
-    df.resp$proportion_d = t(matrix(d.output$response, ncol=n))
-    
     # create categorization surface
-    resp.prob = df.resp$proportion_d
-    
-    # fix the quadratic effects along cue 1 (i.e., VOT) and cue 2 (i.e., f0)
-    resp.prob.fixed <- make_quadratic_effects_of_cues_monotonic(resp.prob)
-    resp.prob.fixed <- make_quadratic_effects_of_cues_monotonic(t(resp.prob.fixed))
-    resp.prob.fixed = t(resp.prob.fixed)
-    
-    df.resp$proportion_d <- resp.prob.fixed
+    resp.prob <- t(matrix(d.output$response, ncol=n))
+  
+    # fix the quadratic effects in the categorization function that can result from unequal variances?
+    if (fix_quadratic_effects) {
+      resp.prob <- make_quadratic_effects_of_cues_monotonic(resp.prob)
+      resp.prob <- make_quadratic_effects_of_cues_monotonic(t(resp.prob))
+      resp.prob <- t(resp.prob)
+    }
+    df.resp$proportion_d <- resp.prob
     
     output[[i]] = df.resp
   }

@@ -7,7 +7,8 @@ Let's delete to-dos after they have been addressed, and post in Slack what we've
   * **Xin:**
     * Missing Figure in final section of SI
     * remove figure about similar-accuracy in GD
-    * align the panels in Figure 27
+    * align the panels in Figure 27; change caption
+    * double check the axis in Figure 27
 
     
   * **Chigusa:**

@@ -1453,10 +1453,7 @@ p.AA.exposure <- d.AA.exposure.target.cases %>%
                  mutate(Title = "Exposure distributions") %>%
                  filter(Condition == "L1-accented") %>%
                  mutate(Group = factor(paste0(Condition, Item.Category))), aes(fill = Group), level = .95, geom = "polygon") +
-  scale_x_continuous(expression("VOT (ms)"), 
-                        # breaks=seq(0, 120, by = 30),
-                        expand = expansion(mult = .1, add = 0)
-                        ) +
+  scale_x_continuous(expression("VOT (ms)"), expand = expansion(mult = .1, add = 0)) +
   scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0), breaks=seq(0, 500, by = 100)) +
   scale_alpha_discrete(range = c(0.2, 0), guide = "none") +
   coord_cartesian(ylim = c(0, 500)) +
@@ -1521,7 +1518,11 @@ plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.2, 1))
 ```
 
 ```{r AA-table-best-performing-parameterization}
-parameters.results.best.cases <- bind_rows(best_performing_parameters.representations.par,                      best_performing_parameters.bias.par, best_performing_parameters.normalization.par) %>%
+parameters.results.best.cases <- 
+  bind_rows(
+    best_performing_parameters.representations.par, 
+    best_performing_parameters.bias.par, 
+    best_performing_parameters.normalization.par) %>%
   mutate(Case = gsub("_", " ", Case)) %>%
   mutate(parameterization = case_when(
    ModelType == "representations" ~ paste0("$\\kappa_{c,0}$ = ", round(prior_kappa, digits = 0), ", $\\nu_{c,0}$ = ", round(prior_nu, digits = 0)),
@@ -1532,7 +1533,6 @@ parameters.results.best.cases <- bind_rows(best_performing_parameters.representa
     select(Case, ModelType, parameterization) %>%
     distinct() %>%
     pivot_wider(names_from = ModelType, values_from = parameterization)
-
 
 colnames(parameters.results.best.cases) = c("L2 accent scenario", "Changes in representations", "Changes in decision-making", "Changes in normalization")
 

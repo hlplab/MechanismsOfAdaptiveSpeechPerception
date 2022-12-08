@@ -358,7 +358,7 @@ There are, however, challenges that will have to be met so that ASP can be used 
 \begin{figure}[h]
 \begin{center}
 \includegraphics[width=.7\columnwidth]{`r get_path("../figures/diagrams/predictive-power-simulations.png")`}
-\caption{CAPTION. REPLACE WITH NEW FIGURE BY CHIGUSA}\label{fig:predictive-power-simulations}
+\caption{CA schematic illustration of the predictive power simulations with ASP. By setting the ASP model parameters and key properties of long-term statistics, which support listeners' prior knowledge, researchers can derive an expected categorization function under any and all change models. The lapse rate parameter $\lambda$ is grayed out because that is not integral part of the change model parameters while it can be set to any values of interest. Exposure A and Exposure B provide distinct distributional information that is predicted to change the latent state of the listeners' cue-category mapping. The change can be assessed within a specific configuration of "test" stimuli and tasks, which yields observable response behaviors. By means of ASP, researchers can manipulate _any_ aspect of this process to derive a predictive power estimate through repeatedly sampling responses for the planned test stimuli and the planned number of participants.}\label{fig:predictive-power-simulations}
 \end{center}
 \end{figure}
 

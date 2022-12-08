@@ -614,7 +614,7 @@ find_best_model.representations.AA <- function(){
   return(best_performing_parameters.representations)
 }
 
-plot_sample_model.representations.AA <- function(
+get_representation_models_for_plot <- function(
     prior_kappa = prior_kappa,
     prior_nu = prior_nu
 ){
@@ -628,29 +628,28 @@ plot_sample_model.representations.AA <- function(
       unnest(ideal_adaptor) %>%
       arrange(category)
     
-    representations.pred <- d.AA.exposure %>%
+    representations.pred <- 
+      d.AA.exposure %>%
       nest(data = -c(Condition, Subject)) %>%
-          crossing(
-            m.ia.VOT_f0.AA.plot_sample %>%
-              nest(prior = -c(prior_kappa, prior_nu))) %>%
+      crossing(
+        m.ia.VOT_f0.AA.plot_sample %>%
+          nest(prior = -c(prior_kappa, prior_nu))) %>%
       group_by(Condition, Subject, prior_kappa, prior_nu) %>%
       group_modify(~ update_representations_and_categorize_test(prior = .x$prior[[1]], exposure = .x$data[[1]], test = d.AA.test %>% filter(Condition == "L2-accented")), .keep = TRUE) %>%
       mutate_at(vars(starts_with("prior_")), ~factor(.x)) %>%
       mutate_at(vars(starts_with("prior_")), fct_rev) %>%
       ungroup()
-      
+    
     saveRDS(representations.pred, get_path(paste0("../models/d.AA.results.representations_", example_label,".rds"))) #
-    } else {
+  } else {
     representations.pred <- readRDS(get_path(paste0("../models/d.AA.results.representations_", example_label,".rds")))
-    }
+  }
+  
   return(representations.pred)
 }
 
- 
-d.AA.representations <- plot_sample_model.representations.AA(
-  prior_kappa = prior_kappa.plot,
-  prior_nu = prior_nu.plot
-)
+
+d.AA.representations <- get_representation_models_for_plot(prior_kappa = prior_kappa.plot, prior_nu = prior_nu.plot)
 best_performing_parameters.representations <- find_best_model.representations.AA()
 ```
 
@@ -990,7 +989,6 @@ Importantly, \@ref(fig:AA-result-changes-in-decision-making) shows that changes 
 Finally, we compare models that normalize test tokens based on the phonetic inputs experienced during exposure to models that continue to apply normalization based on previous long-term L1 experience. Figure \@ref(fig:AA-result-changes-in-normalization) shows the predicted categorization accuracy following changes in normalization in L1- and L2-accented exposure conditions. We again obtain both of the signature results of experiments on accent adaptation. For L1-accented exposure, we continue to see that /d/ test tokens are categorized substantially less accurately than /t/ test tokens. For L2-accented exposure, recognition accuracy is improved for /d/ test tokens without the cost of equivalent decreases in recognition accuracy for /t/. That is, like the other two change models, normalization can predict *overall* improvements in recognition accuracy after L2-accented exposure. Indeed, for the specific L1-L2 accent combination considered here, the computationally simple model for changes in normalization yields improvements similar to those predicted by changes in category representations---paralleling the results for changes in decision-making.
 
 ```{r study-AA-models-normalization-functions, echo=FALSE, message=FALSE, warning=FALSE}
-
 update_normalization_and_categorize_test <- function(
   prior,
   mu_0 = first(prior_marginal_VOT_f0_stats$x_mean),
@@ -1040,7 +1038,6 @@ get_accuracy_from_updated_normalization <- function(
     droplevels() %>%
     lift_MVG_ideal_observer_to_NIW_ideal_adaptor(kappa = max_kappa_nu, nu = max_kappa_nu)
 
-  
   u <- 
     update_normalization_and_categorize_test(
     prior = prior, 
@@ -1059,7 +1056,6 @@ get_accuracy_from_updated_normalization <- function(
 ```
 
 ```{r study-AA-models-normalization, echo=FALSE, message=FALSE, warning=FALSE}
-
 find_best_model.normalization.AA <- function(){
   if (RESET_MODELS || !file.exists(get_path(paste0("../models/best_performing_parameters.normalization_", example_label,".rds")))) {
     best_performing_parameters.normalization <-
@@ -1083,7 +1079,7 @@ find_best_model.normalization.AA <- function(){
   return(best_performing_parameters.normalization)
 }
 
-plot_sample_model.normalization.AA <- function(
+get_normalization_models_for_plot <- function(
     prior_kappa.normalization = prior_kappa.normalization
 ){
   if (RESET_MODELS || !file.exists(get_path(paste0("../models/d.AA.results.normalization_", example_label,".rds")))){
@@ -1110,16 +1106,9 @@ plot_sample_model.normalization.AA <- function(
   return(normalization.pred)
 }
 
-  ##------------------------------------------
-  # normalization model
-  ##------------------------------------------
-
-prior_kappa.normalization.plot = c(1, 4, 16, 64, 256, 1024) # specify what parameters to plot
-
+prior_kappa.normalization.plot <- c(1, 4, 16, 64, 256, 1024) # specify what parameters to plot
 best_performing_parameters.normalization <- find_best_model.normalization.AA()
-d.AA.normalization <- plot_sample_model.normalization.AA(
-  prior_kappa.normalization= prior_kappa.normalization.plot
-)
+d.AA.normalization <- get_decision_making_models_for_plot(prior_kappa.normalization = prior_kappa.normalization.plot)
 ```
 
 (ref:AA-result-changes-in-normalization) Predictions of a model that derives accent adaptation from changes in normalization. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure. The highlighted panel is the one closest to the best-performing parameterization ($\kappa_0 = `r best_performing_parameters.normalization$par[1]`$; overall accuracy $=`r best_performing_parameters.normalization$value`$).

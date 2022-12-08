@@ -1072,10 +1072,11 @@ find_best_model.normalization.AA <- function(){
     
     saveRDS(best_performing_parameters.normalization, get_path(paste0("../models/best_performing_parameters.normalization_", example_label,".rds")))
     saveRDS(history.optimization_normalization, get_path(paste0("../models/d.AA.history.optimization.normalization_", example_label,".rds")))
-    } else {
+  } else {
     best_performing_parameters.normalization <- readRDS(get_path(paste0("../models/best_performing_parameters.normalization_", example_label,".rds")))
     history.optimization_normalization <- readRDS(get_path(paste0("../models/d.AA.history.optimization.normalization_", example_label,".rds")))
-    }
+  }
+  
   return(best_performing_parameters.normalization)
 }
 
@@ -1091,12 +1092,14 @@ get_normalization_models_for_plot <- function(
             filter(prior_kappa == max(prior_kappa) & prior_nu == max(prior_nu)) %>%
             nest(prior = everything())) %>%
        group_by(Condition, Subject, prior_kappa.normalization) %>%
-       group_modify(~ update_normalization_and_categorize_test(prior = .x$prior[[1]],
-                                                     kappa.normalization = .x$prior_kappa.normalization,
-                                                     exposure = .x$data[[1]],
-                                                     test = d.AA.test %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1"))), .keep = TRUE) %>%
-      mutate_at(vars(starts_with("prior_")), ~factor(.x)) %>%
-      mutate_at(vars(starts_with("prior_")), fct_rev) %>%
+       group_modify(
+         ~ update_normalization_and_categorize_test(
+           prior = .x$prior[[1]],
+           kappa.normalization = .x$prior_kappa.normalization,
+           exposure = .x$data[[1]],
+           test = d.AA.test %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1"))), .keep = TRUE) %>%
+       mutate_at(vars(starts_with("prior_")), ~factor(.x)) %>%
+       mutate_at(vars(starts_with("prior_")), fct_rev) %>%
       ungroup()
      
      saveRDS(normalization.pred, get_path(paste0("../models/d.AA.results.normalization_", example_label,".rds")))
@@ -1108,7 +1111,7 @@ get_normalization_models_for_plot <- function(
 
 prior_kappa.normalization.plot <- c(1, 4, 16, 64, 256, 1024) # specify what parameters to plot
 best_performing_parameters.normalization <- find_best_model.normalization.AA()
-d.AA.normalization <- get_decision_making_models_for_plot(prior_kappa.normalization = prior_kappa.normalization.plot)
+d.AA.normalization <- get_normalization_models_for_plot(prior_kappa.normalization = prior_kappa.normalization.plot)
 ```
 
 (ref:AA-result-changes-in-normalization) Predictions of a model that derives accent adaptation from changes in normalization. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure. The highlighted panel is the one closest to the best-performing parameterization ($\kappa_0 = `r best_performing_parameters.normalization$par[1]`$; overall accuracy $=`r best_performing_parameters.normalization$value`$).

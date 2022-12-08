@@ -196,45 +196,28 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
   
   p.output <-  plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.1, 1))
   ggsave(paste0('../figures/plotly/p.model_comparison_', compare_model_label, '.png'), plot = p.output, width = 2*(base.width*3 + .5), height = 2*(base.height + .5), dpi = 300)
+  
+  return(p.output)
 }
 
-# make_plot_compare_models.AA <- function(
-#     model_names = c("Representations", "Decision_making", "Normalization"),
-#     compare_model_label
-# ) {
-#   filename = c()
-#   for (p in 1:length(model_names)) {
-#     filename[p] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L1-accented', '_', compare_model_label, '.png'))
-#     filename[p + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L2-accented', '_', compare_model_label, '.png'))
-#     filename[p + 3 + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.difference.model_', model_names[p], '_', compare_model_label, '.png'))
-#   }
-#   
+make_plot_compare_models.AA <- function(
+    model_names = c("Representations", "Decision_making", "Normalization"),
+    compare_model_label
+) {
+  filename = c()
+  for (p in 1:length(model_names)) {
+    filename[p] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L1-accented', '_', compare_model_label, '.png'))
+    filename[p + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L2-accented', '_', compare_model_label, '.png'))
+    filename[p + 3 + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.difference.model_', model_names[p], '_', compare_model_label, '.png'))
+  }
+# 
 #   filename = c(paste0('../figures/plotly/p.model_comparison_', compare_model_label, '.png'), filename)
-#   
-#   p1 <- ggdraw() + draw_image(filename[2])
-#   p2 <- ggdraw() + draw_image(filename[3])
-#   p3 <- ggdraw() + draw_image(filename[4])
-#   p.L1 <- plot_grid(p1, p2, p3, ncol = 3)
-#   
-#   p1 <- ggdraw() + draw_image(filename[5])
-#   p2 <- ggdraw() + draw_image(filename[6])
-#   p3 <- ggdraw() + draw_image(filename[7])
-#   p.L2 <- plot_grid(p1, p2, p3, ncol = 3)
-#   
-#   p1 <- ggdraw() + draw_image(filename[8])
-#   p2 <- ggdraw() + draw_image(filename[9])
-#   p3 <- ggdraw() + draw_image(filename[10])
-#   p.diff <- plot_grid(p1, p2, p3, ncol = 3)
-#   
-#   knitr::include_graphics(filename[1])
-#   p.L1
-#   p.L2
-#   p.diff
-# }
+  return(filename)
+}
 ```
 
 <!--TO DO: fix the figure size; make sure the caption show in the same page--> 
-(ref:show-model-categorization-3D-plots-similar-accuracy) The three change models predict different categorization functions when applied to the data from Case Study 2, despite achieving a similar level of overall recognition accuracy. From **left to right:** predictions for in changes in representations, decision making, and normalization. **Top:** Predicted categorization functions after L1-accented exposure. **Middle:** Same but after L2-accented exposure. **Bottom:** Differences in predicted posterior log-odds of /d/ between the two exposure conditions. Blue indicates higher predicted posterior log-odds of /d/ in the L2-accented exposure condition, relative to the L1-accented exposure condition. Red indicates the opposite. Gray indicates a difference of 0. The three models make distinct predictions about how exposure affects the perception of specific tokens across the VOT-f0 space.
+(ref:show-model-categorization-3D-plots-similar-accuracy) The three change models predict different categorization functions when applied to the data from Case Study 2, despite achieving a similar level of overall recognition accuracy using the best-performing parameterizations. From **left to right:** predictions for in changes in representations, decision making, and normalization. **Panel A:** Replotting the highlighted panels across Figure \@ref(fig:AA-result-changes-in-representations)-\@ref(fig:AA-result-changes-in-normalization). **Panel B:** Predicted categorization functions after L1-accented exposure. **Panel C:** Same but after L2-accented exposure. **Panel D:** Differences in predicted posterior log-odds of /d/ between the two exposure conditions. Blue indicates higher predicted posterior log-odds of /d/ in the L2-accented exposure condition, relative to the L1-accented exposure condition. Red indicates the opposite. Gray indicates a difference of 0. The three models make distinct predictions about how exposure affects the perception of specific tokens across the VOT-f0 space.
 
 ```{r compare-AA-models-results-across-three-mechanisms-similar-accuracy, warning=FALSE}
 # select the model parameters to be illustrated as an example where all three models predict a similar overall accuracy
@@ -245,37 +228,51 @@ beta_pi.selected = 0.1
 prior_kappa.normalization.selected = 256
 compare_model_label = "similar-accuracy"
 
-compare_models.AA(d.AA.representations, d.AA.bias, d.AA.normalization, d.AA.exposure, d.AA.test, VOT_range, f0_range, n_points)
+p.comparison <- compare_models.AA(d.AA.representations, d.AA.bias, d.AA.normalization, d.AA.exposure, d.AA.test, VOT_range, f0_range, n_points)
 ```
 
-<!--TO DO: change the size of the bar graph at the top-->
-```{r show-model-categorization-3D-plots-similar-accuracy, fig.ncol = 1, fig.show='hold',fig.align='center', out.width= c(rep("99%",4)), out.height=c(rep("20%",4)), fig.cap="(ref:show-model-categorization-3D-plots-similar-accuracy)", fig.subcap=c('Model predictions in accuracy','Predicted categorization functions after L1-accented exposure', 'Predicted categorization functions after L2-accented exposure', 'Differences in categorization functions between exposure conditions')}
+```{r show-model-categorization-3D-plots-similar-accuracy, fig.ncol = 1, fig.show='hold',fig.align='center', out.width= c(rep("99%",4)), out.height=c("15%",rep("20%", 3)),  fig.cap="(ref:show-model-categorization-3D-plots-similar-accuracy)", fig.subcap=c('Model predictions in accuracy','Predicted categorization functions after L1-accented exposure', 'Predicted categorization functions after L2-accented exposure', 'Differences in categorization functions between exposure conditions')}
 # make_plot_compare_models.AA(compare_model_label = "similar-accuracy")
-
+#fig.width=base.width*3 + .5, fig.height=base.height*4 + .5,
+# out.width= c(rep("99%",4)), out.height=c("20%",rep("30%", 3)),
 filename = c()
-  for (p in 1:length(model_names)) {
-    filename[p] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L1-accented', '_', compare_model_label, '.png'))
-    filename[p + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L2-accented', '_', compare_model_label, '.png'))
-    filename[p + 3 + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.difference.model_', model_names[p], '_', compare_model_label, '.png'))
-  }
+for (p in 1:length(model_names)) {
+  filename[p] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L1-accented', '_', compare_model_label, '.png'))
+  filename[p + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[p], '_L2-accented', '_', compare_model_label, '.png'))
+  filename[p + 3 + length(model_names)] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.difference.model_', model_names[p], '_', compare_model_label, '.png'))
+}
 
-  p1 <- ggdraw() + draw_image(filename[1])
-  p2 <- ggdraw() + draw_image(filename[2])
-  p3 <- ggdraw() + draw_image(filename[3])
-  p.L1 <- plot_grid(p1, p2, p3, ncol = 3)
+
+  p1.L1 <- ggdraw() + draw_image(filename[1]) + theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
+  p2.L1 <- ggdraw() + draw_image(filename[2]) + theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
+  p3.L1 <- ggdraw() + draw_image(filename[3]) + theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
+  p.L1 <- plot_grid(p1.L1, p2.L1, p3.L1, ncol = 3)
   ggsave(paste0('../figures/plotly/p.3d.categorization_', conditions.AA[1], '.png'), plot = p.L1, width = 2*(base.width*3 + .5), height = 2*(base.height + .5), dpi = 300)
   
-  p1 <- ggdraw() + draw_image(filename[4])
-  p2 <- ggdraw() + draw_image(filename[5])
-  p3 <- ggdraw() + draw_image(filename[6])
-  p.L2 <- plot_grid(p1, p2, p3, ncol = 3)
+  p1.L2 <- ggdraw() + draw_image(filename[4])
+  p2.L2 <- ggdraw() + draw_image(filename[5])
+  p3.L2 <- ggdraw() + draw_image(filename[6])
+  p.L2 <- plot_grid(p1.L2, p2.L2, p3.L2, ncol = 3)
   ggsave(paste0('../figures/plotly/p.3d.categorization_', conditions.AA[2], '.png'), plot = p.L2, width = 2*(base.width*3 + .5), height = 2*(base.height + .5), dpi = 300)
-  
-  p1 <- ggdraw() + draw_image(filename[7])
-  p2 <- ggdraw() + draw_image(filename[8])
-  p3 <- ggdraw() + draw_image(filename[9])
-  p.diff <- plot_grid(p1, p2, p3, ncol = 3)
+  # 
+  p1.diff <- ggdraw() + draw_image(filename[7])
+  p2.diff <- ggdraw() + draw_image(filename[8])
+  p3.diff <- ggdraw() + draw_image(filename[9])
+  p.diff <- plot_grid(p1.diff, p2.diff, p3.diff, ncol = 3)
   ggsave('../figures/plotly/p.3d.categorization_difference.png', plot = p.diff, width = 2*(base.width*3 + .5), height = 2*(base.height + .5), dpi = 300)
+  # 
+  # p.temp <-plot_grid(p.comparison, p.L1, p.L2, p.diff, ncol = 1)
+  # ggsave('../figures/plotly/p.3d.categorization_comparison.png', plot = p.temp, width = 2*(base.width*3 + .5), height = 4*(base.height + .5), dpi = 300)
+  # 
+#   plot_grid(
+#   p.comparison, p1.L1, p2.L1, p3.L1, p1.L2, p2.L2, p3.L2, p1.diff, p2.diff, p3.diff, 
+#   align = 'hv',
+#   rel_heights = c(2,1),
+#   rel_widths = c(1,2)
+# )
+#   
+  # ggdraw() + draw_plot(p.output)
+  # knitr::include_graphics(p1)
 
   filenew = c()
   filenew[1] <- file.path(get_path(paste0('../figures/plotly/p.model_comparison_', compare_model_label, '.png')))
@@ -288,7 +285,7 @@ knitr::include_graphics(filenew)
 
 (ref:show-model-categorization-3D-plots-best-performing) Using the best-performing parameterization for each model, the three change models predict different categorization functions when applied to the data from Case Study 2. From **left to right:** predictions for in changes in representations, decision making, and normalization. **Top:** Predicted categorization functions after L1-accented exposure. **Middle:** Same but after L2-accented exposure. **Bottom:** Differences in predicted posterior log-odds of /d/ between the two exposure conditions. Blue indicates higher predicted posterior log-odds of /d/ in the L2-accented exposure condition, relative to the L1-accented exposure condition. Red indicates the opposite. Gray indicates a difference of 0. The three models make distinct predictions about how exposure affects the perception of specific tokens across the VOT-f0 space.
 
-```{r compare-AA-models-results-across-three-mechanisms-best-performing, warning=FALSE,eval=FALSE}
+```{r compare-AA-models-results-across-three-mechanisms-best-performing, warning=FALSE}
 # select the model parameters to be illustrated as an example where all three models predict a similar overall accuracy
 prior_kappa.selected = 4
 prior_nu.selected = 4
@@ -300,9 +297,17 @@ compare_model_label = "best-performing"
 compare_models.AA(d.AA.representations, d.AA.bias, d.AA.normalization, d.AA.exposure, d.AA.test, VOT_range, f0_range, n_points)
 ```
 
-```{r show-model-categorization-3D-plots-best-performing, fig.ncol = 3, fig.show='hold',fig.align='center',out.width= c("99%",rep("33%",9)), out.height=c("20%",rep("20%",4)), fig.cap="(ref:show-model-categorization-3D-plots-best-performing)", fig.subcap=c('Model predictions in accuracy','Representations: L1-accented', 'Decision making: L1-accented', 'Normalization: L1-accented', 'Representations: L2-accented', 'Decision making: L2-accented', 'Normalization: L2-accented', 'Representations: difference', 'Decision making: difference', 'Normalization: difference'), eval=FALSE}
 
-make_plot_compare_models.AA(compare_model_label = "best-performing")
+```{r show-model-categorization-3D-plots-best-performing-bar-comparison, fig.ncol = 3, fig.show='hold',fig.align='center', out.width= c("33%"), out.height=c("20%"), fig.cap="(ref:show-model-categorization-3D-plots-best-performing)", fig.subcap=c('Model predictions in accuracy')}
+
+filename <- make_plot_compare_models.AA(compare_model_label = "best-performing")
+knitr::include_graphics(filename)
+```
+
+```{r show-model-categorization-3D-plots-best-performing, fig.ncol = 3, fig.show='hold',fig.align='center',out.width= c(rep("33%",9)), out.height=c(rep("20%",4)), fig.cap="(ref:show-model-categorization-3D-plots-best-performing)", fig.subcap=c('Representations: L1-accented', 'Decision making: L1-accented', 'Normalization: L1-accented', 'Representations: L2-accented', 'Decision making: L2-accented', 'Normalization: L2-accented', 'Representations: difference', 'Decision making: difference', 'Normalization: difference')}
+
+filename <- make_plot_compare_models.AA(compare_model_label = "best-performing")
+knitr::include_graphics(filename)
 ```
 
 

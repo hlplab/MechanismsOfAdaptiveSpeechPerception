@@ -989,8 +989,8 @@ prepare_3D.categorization_from_results <- function(data, exposure.data, test.dat
       pivot_wider(values_from = x, names_from = cue_name)
 
     df.resp = list()
-    df.resp$x = x
-    df.resp$y = y
+    df.resp$VOT = x
+    df.resp$f0 = y
     
     # create categorization surface
     resp.prob <- t(matrix(d.output$response, ncol=n))

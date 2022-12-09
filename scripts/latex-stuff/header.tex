@@ -32,3 +32,25 @@
 %% Some Traditional Chinese fonts: AR PL KaitiM Big5, PingFang TC, Noto Sans CJK TC
 %\XeTeXlinebreaklocale "zh"
 %\XeTeXlinebreakskip = 0pt plus 1pt
+
+%% Added by Florian to make biblatex and its \refsection work since pandoc does not parse 
+%% content within latex environments. \refsection in turn is required to allow authors
+%% to have multiple separate bibliographies (here: one for main text and one for SI).
+%%
+%% For some reasons it does seem to be necessary to reload the bibpackage here since
+%% ---at least for my system---adding the following to the YAML header instead does
+%% not seem to work:
+%%
+%%    biblio-style: apa
+%%    biblatexoptions: [backend=biber,maxbibnames=999,style=apa]
+%% 
+%% curiously removing the following from the YAML header:
+%%
+%%     citation_package: biblatex
+%%
+%% makes knitr (or pandoc?) revert back to the default bibtex treatment, which does 
+%% not allow multiple bibliographies.
+\usepackage[backend=biber,maxbibnames=999,style=apa]{biblatex}
+\addbibresource{latex-stuff/library.bib}
+\newcommand{\brefsection}{\begin{refsection}}
+\newcommand{\erefsection}{\end{refsection}}

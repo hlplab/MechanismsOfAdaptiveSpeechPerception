@@ -86,11 +86,14 @@ fontsize          : 11pt
 output: 
   papaja::apa6_pdf:
     latex_engine: xelatex
-    extra_dependencies: "subfig" 
     includes:
       in_header: latex-stuff/header.tex
+    keep_tex: yes
+    citation_package: biblatex
+    extra_dependencies: "subfig" 
 always_allow_html: true
 ---
+
 
 \setcounter{secnumdepth}{5}
 
@@ -113,8 +116,7 @@ knitr::opts_chunk$set(
   fig.path = get_path("../figures/knitted/"), fig.align = "center", fig.height = 2.5, fig.width = 2.5)
 
 knitr::knit_hooks$set(inline = function(x) {
-  prettyNum(x, big.mark=",")
-})
+  prettyNum(x, big.mark=",") })
 
 knitr::knit_hooks$set(document = function(x) {sub('\\usepackage[]{color}', '\\usepackage{xcolor}', x, fixed = TRUE)})
 color_block = function(color) { function(x, options) sprintf('\\color{%s}\\begin{verbatim}%s\\end{verbatim}\\color{black}', color, x) }
@@ -138,7 +140,7 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```{r, child="section-0-TO-DO.Rmd", eval= if (INCLUDE_TODO) TRUE else FALSE}
 ```
 
-<!-- Using inline R markdown child definition since only the quiet = T option oppresses both the latex *and* the R output of a child -->
+\brefsection
 
 ```{r, child="section-1-introduction.Rmd"}
 ```
@@ -158,10 +160,13 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```{r, child="section-6-general-discussion.Rmd", eval=TRUE}
 ```
 
-```{r, child="section-7-references.Rmd", eval=TRUE}
-```
+\printbibliography
+\erefsection
+
+\brefsection
 
 ```{r, child="supplementary-information.Rmd", eval=TRUE}
 ```
 
-
+\printbibliography
+\erefsection

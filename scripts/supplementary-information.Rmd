@@ -459,11 +459,11 @@ For the test phase, we randomly sample 60 tokens per category from the L2-accent
 <!-- We therefore recommend designs with a small number of within-subject tests, each sufficiently short compared to the length of exposure, and exposure phases that are shared by a sufficiently large number of participants (so that their effect can be reliably estimated). In recent work, we have approached the question of what constitutes “sufficient” through a combination of power analyses and pilot experiments [@burchill-jaeger2021]---an admittedly time- and resource-consuming approach that has, however, yielded a much better understanding of our data. [XX11]Finally, whenever possible, test and exposure phases should transition seamlessly into each other. Alternatively, instructions should use accessible language to highlight whether the upcoming stimuli come from the same source. -->
 
 # Optimization steps for Case Study 2
-Figure \@ref(fig:optimization results) summarizes the effects of parameterizations for each of the three change models on the overall accuracy for L2-accented speech after L2-accented exposure in Case Study 2.
+Figure \@ref(fig:optimization-results) summarizes the effects of parameterizations for each of the three change models on the overall accuracy for L2-accented speech after L2-accented exposure in Case Study 2.
 
 (ref:optimization-results) Parameter space explored by the search for the best-performing parameterizations of the three different change models in Case Study 2.
 
-```{r optimzation-results, fig.width=base.width*3 + .5, fig.height=base.height*1 + .5, fig.cap = "(ref:optimization-results)"}
+```{r optimzation-results, fig.width=base.width*3 + 1, fig.height=base.height + .5, fig.cap = "(ref:optimization-results)"}
 history.optimization_representations <- readRDS(get_path(paste0("../models/d.AA.history.optimization.representations_Cue_reweighting.rds")))
 history.optimization_bias <- readRDS(get_path(paste0("../models/d.AA.history.optimization.bias_Cue_reweighting.rds")))
 history.optimization_normalization <- readRDS(get_path(paste0("../models/d.AA.history.optimization.normalization_Cue_reweighting.rds")))
@@ -480,7 +480,10 @@ p.representations <-
     breaks = 10^(0:log10(range.prior_nu[2]))) +
   scale_color_viridis_b("Accuracy\non L2 accent", limits = c(.5, 1)) + 
   coord_trans(x = "log10", y = "log10") +
-  theme(legend.position = "none")
+  theme(legend.position = "top")  
+
+legend <- get_legend(p.representations)
+p.representations <- p.representations + theme(legend.position = "none")
 
 p.bias <- 
   p.representations %+%
@@ -488,37 +491,35 @@ p.bias <-
   aes(x = beta_pi, y = lapse_rate) +
   scale_x_continuous(
     name = ~beta[pi], 
-    breaks = 10^(log10(range.beta_pi[1]):log10(range.beta_pi[2])),
+    breaks = 10^(seq(log10(range.beta_pi[1]),log10(range.beta_pi[2]), length.out = 4)),
     limits = range.beta_pi) +
   scale_y_continuous(
     name = ~lambda,
     breaks = seq(0, 1, .1)) +
-  coord_trans(x = "log10") +
-  theme(legend.position = "top")
+  coord_trans(x = "log10") 
 
 p.normalization <- 
   p.representations %+%
   (history.optimization_normalization %>%
      crossing(lapse_rate = 0)) +
-  aes(x = kappa.normalization, y = lapse_rate) +
+  aes(x = kappa.normalization, y = 1) +
   scale_x_continuous(
     name = ~kappa[0], 
-    breaks = 10^(0:log10(range.prior_kappa.normalization[2])),
+    breaks = 10^(seq(0, log10(range.prior_kappa.normalization[2]))),
     limits = range.prior_kappa.normalization) +
-  scale_y_continuous(
-    name = ~lambda,
-    breaks = seq(0, 1, .1),
-    limits = c(0, 1)) +
-  coord_trans(x = "log10") +
-  theme(legend.position = "none")
+  scale_y_continuous(name = "") +
+  coord_trans(x = "log10") + theme(axis.text.y = element_blank())
 
 plot_grid(
-  p.representations , 
-  p.bias,
-  p.normalization,
-  labels = c('A)', 'B)', 'C)'), 
-  align = "hv", axis = "btlr",
-  ncol = 3, rel_widths = c(1/3, 1/3, 1/3))
+  legend,
+  plot_grid(
+    p.representations, 
+    p.bias,
+    p.normalization,
+    labels = c('A)', 'B)', 'C)'), 
+    align = "hv", axis = "btlr",
+    ncol = 3, rel_widths = c(1/3, 1/3, 1/3)),
+  ncol = 1, rel_heights = c(.15, .85))
 ```
 
 # Computational limitations of change models afford qualitative tests of their *sufficiency* {#sec:sufficiency}

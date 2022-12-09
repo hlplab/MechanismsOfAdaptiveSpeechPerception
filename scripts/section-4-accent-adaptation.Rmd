@@ -1200,23 +1200,22 @@ construct_three_models <- function(
   best_performing_parameters.representations <- find_best_model.representations.AA()
   representations.pred <- get_representation_models_for_plot(
     prior_kappa = round(best_performing_parameters.representations$par[1], digits =0), # here one can select to plot just the best-performing parameterization or to visualize a range of parameters by specifying the values assigned to prior_kappa and prior_nu
-    prior_nu = round(best_performing_parameters.representations$par[2], digits = 0)
-  )
+    prior_nu = round(best_performing_parameters.representations$par[2], digits = 0))
 
   history.optimization_bias <<- tibble(.rows = 0)
   best_performing_parameters.bias <- find_best_model.bias.AA()
   bias.pred <- get_decision_making_models_for_plot(
     lapse_rate = round(best_performing_parameters.bias$par[1], digits = 2), # here one can select to plot just the best-performing parameterization or to visualize a range of parameters by specifying the values assigned to lapse_rate and beta_pi
-    beta_pi = round(best_performing_parameters.bias$par[2], digits = 2)
-  )
+    beta_pi = round(best_performing_parameters.bias$par[2], digits = 2))
   
   bias.pred %<>% get_average_bias_results_across_simulations() # average predictions across simulations for the bias model
   
   history.optimization_normalization <<- tibble(.rows = 0)
   best_performing_parameters.normalization <- find_best_model.normalization.AA()
-  normalization.pred <- get_normalization_models_for_plot(
-    prior_kappa.normalization = round(best_performing_parameters.normalization$par[1], digits = 0)
-  )
+
+  normalization.pred <-get_normalization_models_for_plot(
+    prior_kappa.normalization = round(best_performing_parameters.normalization$par[1], digits = 0))
+
 
   # plot the predicted results for all parameterization and save plots
   p.AA.representations <- 

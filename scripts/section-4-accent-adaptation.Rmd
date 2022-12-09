@@ -326,11 +326,7 @@ add_subjects_to_test <- function(
 ```
 
 ```{r study-AA-test-make-data}
-# if(SET_SEED){
-#   set.seed(42007)
-# } #DEBUG
 d.AA.test <- make_accent_adaptation_test_design(
- # d.AA.exposure, 
   experimenter.ideal_observer = m.io.VOT_f0.AA, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
 ```
 
@@ -441,7 +437,7 @@ d.parameters <- data.frame(c("Changes in decision-making", "Changes in decision-
                            c(paste0(range.beta_pi[1], " to " ,range.beta_pi[2])),
                              c(paste0(range.prior_kappa[1], " to " ,range.prior_kappa[2])),
                            c(paste0(range.prior_nu[1], " to " ,range.prior_nu[2])),
-                           c(paste0(range.prior_kappa.normalization[1], ", " ,range.prior_kappa.normalization[2]))))
+                           c(paste0(range.prior_kappa.normalization[1], " to " ,range.prior_kappa.normalization[2]))))
 
 colnames(d.parameters) = c("Model","Parameters", "Range")
 
@@ -1202,14 +1198,14 @@ construct_three_models <- function(
 
   history.optimization_representations <<- tibble(.rows = 0)
   best_performing_parameters.representations <- find_best_model.representations.AA()
-  representations.pred <- plot_sample_model.representations.AA(
+  representations.pred <- get_representation_models_for_plot(
     prior_kappa = round(best_performing_parameters.representations$par[1], digits =0), # here one can select to plot just the best-performing parameterization or to visualize a range of parameters by specifying the values assigned to prior_kappa and prior_nu
     prior_nu = round(best_performing_parameters.representations$par[2], digits = 0)
   )
 
   history.optimization_bias <<- tibble(.rows = 0)
   best_performing_parameters.bias <- find_best_model.bias.AA()
-  bias.pred <- plot_sample_model.bias.AA(
+  bias.pred <- get_decision_making_models_for_plot(
     lapse_rate = round(best_performing_parameters.bias$par[1], digits = 2), # here one can select to plot just the best-performing parameterization or to visualize a range of parameters by specifying the values assigned to lapse_rate and beta_pi
     beta_pi = round(best_performing_parameters.bias$par[2], digits = 2)
   )
@@ -1218,7 +1214,7 @@ construct_three_models <- function(
   
   history.optimization_normalization <<- tibble(.rows = 0)
   best_performing_parameters.normalization <- find_best_model.normalization.AA()
-  normalization.pred <- plot_sample_model.normalization.AA(
+  normalization.pred <- get_normalization_models_for_plot(
     prior_kappa.normalization = round(best_performing_parameters.normalization$par[1], digits = 0)
   )
 
@@ -1361,7 +1357,7 @@ for (i in 1:length(cases)){
 ```
 
 ```{r AA-result-comparison-additional-cases, warning=FALSE}
-cases = c("Contrast_reduction", "Contrast_shift", "Contrast_collapse", "Cue_reweighting")
+cases = c("Contrast_reduction", "Contrast_shift", "Contrast_collapse")
 best_performing_parameters.representations.par = data.frame()
 best_performing_parameters.bias.par = data.frame()
 best_performing_parameters.normalization.par = data.frame()
@@ -1392,6 +1388,9 @@ for (i in 1:length(cases)){
 ```
 
 ```{r AA-plot-target-exposure-additional-cases, message = FALSE, warning=FALSE}
+# plot target exposure ellipses
+n.token_for_plot = 5000 # this number of tokens are used to create the ellipses for the exposure categories in the plots (a larger number makes the ellipse estimation used in visualization more accurate); it does not affect the number of exposure tokens used in the simulation experiment
+
 # simulating a case of contrast shift: like French-accented English stops, so allowing negative VOTs
 min_VOT = -100
 var.ratio = 1
@@ -1403,14 +1402,13 @@ d.AA.exposure.target.contrast.shift <-
     category_dist_ratio2 = 0, 
     shift_mean_1 = -1.2, 
     shift_mean_2 = 0, 
-    exposure.tokens.L1.n = 5000, 
-    exposure.tokens.L2.n = 5000)
+    exposure.tokens.L1.n = n.token_for_plot, 
+    exposure.tokens.L2.n = n.token_for_plot)
 
-# plot target exposure ellipses
-min_VOT = 5
-var.ratio = 1
 # simulating a case of contrast reduction
 example_label = "Contrast_reduction" # TO DO:COME BACK HERE TO FIX THE ASSIGNMENT OF EXAMPLE_LABEL
+min_VOT = 5
+var.ratio = 1
 d.AA.exposure.target.contrast.reduction <- 
   make_accent_adaptation_exposure_design(
     experimenter.ideal_observer = m.io.VOT_f0.AA, 
@@ -1418,13 +1416,13 @@ d.AA.exposure.target.contrast.reduction <-
     category_dist_ratio2 = 0, 
     shift_mean_1 = 0, 
     shift_mean_2 = 0, 
-    exposure.tokens.L1.n = 5000, 
-    exposure.tokens.L2.n = 5000)
+    exposure.tokens.L1.n = n.token_for_plot, 
+    exposure.tokens.L2.n = n.token_for_plot)
 
 # simulating a case of contrast collapse
+example_label = "Contrast_collapse"
 min_VOT = -100
 var.ratio = 1
-example_label = "Contrast_collapse"
 d.AA.exposure.target.contrast.collapse <-  
   make_accent_adaptation_exposure_design(
     experimenter.ideal_observer = m.io.VOT_f0.AA, 
@@ -1432,9 +1430,10 @@ d.AA.exposure.target.contrast.collapse <-
     category_dist_ratio2 = 0,
     shift_mean_1 = 0,
     shift_mean_2 = 0,
-    exposure.tokens.L1.n = 5000, 
-    exposure.tokens.L2.n = 5000) 
+    exposure.tokens.L1.n = n.token_for_plot, 
+    exposure.tokens.L2.n = n.token_for_plot) 
 
+# combine all three cases
 d.AA.exposure.target.cases <- rbind(
   d.AA.exposure.target.contrast.reduction %>%
     mutate(Case = "Contrast reduction"),

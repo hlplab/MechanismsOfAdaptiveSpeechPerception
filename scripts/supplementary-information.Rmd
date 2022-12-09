@@ -3,7 +3,6 @@
 \renewcommand{\thesection}{\S \arabic{section}}
 \renewcommand{\theHsection}{sisection. \arabic{section}}
 
-
 # Supplementary information for *Xie, Jaeger, & Kurumada (2022). What we do (not) know about the mechanisms underlying adaptive speech perception* {-}
 Both the main text and these supplementary information (SI) are derived from the same R markdown document available via OSF at [https://osf.io/q7gjp/](https://osf.io/q7gjp/). **The PDFs for both the main text and the SI are best viewed using Acrobat Reader.** Some links and animations might not work in other PDF viewers.
 
@@ -462,7 +461,7 @@ For the test phase, we randomly sample 60 tokens per category from the L2-accent
 # Optimization steps for Case Study 2
 Figure \@ref(fig:optimization results) summarizes the effects of parameterizations for each of the three change models on the overall accuracy for L2-accented speech after L2-accented exposure in Case Study 2.
 
-(ref:optimization results) Parameter space explored by the search for the best-performing parameterizations of the three different change models in Case Study 2.
+(ref:optimization-results) Parameter space explored by the search for the best-performing parameterizations of the three different change models in Case Study 2.
 
 ```{r optimzation-results, fig.width=base.width*3 + .5, fig.height=base.height*1 + .5, fig.cap = "(ref:optimization-results)"}
 history.optimization_representations <- readRDS(get_path(paste0("../models/d.AA.history.optimization.representations_Cue_reweighting.rds")))
@@ -548,5 +547,3 @@ In Section \@ref(sec:framework), we showed that the limitations of change models
 Conversely, there are ways to assess whether representational changes alone are sufficient to explain all forms of adaptive speech perception. For example, if auditory input that arguably carries no information about category statistics affects subsequent speech perception, this provides evidence that changes in representations alone cannot explain all aspects of adaptive speech perception. Perhaps one of the most convincing demonstrations of this type comes from the findings of auditory enhancement effects, wherein non-speech stimuli (e.g., pure tones) can systematically alter the perception of subsequently played speech stimuli [@chodroff-wilson2020; @holt2001; @holt2005; @holt2006; @huang-holt2011; for review, see also @weatherholtz-jaeger2016]. While these demonstrations might be challenged for lack of ecological validity (potentially inviting meta-reasoning about experimenters' intentions that is unlikely to be present during everyday speech perception), it is unclear how representational changes---or, for that matter, changes in response biases---can explain such findings. At the very least then, these findings suggest that normalization *can* be involved in adaptive speech perception.
 
 In sum, by focusing on the computational assumptions of the different change models, it is possible to conduct behavioral experiments that can decisively determine whether either of the two computationally more parsimonious change models is *sufficient* to explain adaptive speech perception, or whether changes in representations are necessary to explain adaptive speech perception. 
-
-

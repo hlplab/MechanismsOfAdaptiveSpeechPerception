@@ -66,7 +66,8 @@ p_height = 900
 ```
 
 ```{r compare-AA-models-results-functions, warning=FALSE}
-compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT_range, f0_range, n_points) {
+fix_quadratic_effects = FALSE # whether to make quadratic effects of cues monotonic or not
+compare_models.AA <- function(data1, data2, data3, VOT_range, f0_range, n_points) {
   d.model.compare <- 
     bind_rows(
       data1 %>%
@@ -93,7 +94,7 @@ compare_models.AA <- function(data1, data2, data3, data.exposure, data.test, VOT
       filter(model == model_names[j])
     
     for (i in 1:length(conditions.AA)) {
-      output.AA <- prepare_3D.categorization_from_results(data, d.AA.exposure, d.AA.test, VOT_range, f0_range, n_points)
+      output.AA <- prepare_3D.categorization_from_results(data, VOT_range, f0_range, n_points, fix_quadratic_effects)
       df.resp <- output.AA[[i]]
       
       if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[j], '_', conditions.AA[i], '_', compare_model_label, '.png')))) { 
@@ -208,14 +209,14 @@ make_plot_compare_models.AA <- function(
 
 ```{r compare-AA-models-results-across-three-mechanisms-best-performing, warning=FALSE}
 # select the model parameters to be illustrated as an example where all three models predict a similar overall accuracy
-prior_kappa.selected = 4
-prior_nu.selected = 4
-posterior.lapse_rate.selected = min(d.AA.bias$posterior.lapse_rate)
-beta_pi.selected = 1
-prior_kappa.normalization.selected = 1
+prior_kappa.selected = d.AA.representations$prior_kappa[which.min(abs(as.numeric(as.character(d.AA.representations$prior_kappa)) - best_performing_parameters.representations$par[1]))]
+prior_nu.selected = d.AA.representations$prior_nu[which.min(abs(as.numeric(as.character(d.AA.representations$prior_nu)) - best_performing_parameters.representations$par[2]))]
+posterior.lapse_rate.selected = d.AA.bias$posterior.lapse_rate[which.min(abs(d.AA.bias$posterior.lapse_rate - best_performing_parameters.bias$par[1]))]
+beta_pi.selected = d.AA.bias$beta_pi[which.min(abs(d.AA.bias$beta_pi - best_performing_parameters.bias$par[2]))]
+prior_kappa.normalization.selected = d.AA.normalization$prior_kappa.normalization[which.min(abs(as.numeric(as.character(d.AA.normalization$prior_kappa.normalization)) - best_performing_parameters.normalization$par[1]))]
 compare_model_label = "best-performing"
 
-compare_models.AA(d.AA.representations, d.AA.bias, d.AA.normalization, d.AA.exposure, d.AA.test, VOT_range, f0_range, n_points)
+compare_models.AA(d.AA.representations, d.AA.bias, d.AA.normalization, VOT_range, f0_range, n_points)
 ```
 
 ```{r show-model-categorization-3D-plots-best-performing, fig.sep = c('\\newline', '', '', '\\newline', '', '', '\\newline', '', '', '\\newline'), fig.show='hold',fig.align='center', out.width= c("100%", rep("33%",9)), out.height=c(rep("15%",4)), fig.cap="(ref:show-model-categorization-3D-plots-best-performing)", fig.subcap=c('Predicted recognition accuracy from changes in representations, decision-making and normalization', 'Representations: \\newline{}L1-accented', 'Decision making: \\newline{}L1-accented', 'Normalization: \\newline{}L1-accented', 'Representations: \\newline{}L2-accented', 'Decision making: \\newline{}L2-accented', 'Normalization: \\newline{}L2-accented', 'Representations:\\newline{} difference', 'Decision making: \\newline{}difference', 'Normalization: \\newline{}difference')}

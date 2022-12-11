@@ -1303,22 +1303,6 @@ example_label = "Contrast_collapse" #TO DO:COME BACK HERE AND FIX IT FOR get_par
 d.AA.results.contrast_collapse.best  <- construct_three_models(example_label = "Contrast_collapse", experimenter.ideal_observer = m.io.VOT_f0.AA)
 ```
 
-```{r AA-result-comparison-best-three-models-cue-reweighting-DEBUG, warning=FALSE, eval= FALSE}
-#DEBUG remove if done
-# Examine a new scenario: contrast collapse
-dist.L2_category.cue1 <- 1
-dist.L2_category.cue2 <- 0.22
-shift.cue1 <- 0.5
-shift.cue2 <- 0.22
-var.ratio = 1 # Multiple category variance by a constant; var.ratio = 1 means no change in category variance
-
-min_VOT = 5 # Set the minimal values for randomly generated test token cue values to make sure it is physiologically possible
-min_f0_Mel = 20
-example_label = "Cue_reweighting"
-
-d.AA.results.cue_reweighting.best  <- construct_three_models(example_label = "Cue_reweighting", experimenter.ideal_observer = m.io.VOT_f0.AA)
-```
-
 ```{r AA-result-comparison-additional-cases-history-DEBUG, warning=FALSE, eval = FALSE}
 #DEBUG remove if done
 cases = c("Cue_reweighting", "Contrast_shift", "Contrast_reduction", "Contrast_collapse")
@@ -1347,7 +1331,8 @@ for (i in 1:length(cases)){
   
   #load history of optimization for normalization model
   history.optimization.normalization.current <- 
-    readRDS(get_path(paste0("../models/d.AA.history.optimization.normalization_", example_label,".rds")))
+    readRDS(get_path(paste0("../models/d.AA.history.optimization.normalization_", example_label,".rds"))) %>%
+    mutate(Case = example_label) 
   
   history.optimization.normalization.all <- 
     bind_rows(history.optimization.normalization.all, history.optimization.normalization.current)

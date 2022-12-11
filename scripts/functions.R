@@ -931,7 +931,7 @@ plot_3D.categorization.diff <- function(df.resp, width, height){
 }
 
 # Function to make categorization surface in 3D space based on the modeling results from the three change mechanisms
-prepare_3D.categorization_from_results <- function(data, exposure.data, test.data, cue1_range, cue2_range, n, fix_quadratic_effects = FALSE) {
+prepare_3D.categorization_from_results <- function(data, cue1_range, cue2_range, n, fix_quadratic_effects = FALSE) {
   x<-seq(cue1_range[1], cue1_range[2],length=n)  # generating the vector series cue 1
   y<-seq(cue2_range[1], cue2_range[2],length=n) 
   

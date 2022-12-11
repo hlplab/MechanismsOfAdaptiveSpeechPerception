@@ -9,3 +9,4 @@ scripts/TESTING/
 *_cache/
 *_files/
 figures/knitted/*
+*.png

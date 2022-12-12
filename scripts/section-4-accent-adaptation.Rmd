@@ -1341,7 +1341,7 @@ for (i in 1:length(cases)){
 ```
 
 ```{r AA-result-comparison-additional-cases, warning=FALSE}
-cases = c("Contrast_reduction", "Contrast_shift", "Contrast_collapse")
+cases = c("Cue_reweighting", "Contrast_reduction", "Contrast_shift", "Contrast_collapse")
 best_performing_parameters.representations.par = data.frame()
 best_performing_parameters.bias.par = data.frame()
 best_performing_parameters.normalization.par = data.frame()
@@ -1521,7 +1521,7 @@ parameters.results.best.cases <-
 
 colnames(parameters.results.best.cases) = c("L2 accent scenario", "Changes in representations", "Changes in decision-making", "Changes in normalization")
 
-knitr::kable(parameters.results.best.cases, caption = "Best-performing parameters across different accent scenarios", align = 'l', booktabs = TRUE, escape = FALSE) %>%
+knitr::kable(parameters.results.best.cases, caption = "Best-performing parameters across different accent scenarios (rounded to the nearest hundredth)", align = 'l', booktabs = TRUE, escape = FALSE) %>%
     kable_styling(latex_options = "scale_down")
 ```
 

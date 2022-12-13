@@ -256,7 +256,6 @@ During test, listeners from both exposure conditions hear the same recordings fr
 
 # make the design of an test phase
 make_accent_adaptation_test_design = function(
- # d,
   experimenter.ideal_observer,
   experimenter.variability_reduction = my_experimenter.variability_reduction,
   category_dist_ratio1 = dist.L2_category.cue1,

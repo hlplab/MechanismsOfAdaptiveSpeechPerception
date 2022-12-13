@@ -405,6 +405,10 @@ make_exposure_test_plot(exposure.data = d.AA.exposure, test.data = d.AA.test)
 ```{r add-subjects-AA-exposure-test-data}
 d.AA.exposure %<>% add_subjects_to_exposure(n.subject = n.subject)
 d.AA.test %<>% add_subjects_to_test(n.subject = n.subject)
+
+d.AA.exposure.main <- d.AA.exposure # save this exposure dataset to be used by the figures in the general discussion which zooms in on specific parameterization of this case
+d.AA.test.main <- d.AA.test # similarly save this test dataset
+
 ```
 
 ## Results

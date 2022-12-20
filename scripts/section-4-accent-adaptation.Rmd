@@ -333,7 +333,9 @@ d.AA.test <- make_accent_adaptation_test_design(
 
 ```{r plot-AA-exposure-test-functions}
 # Function to plot exposure and test data
-make_exposure_test_plot <- function(exposure.data, test.data){
+make_exposure_test_plot <- function(exposure.data, 
+                                    test.data,
+                                    categories = categories.AA){
   p.AA.exposure <- 
     exposure.data %>%
     mutate(Condition = paste0("Exposure: ", Condition)) %>%
@@ -346,8 +348,8 @@ make_exposure_test_plot <- function(exposure.data, test.data){
                         expand = expansion(mult = .1, add = 0)) +
     scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0), breaks=seq(0, 500, by = 100)) +
     coord_cartesian(ylim = c(0, 500)) +
-    scale_color_manual("Category", breaks = categories.AA, values = colors.category) +
-    scale_fill_manual("Category", breaks = categories.AA, values = colors.category) +
+    scale_color_manual("Category", breaks = categories, values = colors.category) +
+    scale_fill_manual("Category", breaks = categories, values = colors.category) +
     facet_grid(~ Condition)
   
   limits <- get_plot_limits(p.AA.exposure)
@@ -394,7 +396,7 @@ make_exposure_test_plot <- function(exposure.data, test.data){
   return(p.output)
 }
 
-appender <- function(string, prefix = "Changes in\n") paste0(prefix, string)
+# appender <- function(string, prefix = "Changes in\n") paste0(prefix, string)
 ```
 
 ```{r study-AA-exposure-test-plot, fig.width=base.width*3 + .5, fig.height=base.height + .5, fig.cap="(ref:study-AA-exposure-test-plot)", warning=FALSE}

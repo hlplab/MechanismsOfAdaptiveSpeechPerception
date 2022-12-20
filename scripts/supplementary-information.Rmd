@@ -536,41 +536,19 @@ A second computational limitation of normalization accounts is specific to accou
 
 A third limitation of normalization accounts that can be productively explored in future research is the lack of category specificity. Consider for example, a possible extension of the study by Clayards and colleagues. In the study by @clayards2008, both /b/ and /p/ either had narrow variance along VOT (SD = 8 msecs) or wide variance (SD = 14 msecs). This confounds the category-specific variance with the overall variance of the cues along VOT. It is, however, possible to manipulate the variance of the two categories while keeping both the means of the two categories (and thus the overall cue mean) and the overall cue variance constant. Figure \@ref(fig:proposed-experiment-asymmetric-variance) depicts two exposure conditions that achieve this, along with changes in the categorization function predicted by normalization and representational change models. This demonstrates how researchers might use the lack of category-specificity to disentangle normalization and representational change accounts. Other possible manipulations in this vein could include category-specific changes in the *co*variance of cues.<!--^[This is not to be confused with another experimental manipulation that is sometimes describes in terms of covariance [@idemaru-holt2011 and follow-up work]: changes in which of two or more cues exhibits the largest relative distance between two category means [which changes the relative reliability of cues, as discussed in @schertz-clare2020]. ASP-based simulations would be required to assess whether such manipulations cannot also be explained by normalization. We suspect that they can.]--> Basically, any manipulation that leaves the *overall* cue mean and variance unaffected while predicting differences in the categorization function under the representational change model can test whether the human listeners exhibit more flexibility than expected by normalization accounts. We note, however, that any such test should take into account that listeners can have strong prior beliefs based on the speech input they have received previously, and that this might include strong prior beliefs about *how* the realization of categories varies across talkers [@kleinschmidt-jaeger2015]. If the manipulations employed by researchers strongly violate those expectations, this needs to be carefully considered in the derivation of predictions. 
 
-(ref:proposed-experiment-asymmetric-variance) A possible way to contrast normalization and representational change accounts. Panel A: two exposure conditions with identical overall means and variances along VOT, but different category-specific variances. Panel B: the predictions of the best-performing normalization and representational change models. For this purpose, the normalization model was extended to both center and standardized the cues.^[We note that the specific predictions for the representational change model shown here assume that listeners have equally strong prior beliefs about the variance of both of the two categories (i.e., one $nu_{0,c}$ for both categories). This is what we assumed in our case studies---which aimed to show that even simplified versions of each change model can explain a wide range of findings in the literature---but it is not an inalienable assumption for representational change models [for discussion, see also @kleinschmidt-jaeger2015]. The general prediction of representational change models that listeners are sensitive to the category-specific variance should hold even if this assumption is removed. How easy to detect this predicted difference is, however, expected to depend on this assumption.] <!-- TO DO: Xin, any chance you could add such a figure. for this we can just perfectly center and standardize (i.e., kappa_0 and the newly introduced nu_0 are both 0); the best performing representational change model should be nu_0,c = 4 and kappa_0,c = 1024, assuming you put the category means on the a priori expected locations. -->
+(ref:proposed-experiment-asymmetric-variance) A possible way to contrast normalization and representational change accounts. Panel A: two exposure conditions with identical overall means and variances along VOT, but different category-specific variances. Panel B: the predictions of the best-performing representational and normalization change models. For this purpose, the normalization model was extended to both center and standardize the cues.^[We note that the specific predictions for the representational change model shown here assume that listeners have equally strong prior beliefs about the variance of both of the two categories (i.e., one $nu_{0,c}$ for both categories). This is what we assumed in our case studies---which aimed to show that even simplified versions of each change model can explain a wide range of findings in the literature---but it is not an inalienable assumption for representational change models [for discussion, see also @kleinschmidt-jaeger2015]. The general prediction of representational change models that listeners are sensitive to the category-specific variance should hold even if this assumption is removed. How easy to detect this predicted difference is, however, expected to depend on this assumption.] <!-- TO DO: Xin, any chance you could add such a figure. for this we can just perfectly center and standardize (i.e., kappa_0 and the newly introduced nu_0 are both 0); the best performing representational change model should be nu_0,c = 4 and kappa_0,c = 1024, assuming you put the category means on the a priori expected locations. -->
 
 ```{r proposed-experiment-asymmetric-variance, fig.cap="(ref:proposed-experiment-asymmetric-variance)", eval = FALSE}
-# Put figure here.
+scale_variable <- function(x){
+  (x - mean(x, na.rm=TRUE)) / sd(x, na.rm=TRUE)
+}
 
-# Exposure condition 1
- mu_A.exposure1 <- m.VOT_f0_MVG %>% filter(category == "/d/") %>% pull(mu) %>% .[[1]] %>% .[1]
- Sigma_A.exposure1 <- m.VOT_f0_MVG %>% filter(category == "/d/") %>% pull(Sigma) %>% .[[1]] %>% .[1]
- mu_B.exposure1 <- m.VOT_f0_MVG %>% filter(category == "/t/") %>% pull(mu) %>% .[[1]] %>% .[1]
- Sigma_B.exposure1 <- m.VOT_f0_MVG %>% filter(category == "/t/") %>% pull(Sigma) %>% .[[1]] %>% .[1]
-
-set.seed(5612)
-
-categories.demo <- c("/d/", "/t/")
-cue.demo <- "VOT_centered"
-
-# Lapse model
-bias.demo <- c(.5, .5)
-
-# Ideal observers and adaptors
-m.io.VOT.con1 <- 
-  make_MVG_from_data(
-  data = d.chodroff_wilson.selected,
-  category = "category",
-  cues = cue.demo) %>%
-  filter(category %in% categories.demo) %>%
-  lift_MVG_to_MVG_ideal_observer(prior = bias.demo, lapse_rate = 0, lapse_bias = bias.demo, Sigma_noise = matrix(80, nrow = 1, dimnames = list("VOT_centered")))
-
-m.io.VOT.con2 <- m.io.VOT.con1 # create two conditions that have identical category means, but switched category variance
-m.io.VOT.con2$Sigma[1] = m.io.VOT.con1$Sigma[2] 
-m.io.VOT.con2$Sigma[2] = m.io.VOT.con1$Sigma[1] 
-m.io.VOT.asym_var <- bind_rows(m.io.VOT.con1 %>% mutate(Condition = "Condition-1"), 
-                               m.io.VOT.con2 %>% mutate(Condition = "Condition-2"))
-
-
+d.chodroff_wilson.selected %<>%
+  ungroup() %>%
+  mutate(mVOT = mean(VOT)) %>%
+  group_by(Talker) %>%
+  mutate(VOT_scaled = scale_variable(VOT))
+  
 make_asymmetric_variance_exposure_design <- function(
   # Ideal observer describing the true perceptual system for two categories.
   experimenter.ideal_observer,
@@ -579,7 +557,7 @@ make_asymmetric_variance_exposure_design <- function(
   exposure.tokens.L2.n = n.exposure.token,
   quiet = F){
   if (!quiet) message(
-    paste0("Making exposure design with ", exposure.tokens.L1.n, " L1-accented tokens and ", exposure.tokens.L2.n, " L2-accented tokens."))
+    paste0("Making exposure design with ", exposure.tokens.L1.n, " ",  levels(factor(experimenter.ideal_observer$Condition))[1], " tokens and ", exposure.tokens.L2.n, " ",  levels(factor(experimenter.ideal_observer$Condition))[2], " tokens."))
   
     # Create basic tibble
 tibble(
@@ -588,47 +566,42 @@ tibble(
     Item.Type = factor(c(rep("Condition-1", n.exposure.token), rep("Condition-2", n.exposure.token)))) %>%
     # Add all unique design combinations
     crossing(
-      Item.Category = factor(m.io.VOT.asym_var$category)) %>%
+      Item.Category = factor(experimenter.ideal_observer$category)) %>%
     mutate(
       x = map2(
         Item.Type,
         Item.Category, ~ case_when(
-   .x == "Condition-1" & .y == experimenter.ideal_observer$category[[1]] ~ rmvnorm(1, m.io.VOT.asym_var$mu[[1]], m.io.VOT.asym_var$Sigma[[1]] / experimenter.variability_reduction),
-   .x == "Condition-1" & .y == experimenter.ideal_observer$category[[2]] ~ rmvnorm(1, m.io.VOT.asym_var$mu[[2]], m.io.VOT.asym_var$Sigma[[2]] / experimenter.variability_reduction),
-   .x == "Condition-2" & .y == experimenter.ideal_observer$category[[1]] ~ rmvnorm(1, m.io.VOT.asym_var$mu[[3]], m.io.VOT.asym_var$Sigma[[3]] / experimenter.variability_reduction),
-   .x == "Condition-2" & .y == experimenter.ideal_observer$category[[2]] ~ rmvnorm(1, m.io.VOT.asym_var$mu[[4]], m.io.VOT.asym_var$Sigma[[4]] / experimenter.variability_reduction),
+   .x == "Condition-1" & .y == experimenter.ideal_observer$category[[1]] ~ rmvnorm(1,  experimenter.ideal_observer$mu[[1]],  experimenter.ideal_observer$Sigma[[1]]),
+   .x == "Condition-1" & .y == experimenter.ideal_observer$category[[2]] ~ rmvnorm(1,  experimenter.ideal_observer$mu[[2]],  experimenter.ideal_observer$Sigma[[2]]),
+   .x == "Condition-2" & .y == experimenter.ideal_observer$category[[1]] ~ rmvnorm(1,  experimenter.ideal_observer$mu[[3]],  experimenter.ideal_observer$Sigma[[3]]),
+   .x == "Condition-2" & .y == experimenter.ideal_observer$category[[2]] ~ rmvnorm(1,  experimenter.ideal_observer$mu[[4]],  experimenter.ideal_observer$Sigma[[4]]),
    T ~ NA_real_))) %>%
     mutate(
       Condition = Item.Type,
-      VOT = unlist(map(x, ~ max(min_VOT, .x[1]))),
+      VOT = unlist(map(x, ~ .x[1])),
       x = map(VOT, ~ c("VOT" = .x)))
-  
 }
-
-d.exposure.asym_var <- make_asymmetric_variance_exposure_design(m.io.VOT.asym_var)
-  
 
 make_asymmetric_variance_test_design = function(
   experimenter.ideal_observer,
-  test.n_block = n.test_block, 
-  n_test = n.test.token     
+  n_test = 30
 ) {
   x <- 
-    rbind(
+    c(
       rmvnorm(
         n_test,
-        m.io.VOT.asym_var %>% filter(Condition == experimenter.ideal_observer$Condition[[2]], category == experimenter.ideal_observer$category[[1]]) %>% pull(mu) %>% .[[1]],
-        m.io.VOT.asym_var %>% filter(Condition == experimenter.ideal_observer$Condition[[2]], category == experimenter.ideal_observer$category[[1]]) %>% pull(Sigma) %>% .[[1]]),
+        m.io.VOT.asym_var$mu[[3]], 
+        m.io.VOT.asym_var$Sigma[[3]]),
       rmvnorm(
         n_test,
-        m.io.VOT.asym_var %>% filter(Condition == experimenter.ideal_observer$Condition[[2]], category == experimenter.ideal_observer$category[[2]]) %>% pull(mu) %>% .[[1]],
-        m.io.VOT.asym_var %>% filter(Condition == experimenter.ideal_observer$Condition[[2]], category == experimenter.ideal_observer$category[[2]]) %>% pull(Sigma) %>% .[[1]])
+        m.io.VOT.asym_var$mu[[4]], 
+        m.io.VOT.asym_var$Sigma[[4]])
       )
   
   d.test <-
     tibble(
-      Item.Intended_category = sort(rep(c(experimenter.ideal_observer$category[[1]], experimenter.ideal_observer$category[[2]]), n_test)),
-      VOT = unlist(map(x, ~ max(min_VOT, .x[1]))),
+      Item.Intended_category = sort(rep(c(experimenter.ideal_observer$category[[3]], experimenter.ideal_observer$category[[4]]), n_test)),
+      VOT = unlist(map(x, ~ .x)),
       x = map(VOT, ~ c("VOT" = .x))) %>%
     mutate(
       Phase = "test",
@@ -637,46 +610,337 @@ make_asymmetric_variance_test_design = function(
       Item.Category = NA,
     ) %>%
     crossing(  
-       Condition = factor(experimenter.ideal_observer$Condition),
-      Block = 1:test.n_block) %>%
+       Condition = factor(experimenter.ideal_observer$Condition)) %>%
     droplevels()
 }
-d.test.asym_var <- make_asymmetric_variance_test_design(m.io.VOT.asym_var)
 
-make_exposure_test_plot(d.exposure.asym_var, d.test.asym_var)
 
-# get predictions from representational model
+## Trying to use the plot_expected_categories_density1D function here, didn't work
+# colnames(m.io.VOT.asym_var) <- c("category","m", "S","prior", "lapse_rate", "lapse_bias", "Sigma_noise", "Condition")
+# m.io.VOT.asym_var.belief <- m.io.VOT.asym_var %>%
+#   mutate(kappa = 4, nu = 4)
+# plot_expected_categories_density1D(m.io.VOT.asym_var.belief, d.asym_var.exposure %>% mutate(category = Item.Category), d.asym_var.test %>% mutate(category = Item.Intended_category), categories = categories.demo)
+
+##--------------
+# Visualization
+##--------------
+VOT_range <- c(0, 110)
+VOT_resolution <- 100
+
+
+
+```
+
+```{r model-changes-in-representations-asym-var, message=FALSE, warning=FALSE, eval = FALSE}
+
+set.seed(5612)
+
+categories.demo <- c("/d/", "/t/")
+cue.demo <- "VOT_scaled"
+
+cue.renamed <- "VOT"
+# Lapse model
+bias.demo <- c(.5, .5)
+lambdas.demo <- 0
+
+# Ideal observers and adaptors
+m.io.VOT.con1 <- 
+  make_MVG_from_data(
+  data = d.chodroff_wilson.selected %>%
+    select(-VOT) %>%
+    rename(VOT = cue.demo), # use the selected cues (centered or scaled) and rename it as VOT
+  category = "category",
+  cues = cue.renamed) %>%
+  filter(category %in% categories.demo) %>%
+  lift_MVG_to_MVG_ideal_observer(prior = bias.demo, lapse_rate = 0, lapse_bias = bias.demo, Sigma_noise = matrix(0, nrow = 1, dimnames = list(cue.renamed)))
+
+# change if needed to change the variance for demo presentation
+# m.io.VOT.con1$Sigma[1] = 20
+# m.io.VOT.con1$Sigma[2] = 400
+
+m.io.VOT.con2 <- m.io.VOT.con1 # create two conditions that have identical category means, but switched category variance
+m.io.VOT.con2$Sigma[1] = m.io.VOT.con1$Sigma[2] 
+m.io.VOT.con2$Sigma[2] = m.io.VOT.con1$Sigma[1] 
+m.io.VOT.asym_var <- bind_rows(m.io.VOT.con1 %>% mutate(Condition = "Condition-1"), 
+                               m.io.VOT.con2 %>% mutate(Condition = "Condition-2"))
+
+
+
+d.asym_var.exposure <- make_asymmetric_variance_exposure_design(m.io.VOT.asym_var)
+#sanity check
+# d.asym_var.exposure %>%
+#   group_by(Condition, Item.Category) %>%
+#   summarise(mean = mean(VOT), var= var(VOT))
+
+d.asym_var.test <- make_asymmetric_variance_test_design(m.io.VOT.asym_var)
+#sanity check
+# d.asym_var.test %>%
+#   group_by(Condition, Item.Intended_category) %>%
+#   summarise(mean = mean(VOT), var= var(VOT))
+ 
+# get the best-performing parameterization
+history.optimization_representations <- tibble(.rows = 0)
+get_accuracy_from_updated_representations.asym_var <- function(
+    pars,
+    model = m.io.VOT.asym_var %>% filter(Condition == "Condition-1"), # specify prior
+    exposure = d.asym_var.exposure %>% filter(Condition == "Condition-2"), # optimize for the condition when exposure comes from Condition-2
+    test = d.asym_var.test %>% filter(Condition == "Condition-2")
+) {
+  kappa <- exp(pars[1])
+  nu <- exp(pars[2])
   
-m.ia.VOT <-
+  prior <- 
+    model %>% 
+    droplevels() %>%
+    lift_MVG_ideal_observer_to_NIW_ideal_adaptor(kappa = kappa, nu = nu)
+  
+  u <-
+    update_representations_and_categorize_test(
+    prior = prior,
+    exposure = exposure,
+    test = test,
+    cues = c("VOT")) %>%
+    get_accuracy()
+  
+  history.optimization_representations <<- 
+    bind_rows(
+      history.optimization_representations, 
+      tibble(kappa = kappa, nu = nu, accuracy = u))
+  
+  return(u)
+}
+
+best_performing_parameters.representations.asym_var <-
+    optim(
+      # Parameters are kappa, nu
+      par = c(mean(log(range.prior_kappa)), mean(log(range.prior_nu))),
+      fn = get_accuracy_from_updated_representations.asym_var,
+      # The only method that works for multiple parameters with bounds
+      method = "L-BFGS-B",
+      # Stop searching outside of those bounds
+      lower = c(min(log(range.prior_kappa)), min(log(range.prior_nu))),
+      upper = c(max(log(range.prior_kappa)), max(log(range.prior_nu))),
+      control = list(
+        # trace = 1,
+        fnscale = -1,   # negative scale since we are seeking to maximize accuracy
+        factr = 10^8)) 
+history.optimization_representations.asym_var <- history.optimization_representations
+best_performing_parameters.representations.asym_var$par <- exp(best_performing_parameters.representations.asym_var$par)
+
+# get predictions from best-performing representational model
+m.ia.VOT.asym_var <-
   crossing(
-    prior_kappa = c(weak, strong),
-    prior_nu = c(weak, strong),
+    prior_kappa = best_performing_parameters.representations.asym_var$par[1], 
+    prior_nu = best_performing_parameters.representations.asym_var$par[2],
     lambda = lambdas.demo) %>%
   mutate(
     posterior = map2(
       prior_kappa, 
       prior_nu, 
-      ~ lift_MVG_ideal_observer_to_NIW_ideal_adaptor(x = m.io.VOT, kappa = .x, nu = .y))) %>%
+      ~ lift_MVG_ideal_observer_to_NIW_ideal_adaptor(x = m.io.VOT.asym_var, kappa = .x, nu = .y))) %>%
   unnest(posterior)  %>%
   mutate(lapse_rate = lambda)
 
-# Make artificial VOT data set in which category means are shifted downwards
-category_shift.demo <- 25
-n.demo <- 20
+my_groups <- c("prior_kappa", "prior_nu")
 
-d.exposure.demo <- 
-  sample_MVG_data(
-    Ns = rep(n.demo, 2), 
-    mus = c(m.io.VOT$mu[[1]] + category_shift.demo, m.io.VOT$mu[[2]] + category_shift.demo), 
-    Sigmas = map2(m.io.VOT$Sigma, list(1, 2), ~ .x / .y), 
-    randomize.order = T) %>%
-      rename(!! sym(cue.demo) := cue1) %>%
-      mutate(category = ifelse(category == 1, "/d/", "/t/")) %>%
-  nest(data = everything()) 
+d.representations.asym_var <- 
+  d.asym_var.exposure %>%
+  mutate(category = Item.Category) %>%
+  nest(data = -Condition) %>%
+  crossing(
+    m.ia.VOT.asym_var %>% 
+      filter(lambda == 0) %>%
+      filter(Condition == "Condition-1") %>% # DEBUG: simplify this. m.ia.VOT.asym_var does not need Condition-2?
+      select(-Condition) %>%
+      nest(prior = -all_of(my_groups))) %>%
+  group_by(Condition, prior_kappa, prior_nu) %>%
+  # get the posterior category parameters and the predictions for the test tokens
+      group_modify(~ update_representations_and_categorize_test(
+        cues = cue.renamed,
+        prior = .x$prior[[1]],
+        exposure = .x$data[[1]],
+        test = d.asym_var.test %>% filter(Condition == "Condition-2")), .keep = TRUE) %>%
+  mutate_at(vars(starts_with("prior_")), ~factor(.x)) %>%
+  mutate_at(vars(starts_with("prior_")), fct_rev) %>%
+  ungroup()
 
-# Visualization
-VOT_range <- c(0, 110)
-VOT_resolution <- 100
+# sanity check
+# d.representations.asym_var.results <- d.representations.asym_var %>%
+#   group_by(Condition, !!! syms(my_groups)) %>%
+#   mutate(response.overall = mean(response)) %>%
+#   group_by(Condition, !!! syms(my_groups), category, response.overall) %>%
+#   summarise(response = mean(response))
+
+```
+
+```{r demonstrate-changes-in-representations-asym-var, fig.width=base.width*2*1.5, fig.height=base.height + 1, fig.cap="(ref:demonstrate-changes-in-representations-SI)", eval=FALSE}
+
+m.io.VOT.asym_var.mu <- m.io.VOT.asym_var %>%
+  select(-Sigma) %>%
+  mutate(mu = unlist(mu)) %>%
+  group_by(Condition) %>%
+  pivot_wider(names_from = category, values_from = mu, names_glue = "{.value}_{category}")
+
+m.io.VOT.asym_var.Sigma <- m.io.VOT.asym_var %>%
+  select(-mu) %>%
+  mutate(Sigma = unlist(Sigma)) %>%
+  group_by(Condition) %>%
+  pivot_wider(names_from = category, values_from = Sigma, names_glue = "{.value}_{category}")
+
+m.io.VOT.asym_var <- left_join(m.io.VOT.asym_var.mu, m.io.VOT.asym_var.Sigma) %>%
+  mutate(likelihood1 = map2(`mu_/d/`, `Sigma_/d/`, ~ function(x) dnorm(x, .x, .y^.5)),
+         likelihood2 = map2(`mu_/t/`, `Sigma_/t/`, ~ function(x) dnorm(x, .x, .y^.5))
+         )
+
+
+# cue distribution
+p.distribution.asym_var <- m.io.VOT.asym_var %>%
+  filter(Condition == "Condition-2") %>%
+  ggplot(aes(x = !! sym(cue.renamed))) +
+  geom_line(
+    data = . %>% 
+      distinct(Condition, likelihood1, likelihood2) %>%
+      crossing(category = categories.demo, !! sym(cue.renamed) := seq(VOT_range[1], VOT_range[2])) %>%
+      ungroup() %>%
+      mutate(y = ifelse(
+        category == categories.demo[1],
+        map2(likelihood1, !! sym(cue.renamed), .f = mycall) %>% unlist(),
+        map2(likelihood2, !! sym(cue.renamed), .f = mycall) %>% unlist())),
+    aes(y = y, color = category, alpha = Condition))+
+  scale_x_continuous("VOT (msec)") +
+  scale_y_continuous("Density") +
+  scale_color_manual("Category", values = colors.voicing) +
+  theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank())
+
+
+# plot posterior category distribution under best-performing parameterization
+# d.representations.asym_var %>%
+#   mutate(
+#     mu1 = map(posterior, ~ .x$m[1]) %>% unlist(),
+#     mu2 = map(posterior, ~ .x$m[2]) %>% unlist(),
+#     sigma1 = map(posterior, ~ get_expected_Sigma_from_S(.x$S, .x$nu)[1]) %>% unlist(),
+#     sigma2 = map(posterior, ~ get_expected_Sigma_from_S(.x$S, .x$nu)[2]) %>% unlist()) %>% # obtain the likelihood for each test token
+#   mutate(
+#     posterior.likelihood1 = map2(mu1, sigma1, ~ function(x) dnorm(x, .x, .y^.5)),
+#     posterior.likelihood2 = map2(mu2, sigma2, ~ function(x) dnorm(x, .x, .y^.5)),
+#     posterior.categorization_function = map(
+#       posterior, 
+#       ~ get_categorization_function_from_NIW_ideal_adaptor(.x, noise_treatment = "marginalize"))) %>%
+#   filter(observationID ==1 & Condition == "Condition-2") %>%
+#   ggplot(aes(x = !! sym(cue.renamed))) +
+#   # cue distribution
+#   geom_line(
+#     data = . %>% 
+#       distinct(Condition, !!! syms(my_groups), posterior.likelihood1, posterior.likelihood2, observationID) %>%
+#       crossing(category = categories.demo, !! sym(cue.renamed) := seq(VOT_range[1], VOT_range[2])) %>%
+#       ungroup() %>%
+#       mutate(y = ifelse(
+#         category == categories.demo[1],
+#         map2(posterior.likelihood1, !! sym(cue.renamed), .f = mycall) %>% unlist(),
+#         map2(posterior.likelihood2, !! sym(cue.renamed), .f = mycall) %>% unlist())),
+#     aes(y = y, color = category, 
+#         alpha = factor(paste(!! sym(my_groups[2]), sep = ", ")), 
+#         group = paste(category, !!! syms(my_groups)))) +
+#   scale_x_continuous("VOT (msec)") +
+#   scale_y_continuous("Density") +
+#   scale_color_manual("Category", values = colors.voicing) +
+#   scale_alpha_manual(name = expression(nu[0~",c"]), values = c(.4, .8)) +
+#   facet_grid(
+#     . ~ prior_kappa,
+#     labeller = label_bquote(
+#       cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)))) +
+#   theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank())
+```
+
+
+```{r plot-test-results-asym-var-DEBUG, eval= FALSE}
+# plot predictions from the representations model
+basic_AA_result_plot(d.representations.asym_var) +
+  geom_text(
+      inherit.aes = FALSE, 
+      data = . %>%
+        group_by(Condition, prior_nu, prior_kappa) %>%
+        summarise(mAcc = round(mean(response), digits = 2)), 
+      mapping = aes(label = mAcc, x = Condition, y = 1.05), 
+      size = geom_text.size) +
+    facet_grid(
+      prior_nu ~ prior_kappa,
+      labeller = label_bquote(
+        cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)),
+        rows = {nu[.(categories.demo[1])~","~0] == nu[.(categories.demo[2])~","~0]} == .(as.character(prior_nu)))) +
+  scale_x_discrete(labels= c("Condition-1", "Condition-2"))
+```
+```{r model-changes-in-normalization-asym-var-SCALED_CUES-DEBUG, message=FALSE, warning=FALSE, eval = FALSE}
+```
+
+
+
+
+```{r model-changes-in-representations-asym-var-SCALED_CUES-DEBUG, message=FALSE, warning=FALSE, eval = FALSE}
+# 
+# set.seed(5612)
+# 
+# categories.demo <- c("/d/", "/t/")
+# cue.demo <- "VOT_scaled"
+# cue.renamed <- "VOT"
+# # Lapse model
+# bias.demo <- c(.5, .5)
+# lambdas.demo <- 0
+# 
+# # Ideal observers and adaptors
+# m.io.VOT.con1 <- 
+#   make_MVG_from_data(
+#   data = d.chodroff_wilson.selected %>%
+#     select(-VOT) %>%
+#     rename(VOT = cue.demo), # use the selected cues (centered or scaled) and rename it as VOT
+#   category = "category",
+#   cues = cue.renamed) %>%
+#   filter(category %in% categories.demo) %>%
+#   lift_MVG_to_MVG_ideal_observer(prior = bias.demo, lapse_rate = 0, lapse_bias = bias.demo, Sigma_noise = matrix(80, nrow = 1, dimnames = list(cue.renamed)))
+# 
+# # change if needed to change the variance for demo presentation
+# m.io.VOT.con1$Sigma[1] = 20
+# m.io.VOT.con1$Sigma[2] = 400
+# 
+# m.io.VOT.con2 <- m.io.VOT.con1 # create two conditions that have identical category means, but switched category variance
+# m.io.VOT.con2$Sigma[1] = m.io.VOT.con1$Sigma[2] 
+# m.io.VOT.con2$Sigma[2] = m.io.VOT.con1$Sigma[1] 
+# m.io.VOT.asym_var.scaled <- bind_rows(m.io.VOT.con1 %>% mutate(Condition = "Condition-1"), 
+#                                m.io.VOT.con2 %>% mutate(Condition = "Condition-2"))
+# 
+# 
+# 
+# d.asym_var.exposure <- make_asymmetric_variance_exposure_design(m.io.VOT.asym_var)
+# #sanity check
+# # d.asym_var.exposure %>%
+# #   group_by(Condition, Item.Category) %>%
+# #   summarise(mean = mean(VOT), var= var(VOT))
+# 
+# d.asym_var.test <- make_asymmetric_variance_test_design(m.io.VOT.asym_var)
+# #sanity check
+# # d.asym_var.test %>%
+# #   group_by(Condition, Item.Intended_category) %>%
+# #   summarise(mean = mean(VOT), var= var(VOT))
+# # 
+# 
+# m.io.VOT.asym_var %>%
+#   filter(Condition == "Condition-2") %>%
+#   ggplot(aes(x = !! sym(cue.renamed))) +
+#   geom_line(
+#     data = m.io.VOT.asym_var %>% 
+#       distinct(Condition, likelihood1, likelihood2) %>%
+#       crossing(category = categories.demo, !! sym(cue.renamed) := seq(min(d.chodroff_wilson.selected$VOT_scaled), max(d.chodroff_wilson.selected$VOT_scaled), by = 0.01)) %>%
+#       ungroup() %>%
+#       mutate(y = ifelse(
+#         category == categories.demo[1],
+#         map2(likelihood1, !! sym(cue.renamed), .f = mycall) %>% unlist(),
+#         map2(likelihood2, !! sym(cue.renamed), .f = mycall) %>% unlist())),
+#     aes(y = y, color = category, alpha = Condition))+
+#   coord_cartesian(xlim = c(-3,3)) +
+#   scale_x_continuous("VOT (msec)") +
+#   scale_y_continuous("Density") +
+#   scale_color_manual("Category", values = colors.voicing) +
+#   theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank())
 
 ```
 

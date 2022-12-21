@@ -372,7 +372,7 @@ p.PR.results +
           T ~ F)), 
       aes(fill = highlight), alpha = .2, inherit.aes = F,
       xmin = -Inf,xmax = Inf, ymin = -Inf,ymax = Inf)) +
-  scale_fill_manual(breaks = c(T, F), values = c("darkgray", "white")) +
+  scale_fill_manual(breaks = c(T, F), values = c("gray20", "white")) +
   guides(fill = "none")
 ```
 

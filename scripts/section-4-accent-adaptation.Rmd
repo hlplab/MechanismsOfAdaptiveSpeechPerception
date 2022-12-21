@@ -652,7 +652,7 @@ make_results_plot_representations <- function(data, data_best) {
                 T, F)),
         aes(fill = highlight), alpha = .2, inherit.aes = F,
         xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf)) +
-  scale_fill_manual(breaks = c(T, F), values = c("darkgray", "white")) +
+  scale_fill_manual(breaks = c(T, F), values = c("gray20", "white")) +
   guides(fill = "none")
 }
 ```
@@ -844,7 +844,7 @@ make_results_plot_decision_making <- function(data, data_best){
         aes(fill = highlight), alpha = .2, inherit.aes = F,
         xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf)
     ) +
-    scale_fill_manual(breaks = c(T, F), values = c("darkgray", "white")) +
+    scale_fill_manual(breaks = c(T, F), values = c("gray20", "white")) +
     guides(fill = "none")
 }
 ```
@@ -1021,7 +1021,7 @@ make_results_plot_normalization <- function(data, data_best){
                 T, F)),
         aes(fill = highlight), alpha = .2, inherit.aes = F,
         xmin = -Inf, xmax = Inf, ymin = -Inf ,ymax = Inf)) +
-    scale_fill_manual(breaks = c(T, F), values = c("darkgray", "white")) +
+    scale_fill_manual(breaks = c(T, F), values = c("gray20", "white")) +
     guides(fill = "none")
 }
 ```

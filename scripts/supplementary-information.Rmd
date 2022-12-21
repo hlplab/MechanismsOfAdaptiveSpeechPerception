@@ -546,37 +546,14 @@ scale_variable <- function(x){
   (x - mean(x, na.rm=TRUE)) / sd(x, na.rm=TRUE)
 }
 
-# Put figure here.
-
-# Exposure condition 1
- mu_A.exposure1 <- m.VOT_f0_MVG %>% filter(category == "/d/") %>% pull(mu) %>% .[[1]] %>% .[1]
- Sigma_A.exposure1 <- m.VOT_f0_MVG %>% filter(category == "/d/") %>% pull(Sigma) %>% .[[1]] %>% .[1]
- mu_B.exposure1 <- m.VOT_f0_MVG %>% filter(category == "/t/") %>% pull(mu) %>% .[[1]] %>% .[1]
- Sigma_B.exposure1 <- m.VOT_f0_MVG %>% filter(category == "/t/") %>% pull(Sigma) %>% .[[1]] %>% .[1]
 
 set.seed(5612)
 
 categories.demo <- c("/d/", "/t/")
-cue.demo <- "VOT_centered"
+cue.demo <- "VOT_scaled"
 
 # Lapse model
 bias.demo <- c(.5, .5)
-
-# Ideal observers and adaptors
-m.io.VOT.con1 <- 
-  make_MVG_from_data(
-  data = d.chodroff_wilson.selected,
-  category = "category",
-  cues = cue.demo) %>%
-  filter(category %in% categories.demo) %>%
-  lift_MVG_to_MVG_ideal_observer(prior = bias.demo, lapse_rate = 0, lapse_bias = bias.demo, Sigma_noise = matrix(80, nrow = 1, dimnames = list("VOT_centered")))
-
-m.io.VOT.con2 <- m.io.VOT.con1 # create two conditions that have identical category means, but switched category variance
-m.io.VOT.con2$Sigma[1] = m.io.VOT.con1$Sigma[2] 
-m.io.VOT.con2$Sigma[2] = m.io.VOT.con1$Sigma[1] 
-m.io.VOT.asym_var <- bind_rows(m.io.VOT.con1 %>% mutate(Condition = "Condition-1"), 
-                               m.io.VOT.con2 %>% mutate(Condition = "Condition-2"))
-
 
 d.chodroff_wilson.selected %<>%
   ungroup() %>%
@@ -650,33 +627,19 @@ make_asymmetric_variance_test_design = function(
 }
 
 
-## Trying to use the plot_expected_categories_density1D function here, didn't work
-# colnames(m.io.VOT.asym_var) <- c("category","m", "S","prior", "lapse_rate", "lapse_bias", "Sigma_noise", "Condition")
-# m.io.VOT.asym_var.belief <- m.io.VOT.asym_var %>%
-#   mutate(kappa = 4, nu = 4)
-# plot_expected_categories_density1D(m.io.VOT.asym_var.belief, d.asym_var.exposure %>% mutate(category = Item.Category), d.asym_var.test %>% mutate(category = Item.Intended_category), categories = categories.demo)
-
-##--------------
-# Visualization
-##--------------
-VOT_range <- c(0, 110)
-VOT_resolution <- 100
-
-
-
 ```
 
 ```{r model-changes-in-representations-asym-var, message=FALSE, warning=FALSE, eval = FALSE}
 
-set.seed(5612)
-
-categories.demo <- c("/d/", "/t/")
-cue.demo <- "VOT_scaled"
-
-cue.renamed <- "VOT"
-# Lapse model
-bias.demo <- c(.5, .5)
-lambdas.demo <- 0
+# set.seed(5612)
+# 
+# categories.demo <- c("/d/", "/t/")
+# cue.demo <- "VOT_scaled"
+# 
+# cue.renamed <- "VOT"
+# # Lapse model
+# bias.demo <- c(.5, .5)
+# lambdas.demo <- 0
 
 # Ideal observers and adaptors
 m.io.VOT.con1 <- 
@@ -762,8 +725,58 @@ best_performing_parameters.representations.asym_var <-
 history.optimization_representations.asym_var <- history.optimization_representations
 best_performing_parameters.representations.asym_var$par <- exp(best_performing_parameters.representations.asym_var$par)
 
+```
+
+```{r demonstrate-changes-in-representations-asym-var, fig.width=base.width*2*1.5, fig.height=base.height + 1, fig.cap="(ref:demonstrate-changes-in-representations-SI)", eval=FALSE}
+
+m.io.VOT.asym_var.mu <- m.io.VOT.asym_var %>%
+  select(-Sigma) %>%
+  mutate(mu = unlist(mu)) %>%
+  group_by(Condition) %>%
+  pivot_wider(names_from = category, values_from = mu, names_glue = "{.value}_{category}")
+
+m.io.VOT.asym_var.Sigma <- m.io.VOT.asym_var %>%
+  select(-mu) %>%
+  mutate(Sigma = unlist(Sigma)) %>%
+  group_by(Condition) %>%
+  pivot_wider(names_from = category, values_from = Sigma, names_glue = "{.value}_{category}")
+
+m.io.VOT.asym_var.dist <- left_join(m.io.VOT.asym_var.mu, m.io.VOT.asym_var.Sigma) %>%
+  mutate(likelihood1 = map2(`mu_/d/`, `Sigma_/d/`, ~ function(x) dnorm(x, .x, .y^.5)),
+         likelihood2 = map2(`mu_/t/`, `Sigma_/t/`, ~ function(x) dnorm(x, .x, .y^.5))
+         )
+
+
+##--------------
+# Visualization
+##--------------
+# VOT_range <- c(0, 110) # if using raw or c-cured cues
+
+VOT_range = c(-3,3) # if using standardized cues
+# cue distribution
+p.distribution.asym_var <- m.io.VOT.asym_var.dist %>%
+  ggplot(aes(x = !! sym(cue.renamed))) +
+  geom_line(
+    data = . %>% 
+      distinct(Condition, likelihood1, likelihood2) %>%
+      crossing(category = categories.demo, !! sym(cue.renamed) := seq(VOT_range[1], VOT_range[2], by = 0.01)) %>% 
+      ungroup() %>%
+      mutate(y = ifelse(
+        category == categories.demo[1],
+        map2(likelihood1, !! sym(cue.renamed), .f = mycall) %>% unlist(),
+        map2(likelihood2, !! sym(cue.renamed), .f = mycall) %>% unlist())),
+    aes(y = y, color = category, alpha = Condition))+
+  scale_x_continuous("VOT (msec)") +
+  scale_y_continuous("Density") +
+  scale_color_manual("Category", values = colors.voicing) +
+  theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank())
+
+```
+
+
+```{r plot-test-results-asym-var-DEBUG, eval= FALSE}
 # get predictions from best-performing representational model
-m.ia.VOT.asym_var <-
+m.ia.VOT.asym_var.representations <-
   crossing(
     prior_kappa = best_performing_parameters.representations.asym_var$par[1], 
     prior_nu = best_performing_parameters.representations.asym_var$par[2],
@@ -783,7 +796,7 @@ d.representations.asym_var <-
   mutate(category = Item.Category) %>%
   nest(data = -Condition) %>%
   crossing(
-    m.ia.VOT.asym_var %>% 
+    m.ia.VOT.asym_var.representations %>% 
       filter(lambda == 0) %>%
       filter(Condition == "Condition-1") %>% # DEBUG: simplify this. m.ia.VOT.asym_var does not need Condition-2?
       select(-Condition) %>%
@@ -806,47 +819,118 @@ d.representations.asym_var <-
 #   group_by(Condition, !!! syms(my_groups), category, response.overall) %>%
 #   summarise(response = mean(response))
 
+# plot predictions from the representations model
+basic_AA_result_plot(d.representations.asym_var) +
+  geom_text(
+      inherit.aes = FALSE, 
+      data = . %>%
+        group_by(Condition, prior_nu, prior_kappa) %>%
+        summarise(mAcc = round(mean(response), digits = 2)), 
+      mapping = aes(label = mAcc, x = Condition, y = 1.05), 
+      size = geom_text.size) +
+    facet_grid(
+      prior_nu ~ prior_kappa,
+      labeller = label_bquote(
+        cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)),
+        rows = {nu[.(categories.demo[1])~","~0] == nu[.(categories.demo[2])~","~0]} == .(as.character(prior_nu)))) +
+  scale_x_discrete(labels= c("Condition-1", "Condition-2"))
 ```
 
-```{r demonstrate-changes-in-representations-asym-var, fig.width=base.width*2*1.5, fig.height=base.height + 1, fig.cap="(ref:demonstrate-changes-in-representations-SI)", eval=FALSE}
 
-m.io.VOT.asym_var.mu <- m.io.VOT.asym_var %>%
-  select(-Sigma) %>%
-  mutate(mu = unlist(mu)) %>%
-  group_by(Condition) %>%
-  pivot_wider(names_from = category, values_from = mu, names_glue = "{.value}_{category}")
+```{r model-changes-in-normalization-asym-var-SCALED_CUES-DEBUG, message=FALSE, warning=FALSE, eval = FALSE}
 
-m.io.VOT.asym_var.Sigma <- m.io.VOT.asym_var %>%
-  select(-mu) %>%
-  mutate(Sigma = unlist(Sigma)) %>%
-  group_by(Condition) %>%
-  pivot_wider(names_from = category, values_from = Sigma, names_glue = "{.value}_{category}")
+history.optimization_normalization <- tibble(.rows = 0)
+get_accuracy_from_updated_normalization.asym_var <- function(
+    par, # only one parameter to optimize for
+    model = m.io.VOT.asym_var %>% filter(Condition == "Condition-1"), # specify prior
+    exposure = d.asym_var.exposure %>% filter(Condition == "Condition-2"), # optimize for the condition when exposure comes from Condition-2
+    test = d.asym_var.test %>% filter(Condition == "Condition-2")
+) {
+  kappa.normalization <- exp(par[1])
+  max_kappa_nu <- 10000
+  
+  prior <-
+    model %>% 
+    droplevels() %>%
+    lift_MVG_ideal_observer_to_NIW_ideal_adaptor(kappa = max_kappa_nu, nu = max_kappa_nu)
 
-m.io.VOT.asym_var <- left_join(m.io.VOT.asym_var.mu, m.io.VOT.asym_var.Sigma) %>%
-  mutate(likelihood1 = map2(`mu_/d/`, `Sigma_/d/`, ~ function(x) dnorm(x, .x, .y^.5)),
-         likelihood2 = map2(`mu_/t/`, `Sigma_/t/`, ~ function(x) dnorm(x, .x, .y^.5))
-         )
+  u <- 
+    update_normalization_and_categorize_test(
+    prior = prior, 
+    mu_0 = 0, # prior mu is zero because scaled cues are used
+    kappa.normalization = kappa.normalization,
+    exposure = exposure,
+    test = test) %>%
+    get_accuracy()
+  
+  history.optimization_normalization <<- 
+    bind_rows(
+      history.optimization_normalization, 
+      tibble(kappa.normalization = kappa.normalization, accuracy = u)) 
+  
+  return(u)
+}
+
+best_performing_parameters.normalization.asym_var <-
+    optim(
+        par = log(mean(range.prior_kappa.normalization)),
+        fn = get_accuracy_from_updated_normalization.asym_var,
+        method = "L-BFGS-B",
+        lower = log(min(range.prior_kappa.normalization)),
+        upper = log(max(range.prior_kappa.normalization)),
+        control = list(
+          fnscale = -1,
+          factr = 10^8))
+   
+history.optimization_normalization.asym_var <- history.optimization_normalization
+best_performing_parameters.normalization$par <- exp(best_performing_parameters.normalization$par[1])
 
 
-# cue distribution
-p.distribution.asym_var <- m.io.VOT.asym_var %>%
-  filter(Condition == "Condition-2") %>%
-  ggplot(aes(x = !! sym(cue.renamed))) +
-  geom_line(
-    data = . %>% 
-      distinct(Condition, likelihood1, likelihood2) %>%
-      crossing(category = categories.demo, !! sym(cue.renamed) := seq(VOT_range[1], VOT_range[2])) %>%
-      ungroup() %>%
-      mutate(y = ifelse(
-        category == categories.demo[1],
-        map2(likelihood1, !! sym(cue.renamed), .f = mycall) %>% unlist(),
-        map2(likelihood2, !! sym(cue.renamed), .f = mycall) %>% unlist())),
-    aes(y = y, color = category, alpha = Condition))+
-  scale_x_continuous("VOT (msec)") +
-  scale_y_continuous("Density") +
-  scale_color_manual("Category", values = colors.voicing) +
-  theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank())
+# get predictions from best-performing representational model
+m.ia.VOT.asym_var.normalization <-
+  crossing(
+    prior_kappa.normalization = best_performing_parameters.normalization.asym_var$par[1], 
+    lambda = lambdas.demo) %>%
+  mutate(
+    posterior = map2(
+      prior_kappa, 
+      prior_nu, 
+      ~ lift_MVG_ideal_observer_to_NIW_ideal_adaptor(x = m.io.VOT.asym_var, kappa = .x, nu = .y))) %>%
+  unnest(posterior)  %>%
+  mutate(lapse_rate = lambda)
 
+my_groups <- c("prior_kappa.normalization")
+
+d.normalization.asym_var <- 
+  d.asym_var.exposure %>%
+  mutate(category = Item.Category) %>%
+  nest(data = -Condition) %>%
+  crossing(
+    m.ia.VOT.asym_var %>% 
+      filter(Condition == "Condition-1") %>% # DEBUG: simplify this. m.ia.VOT.asym_var does not need Condition-2?
+      select(-Condition) %>%
+      nest(prior = -all_of(my_groups))) %>%
+  group_by(Condition, prior_kappa, prior_nu) %>%
+  # get the posterior category parameters and the predictions for the test tokens
+      group_modify(~ update_normalization_and_categorize_test(
+        mu_0 = 0,
+        prior = .x$prior[[1]],
+        exposure = .x$data[[1]],
+        test = d.asym_var.test %>% filter(Condition == "Condition-2")), .keep = TRUE) %>%
+  mutate_at(vars(starts_with("prior_")), ~factor(.x)) %>%
+  mutate_at(vars(starts_with("prior_")), fct_rev) %>%
+  ungroup()
+
+# sanity check
+# d.representations.asym_var.results <- d.representations.asym_var %>%
+#   group_by(Condition, !!! syms(my_groups)) %>%
+#   mutate(response.overall = mean(response)) %>%
+#   group_by(Condition, !!! syms(my_groups), category, response.overall) %>%
+#   summarise(response = mean(response))
+
+```
+
+```{r plot-changes-in-representations-DEBUG, message=FALSE, warning=FALSE, eval = FALSE}
 
 # plot posterior category distribution under best-performing parameterization
 # d.representations.asym_var %>%
@@ -886,30 +970,6 @@ p.distribution.asym_var <- m.io.VOT.asym_var %>%
 #       cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)))) +
 #   theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank())
 ```
-
-
-```{r plot-test-results-asym-var-DEBUG, eval= FALSE}
-# plot predictions from the representations model
-basic_AA_result_plot(d.representations.asym_var) +
-  geom_text(
-      inherit.aes = FALSE, 
-      data = . %>%
-        group_by(Condition, prior_nu, prior_kappa) %>%
-        summarise(mAcc = round(mean(response), digits = 2)), 
-      mapping = aes(label = mAcc, x = Condition, y = 1.05), 
-      size = geom_text.size) +
-    facet_grid(
-      prior_nu ~ prior_kappa,
-      labeller = label_bquote(
-        cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)),
-        rows = {nu[.(categories.demo[1])~","~0] == nu[.(categories.demo[2])~","~0]} == .(as.character(prior_nu)))) +
-  scale_x_discrete(labels= c("Condition-1", "Condition-2"))
-```
-```{r model-changes-in-normalization-asym-var-SCALED_CUES-DEBUG, message=FALSE, warning=FALSE, eval = FALSE}
-```
-
-
-
 
 ```{r model-changes-in-representations-asym-var-SCALED_CUES-DEBUG, message=FALSE, warning=FALSE, eval = FALSE}
 # 

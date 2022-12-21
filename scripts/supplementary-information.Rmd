@@ -536,23 +536,15 @@ Importantly though, no boundary shift was observed in control conditions where t
 
 A second computational limitation of normalization accounts is specific to accounts that only correct for differences in the overall mean of cues but not differences in cue variability (like C-CuRE). <!--Such normalization accounts seem to be in conflict with existing findings, although these findings have to the best of our knowledge not previously been discussed in these terms. -->In a ground-breaking study that was targeted at a separate question, @clayards2008 exposed participants to distributions of synthesized /b/ and /p/ tokens (as in, e..g, *beach*-*peach* continuum). Between participants, the VOT of these tokens had been manipulated to either form wide or narrow VOT distributions for both /b/ and /p/. The VOT means of /b/ and /p/ were identical in both conditions<!-- (0 and 50 msecs, respectively)-->. Since acoustic cues are encoded relative to the cue mean only in C-CuRE and similar normalization accounts, these accounts thus do *not* predict any differences in the effects of these exposure conditions. Clayards and colleagues, however, found that participants in the wide variance condition exhibited shallower categorization functions along the VOT continuum [conceptually replicated in @nixon2016]---as predicted by representational change models [see @clayards2008; @kleinschmidt-jaeger2015; @theodore-monto2019]. Future research should test whether this finding replicates for more natural-sounding (rather than resynthesized, robotic-sounding) stimuli and in situations where task demands more closely resemble those of everyday speech perception (less repetition, more lexical heterogeneity, words presented in sentential contexts rather than in isolation, etc.). <!-- TO DO: was Theodore & Monto not natural sounding? I think it was. So then the first part of this has been done. Let's discuss. --> If such replications are obtained, this would argue that normalization would at least have to include standardization or similar corrections for the variability of cues [as proposed in @johnson2020; @lobanov1971; @monahan-idsardi2010].
 
-A third limitation of normalization accounts that can be productively explored in future research is the lack of category specificity. Consider for example, a possible extension of the study by Clayards and colleagues. In the study by @clayards2008, both /b/ and /p/ either had narrow variance along VOT (SD = 8 msecs) or wide variance (SD = 14 msecs). This confounds the category-specific variance with the overall variance of the cues along VOT. It is, however, possible to manipulate the variance of the two categories while keeping both the means of the two categories (and thus the overall cue mean) and the overall cue variance constant. Figure \@ref(fig:proposed-experiment-asymmetric-variance) depicts two exposure conditions that achieve this, along with changes in the categorization function predicted by normalization and representational change models. This demonstrates how researchers might use the lack of category-specificity to disentangle normalization and representational change accounts. Other possible manipulations in this vein could include category-specific changes in the *co*variance of cues.<!--^[This is not to be confused with another experimental manipulation that is sometimes describes in terms of covariance [@idemaru-holt2011 and follow-up work]: changes in which of two or more cues exhibits the largest relative distance between two category means [which changes the relative reliability of cues, as discussed in @schertz-clare2020]. ASP-based simulations would be required to assess whether such manipulations cannot also be explained by normalization. We suspect that they can.]--> Basically, any manipulation that leaves the *overall* cue mean and variance unaffected while predicting differences in the categorization function under the representational change model can test whether the human listeners exhibit more flexibility than expected by normalization accounts. We note, however, that any such test should take into account that listeners can have strong prior beliefs based on the speech input they have received previously, and that this might include strong prior beliefs about *how* the realization of categories varies across talkers [@kleinschmidt-jaeger2015]. If the manipulations employed by researchers strongly violate those expectations, this needs to be carefully considered in the derivation of predictions. 
+A third limitation of normalization accounts that can be productively explored in future research is the lack of category specificity. Consider for example, a possible extension of the study by Clayards and colleagues. In the study by @clayards2008, both /b/ and /p/ either had narrow variance along VOT (SD = 8 msecs) or wide variance (SD = 14 msecs). This confounds the category-specific variance with the overall variance of the cues along VOT. It is, however, possible to manipulate the variance of the two categories while keeping both the means of the two categories (and thus the overall cue mean) and the overall cue variance constant. Figure \@ref(fig:proposed-experiment-asymmetric-variance) depicts two exposure conditions that achieve this, along with recognition accuracies predicted by normalization and representational change models. This demonstrates how researchers might use the lack of category-specificity to disentangle normalization and representational change accounts. Other possible manipulations in this vein could include category-specific changes in the *co*variance of cues.<!--^[This is not to be confused with another experimental manipulation that is sometimes describes in terms of covariance [@idemaru-holt2011 and follow-up work]: changes in which of two or more cues exhibits the largest relative distance between two category means [which changes the relative reliability of cues, as discussed in @schertz-clare2020]. ASP-based simulations would be required to assess whether such manipulations cannot also be explained by normalization. We suspect that they can.]--> Basically, any manipulation that leaves the *overall* cue mean and variance unaffected while predicting differences in the categorization function under the representational change model can test whether the human listeners exhibit more flexibility than expected by normalization accounts. We note, however, that any such test should take into account that listeners can have strong prior beliefs based on the speech input they have received previously, and that this might include strong prior beliefs about *how* the realization of categories varies across talkers [@kleinschmidt-jaeger2015]. If the manipulations employed by researchers strongly violate those expectations, this needs to be carefully considered in the derivation of predictions. 
 
-(ref:proposed-experiment-asymmetric-variance) A possible way to contrast normalization and representational change accounts. Panel A: two exposure conditions with identical overall means and variances along VOT, but different category-specific variances. Panel B: the predictions of the best-performing representational and normalization change models. For this purpose, the normalization model was extended to both center and standardize the cues.^[We note that the specific predictions for the representational change model shown here assume that listeners have equally strong prior beliefs about the variance of both of the two categories (i.e., one $nu_{0,c}$ for both categories). This is what we assumed in our case studies---which aimed to show that even simplified versions of each change model can explain a wide range of findings in the literature---but it is not an inalienable assumption for representational change models [for discussion, see also @kleinschmidt-jaeger2015]. The general prediction of representational change models that listeners are sensitive to the category-specific variance should hold even if this assumption is removed. How easy to detect this predicted difference is, however, expected to depend on this assumption.] <!-- TO DO: Xin, any chance you could add such a figure. for this we can just perfectly center and standardize (i.e., kappa_0 and the newly introduced nu_0 are both 0); the best performing representational change model should be nu_0,c = 4 and kappa_0,c = 1024, assuming you put the category means on the a priori expected locations. -->
+(ref:proposed-experiment-asymmetric-variance) A possible way to contrast normalization and representational change accounts. Panel A: two exposure conditions with identical overall means and variances along VOT, but different category-specific variances. Panel B: the predictions of the best-performing representational and normalization change models. For this purpose, the normalization model was extended to both center and standardize the cues.<!--^[We note that the specific predictions for the representational change model shown here assume that listeners have equally strong prior beliefs about the variance of both of the two categories (i.e., one $nu_{0,c}$ for both categories). This is what we assumed in our case studies---which aimed to show that even simplified versions of each change model can explain a wide range of findings in the literature---but it is not an inalienable assumption for representational change models [for discussion, see also @kleinschmidt-jaeger2015]. The general prediction of representational change models that listeners are sensitive to the category-specific variance should hold even if this assumption is removed. How easy to detect this predicted difference is, however, expected to depend on this assumption.]-->
 
-
-```{r proposed-experiment-asymmetric-variance, fig.cap="(ref:proposed-experiment-asymmetric-variance)", eval = FALSE}
+```{r proposed-experiment-asymmetric-variance-functions, echo=FALSE, message=FALSE, warning=FALSE}
 scale_variable <- function(x){
   (x - mean(x, na.rm=TRUE)) / sd(x, na.rm=TRUE)
 }
 
-
-d.chodroff_wilson.selected %<>%
-  ungroup() %>%
-  mutate(mVOT = mean(VOT)) %>%
-  group_by(Talker) %>%
-  mutate(VOT_scaled = scale_variable(VOT))
-  
 make_asymmetric_variance_exposure_design <- function(
     # Ideal observer describing the true perceptual system for two categories.
   experimenter.ideal_observer,
@@ -620,19 +612,22 @@ make_asymmetric_variance_test_design = function(
 
 ```
 
-```{r model-changes-in-representations-asym-var, message=FALSE, warning=FALSE, eval = FALSE}
+```{r proposed-experiment-asymmetric-variance-prep, message=FALSE, warning=FALSE}
+d.chodroff_wilson.selected %<>%
+  ungroup() %>%
+  mutate(mVOT = mean(VOT)) %>%
+  group_by(Talker) %>%
+  mutate(VOT_scaled = scale_variable(VOT)) # get standardized cues
+  
 set.seed(5612)
 
 categories.demo <- c("/d/", "/t/")
 cue.demo <- "VOT_scaled"
-
 cue.renamed <- "VOT"
-# Lapse model
 bias.demo <- c(.5, .5)
 lambdas.demo <- 0
 
-
-# Ideal observers and adaptors
+# Ideal observers
 m.io.VOT.con1 <- 
   make_MVG_from_data(
   data = d.chodroff_wilson.selected %>%
@@ -653,20 +648,13 @@ m.io.VOT.con2$Sigma[2] = m.io.VOT.con1$Sigma[1]
 m.io.VOT.asym_var <- bind_rows(m.io.VOT.con1 %>% mutate(Condition = "Condition-1"), 
                                m.io.VOT.con2 %>% mutate(Condition = "Condition-2"))
 
-
-
 d.asym_var.exposure <- make_asymmetric_variance_exposure_design(m.io.VOT.asym_var)
-#sanity check
-# d.asym_var.exposure %>%
-#   group_by(Condition, Item.Category) %>%
-#   summarise(mean = mean(VOT), var= var(VOT))
 
 d.asym_var.test <- make_asymmetric_variance_test_design(m.io.VOT.asym_var)
-#sanity check
-# d.asym_var.test %>%
-#   group_by(Condition, Item.Intended_category) %>%
-#   summarise(mean = mean(VOT), var= var(VOT))
- 
+
+```
+
+```{r model-changes-in-representations-asym-var, echo=FALSE, message=FALSE, warning=FALSE}
 # get the best-performing parameterization
 history.optimization_representations <- tibble(.rows = 0)
 get_accuracy_from_updated_representations.asym_var <- function(
@@ -715,122 +703,10 @@ best_performing_parameters.representations.asym_var <-
         factr = 10^8)) 
 history.optimization_representations.asym_var <- history.optimization_representations
 best_performing_parameters.representations.asym_var$par <- exp(best_performing_parameters.representations.asym_var$par)
-
-```
-
-```{r demonstrate-changes-in-representations-asym-var, fig.width=base.width*2*1.5, fig.height=base.height + 1, fig.cap="(ref:demonstrate-changes-in-representations-SI)", eval=FALSE}
-
-m.io.VOT.asym_var.mu <- m.io.VOT.asym_var %>%
-  select(-Sigma) %>%
-  mutate(mu = unlist(mu)) %>%
-  group_by(Condition) %>%
-  pivot_wider(names_from = category, values_from = mu, names_glue = "{.value}_{category}")
-
-m.io.VOT.asym_var.Sigma <- m.io.VOT.asym_var %>%
-  select(-mu) %>%
-  mutate(Sigma = unlist(Sigma)) %>%
-  group_by(Condition) %>%
-  pivot_wider(names_from = category, values_from = Sigma, names_glue = "{.value}_{category}")
-
-m.io.VOT.asym_var.dist <- left_join(m.io.VOT.asym_var.mu, m.io.VOT.asym_var.Sigma) %>%
-  mutate(likelihood1 = map2(`mu_/d/`, `Sigma_/d/`, ~ function(x) dnorm(x, .x, .y^.5)),
-         likelihood2 = map2(`mu_/t/`, `Sigma_/t/`, ~ function(x) dnorm(x, .x, .y^.5))
-         )
-
-
-##--------------
-# Visualization
-##--------------
-# VOT_range <- c(0, 110) # if using raw or c-cured cues
-
-VOT_range = c(-3,3) # if using standardized cues
-# cue distribution
-p.distribution.asym_var <- m.io.VOT.asym_var.dist %>%
-  ggplot(aes(x = !! sym(cue.renamed))) +
-  geom_line(
-    data = . %>% 
-      distinct(Condition, likelihood1, likelihood2) %>%
-      crossing(category = categories.demo, !! sym(cue.renamed) := seq(VOT_range[1], VOT_range[2], by = 0.01)) %>% 
-      ungroup() %>%
-      mutate(y = ifelse(
-        category == categories.demo[1],
-        map2(likelihood1, !! sym(cue.renamed), .f = mycall) %>% unlist(),
-        map2(likelihood2, !! sym(cue.renamed), .f = mycall) %>% unlist())),
-    aes(y = y, color = category, alpha = Condition))+
-  scale_x_continuous("VOT (msec)") +
-  scale_y_continuous("Density") +
-  scale_color_manual("Category", values = colors.voicing) +
-  theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank())
-
 ```
 
 
-```{r plot-test-results-asym-var-DEBUG, eval= FALSE}
-# get predictions from best-performing representational model
-m.ia.VOT.asym_var.representations <-
-  crossing(
-    prior_kappa = best_performing_parameters.representations.asym_var$par[1], 
-    prior_nu = best_performing_parameters.representations.asym_var$par[2],
-    lambda = lambdas.demo) %>%
-  mutate(
-    posterior = map2(
-      prior_kappa, 
-      prior_nu, 
-      ~ lift_MVG_ideal_observer_to_NIW_ideal_adaptor(x = m.io.VOT.asym_var, kappa = .x, nu = .y))) %>%
-  unnest(posterior)  %>%
-  mutate(lapse_rate = lambda)
-
-my_groups <- c("prior_kappa", "prior_nu")
-
-d.representations.asym_var <- 
-  d.asym_var.exposure %>%
-  mutate(category = Item.Category) %>%
-  nest(data = -Condition) %>%
-  crossing(
-    m.ia.VOT.asym_var.representations %>% 
-      filter(lambda == 0) %>%
-      filter(Condition == "Condition-1") %>% # DEBUG: simplify this. m.ia.VOT.asym_var does not need Condition-2?
-      select(-Condition) %>%
-      nest(prior = -all_of(my_groups))) %>%
-  group_by(Condition, prior_kappa, prior_nu) %>%
-  # get the posterior category parameters and the predictions for the test tokens
-      group_modify(~ update_representations_and_categorize_test(
-        cues = cue.renamed,
-        prior = .x$prior[[1]],
-        exposure = .x$data[[1]],
-        test = d.asym_var.test %>% filter(Condition == "Condition-2")), .keep = TRUE) %>%
-  mutate_at(vars(starts_with("prior_")), ~factor(.x)) %>%
-  mutate_at(vars(starts_with("prior_")), fct_rev) %>%
-  ungroup()
-
-# sanity check
-# d.representations.asym_var.results <- d.representations.asym_var %>%
-#   group_by(Condition, !!! syms(my_groups)) %>%
-#   mutate(response.overall = mean(response)) %>%
-#   group_by(Condition, !!! syms(my_groups), category, response.overall) %>%
-#   summarise(response = mean(response))
-
-
-# plot predictions from the representations model
-basic_AA_result_plot(d.representations.asym_var) +
-  geom_text(
-      inherit.aes = FALSE, 
-      data = . %>%
-        group_by(Condition, prior_nu, prior_kappa) %>%
-        summarise(mAcc = round(mean(response), digits = 2)), 
-      mapping = aes(label = mAcc, x = Condition, y = 1.05), 
-      size = geom_text.size) +
-    facet_grid(
-      prior_nu ~ prior_kappa,
-      labeller = label_bquote(
-        cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)),
-        rows = {nu[.(categories.demo[1])~","~0] == nu[.(categories.demo[2])~","~0]} == .(as.character(prior_nu)))) +
-  scale_x_discrete(labels= c("Condition-1", "Condition-2"))
-```
-
-
-```{r model-changes-in-normalization-asym-var-SCALED_CUES-DEBUG, message=FALSE, warning=FALSE, eval = FALSE}
-
+```{r model-changes-in-normalization-asym-var, message=FALSE, warning=FALSE}
 history.optimization_normalization <- tibble(.rows = 0)
 get_accuracy_from_updated_normalization.asym_var <- function(
     par, # only one parameter to optimize for
@@ -876,13 +752,19 @@ best_performing_parameters.normalization.asym_var <-
           factr = 10^8))
    
 history.optimization_normalization.asym_var <- history.optimization_normalization
-best_performing_parameters.normalization$par <- exp(best_performing_parameters.normalization$par[1])
+best_performing_parameters.normalization.asym_var$par <- exp(best_performing_parameters.normalization.asym_var$par[1])
+```
 
 
-# get predictions from best-performing representational model
-m.ia.VOT.asym_var.normalization <-
+```{r plot-test-results-asym-var}
+max_kappa_nu = 10000
+prior_kappa.plot = c(best_performing_parameters.representations.asym_var$par[1], max_kappa_nu) # select the best-performing parameterization for the representational model and the slowest representations updating parameterization for the normalization model
+prior_nu.plot = c(best_performing_parameters.representations.asym_var$par[2], max_kappa_nu)
+
+m.ia.VOT.asym_var <-
   crossing(
-    prior_kappa.normalization = best_performing_parameters.normalization.asym_var$par[1], 
+    prior_kappa = prior_kappa.plot, 
+    prior_nu = prior_nu.plot,
     lambda = lambdas.demo) %>%
   mutate(
     posterior = map2(
@@ -892,6 +774,52 @@ m.ia.VOT.asym_var.normalization <-
   unnest(posterior)  %>%
   mutate(lapse_rate = lambda)
 
+# get predictions from best-performing representational model
+
+my_groups <- c("prior_kappa", "prior_nu")
+
+d.representations.asym_var <- 
+  d.asym_var.exposure %>%
+  mutate(category = Item.Category) %>%
+  nest(data = -Condition) %>%
+  crossing(
+    m.ia.VOT.asym_var %>% 
+      filter(prior_kappa == best_performing_parameters.representations.asym_var$par[1] & prior_nu == best_performing_parameters.representations.asym_var$par[2]) %>%
+      filter(Condition == "Condition-1") %>% 
+      select(-Condition) %>%
+      nest(prior = -all_of(my_groups))) %>%
+  group_by(Condition, !!! syms(my_groups)) %>%
+  # get the posterior category parameters and the predictions for the test tokens
+      group_modify(~ update_representations_and_categorize_test(
+        cues = cue.renamed,
+        prior = .x$prior[[1]],
+        exposure = .x$data[[1]],
+        test = d.asym_var.test %>% filter(Condition == "Condition-2")), .keep = TRUE) %>%
+  mutate_at(vars(starts_with("prior_")), ~factor(.x)) %>%
+  mutate_at(vars(starts_with("prior_")), fct_rev) %>%
+  ungroup()
+
+# plot predictions from the representations model
+p.asym_var.representations <- basic_AA_result_plot(d.representations.asym_var) +
+  geom_text(
+      inherit.aes = FALSE, 
+      data = . %>%
+        group_by(Condition, prior_nu, prior_kappa) %>%
+        summarise(mAcc = round(mean(response), digits = 2)), 
+      mapping = aes(label = mAcc, x = Condition, y = 1.05), 
+      size = geom_text.size) +
+    facet_grid(
+      prior_nu ~ prior_kappa,
+      labeller = label_bquote(
+        cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)),
+        rows = {nu[.(categories.demo[1])~","~0] == nu[.(categories.demo[2])~","~0]} == .(as.character(prior_nu)))) +
+  scale_x_discrete(labels= c("Condition-1", "Condition-2")) +
+  myGplot.defaults(base_size = 14, set_theme = F) + 
+  theme(legend.position = "top", 
+        axis.text.x = element_text(angle = 0, hjust = 0.5),
+      panel.grid.major.x = element_blank())
+
+# get predictions from best-performing normalization model
 
 my_groups <- c("prior_kappa.normalization")
 
@@ -900,13 +828,16 @@ d.normalization.asym_var <-
   mutate(category = Item.Category) %>%
   nest(data = -Condition) %>%
   crossing(
-    m.ia.VOT.asym_var %>% 
-      filter(Condition == "Condition-1") %>% # DEBUG: simplify this. m.ia.VOT.asym_var does not need Condition-2?
+    prior_kappa.normalization = best_performing_parameters.normalization.asym_var$par,
+    m.ia.VOT.asym_var %>%
+      filter(prior_kappa == max_kappa_nu & prior_nu == max_kappa_nu) %>% 
+      filter(Condition == "Condition-1") %>%
       select(-Condition) %>%
-      nest(prior = -all_of(my_groups))) %>%
-  group_by(Condition, prior_kappa, prior_nu) %>%
+      nest(prior = everything())) %>%
+  group_by(Condition, !!! syms(my_groups)) %>%
   # get the posterior category parameters and the predictions for the test tokens
       group_modify(~ update_normalization_and_categorize_test(
+        kappa.normalization = .x$prior_kappa.normalization,
         mu_0 = 0,
         prior = .x$prior[[1]],
         exposure = .x$data[[1]],
@@ -915,123 +846,90 @@ d.normalization.asym_var <-
   mutate_at(vars(starts_with("prior_")), fct_rev) %>%
   ungroup()
 
-# sanity check
-# d.representations.asym_var.results <- d.representations.asym_var %>%
-#   group_by(Condition, !!! syms(my_groups)) %>%
-#   mutate(response.overall = mean(response)) %>%
-#   group_by(Condition, !!! syms(my_groups), category, response.overall) %>%
-#   summarise(response = mean(response))
+# plot predictions from the normalization model
 
+p.asym_var.normalization <- basic_AA_result_plot(d.normalization.asym_var %>% mutate(prior_kappa.normalization = round(as.numeric(as.character(prior_kappa.normalization))))) +
+  geom_text(
+      inherit.aes = FALSE, 
+      data = . %>%
+        group_by(Condition, prior_kappa.normalization) %>%
+        mutate(prior_kappa.normalization = prior_kappa.normalization) %>%
+        summarise(mAcc = round(mean(response), digits = 2)), 
+      mapping = aes(label = mAcc, x = Condition, y = 1.05), 
+      size = geom_text.size) +
+    facet_grid(
+      . ~ prior_kappa.normalization,
+      labeller = label_bquote(
+        cols = ~kappa[0] == .(as.character(prior_kappa.normalization)))) +
+  scale_x_discrete(labels= c("Condition-1", "Condition-2")) +
+  myGplot.defaults(base_size = 14, set_theme = F) + 
+  theme(legend.position = "top", 
+        axis.text.x = element_text(angle = 0, hjust = 0.5),
+      panel.grid.major.x = element_blank())
 ```
 
-```{r plot-changes-in-representations-DEBUG, message=FALSE, warning=FALSE, eval = FALSE}
+```{r proposed-experiment-asymmetric-variance, fig.width=base.width*3 + 0.5, fig.height=base.height + 0.5, fig.cap="(ref:proposed-experiment-asymmetric-variance)"}
+m.io.VOT.asym_var.mu <- m.io.VOT.asym_var %>%
+  select(-Sigma) %>%
+  mutate(mu = unlist(mu)) %>%
+  group_by(Condition) %>%
+  pivot_wider(names_from = category, values_from = mu, names_glue = "{.value}_{category}")
 
-# plot posterior category distribution under best-performing parameterization
-# d.representations.asym_var %>%
-#   mutate(
-#     mu1 = map(posterior, ~ .x$m[1]) %>% unlist(),
-#     mu2 = map(posterior, ~ .x$m[2]) %>% unlist(),
-#     sigma1 = map(posterior, ~ get_expected_Sigma_from_S(.x$S, .x$nu)[1]) %>% unlist(),
-#     sigma2 = map(posterior, ~ get_expected_Sigma_from_S(.x$S, .x$nu)[2]) %>% unlist()) %>% # obtain the likelihood for each test token
-#   mutate(
-#     posterior.likelihood1 = map2(mu1, sigma1, ~ function(x) dnorm(x, .x, .y^.5)),
-#     posterior.likelihood2 = map2(mu2, sigma2, ~ function(x) dnorm(x, .x, .y^.5)),
-#     posterior.categorization_function = map(
-#       posterior, 
-#       ~ get_categorization_function_from_NIW_ideal_adaptor(.x, noise_treatment = "marginalize"))) %>%
-#   filter(observationID ==1 & Condition == "Condition-2") %>%
-#   ggplot(aes(x = !! sym(cue.renamed))) +
-#   # cue distribution
-#   geom_line(
-#     data = . %>% 
-#       distinct(Condition, !!! syms(my_groups), posterior.likelihood1, posterior.likelihood2, observationID) %>%
-#       crossing(category = categories.demo, !! sym(cue.renamed) := seq(VOT_range[1], VOT_range[2])) %>%
-#       ungroup() %>%
-#       mutate(y = ifelse(
-#         category == categories.demo[1],
-#         map2(posterior.likelihood1, !! sym(cue.renamed), .f = mycall) %>% unlist(),
-#         map2(posterior.likelihood2, !! sym(cue.renamed), .f = mycall) %>% unlist())),
-#     aes(y = y, color = category, 
-#         alpha = factor(paste(!! sym(my_groups[2]), sep = ", ")), 
-#         group = paste(category, !!! syms(my_groups)))) +
-#   scale_x_continuous("VOT (msec)") +
-#   scale_y_continuous("Density") +
-#   scale_color_manual("Category", values = colors.voicing) +
-#   scale_alpha_manual(name = expression(nu[0~",c"]), values = c(.4, .8)) +
-#   facet_grid(
-#     . ~ prior_kappa,
-#     labeller = label_bquote(
-#       cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)))) +
-#   theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank())
+m.io.VOT.asym_var.Sigma <- m.io.VOT.asym_var %>%
+  select(-mu) %>%
+  mutate(Sigma = unlist(Sigma)) %>%
+  group_by(Condition) %>%
+  pivot_wider(names_from = category, values_from = Sigma, names_glue = "{.value}_{category}")
+
+m.io.VOT.asym_var.dist <- left_join(m.io.VOT.asym_var.mu, m.io.VOT.asym_var.Sigma) %>%
+  mutate(likelihood1 = map2(`mu_/d/`, `Sigma_/d/`, ~ function(x) dnorm(x, .x, .y^.5)),
+         likelihood2 = map2(`mu_/t/`, `Sigma_/t/`, ~ function(x) dnorm(x, .x, .y^.5))
+         )
+
+# Visualization
+
+# VOT_range <- c(0, 110) # if using raw or c-cured cues
+VOT_range = c(-3,3) # if using standardized cues
+
+# cue distribution
+p.distribution.asym_var <- m.io.VOT.asym_var.dist %>%
+  ggplot(aes(x = !! sym(cue.renamed))) +
+  geom_line(
+    data = . %>% 
+      distinct(Condition, likelihood1, likelihood2) %>%
+      crossing(category = categories.demo, !! sym(cue.renamed) := seq(VOT_range[1], VOT_range[2], by = 0.01)) %>% 
+      ungroup() %>%
+      mutate(y = ifelse(
+        category == categories.demo[1],
+        map2(likelihood1, !! sym(cue.renamed), .f = mycall) %>% unlist(),
+        map2(likelihood2, !! sym(cue.renamed), .f = mycall) %>% unlist())),
+    aes(y = y, color = category, alpha = Condition))+
+  scale_x_continuous("VOT (standardized)") +
+  scale_y_continuous("Density") +
+  scale_color_manual("Category", values = colors.voicing) +
+  myGplot.defaults(base_size = 14, set_theme = F) +
+  theme(legend.position = "top", panel.grid = element_blank())
+
+legend_prow <- 
+    get_legend(
+      p.distribution.asym_var +
+        guides(color = guide_legend(title.position = "left", nrow = 1)))
+
+prow <- plot_grid(
+    p.distribution.asym_var + theme(legend.position="none"),
+    p.asym_var.representations + theme(legend.position="none"), 
+    p.asym_var.normalization + theme(legend.position="none"), 
+    labels = c('A)', 'B)', 'C)'), 
+    align = "hv", axis = "btlr",
+    ncol = 3, rel_widths = c(1/3, 1/3, 1/3))
+legend_prow <- legend_prow <- 
+    get_legend(
+      p.distribution.asym_var +
+        guides(color = guide_legend(title.position = "left", nrow = 1)))
+
+plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.1, 1))
 ```
 
-```{r model-changes-in-representations-asym-var-SCALED_CUES-DEBUG, message=FALSE, warning=FALSE, eval = FALSE}
-# 
-# set.seed(5612)
-# 
-# categories.demo <- c("/d/", "/t/")
-# cue.demo <- "VOT_scaled"
-# cue.renamed <- "VOT"
-# # Lapse model
-# bias.demo <- c(.5, .5)
-# lambdas.demo <- 0
-# 
-# # Ideal observers and adaptors
-# m.io.VOT.con1 <- 
-#   make_MVG_from_data(
-#   data = d.chodroff_wilson.selected %>%
-#     select(-VOT) %>%
-#     rename(VOT = cue.demo), # use the selected cues (centered or scaled) and rename it as VOT
-#   category = "category",
-#   cues = cue.renamed) %>%
-#   filter(category %in% categories.demo) %>%
-#   lift_MVG_to_MVG_ideal_observer(prior = bias.demo, lapse_rate = 0, lapse_bias = bias.demo, Sigma_noise = matrix(80, nrow = 1, dimnames = list(cue.renamed)))
-# 
-# # change if needed to change the variance for demo presentation
-# m.io.VOT.con1$Sigma[1] = 20
-# m.io.VOT.con1$Sigma[2] = 400
-# 
-# m.io.VOT.con2 <- m.io.VOT.con1 # create two conditions that have identical category means, but switched category variance
-# m.io.VOT.con2$Sigma[1] = m.io.VOT.con1$Sigma[2] 
-# m.io.VOT.con2$Sigma[2] = m.io.VOT.con1$Sigma[1] 
-# m.io.VOT.asym_var.scaled <- bind_rows(m.io.VOT.con1 %>% mutate(Condition = "Condition-1"), 
-#                                m.io.VOT.con2 %>% mutate(Condition = "Condition-2"))
-# 
-# 
-# 
-# d.asym_var.exposure <- make_asymmetric_variance_exposure_design(m.io.VOT.asym_var)
-# #sanity check
-# # d.asym_var.exposure %>%
-# #   group_by(Condition, Item.Category) %>%
-# #   summarise(mean = mean(VOT), var= var(VOT))
-# 
-# d.asym_var.test <- make_asymmetric_variance_test_design(m.io.VOT.asym_var)
-# #sanity check
-# # d.asym_var.test %>%
-# #   group_by(Condition, Item.Intended_category) %>%
-# #   summarise(mean = mean(VOT), var= var(VOT))
-# # 
-# 
-# m.io.VOT.asym_var %>%
-#   filter(Condition == "Condition-2") %>%
-#   ggplot(aes(x = !! sym(cue.renamed))) +
-#   geom_line(
-#     data = m.io.VOT.asym_var %>% 
-#       distinct(Condition, likelihood1, likelihood2) %>%
-#       crossing(category = categories.demo, !! sym(cue.renamed) := seq(min(d.chodroff_wilson.selected$VOT_scaled), max(d.chodroff_wilson.selected$VOT_scaled), by = 0.01)) %>%
-#       ungroup() %>%
-#       mutate(y = ifelse(
-#         category == categories.demo[1],
-#         map2(likelihood1, !! sym(cue.renamed), .f = mycall) %>% unlist(),
-#         map2(likelihood2, !! sym(cue.renamed), .f = mycall) %>% unlist())),
-#     aes(y = y, color = category, alpha = Condition))+
-#   coord_cartesian(xlim = c(-3,3)) +
-#   scale_x_continuous("VOT (msec)") +
-#   scale_y_continuous("Density") +
-#   scale_color_manual("Category", values = colors.voicing) +
-#   theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank())
-
-```
 
 ## Changes in decision-making vs. changes in category representations
 In Section \@ref(sec:framework), we showed that the limitations of change models for decision-making are less well understood than sometimes assumed. One recommendation for future research is thus to further explore the mathematical limitations of decision-making change models. Designs that limit attentional lapses to basically zero [e.g., by employing more engaging tasks, as in gamified paradigms, @wade-holt2005; @lim-holt2011] would emphasize the computational limitations of decision-making change models. In such scenarios, changes in response biases can only explain changes that are additive in the posterior log-odds of categories (Section \@ref(sec:change-bias)). That is, changes in response biases cannot account for changes in the *slope* of categorization functions. Future studies should use exposure conditions for which such changes are predicted by representational or normalization models to test whether changes in response biases are sufficient to explain adaptive speech perception<!-- [e.g., if zero lapses had been observed in @clayards2008, which was, however, not the case]-->. Since it can be difficult to detect changes in categorization slopes---especially without making strong linearity assumptions, we suspect that this question is better explored by manipulating the relative reliability of two cues (see also Figure \@ref(fig:show-model-categorization-3D-plots-best-performing)). Such manipulations are routinely used in a paradigm known as "dimension-based statistical learning" [@idemaru-holt2011; @lehet-holt2020; @liu-holt2015]. With recent trends towards analyses that more transparently link phonetic cues to changes in participants' responses [@idemaru-holt2020; @schertz-clare2020, see also Section \@ref(sec:methodological-advances)]  this field of study is in a good position to test the sufficiency of changes in decision-making accounts. An ongoing project from one of our labs, uses ASP-like simulations in combination with experimental designs that are intended to directly address this question [@burchill-jaeger2022].

@@ -274,13 +274,17 @@ p.PR.exposure <- d.PR.exposure %>%
     arrow = arrow(type = "closed", angle = "24", length = unit(5, "points")),
     alpha = .4, 
     show.legend = F) +
-  scale_x_continuous(expression("VOT (ms)"), expand = expansion(mult = .1, add = 0)) +
-  scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0)) +
   scale_shape_manual("Item type", breaks = c("typical", "shifted"), values = shapes.category) +
   scale_color_manual("Category", breaks = categories.PR, values = colors.category) +
-  facet_grid(~ paste("Exposure:", Condition))
+  scale_x_continuous(expression("VOT (ms)"), expand = expansion(mult = .1, add = 0)) +
+  scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0),
+                     breaks=seq(180, 280, by = 20)) +
+  coord_cartesian(ylim = c(180, 280)) +
+  facet_grid(~ paste("Exposure:", Condition)) 
 
 limits <- get_plot_limits(p.PR.exposure)
+breaks <- get_plot_breaks(p.PR.exposure)
+
 p.PR.test <-
   d.PR.test %>%
   filter(Condition == conditions.PR[1]) %>%
@@ -288,11 +292,13 @@ p.PR.test <-
   ggplot(aes(x = VOT, y = f0_Mel, label = as.numeric(factor(ItemID)))) + 
   geom_line(color = "gray", alpha = .5) +
   geom_text(aes(color = as.numeric(as.character(Item.Intended_proportion_category1))), size = 3) +
-  scale_x_continuous(expression("VOT (ms)"), expand = expansion(mult = .1, add = 0)) +
-  scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0)) +
+  scale_x_continuous(expression("VOT (ms)"), expand = expansion(mult = .1, add = 0),
+                     breaks = c(breaks$xbreaks), limits = c(limits$xmin, limits$xmax)) +
+  scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0),
+                     breaks=c(breaks$ybreaks), limits = c(limits$ymin, limits$ymax)) +
+  coord_cartesian(ylim = c(180, 280)) +
   scale_shape_discrete("Item type") +
   scale_color_gradient("", low = colors.category[2], high = colors.category[1], guide = NULL) +
-  coord_cartesian(xlim = c(limits$xmin, limits$xmax), ylim = c(limits$ymin, limits$ymax)) +
   facet_grid(~ Condition)
 
 plot_grid(

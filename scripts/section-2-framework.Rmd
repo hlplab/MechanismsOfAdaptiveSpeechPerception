@@ -1,9 +1,9 @@
 # Modeling adaptive changes in speech perception  {#sec:framework}
-We assume conceptual familiarity with reasoning about distributions and contemporary theories of speech perception---all of which expect that listeners have implicit representations of the mapping between phonetic cues and linguistic categories that encompass (in one form or other) knowledge of the distribution of cues that correspond to a linguistic category. This assumption is motivated by observations made as early as @abramson1973voice or @nearey-hogan1986, and illustrated in Figure \@ref(fig:demonstrate-production-perception-link): listeners' categorization responses for two phonetic categories (/d/ and /t/ in Figure \@ref(fig:demonstrate-production-perception-link)B) can be predicted by considering the phonetic properties of the input *relative to the distribution of phonetic cues* that listeners have previously experienced (Figure \@ref(fig:demonstrate-production-perception-link)A). Recent introductions to, and discussions of, this perspective are provided in @bent-baeseberk2021, @kurumada-roettger2021, @quam-creel2021, and @schertz-clare2020. 
+We assume conceptual familiarity with reasoning about distributions and contemporary theories of speech perception---all of which expect that listeners have implicit representations of the mapping between phonetic cues and linguistic categories that encompass (in one form or other) knowledge of the distribution of cues that correspond to a linguistic category. This assumption is motivated by observations made as early as @abramson1973voice or @nearey-hogan1986, and illustrated in Figure \@ref(fig:demonstrate-production-perception-link): listeners' categorization responses for two phonetic categories (/d/ and /t/ in Figure \@ref(fig:demonstrate-production-perception-link)B) can be predicted by considering the phonetic properties of the input *relative to the distribution of phonetic cues* that listeners have previously experienced (Figure \@ref(fig:demonstrate-production-perception-link)A). Recent introductions to, and discussions of, this perspective are provided in @bent-baeseberk2021, @kurumada-roettger2021, @quam-creel2021, and @schertz-clare2020.
 
 ```{r}
 d.production_to_perception <-
-  d.chodroff_wilson %>% 
+  d.chodroff_wilson %>%
   filter(category %in% c("/d/", "/t/"), gender == "male") %>%
   group_by(Talker) %>%
   mutate(f0_Mel = phonR::normMel(f0)) %>%
@@ -16,7 +16,7 @@ d.production_to_perception <-
 (ref:demonstrate-production-perception-link) Speech production realizes phonetic categories as distributions in a multi-dimensional acoustic or phonetic cue space. Implicit knowledge of these distributions is known to mediate listeners’ interpretation of speech inputs [for review, see @schertz-clare2020]. **Panel A:** voice onset time (VOT) and fundamental frequency (f0) of `r nrow(d.production_to_perception)` word-initial /d/ and /t/ from `r d.production_to_perception %>% droplevels() %>% pull(Talker) %>% nlevels()` male L1 speakers of US English [data from @chodroff-wilson2018]. VOT and f0 were centered relative to their overall mean (see SI \@ref(sec:SI-chodroff)). **Panel B:** responses to a 2AFC ("da" vs. "ta") categorization task by 10 L1 listeners of US English, depending on VOT and f0 [data from Experiment 1 in @burchill-jaeger2022].
 
 ```{r demonstrate-production-perception-link, fig.width= base.width * 3, fig.height = base.height * 1 + 1, fig.cap="(ref:demonstrate-production-perception-link)"}
-p <- 
+p <-
   d.production_to_perception %>%
   ggplot(aes(x = VOT_centered, y = f0_Mel_centered)) +
   scale_x_continuous(expression("VOT (ms)"), breaks = c(10, 30, 50, 70)) +
@@ -26,7 +26,7 @@ p <-
 p2 <-   
   p %+%
   (read.csv("../data/Burchill-Jaeger-2023/raw_avg.csv") %>%
-  mutate(f0_Mel = phonR::normMel(f0))) + 
+  mutate(f0_Mel = phonR::normMel(f0))) +
   theme(legend.position = "top", legend.box="horizontal", panel.grid = element_blank()) +
   aes(x = VOT, y = f0_Mel, fill = is_voiced * 100) +
   geom_tile() +
@@ -35,28 +35,28 @@ p2 <-
   guides(fill = guide_colorbar(title.position = "left", reverse = T))
 
 limits.chodroff <- get_plot_limits(p2)
-p2 <- 
+p2 <-
   p2 +
   coord_fixed(
-    xlim = c(limits.chodroff$xmin, limits.chodroff$xmax), 
-    ylim = c(limits.chodroff$ymin, limits.chodroff$ymax), 
+    xlim = c(limits.chodroff$xmin, limits.chodroff$xmax),
+    ylim = c(limits.chodroff$ymin, limits.chodroff$ymax),
     expand = F, ratio = (limits.chodroff$xmax - limits.chodroff$xmin) / (limits.chodroff$ymax - limits.chodroff$ymin))
 
-p1 <- 
-  p + 
+p1 <-
+  p +
   geom_point(aes(color = voicing), alpha = .05) +
   geom_density_2d(aes(color = voicing), linewidth = .1) +
   scale_color_manual("Category", breaks = c("yes", "no"), labels = c("/d/", "/t/"), values = colors.voicing) +
   guides(colour = guide_legend(override.aes = list(alpha = 1))) +
   coord_fixed(
-    xlim = c(limits.chodroff$xmin, limits.chodroff$xmax), 
-    ylim = c(limits.chodroff$ymin, limits.chodroff$ymax), 
-    expand = F, 
+    xlim = c(limits.chodroff$xmin, limits.chodroff$xmax),
+    ylim = c(limits.chodroff$ymin, limits.chodroff$ymax),
+    expand = F,
     ratio = (limits.chodroff$xmax - limits.chodroff$xmin) / (limits.chodroff$ymax - limits.chodroff$ymin)) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
 plot_grid(
-  plotlist = list(p1, p2), 
+  plotlist = list(p1, p2),
   nrow = 1, labels = c("A)", "B)"),
   align = "hv",
   axis = "lrtb")
@@ -66,7 +66,7 @@ ASP is not meant to be a new model of speech perception but rather a conceptual 
 
 For the present purpose, we focus on modeling offline responses, which remain one of the most commonly employed measures in research on speech perception. This includes categorization/identification responses in two-forced-choice (2AFC) tasks that continue to be the standard approach used to assess the effects of recent exposure on subsequent speech perception [e.g., @norris2003; @kraljic-samuel2006; @vroomen2007; @reinisch-holt2013; @drouin2016; @liu-jaeger2018; @zheng-samuel2020; @clayards2008; @maye2008; @kleinschmidt2015; @xie2017]. The general framework we develop here can, however, be extended to offline and online tasks with two or more categorical outcomes, including discrimination [e.g., @feldman2009; @richter2017], transcription [e.g., @bradlow-bent2008], accuracy in cross-modal priming [e.g., @eisner2013; @sjerps-mcqueen2010], spoken repetition [e.g., @bieber2021], or fixations in the visual world paradigm [e.g., @hanulikova-weber2012; @nixon2016].
 
-Figure \@ref(fig:overview-change) provides an overview of how ASP can be used to model adaptive changes in speech perception. This is the approach we employ in the two case studies in Sections \@ref(sec:PR) and \@ref(sec:AA). ASP integrates a *processing model* with three different *change models*---one each to describe changes in normalization, representations, and decision-making, respectively. The processing model---for the present study, a *categorization model*---describes the mechanisms that allow listeners to infer '*what* is being said'.^[The present study focuses on the recognition of phonetic categories---be it a phoneme, syllable, or word---*out of context*. We do not aim to model the well-documented effects of, a.o., phonotactic<!-- [e.g., @carlisle1991; @cutler-jesse2021]-->, prosodic<!--[e.g., @munro1995; @sereno2015]-->, lexical/semantic<!--[e.g., @cooper-bradlow2016; @davis2005]-->, visual<!--[e.g., @bertelson2003; @ganong1980; @vroomen2007; @vroomen-baart2009]--> and sentential/discourse contexts<!--[e.g., @contemori-tortajada2020; @klatt1975; @holt-bent2017; @winn2018]--> [for a great concise review, see @winn2018]. The results we present below are, however, expected to generalize to situations in which such context is taken into account (in ASP, context simply changes the overall response bias). Critically, models of spoken word recognition that capture contextual effects share the general assumptions encoded in ASP's processing model [DIANA, @bosch2015; NAM, @luce-pisoni1998; TRACE, @mcclelland-elman1986; EARSHOT, @magnuson2020].] This model is closely related to psychometric models that are used for data analysis in many areas of the cognitive sciences [for an introduction, see @wichmann-hill2001] but remain rare in research on speech perception---in particular, in research on the effects of recent experience [but see @clayards2008; @kleinschmidt-jaeger2016cogsci]. It is also conceptually related to general process models of online perceptual decision-making [e.g., the drift diffusion model, @ratcliff2011]. The change models describe listeners' inferences about 'how things are being said'. These change models extend existing models for normalization [adding *inference* of talker's means to C-CuRE, @mcmurray-jongman2011] and representational changes [extending ideal adaptors to multivariate acoustic inputs, @kleinschmidt-jaeger2015], and add a novel model for changes in decision-making. 
+Figure \@ref(fig:overview-change) provides an overview of how ASP can be used to model adaptive changes in speech perception. This is the approach we employ in the two case studies in Sections \@ref(sec:PR) and \@ref(sec:AA). ASP integrates a *processing model* with three different *change models*---one each to describe changes in normalization, representations, and decision-making, respectively. The processing model---for the present study, a *categorization model*---describes the mechanisms that allow listeners to infer '*what* is being said'.^[The present study focuses on the recognition of phonetic categories---be it a phoneme, syllable, or word---*out of context*. We do not aim to model the well-documented effects of, a.o., phonotactic<!-- [e.g., @carlisle1991; @cutler-jesse2021]-->, prosodic<!--[e.g., @munro1995; @sereno2015]-->, lexical/semantic<!--[e.g., @cooper-bradlow2016; @davis2005]-->, visual<!--[e.g., @bertelson2003; @ganong1980; @vroomen2007; @vroomen-baart2009]--> and sentential/discourse contexts<!--[e.g., @contemori-tortajada2020; @klatt1975; @holt-bent2017; @winn2018]--> [for a great concise review, see @winn2018]. The results we present below are, however, expected to generalize to situations in which such context is taken into account (in ASP, context simply changes the overall response bias). Critically, models of spoken word recognition that capture contextual effects share the general assumptions encoded in ASP's processing model [DIANA, @bosch2015; NAM, @luce-pisoni1998; TRACE, @mcclelland-elman1986; EARSHOT, @magnuson2020].] This model is closely related to psychometric models that are used for data analysis in many areas of the cognitive sciences [for an introduction, see @wichmann-hill2001] but remain rare in research on speech perception---in particular, in research on the effects of recent experience [but see @clayards2008; @kleinschmidt-jaeger2016cogsci]. It is also conceptually related to general process models of online perceptual decision-making [e.g., the drift diffusion model, @ratcliff2011]. The change models describe listeners' inferences about 'how things are being said'. These change models extend existing models for normalization [adding *inference* of talker's means to C-CuRE, @mcmurray-jongman2011] and representational changes [extending ideal adaptors to multivariate acoustic inputs, @kleinschmidt-jaeger2015], and add a novel model for changes in decision-making.
 
 \begin{figure}[h]
 \begin{center}
@@ -76,7 +76,7 @@ Figure \@ref(fig:overview-change) provides an overview of how ASP can be used to
 \end{figure}
 
 ## The categorization model ('processing')
-For the present purpose, we can think of the mapping from acoustic inputs to categorization responses as involving at least the three processes illustrated in Figure \@ref(fig:model-perceptual-decision-making) (by presenting these processes as three different steps, we do not mean to imply that they are discrete, information encapsulated processes). 
+For the present purpose, we can think of the mapping from acoustic inputs to categorization responses as involving at least the three processes illustrated in Figure \@ref(fig:model-perceptual-decision-making) (by presenting these processes as three different steps, we do not mean to imply that they are discrete, information encapsulated processes).
 
 \begin{figure}[h]
 \begin{center}
@@ -88,29 +88,29 @@ For the present purpose, we can think of the mapping from acoustic inputs to cat
 ### 'Pre-linguistic' auditory processes: signal transformations and normalization {#sec:normalization}
 The first step in our categorization model maps the acoustic input onto *perceptual* features. These perceptual features are the outcome of low-level signal transformations and normalization processes.^[The term normalization is often used to refer to both of these components together. For example, some of the most common normalization approaches involve both log-transforms and further normalization steps [e.g., Lobanov normalization, @lobanov1971; height-backness normalization, @miller1989]. Transformation and normalization can, however, be understood as separate processes. <!-- [see also "vowel-intrinsic" vs. "vowel-extrinsic" procedures in @adank2004]. -->] Experiments on the perception of stimulus similarity suggest that the human brain represents frequency information logarithmically [@greenwood1961]. This is captured by, for example, the Mel [@stevens1937], Bark [@zwicker1961], and ERB [@moore-glasberg1983] transformations. Such logarithm-transformed spectral cues have been found to provide a better fit against human categorization responses than features based on raw frequencies [@hoffmanbion-escudero2007; @kleinschmidt2019; @richter2017]. The case studies we present below model perception for a phonological contrast that depends on both temporal and spectral cues. For the spectral cue, we use Mel-transformed frequencies.<!-- Put differently, the perceptual feature relevant to vowel categorization seem to be log-transformed, rather than raw, frequencies. Here, the purpose of our simplified model is to make predictions about the differences in effects resulting from exposure to different acoustic inputs. The specific nature of the perceptual features relevant to any given categorization problem (e.g., vowel categorization) is thus not of relevance for the present purpose. -->
 
-*Normalization* refers to further transformation of acoustic inputs based on either other acoustic properties or the overall distribution of the acoustic input itself [for a review, see @weatherholtz-jaeger2016]. For example, one of the most influential normalization procedures for the formant cues that affect vowel perception centers and standardizes these cues based on the talker-specific mean and standard deviation of the formant values [@lobanov1971]. This and conceptually similar normalizations [e.g., @gerstman1968] have been found to remove a substantial amount of cross-talker variability in the realization of vowels [e.g., @hoffmanbion-escudero2007; @nearey1989; for review, see @persson-jaeger2023] while maintaining phonemic contrasts and sociolinguistic information [@adank2004], providing a good fit against vowel categorization by human listeners [e.g., @persson-jaeger2022; @richter2017]. 
+*Normalization* refers to further transformation of acoustic inputs based on either other acoustic properties or the overall distribution of the acoustic input itself [for a review, see @weatherholtz-jaeger2016]. For example, one of the most influential normalization procedures for the formant cues that affect vowel perception centers and standardizes these cues based on the talker-specific mean and standard deviation of the formant values [@lobanov1971]. This and conceptually similar normalizations [e.g., @gerstman1968] have been found to remove a substantial amount of cross-talker variability in the realization of vowels [e.g., @hoffmanbion-escudero2007; @nearey1989; for review, see @persson-jaeger2023] while maintaining phonemic contrasts and sociolinguistic information [@adank2004], providing a good fit against vowel categorization by human listeners [e.g., @persson-jaeger2022; @richter2017].
 
 The case studies we present below employ a general model of normalization that can be applied to any type of phonological contrast [C-CuRE, @cole2010; @mcmurray-jongman2011]. C-CuRE stands for "computing cues relative to expectations" and centers cues by subtracting the (expected) mean for that cue in the current context ($\mu$ in Figure \@ref(fig:model-perceptual-decision-making)). C-CuRE has been found effective in accounting for cross-talker differences as well as effects of surrounding phonological context, improving the ability to predict human responses compared to a model without any normalization [@mcmurray-jongman2011; see also @apfelbaum-mcmurray2015; @crinnion2020; @kleinschmidt2020; @mcmurray-jongman2016; @xie2021cognition]. Figure \@ref(fig:demonstrate-normalization) visualizes the effects of C-CuRE normalization on the marginal distributions of f0 and VOT to word-initial stop voicing in US English (e.g., /b/ vs. /p/ in *bin* vs. *pin*). The specific procedure is described in the SI (\@ref(sec:SI-chodroff)). We use these normalized data throughout the remainder of this study, including the two case studies. That is, all studies presented below assume that listeners' *long-term* expectations are based on talker-normalized cues, while leaving open how normalization affects perception during the initial exposure to an unfamiliar talker. The qualitative findings of our studies do not, however, depend on this assumption.
 
-(ref:demonstrate-normalization) Effects of applying C-CuRE normalization to productions of word-initial stop voicing in US English (e.g., *bin* vs. *pin*). **Panel A:** unnormalized VOT and f0 of `r nrow(d.chodroff_wilson)` stop productions from @chodroff-wilson2018. VOT is the primary cue to this voicing contrast for L1 US English, and f0 is known to be a secondary cue. The data exhibit clear evidence of multimodality along both VOT and f0. **Panel B:** the same productions but after C-CuRE normalization has been applied to remove talker-specific variability. Compared to unnormalized data, the C-CuRE normalized data exhibits reduced variability and reduced evidence of multimodality (the remaining low-f0 outliers in the Panel B are the result of creaky voice and measurement errors like pitch-halving, see SI \@ref(sec:SI-chodroff)). 
+(ref:demonstrate-normalization) Effects of applying C-CuRE normalization to productions of word-initial stop voicing in US English (e.g., *bin* vs. *pin*). **Panel A:** unnormalized VOT and f0 of `r nrow(d.chodroff_wilson)` stop productions from @chodroff-wilson2018. VOT is the primary cue to this voicing contrast for L1 US English, and f0 is known to be a secondary cue. The data exhibit clear evidence of multimodality along both VOT and f0. **Panel B:** the same productions but after C-CuRE normalization has been applied to remove talker-specific variability. Compared to unnormalized data, the C-CuRE normalized data exhibits reduced variability and reduced evidence of multimodality (the remaining low-f0 outliers in the Panel B are the result of creaky voice and measurement errors like pitch-halving, see SI \@ref(sec:SI-chodroff)).
 
 ```{r demonstrate-normalization, fig.width= base.width * 3, fig.height = base.height * 2 + 2, fig.cap="(ref:demonstrate-normalization)"}
-p <- 
-  d.chodroff_wilson %>% 
+p <-
+  d.chodroff_wilson %>%
   ggplot(aes(x = VOT, y = f0_Mel, color = voicing)) +
   scale_x_continuous(expression("VOT (ms)")) +
   scale_y_continuous(expression("f0 (Mel)")) +
   scale_color_manual("Voiced", breaks = c("yes", "no"), values = colors.voicing) +
-  facet_grid(. ~ poa) + 
-  guides(colour = guide_legend(override.aes = list(alpha = 1)), shape = guide_legend(override.aes = list(alpha = 1))) + 
+  facet_grid(. ~ poa) +
+  guides(colour = guide_legend(override.aes = list(alpha = 1)), shape = guide_legend(override.aes = list(alpha = 1))) +
   theme(legend.position = "top")
 
-p1 <- 
-  p + 
+p1 <-
+  p +
   geom_point(
     mapping = aes(shape = gender),
     alpha = .05) +
-  scale_shape_discrete("Gender") 
+  scale_shape_discrete("Gender")
 
 limits <- get_plot_limits(p1)
 p2 <-   
@@ -119,7 +119,7 @@ p2 <-
   coord_cartesian(xlim = c(limits$xmin, limits$xmax), ylim = c(limits$ymin, limits$ymax))
 
 plot_grid(
-  plotlist = list(p1, p2), 
+  plotlist = list(p1, p2),
   nrow = 2, labels = c("A)", "B)"),
   align = "h",
   axis = "lrtb")
@@ -128,7 +128,7 @@ plot_grid(
 Beyond signal transformations and normalization, the stimulus observed by a listener is also affected by perceptual noise (not shown in Figure \@ref(fig:demonstrate-normalization)). This means that even the same exact acoustic stimulus does not necessarily result in the same percept [@feldman2009; @nearey-hogan1986, p. 148]. The integration of noise into models of speech perception has been shown to explain otherwise puzzling differences in the perception and recognition of different types of phonological contrasts [e.g., @kronrod2016]. Although not critical for the present purpose, we incorporate perceptual noise into ASP also because it results in more human-like (less steep) categorization functions. This noise is held constant across all case studies presented below, set to the values obtained by Kronrod and colleagues [-@kronrod2016, $\sigma^2_{noise, VOT}=80 msec^2$, $\sigma^2_{noise, spectral}=878 Mel^2$].
 
 ### Category representations: from perceptual features to linguistic categories {#sec:representations}
-The output of normalization is the input to the mapping onto linguistic categories. All major theories of speech perception agree that this involves implicit knowledge of the distributional realization of linguistic categories---i.e., the distribution of acoustic or phonetic cues that are observed across instances of the category. In analytic models, this mapping is typically described by the *category likelihood* that is learned from previous inputs [e.g., in the neighborhood activation model, @luce-pisoni1998; shortlist B, @norris-mcqueen2008; and other Bayesian inference models, @clayards2008; @feldman2009; @kleinschmidt-jaeger2015]. In exemplar models and related theories, the same mapping is achieved by storing previously experienced inputs as exemplars [e.g., @johnson2006; @pierrehumbert2001; @wedel2006] or episodic traces [@goldinger1996] that subsequent inputs are compared to during recognition [e.g., by means of $k$-nearest neighbor algorithms, @fix-hodges1989]. In connectionist and deep neural network models, the same probabilistic mapping is achieved through latent structure in the network that is learned from previous input [@mcclelland-elman1986; @magnuson2020]. Although the specific nature of these representations continues to be a matter of debate, all of these theories share the assumption that there is a probabilistic mapping between perceptual cues and linguistic categories [see also @shi2010 on the close computational relation between exemplar and Bayesian inference models] and that perception involves implicit knowledge of this probabilistic mapping. 
+The output of normalization is the input to the mapping onto linguistic categories. All major theories of speech perception agree that this involves implicit knowledge of the distributional realization of linguistic categories---i.e., the distribution of acoustic or phonetic cues that are observed across instances of the category. In analytic models, this mapping is typically described by the *category likelihood* that is learned from previous inputs [e.g., in the neighborhood activation model, @luce-pisoni1998; shortlist B, @norris-mcqueen2008; and other Bayesian inference models, @clayards2008; @feldman2009; @kleinschmidt-jaeger2015]. In exemplar models and related theories, the same mapping is achieved by storing previously experienced inputs as exemplars [e.g., @johnson2006; @pierrehumbert2001; @wedel2006] or episodic traces [@goldinger1996] that subsequent inputs are compared to during recognition [e.g., by means of $k$-nearest neighbor algorithms, @fix-hodges1989]. In connectionist and deep neural network models, the same probabilistic mapping is achieved through latent structure in the network that is learned from previous input [@mcclelland-elman1986; @magnuson2020]. Although the specific nature of these representations continues to be a matter of debate, all of these theories share the assumption that there is a probabilistic mapping between perceptual cues and linguistic categories [see also @shi2010 on the close computational relation between exemplar and Bayesian inference models] and that perception involves implicit knowledge of this probabilistic mapping.
 
 Here we employ an analytic characterization of category likelihoods. Specifically, we adopt a simplifying assumption commonly made in research on speech perception [@clayards2008; @feldman2009; @kleinschmidt-jaeger2015; @norris-mcqueen2008] and automatic speech recognition [@jurafsky-martin2000] that the cue distributions for each category follow a multivariate Gaussian distribution. In Figure \@ref(fig:model-perceptual-decision-making), this is indicated through the two parameters that are sufficient to specify each multivariate Gaussian (the category means $\mu_c$ and the category covariance matrices $\Sigma_c$).^[\label{fn:alternative-representational-changes} This assumption strikes a compromise between two common alternatives. A representationally less complex proposal introduces an independence assumption and describes linguistic categories as a combination of *independent uni*variate Gaussians for each cue dimension. The likelihoods from the univariate Gaussians is then combined through a cue integration model. This substantially reduces the degrees of freedom that need to be estimated---both for learners/listeners and the researcher [see @toscano-mcmurray2010]. A representationally more complex alternative dispenses with the Gaussian assumption and instead assumes that listeners store all previously experienced exemplars [or some pruned set of exemplars, @pierrehumbert2001]. This allows for more accurate (non-parametric) representations of previous experience but also introduces many additional degrees of freedom--both for learners/listeners and the researcher [for discussion, see @apfelbaum-mcmurray2015]. We expect the big picture conclusions we draw below to be largely independent of the specific model of category representations.] Bivariate Gaussian categories fit to the data from @chodroff-wilson2018 are shown in Figure \@ref(fig:show-representations-plots), along with the categorization functions of the f0-VOT space that would result from these categories prior to considering other effects on decision-making that we discuss in the next section.
 
@@ -156,35 +156,35 @@ margin <- list(
   pad = 0)
 
 for (j in 1:length(levels(factor(d.chodroff_wilson$poa)))){
-  if (RESET_FIGURES || 
+  if (RESET_FIGURES ||
       !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.density.panel_', j,'.png'))) ||
       !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.panel_', j,'.png')))) {
-    
+
     category.contrasts <- unlist(strsplit(levels(factor(d.chodroff_wilson$poa))[j], "-"))
-    output <- 
+    output <-
       make_MVG_from_data(data = d.chodroff_wilson, cues = c("VOT_centered", "f0_Mel_centered")) %>%
       filter(category %in% category.contrasts) %>%
       demonstrate_representations_3D(
-        model = ., 
-        n = n_points, 
-        cue1_range = VOT_range, 
-        cue2_range = f0_range, 
-        cue_names = cue_names, 
-        lambda = lambda, 
+        model = .,
+        n = n_points,
+        cue1_range = VOT_range,
+        cue2_range = f0_range,
+        cue_names = cue_names,
+        lambda = lambda,
         pi = pi)
-    
-    if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.density.panel_', j,'.png')))) { 
-      p.3d.density <- 
+
+    if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.density.panel_', j,'.png')))) {
+      p.3d.density <-
         plot_3D.density(
-          d.bivn = output$d.bivn, 
-          t.bivn = output$t.bivn, 
-          d.ellipse = output$d.ellipse, 
-          t.ellipse = output$t.ellipse, 
-          color = output$color, 
+          d.bivn = output$d.bivn,
+          t.bivn = output$t.bivn,
+          d.ellipse = output$d.ellipse,
+          t.ellipse = output$t.ellipse,
+          color = output$color,
           width = 700, height = 700) %>% layout(margin = margin)
       save_3Dfigure(p.3d.density, paste0('p.3d.density.panel_', j,'.png'))
     }
-    
+
     if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.panel_', j,'.png')))) {
       p.3d.categorization <- plot_3D.categorization(output$df.resp, width = 900, height = 900)
       save_3Dfigure(p.3d.categorization, paste0('p.3d.categorization.panel_', j,'.png'))
@@ -217,8 +217,8 @@ p(c | input) & = \frac{p(input | c) p(c)}{\Sigma_i p(input | c_i) p(c_i)} \\
 <!-- Could include context explicitly but that then requires additional explanation: p(category | input, context) = \frac{p(input | c, context) p(c | context)}{\Sigma_i p(input | c_i, context) p(c_i | context)}
 
 Of this model is further simplified by making the independence assumption that the likelihood of the category $c$ does not depend on the context. While this assumption is not always warranted, it is trivially true for the case studies we present below, none of which takes context into account ... -->
-  
-where the second row substitutes the Gaussian category likelihoods assumed in the previous section into the equation. In Bayesian models, $p(c_i)$ is generally assumed to reflect a rational estimate based on either the relative frequency of the category in this type of context in listeners' longterm experience or an estimate based on the expectations about the present context. The latter allows for the integration of *response biases* that go beyond capturing the relative frequency of categories in previous experience. In an experiment with a 2AFC task, for example, participants might expect both response options to occur about equally often. This might lead participants to adjust response biases based on the sequence of most recently observed categories. The simplified model in Figure \@ref(fig:model-perceptual-decision-making) captures these response biases---regardless of whether they reflect priors based on the relative frequency of categories, meta-reasoning about the structure of experiments, or other factors---through the parameters $\pi_{c}$. 
+
+where the second row substitutes the Gaussian category likelihoods assumed in the previous section into the equation. In Bayesian models, $p(c_i)$ is generally assumed to reflect a rational estimate based on either the relative frequency of the category in this type of context in listeners' longterm experience or an estimate based on the expectations about the present context. The latter allows for the integration of *response biases* that go beyond capturing the relative frequency of categories in previous experience. In an experiment with a 2AFC task, for example, participants might expect both response options to occur about equally often. This might lead participants to adjust response biases based on the sequence of most recently observed categories. The simplified model in Figure \@ref(fig:model-perceptual-decision-making) captures these response biases---regardless of whether they reflect priors based on the relative frequency of categories, meta-reasoning about the structure of experiments, or other factors---through the parameters $\pi_{c}$.
 For a $J$-way categorical outcome, this introduces $J-1$ degrees of freedom (since $\Sigma_i \pi_{c_i} = 1$) that cannot be independently estimated from phonetically annotated databases. These parameters can, however, often be set based on assumptions about the current task as well as on the extent to which prior expectations about natural language transfer to this task. For example, standard experimental designs provide participants with ample evidence that prior expectations based on the relative frequency of lexical items in natural language use do *not* transfer to the experiment [cf. @jaeger2010]. In such contexts, participants might quickly come to adjust their expectations and employ uniform response biases.
 
 In addition to response biases, the categorization model in Figure \@ref(fig:model-perceptual-decision-making) includes the possibility that listeners sometimes respond *in*dependent of the stimulus. As we will show below, this is a critical addition that affects what types of behavioral changes can be explained by changes in decision biases. Stimulus-independent responses can occur, for example, because of attentional lapses. On such occasions, the response is only influenced by the response biases. Lapsing models *without* consideration of response biases have previously been used in some analyses of exposure effect on speech perception [@clayards2008; @mcmurray-jongman2011; @kleinschmidt-jaeger2016cogsci]. For the present purpose, we further assume that these response biases on lapsing trials are identical to the response biases on non-lapsing trials. Assuming equal priors for all alternative categories, this yields the following simplified model of the joint effect of attentional lapses and response biases, where $\lambda$ is lapse rate---the probability of lapsing:^[Readers familiar with psychometric models might recognize the close relation between Equation \@ref(eq:posterior-probability-lapse) and the standard psychometric model in @wichmann-hill2001: $\gamma + (1-\gamma-\lambda) F(stimulus | \alpha, \beta)$. In the Wichmann and Hill model, $\gamma$ describes the floor and $1-\lambda$ describes the ceiling probability. In Equation \@ref(eq:posterior-probability-lapse), $\lambda$ is the lapse rate and $\pi_c$ determines how the lapses (and non-lapses) are affected by response biases, resulting in a floor of $\lambda \pi_c$ and a ceiling of $1 - \lambda(1 - \pi_c)$. For the special case of two Gaussian categories with identical variance along a unidimensional cue continuum, Equation \@ref(eq:posterior-probability-lapse) can be described by Wichmann and Hill's psychometric model if the perceptual model $F$ is set to be a logistic function with appropriate choice of its threshold $\alpha$ and slope $\beta$ [cf. @kleinschmidt-jaeger2015, p. 200]. For unequal variances and/or additional cue dimensions, additional $\beta$s are required.]  
@@ -227,7 +227,7 @@ In addition to response biases, the categorization model in Figure \@ref(fig:mod
 p(c | input) = (1 - \lambda) \frac{\mathcal{N}\!\left( input | \mu_c, \Sigma_c \right) \pi_c}{\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i} \right) \pi_{c_i}} + \lambda \frac{\pi_c}{\Sigma_i \pi_{c_i}}
 \end{equation}
 
-In Figure \@ref(fig:model-perceptual-decision-making), the fact that response bias affect listeners' responses in both lapsing and non-lapsing trials is indicated by the two arrows leaving from $\pi_c$. Figure \@ref(fig:show-lapse-bias-demonstration-plots) visualizes the effects of the two parameters $\lambda$ and $\pi_c$ for a 2AFC categorization task. 
+In Figure \@ref(fig:model-perceptual-decision-making), the fact that response bias affect listeners' responses in both lapsing and non-lapsing trials is indicated by the two arrows leaving from $\pi_c$. Figure \@ref(fig:show-lapse-bias-demonstration-plots) visualizes the effects of the two parameters $\lambda$ and $\pi_c$ for a 2AFC categorization task.
 
 (ref:show-lapse-bias-demonstration-plots) Illustrating the effects of $\lambda$ and $\pi_c$ on the posterior probability of /d/, using the two bivariate Gaussian categories of /d/ and /t/ shown in Figure \@ref(fig:show-representations-plots)b. The colored planes indicate the ceiling and flooring levels of posterior probability of /d/. Panel a) here is identical to Panel e) in Figure \@ref(fig:show-representations-plots)，with $\lambda$ = 0 and $\pi_{/d/}=.5$. **Top panel:** Differences in lapse rate $\lambda$ for a uniform bias of $\pi_{/d/}=.5$. As the lapse rate increases, the ceiling and flooring responses at the end points change while the categorization slope remains the same. **Bottom panel:** Differences in bias $\pi_{/d/}$ when the lapse rate $\lambda$ = .2. As the bias towards /d/ changes from 0.1 to 0.9, the categorization surface shifts upwards and to the right, resulting in more /d/ responses across the phonetic space.
 
@@ -235,19 +235,19 @@ In Figure \@ref(fig:model-perceptual-decision-making), the fact that response bi
 # Set image size
 p_width = 900
 p_height = 900
-  
+
 lambda = c(0, .2)
 pi = c(.1, .9)
 category.contrasts = c("/d/", "/t/")
 
 for (p in 1:length(lambda)) {
-  if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.panel_lambda=', p,'.png')))) { 
-    output <- 
+  if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.panel_lambda=', p,'.png')))) {
+    output <-
       make_MVG_from_data(data = d.chodroff_wilson, cues = c("VOT_centered", "f0_Mel_centered")) %>%
       filter(category %in% category.contrasts) %>%
       demonstrate_representations_3D(model = ., n_points, VOT_range, f0_range, cue_names, lambda[p], .5)
-    
-    p.3d.categorization <- 
+
+    p.3d.categorization <-
       plot_3D.categorization(output$df.resp, width = p_width, height = p_height) %>%
       add_surface(
         z = matrix(rep(max(output[["df.resp"]][["proportion_d"]]), 10000), ncol=100),
@@ -260,19 +260,19 @@ for (p in 1:length(lambda)) {
         scene = list(
           camera = list(
             eye = list(x = -0.5, y = -2.5, z = 0.1)))) # perspective good for showing categorization curve
-    
+
     save_3Dfigure(p.3d.categorization, paste0('p.3d.categorization.panel_lambda=', p,'.png'))
   }
 }
 
 for (p in 1:length(pi)) {
-  if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.panel_pi=', p,'.png')))) { 
-    output <- 
+  if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.panel_pi=', p,'.png')))) {
+    output <-
       make_MVG_from_data(data = d.chodroff_wilson, cues = c("VOT_centered", "f0_Mel_centered")) %>%
       filter(category %in% c("/d/", "/t/")) %>%
       demonstrate_representations_3D(model = ., n_points, VOT_range, f0_range, cue_names, .2, pi[p])
-    
-    p.3d.categorization <- 
+
+    p.3d.categorization <-
       plot_3D.categorization(output$df.resp, width = p_width, height = p_height) %>%
       add_surface(
         z = matrix(rep(max(output[["df.resp"]][["proportion_d"]]), 10000), ncol=100),
@@ -285,7 +285,7 @@ for (p in 1:length(pi)) {
         scene = list(
           camera = list(
             eye = list(x = -0.5, y = -2.5, z = 0.1)))) # perspective good for showing categorization curve
-    
+
     save_3Dfigure(p.3d.categorization, paste0('p.3d.categorization.panel_pi=', p,'.png'))
   }
 }
@@ -304,12 +304,12 @@ for (p in 1:length(pi)) {
 knitr::include_graphics(filename)
 ```
 
-The final part of ASP's categorization model is the decision rule that takes the posterior in Equation \@ref(eq:posterior-probability-lapse) as input and returns a response. Here, we follow a common assumption in research in speech perception and employ Luce's choice rule [@luce1959; for a comparison of decision rules, see @massaro-friedman1990]. Under this decision rule, the predicted distribution of responses is identical to the posterior in Equation \@ref(eq:posterior-probability-lapse). For example, in a 2AFC categorization task, a posterior probability of .3 for /d/ and .7 for /t/ would result in a /d/-response with .3 probability or a /t/-response with .7 probability. 
+The final part of ASP's categorization model is the decision rule that takes the posterior in Equation \@ref(eq:posterior-probability-lapse) as input and returns a response. Here, we follow a common assumption in research in speech perception and employ Luce's choice rule [@luce1959; for a comparison of decision rules, see @massaro-friedman1990]. Under this decision rule, the predicted distribution of responses is identical to the posterior in Equation \@ref(eq:posterior-probability-lapse). For example, in a 2AFC categorization task, a posterior probability of .3 for /d/ and .7 for /t/ would result in a /d/-response with .3 probability or a /t/-response with .7 probability.
 
 ## The change models ('adaptation'/'learning')
 This completes the description of the categorization model in Figure \@ref(fig:model-perceptual-decision-making). For any parameterization of $\lambda$, $\pi_c$, $\mu_c$, $\Sigma_c$, and $\mu$, this model takes acoustic stimuli as input and returns predictions about the expected response distribution (e.g., 30% /d/-responses and 70% /t/-responses). In practice, all but one of these parameters (the lapse rate $\lambda$) can either be independently estimated from phonetically annotated databases ($\mu_c$, $\Sigma_c$, and $\mu$) or assumed to have certain values (e.g., uniform response biases $\pi_c$), leaving a single parameter that must be estimated from perceptual data.
 
-Next, we extend this model to capture *changes* at any of the three mechanistic levels. That is, we specify *change models* that describe how $\pi_c$, $\mu_c$, $\Sigma_c$, and $\mu$ can change with exposure. It is these change models that make it possible to use ASP to derive predictions for human responses following exposure---for example, during the test phase of an experiment on perceptual recalibration or accent adaptation (see Figure \@ref(fig:overview-change)). Together, the three change models introduce a total of four new parameters that must be estimated from perceptual data, all of which can be understood as related to *learning rates*. 
+Next, we extend this model to capture *changes* at any of the three mechanistic levels. That is, we specify *change models* that describe how $\pi_c$, $\mu_c$, $\Sigma_c$, and $\mu$ can change with exposure. It is these change models that make it possible to use ASP to derive predictions for human responses following exposure---for example, during the test phase of an experiment on perceptual recalibration or accent adaptation (see Figure \@ref(fig:overview-change)). Together, the three change models introduce a total of four new parameters that must be estimated from perceptual data, all of which can be understood as related to *learning rates*.
 
 ### Modeling *changes* in normalization {#sec:change-normalization}
 
@@ -354,7 +354,7 @@ lambdas.demo <- c(0, .05)
 bias.demo <- c(.5, .5)
 
 # Ideal observers and adaptors
-m.io.VOT <- 
+m.io.VOT <-
   make_MVG_from_data(
   data = d.chodroff_wilson,
   category = "category",
@@ -369,8 +369,8 @@ m.ia.VOT <-
     lambda = lambdas.demo) %>%
   mutate(
     posterior = map2(
-      prior_kappa, 
-      prior_nu, 
+      prior_kappa,
+      prior_nu,
       ~ lift_MVG_ideal_observer_to_NIW_ideal_adaptor(x = m.io.VOT, kappa = .x, nu = .y))) %>%
   unnest(posterior)  %>%
   mutate(lapse_rate = lambda)
@@ -379,15 +379,15 @@ m.ia.VOT <-
 category_shift.demo <- 25
 n.demo <- 20
 
-d.exposure.demo <- 
+d.exposure.demo <-
   sample_MVG_data(
-    Ns = rep(n.demo, 2), 
-    mus = c(m.io.VOT$mu[[1]] + category_shift.demo, m.io.VOT$mu[[2]] + category_shift.demo), 
-    Sigmas = map2(m.io.VOT$Sigma, list(1, 2), ~ .x / .y), 
+    Ns = rep(n.demo, 2),
+    mus = c(m.io.VOT$mu[[1]] + category_shift.demo, m.io.VOT$mu[[2]] + category_shift.demo),
+    Sigmas = map2(m.io.VOT$Sigma, list(1, 2), ~ .x / .y),
     randomize.order = T) %>%
       rename(!! sym(cue.demo) := cue1) %>%
       mutate(category = ifelse(category == 1, "/d/", "/t/")) %>%
-  nest(data = everything()) 
+  nest(data = everything())
 
 # Visualization
 VOT_range <- c(0, 110)
@@ -399,7 +399,7 @@ C-CuRE and most other models of normalization assume that the theoretical quanti
 Some proposals for such functions include moving-window algorithms that estimate the mean as the sample mean over a finite number of the most recent observations [@lee2002; @zhang-peng2021]. Here, we model listeners' estimate of the talker-specific cue mean $\mu_n$ after $n$ observations from that talker as simple linear interpolation between the cue mean observed in previous longterm experience ($\mu_0$) and the mean observed in the sample observed from the unfamiliar talker ($\bar{x}$). This approach has the advantage that listeners can draw on prior experience when they do not yet have much (or any) data from an unfamiliar talker. They can then update the inferred cue mean as they observe further data from the talker [see discussion of the flexibility-stability trade-off in @kleinschmidt-jaeger2015, p. 178-182]:
 
 \begin{equation}\label{eq:normalization-change}
-\mu_n = \frac{1}{\kappa_0 + N} \left( \kappa_0 \mu_0 + N \bar{x} \right) = \frac{\kappa_0}{\kappa_0 + N} \mu_0 + \frac{N}{\kappa_0 + N}\bar{x} 
+\mu_n = \frac{1}{\kappa_0 + N} \left( \kappa_0 \mu_0 + N \bar{x} \right) = \frac{\kappa_0}{\kappa_0 + N} \mu_0 + \frac{N}{\kappa_0 + N}\bar{x}
 \end{equation}
 
 Figure \@ref(fig:graphical-model-changes-normalization) expresses Equation \@ref(eq:normalization-change) as a graphical model. The two parameters describing the input from the unfamiliar talker, $n$ and $\bar{x}$, are determined by the exposure data used in the experiment (the estimation of the cue means, $\bar{x}$ requires that the exposure stimuli are phonetically annotated). $\mu_0$ can be estimated from sufficiently large phonetically annotated databases of speech, essentially assuming that listeners have learned the overall cue means across talkers from previously experienced speech input. This is what we did to create Figure \@ref(fig:demonstrate-normalization), and it is what we assume in the remainder of this study. This leaves only one degree of freedom that is not independently determined: the relative weight of previous experience compared to the input received from the talker so far ($\kappa_0$). This is the parameter we vary in the case studies presented below to illustrate the types of results that can be explained through changes in normalization due to recent exposure.
@@ -410,7 +410,7 @@ One important characteristic of normalization that we will return to in the gene
 Just like listeners need to infer an unfamiliar talker's overall cue mean for normalization, listeners who learn talker-specific representations need to infer the *category* means and covariance matrices of the unfamiliar talker. That is, changes in representations can be described as the process of inferring the talker's category likelihood. A theory of this inference process---the ideal adaptor---is introduced in @kleinschmidt-jaeger2015. Bayesian belief-updating models based on this theory have been shown to provide a good qualitative and quantitative fit against human responses in experiments on perceptual recalibration [@kleinschmidt-jaeger2011; @kleinschmidt-jaeger2012; for closely related models, see @xie2021cognition], selective adaptation [@kleinschmidt-jaeger2016pbr], unsupervised or semi-supervised distributional learning [e.g., @kim2020; @kleinschmidt-jaeger2016cogsci; @theodore-monto2019; for closely related model, see @bejjanki2011; @clayards2008], and accent adapation [@hitczenko-feldman2016; for a closely related model, see @tan2021]. However, as outlined in the introduction, an explicit comparison with alternative models that change normalization or response biases has been lacking.
 
 The belief-updating model describes the inference of category means and category variances in ways that are conceptually similar to the type of interpolation we described in Equation \@ref(eq:normalization-change), by combining knowledge based on previously experienced speech input with the observations made from the unfamiliar talker. The specific instance of the model we use here---belief-updating over a Normal-Inverse-Wishart ($\mathcal{NW^{-1}}$) prior [@kleinschmidt-jaeger2015]---describes the uncertainty listeners have about the category means $\mu_c$ and category covariance matrices $\Sigma_c$ prior to any observations from an unfamiliar talker as a function of four variables [@murphy2012, p. 132-3]:
-  
+
 \begin{equation}\label{eq:niw-updating}
 \begin{split}
 p\left( \mu_c, \Sigma_c | \mathcal{D} \right) & = \mathcal{NW}^{-1} \left( \mu_c, \Sigma_c | \mathrm{m}_{c,0}, \kappa_{c,0}, \nu_{c,0}, \mathrm{S}_{c,0} \right) \\
@@ -418,11 +418,11 @@ p\left( \mu_c, \Sigma_c | \mathcal{D} \right) & = \mathcal{NW}^{-1} \left( \mu_c
 \end{split}
 \end{equation}
 
-The Normal part of the $\mathcal{NW^{-1}}$ model describes the uncertainty about the category mean $\mu_c$, the Inverse-Wishart part describes the uncertainty about the category covariance $\Sigma_c$. For the former, $\mathrm{m}_{c,0}$ is the mean of the normal distribution describing the uncertainty about the category mean $\mu_c$, and $\kappa_{c,0}$ indicates the extent to which listeners transfer their prior beliefs about the category mean to the present input. The larger $\kappa_{c,0}$ is, the more certain listeners are about the category mean even prior to any observation, and the less their inferences about the talker's category mean will be influenced by observations from the talker. Put differently, larger $\kappa_{c,0}$ predicts slower learning of changes in the category mean. Similarly, $\mathrm{S}_{c,0}$ is the scale matrix of the Inverse-Wishart---having a conceptually similar function to the mean $\mathrm{m}_{c,0}$ of the Normal distribution---and $\nu_{c,0}$ indicates extent to which listeners transfer their prior beliefs about the category covariance to the present input. Just as larger $\kappa_{c,0}$ predicts slower learning of changes in the category mean, larger $\nu_{c,0}$ predicts slower learning of changes in the category covariances. 
+The Normal part of the $\mathcal{NW^{-1}}$ model describes the uncertainty about the category mean $\mu_c$, the Inverse-Wishart part describes the uncertainty about the category covariance $\Sigma_c$. For the former, $\mathrm{m}_{c,0}$ is the mean of the normal distribution describing the uncertainty about the category mean $\mu_c$, and $\kappa_{c,0}$ indicates the extent to which listeners transfer their prior beliefs about the category mean to the present input. The larger $\kappa_{c,0}$ is, the more certain listeners are about the category mean even prior to any observation, and the less their inferences about the talker's category mean will be influenced by observations from the talker. Put differently, larger $\kappa_{c,0}$ predicts slower learning of changes in the category mean. Similarly, $\mathrm{S}_{c,0}$ is the scale matrix of the Inverse-Wishart---having a conceptually similar function to the mean $\mathrm{m}_{c,0}$ of the Normal distribution---and $\nu_{c,0}$ indicates extent to which listeners transfer their prior beliefs about the category covariance to the present input. Just as larger $\kappa_{c,0}$ predicts slower learning of changes in the category mean, larger $\nu_{c,0}$ predicts slower learning of changes in the category covariances.
 
 In practice, researchers can estimate the $\mathrm{m}_{c,0}$s and the $\mathrm{S}_{c,0}$s such that they yield the distribution of category means and covariances that would be expected given listeners' previous long-term experience (see SI, \@ref(sec:SI-models-changes-in-representations)). This leaves two degrees of freedom to model changes in each category's likelihood, $\kappa_{c,0}$ and $\nu_{c,0}$. We further follow previous work to make the simplifying assumption that all categories have the same prior $\kappa_{c,0}$ and $\nu_{c,0}$ [@kleinschmidt-jaeger2015; @kleinschmidt-jaeger2016cogsci], leaving just two degrees of freedom *across* all categories to model changes in representations. These are the two parameters we vary in the case studies presented below to illustrate the types of results that can be explained through changes in representations. Figure \@ref(fig:demonstrate-niw-prior-mu-sigma) demonstrates how $\kappa_{c,0}$ and $\nu_{c,0}$ affect the uncertainty about the category likelihoods for the simple case of univariate Gaussian categories along a single cue dimension (VOT). The case studies we present below employ bivariate Gaussian categories along f0 and VOT.
 
-(ref:demonstrate-niw-prior-mu-sigma)  Illustrating the effects of $\kappa_{c,0}$ and $\nu_{c,0}$ on the uncertainty about the category means $\mu_c$ and variances $\Sigma_c$ for univariate /d/ and /t/ categories along VOT. The four priors have identical expected category means ($\mathbf{E}(\mu_{/d/}), \mathbf{E}(\mu_{/t/})$) and variances ($\mathbf{E}(\sigma_{/d/}), \mathbf{E}(\sigma_{/t/})$)---set to match the average of the C-CuRE normalized category means and covariance matrices obtained from the data in @chodroff-wilson2018, and indicated by black points. The four priors differ, however, in their uncertainty about the category means and variances and thus in the changes they predict to occur when exposed to input from an unfamiliar talker. The more uncertain a listener is about the category means and variances of an unfamiliar talker (smaller $\kappa_{c,0}$ and $\nu_{c,0}$), the quicker that listener will adjust their expectations based on the inputs observed from that talker (see Figures \@ref(fig:demonstrate-changes-in-representations) and \@ref(fig:demonstrate-changes-in-representations-b)). Density lines are drawn at $10^{-3}$ to $10^{-10}$ at powers of 10. 
+(ref:demonstrate-niw-prior-mu-sigma)  Illustrating the effects of $\kappa_{c,0}$ and $\nu_{c,0}$ on the uncertainty about the category means $\mu_c$ and variances $\Sigma_c$ for univariate /d/ and /t/ categories along VOT. The four priors have identical expected category means ($\mathbf{E}(\mu_{/d/}), \mathbf{E}(\mu_{/t/})$) and variances ($\mathbf{E}(\sigma_{/d/}), \mathbf{E}(\sigma_{/t/})$)---set to match the average of the C-CuRE normalized category means and covariance matrices obtained from the data in @chodroff-wilson2018, and indicated by black points. The four priors differ, however, in their uncertainty about the category means and variances and thus in the changes they predict to occur when exposed to input from an unfamiliar talker. The more uncertain a listener is about the category means and variances of an unfamiliar talker (smaller $\kappa_{c,0}$ and $\nu_{c,0}$), the quicker that listener will adjust their expectations based on the inputs observed from that talker (see Figures \@ref(fig:demonstrate-changes-in-representations) and \@ref(fig:demonstrate-changes-in-representations-b)). Density lines are drawn at $10^{-3}$ to $10^{-10}$ at powers of 10.
 
 ```{r demonstrate-niw-prior-mu-sigma, fig.width = base.width * 4 + .5, fig.height= base.height + 1, fig.cap="(ref:demonstrate-niw-prior-mu-sigma)", warning=FALSE}
 plotlist = list(
@@ -475,7 +475,7 @@ my_plot_grid(plotlist = plotlist, legend.position = "top")
 \caption{Simplified graphical representation of Equation \ref{eq:niw-updating}, describing how category representations change with exposure. $\mu_{c,n}$ and $\Sigma_{c,n}$ here substitutes $\mu_c$ and $\Sigma_c$ in Figure \ref{fig:model-perceptual-decision-making} (removing those degrees of freedom from the categorization model). While we mark the prior ${\rm m}_{c,0}$ and ${\rm S}_{c,0}$ as latent variables, they can be estimated from phonetic databases (as we do in  Case Studies 1 and 2), leaving $\kappa_{c,0}$ and $\nu_{c,0}$ as the only degrees of freedom for this change model. A more detailed graphical model is provided in the SI (\ref{sec:SI-models-changes-in-representations}). \label{fig:graphical-model-changes-representations}}
 \end{figure}
 
-As listeners observe additional information from the unfamiliar talker, they update their beliefs (and thus uncertainty) about the distribution of that talker's category means and covariances by integrating their prior beliefs with the observed input from the unfamiliar talker. The updating formula for each parameter is given in the SI (\@ref(sec:SI-models-changes-in-representations)) and visualized in Figure \@ref(fig:model-belief-updating). Figures \@ref(fig:demonstrate-changes-in-representations) and \@ref(fig:demonstrate-changes-in-representations-b) illustrate how speech input from a talker with unexpected pronunciations changes listeners' beliefs about the category likelihoods and, consequently, their categorization functions. We exposed the four models from Figure \@ref(fig:demonstrate-niw-prior-mu-sigma)---each of which reflects the expected category means and variances derived from Chodroff and Wilson (2018), but with different certainty---to input from a talker with unexpected pronunciations of /d/ and /t/. Specifically, the talker's /d/ and /t/ categories were shifted by +`r category_shift.demo` msecs VOT compared to a (C-CuRE normalized) talker in Chodroff and Wilson' (2018) data. Additionally, the talker's /t/-category exhibited half the variance found in Chodroff and Wilson' data. Figure \@ref(fig:demonstrate-changes-in-representations) shows how the expected category likelihoods of the four models change as a function of input from the new talker. Models with weak prior beliefs about category means ($\kappa_{c,0}=4$) accommodate the unfamiliar speech input by changing beliefs about the category mean---shifting categories 'horizontally'. Models with weak prior beliefs about category variance ($\nu_{c,0}=4$) accommodate the unfamiliar speech input by changing beliefs about the category variance---expanding the category. This is particularly apparent for the /d/ category. Figure \@ref(fig:demonstrate-changes-in-representations-b) demonstrates the consequences of these changes for the expected categorization function. 
+As listeners observe additional information from the unfamiliar talker, they update their beliefs (and thus uncertainty) about the distribution of that talker's category means and covariances by integrating their prior beliefs with the observed input from the unfamiliar talker. The updating formula for each parameter is given in the SI (\@ref(sec:SI-models-changes-in-representations)) and visualized in Figure \@ref(fig:model-belief-updating). Figures \@ref(fig:demonstrate-changes-in-representations) and \@ref(fig:demonstrate-changes-in-representations-b) illustrate how speech input from a talker with unexpected pronunciations changes listeners' beliefs about the category likelihoods and, consequently, their categorization functions. We exposed the four models from Figure \@ref(fig:demonstrate-niw-prior-mu-sigma)---each of which reflects the expected category means and variances derived from Chodroff and Wilson (2018), but with different certainty---to input from a talker with unexpected pronunciations of /d/ and /t/. Specifically, the talker's /d/ and /t/ categories were shifted by +`r category_shift.demo` msecs VOT compared to a (C-CuRE normalized) talker in Chodroff and Wilson' (2018) data. Additionally, the talker's /t/-category exhibited half the variance found in Chodroff and Wilson' data. Figure \@ref(fig:demonstrate-changes-in-representations) shows how the expected category likelihoods of the four models change as a function of input from the new talker. Models with weak prior beliefs about category means ($\kappa_{c,0}=4$) accommodate the unfamiliar speech input by changing beliefs about the category mean---shifting categories 'horizontally'. Models with weak prior beliefs about category variance ($\nu_{c,0}=4$) accommodate the unfamiliar speech input by changing beliefs about the category variance---expanding the category. This is particularly apparent for the /d/ category. Figure \@ref(fig:demonstrate-changes-in-representations-b) demonstrates the consequences of these changes for the expected categorization function.
 
 <!-- \begin{figure} -->
   <!--   \centering -->
@@ -510,15 +510,15 @@ As listeners observe additional information from the unfamiliar talker, they upd
 ```{r demonstrate-changes-in-representations-preparation, message=FALSE, warning=FALSE}
 my_groups <- c("prior_kappa", "prior_nu")
 
-d.exposure <- 
+d.exposure <-
   d.exposure.demo %>%
   crossing(
-    m.ia.VOT %>% 
+    m.ia.VOT %>%
       filter(lambda == 0) %>%
       nest(prior = -all_of(my_groups))) %>%
   mutate(
     posterior = map2(
-      data, 
+      data,
       prior,
       ~ update_NIW_ideal_adaptor_incrementally(
         prior = .y,
@@ -528,7 +528,7 @@ d.exposure <-
         noise_treatment = "marginalize",
         lapse_treatment = "marginalize",
         method = "label-certain",
-        keep.update_history = T, 
+        keep.update_history = T,
         keep.exposure_data = T))) %>%
   select(-prior) %>%
   unnest(posterior) %>%
@@ -537,14 +537,14 @@ d.exposure <-
     mu1 = map(posterior, ~ .x$m[1]) %>% unlist(),
     mu2 = map(posterior, ~ .x$m[2]) %>% unlist(),
     sigma1 = map(posterior, ~ get_expected_Sigma_from_S(.x$S, .x$nu)[1]) %>% unlist(),
-    sigma2 = map(posterior, ~ get_expected_Sigma_from_S(.x$S, .x$nu)[2]) %>% unlist()) 
+    sigma2 = map(posterior, ~ get_expected_Sigma_from_S(.x$S, .x$nu)[2]) %>% unlist())
 
 d.exposure %<>%
   mutate(
     posterior.likelihood1 = map2(mu1, sigma1, ~ function(x) dnorm(x, .x, .y^.5)),
     posterior.likelihood2 = map2(mu2, sigma2, ~ function(x) dnorm(x, .x, .y^.5)),
     posterior.categorization_function = map(
-      posterior, 
+      posterior,
       ~ get_categorization_function_from_NIW_ideal_adaptor(.x, noise_treatment = "marginalize")))
 ```
 
@@ -553,7 +553,7 @@ d.exposure %>%
   ggplot(aes(x = !! sym(cue.demo))) +
   # categorization function
   geom_line(
-    data = . %>% 
+    data = . %>%
       distinct(!!! syms(my_groups), posterior.likelihood1, posterior.likelihood2, observation.n) %>%
       crossing(category = categories.demo, !! sym(cue.demo) := seq(VOT_range[1], VOT_range[2])) %>%
       ungroup() %>%
@@ -561,8 +561,8 @@ d.exposure %>%
         category == categories.demo[1],
         map2(posterior.likelihood1, !! sym(cue.demo), .f = mycall) %>% unlist(),
         map2(posterior.likelihood2, !! sym(cue.demo), .f = mycall) %>% unlist())),
-    aes(y = y, color = category, 
-        alpha = factor(paste(!! sym(my_groups[2]), sep = ", ")), 
+    aes(y = y, color = category,
+        alpha = factor(paste(!! sym(my_groups[2]), sep = ", ")),
         group = paste(category, !!! syms(my_groups), observation.n))) +
   # background rug
   geom_rug(
@@ -598,11 +598,11 @@ d.exposure %>%
   ggplot(aes(x = !! sym(cue.demo))) +
   # categorization function
   geom_line(
-    data = . %>% 
+    data = . %>%
       distinct(!!! syms(my_groups), posterior.categorization_function, observation.n) %>%
       crossing(!! sym(cue.demo) := seq(VOT_range[1], VOT_range[2])) %>%
       mutate(y = map2(posterior.categorization_function, !! sym(cue.demo), .f = mycall) %>% unlist()),
-    aes(y = y, alpha = factor(paste(!! sym(my_groups[2]), sep = ", ")), group = paste(!!! syms(my_groups), observation.n)), 
+    aes(y = y, alpha = factor(paste(!! sym(my_groups[2]), sep = ", ")), group = paste(!!! syms(my_groups), observation.n)),
     color = "black") +
   # background rug
   geom_rug(
@@ -630,11 +630,11 @@ d.exposure %>%
   # enter_fade() + exit_fade() +
   transition_states(observation.n, state_length = .5, transition_length = .5)
 ```
-  
+
 Unlike normalization, changes in category representations can capture *category-specific* changes in cue distributions. As we lay out in more detail in the general discussion, this makes representational changes computationally less parsimonious than normalization but also more expressive: there are ways in which talkers might differ from each other that can be better captured by changes in representations than by normalization (which of these two change mechanisms better describes *listeners'* abilities is, however, an open question).
 
 ### Modeling *changes* in decision-making {#sec:change-bias}
-Finally, we specify a linking hypothesis for changes in response biases. To the best of our knowledge, this problem has not previously been formalized for speech perception. The change model we propose is, however, very similar to the conceptual proposal of @sohoglu-davis2016, who describe adaptation to degraded speech as changes in decision-making. These changes are assumed to be a function of the prediction error experienced during processing, when the category label is encountered or inferred from context [for discussion, see also @davis-sohoglu2020]. The proposed change model for decision-making is thus a form of error-based learning, as implemented for other learning problems in connectionist [@rumelhart-mcclelland1986; @mcclelland-elman1986; @chang2006], Bayesian [@jaeger2019], information theoretic [@jaeger-snider2013], and predictive coding models [@sohoglu2012; @rao-ballard1999; for review, see @clark2013]. 
+Finally, we specify a linking hypothesis for changes in response biases. To the best of our knowledge, this problem has not previously been formalized for speech perception. The change model we propose is, however, very similar to the conceptual proposal of @sohoglu-davis2016, who describe adaptation to degraded speech as changes in decision-making. These changes are assumed to be a function of the prediction error experienced during processing, when the category label is encountered or inferred from context [for discussion, see also @davis-sohoglu2020]. The proposed change model for decision-making is thus a form of error-based learning, as implemented for other learning problems in connectionist [@rumelhart-mcclelland1986; @mcclelland-elman1986; @chang2006], Bayesian [@jaeger2019], information theoretic [@jaeger-snider2013], and predictive coding models [@sohoglu2012; @rao-ballard1999; for review, see @clark2013].
 
 Consider a typical experiment on accent adaptation. A listener unfamiliar with the L2 accent will initially miscategorize the L2-accented inputs. Typically, these errors will not be random but rather exhibit directionality. For example, in experiments on Mandarin-accented English, L1-English participants initially mishear voiced syllable-final stops as voiceless [e.g., hearing *lid* as *lit*, @flege1992; @xie2016jep]. Critically, experiments of this type tend to employ exposure stimuli that effectively label the intended category of the stimulus (e.g., *lemona_e*). Participants thus receive an error signal, indicating how much their expectations based on the acoustic input mismatched the intended (labeled) category. Participants can use this prediction error---operationalized here as the surprisal $I(c_i|x_i)$ of the category label given the acoustic input---to adapt the biases for all categories. For the present example, participants would increase the bias for the labeled category (/d/ in this example) and decrease the bias for all other categories, thereby improving their recognition accuracy for the L2-accented speech.^[We thank Zach Burchill for bringing this possibility to our attention.] With each exposure observation, the log-odds for the intended category increase by an amount jointly determined by the prediction error and the change/learning rate ($\beta_{\pi}$), with larger prediction errors and larger $\beta_{\pi}$s resulting in larger changes (for details, see SI, \@ref(sec:SI-models-changes-in-decision-making)). We note that this makes our change model for decision-making sensitive to the order of exposure, unlike the two change models presented so far. We return to this issue in our case studies. Figure \@ref(fig:graphical-model-changes-decision-making) expresses the change model for decision-making as a graphical model.
 
@@ -670,7 +670,7 @@ Figure \@ref(fig:demonstrate-lapse-bias-change) illustrates the proposed change 
 (ref:demonstrate-lapse-bias-change) Illustrating the effects of $\beta_{\pi}$ on changes in the categorization function (**Left:** posterior probability, **Right:** posterior log-odds). The model has the same uncertain prior beliefs about category mean and variances as the model in Figure \@ref(fig:demonstrate-niw-prior-mu-sigma)D ($\kappa_{c,0} = \nu_{c,0}=0$). Neither normalization nor prior beliefs about the categories changes as a function of exposure. We set the lapse rate $\lambda = 0$, the prior lapse biases to uniform ($\pi_{c,0}=.5$). The input to this change model is identical to what was used in Figures \@ref(fig:demonstrate-changes-in-representations) and \@ref(fig:demonstrate-changes-in-representations-b). In the left panel, orange arrows indicate changes in the category boundary (point of subjective equality) for $\beta_{\pi} = 1$. In the right panel, orange arrows indicate the distance between the posterior log-odds resulting from the two most extreme $\beta_{\pi}$s. This highlights the fact that changes to response biases have additive effects on the log-odds of `r categories.demo[1]` responses when $\lambda = 0$. Animation controls require Acrobat PDF reader.
 
 ```{r demonstrate-lapse-bias-change, fig.width=base.width*2.5 + 1.5, fig.height=base.height + .5, fig.cap="(ref:demonstrate-lapse-bias-change)", fig.show='animate', warning=FALSE, message=FALSE}
-d.exposure <- 
+d.exposure <-
   d.exposure.demo %>%
   crossing(
     beta = c(0.1, 1, 10),
@@ -682,9 +682,9 @@ d.exposure <-
         update_NIW_response_bias_incrementally(
           prior = .prior,
           beta = .beta,
-          exposure = .data, 
-          exposure.cues = cue.demo, 
-          # We are using the decision rule "proportional" since we want to simulate the behavior that is expected when averaging 
+          exposure = .data,
+          exposure.cues = cue.demo,
+          # We are using the decision rule "proportional" since we want to simulate the behavior that is expected when averaging
           # across lots of listeners. For the same reason, we are marginalizing over the consequences of attentional lapses and noise.
           decision_rule = "proportional",
           noise_treatment = "marginalize",
@@ -700,18 +700,18 @@ d.exposure <-
 d.exposure %<>%
   mutate(
     posterior.categorization_function = map2(
-      posterior, 
-      use_logit, 
+      posterior,
+      use_logit,
       ~ get_categorization_function_from_NIW_ideal_adaptor(.x, logit = .y, noise_treatment = "marginalize"))) %>%
   select(-c(posterior))
 
-p <- 
+p <-
   d.exposure %>%
   mutate(use_logit = factor(ifelse(use_logit, "log-odds", "probability"), levels = c("probability", "log-odds"))) %>%
   ggplot(aes(x = !! sym(cue.demo))) +
   # categorization function
   geom_line(
-    data = . %>% 
+    data = . %>%
       distinct(beta, use_logit, posterior.categorization_function, observation.n) %>%
       crossing(!! sym(cue.demo) := seq(VOT_range[1], VOT_range[2])) %>%
       mutate(y = map2(posterior.categorization_function, !! sym(cue.demo), .f = mycall) %>% unlist()),
@@ -745,10 +745,10 @@ p <-
         ymax = max(y),
         ymin = min(y)),
     aes(
-      x = ifelse(!! sym(cue.demo) == max(!! sym(cue.demo)), !! sym(cue.demo) + 3, !! sym(cue.demo) - 3), 
+      x = ifelse(!! sym(cue.demo) == max(!! sym(cue.demo)), !! sym(cue.demo) + 3, !! sym(cue.demo) - 3),
       xend = ifelse(!! sym(cue.demo) == max(!! sym(cue.demo)), !! sym(cue.demo) + 3, !! sym(cue.demo) - 3),
       y = ymin,
-      yend = ymax), 
+      yend = ymax),
     arrow = arrow(type = "closed", ends = "both", angle = 30, length = unit(0.05, "inches")),
     color = "orange", show.legend = F) +
   geom_text(
@@ -765,15 +765,15 @@ p <-
         ymax = max(y),
         y = max(y) - min(y)),
     aes(
-      x = ifelse(!! sym(cue.demo) == max(!! sym(cue.demo)), !! sym(cue.demo) +6, !! sym(cue.demo) -6), 
-      y = ymax - y/2, 
-      label = ifelse(use_logit == "log-odds", round(y, ifelse(use_logit == "log-odds", 1, 2)), ""), 
+      x = ifelse(!! sym(cue.demo) == max(!! sym(cue.demo)), !! sym(cue.demo) +6, !! sym(cue.demo) -6),
+      y = ymax - y/2,
+      label = ifelse(use_logit == "log-odds", round(y, ifelse(use_logit == "log-odds", 1, 2)), ""),
       hjust = ifelse(!! sym(cue.demo) == max(!! sym(cue.demo)), 0, 1)),
     color = "orange", show.legend = F) +
   geom_segment(
     data = . %>%
       filter(
-        use_logit == "probability", 
+        use_logit == "probability",
         beta == median(beta)) %>%
       droplevels() %>%
       crossing(!! sym(cue.demo) := seq(VOT_range[1], VOT_range[2])) %>%
@@ -786,7 +786,7 @@ p <-
   geom_segment(
     data = . %>%
       filter(
-        use_logit == "probability", 
+        use_logit == "probability",
         beta == median(beta)) %>%
       droplevels() %>%
       crossing(!! sym(cue.demo) := seq(VOT_range[1], VOT_range[2])) %>%
@@ -815,7 +815,7 @@ p
 (ref:demonstrate-lapse-bias-change-nonzero-lapse) Same as Figure \@ref(fig:demonstrate-lapse-bias-change) but for a lapse rate $\lambda=$ `r lambdas.demo[2]`. For such non-zero lapse rates, changes to the response bias have *non*-additive effects on the posterior log-odds. This means that, even in log-odds, changes in response biases can have effects that go beyond purely additive changes in the categorization functions ('shifts in category boundaries'). Animation controls require Acrobat PDF reader.
 
 ```{r demonstrate-lapse-bias-change-nonzero-lapse, fig.width=base.width*2.5 + 1.5, fig.height=base.height +.5, fig.cap="(ref:demonstrate-lapse-bias-change-nonzero-lapse)", fig.show='animate', warning=FALSE, message=FALSE}
-d.exposure <- 
+d.exposure <-
   d.exposure.demo %>%
   crossing(
     beta = c(0.1, 1, 10),
@@ -827,8 +827,8 @@ d.exposure <-
         update_NIW_response_bias_incrementally(
           prior = .prior,
           beta = .beta,
-          exposure = .data, 
-          exposure.cues = cue.demo, 
+          exposure = .data,
+          exposure.cues = cue.demo,
           decision_rule = "proportional",
           noise_treatment = "marginalize",
           lapse_treatment = "marginalize",
@@ -843,38 +843,42 @@ d.exposure <-
 d.exposure %<>%
   mutate(
     posterior.categorization_function = map2(
-      posterior, 
-      use_logit, 
+      posterior,
+      use_logit,
       ~ get_categorization_function_from_NIW_ideal_adaptor(.x, logit = .y, noise_treatment = "marginalize"))) %>%
   select(-posterior)
 
-p %+% 
+p %+%
   (d.exposure %>%
   mutate(use_logit = factor(ifelse(use_logit, "log-odds", "probability"), levels = c("probability", "log-odds"))))
 ```
 
-## Next in this theater
+# Next in this theater: overview of case studies
 Next, we present two case studies that illustrate the predictions of the three change models for two types of paradigms that have been particularly influential: perceptual recalibration (Case Study 1) and accent adaptation (Case Study 2). Figure \@ref(fig:ASP-predictions) summarizes how we will use ASP in these two case studies to derive predictions about listeners' behavior.
 
 \begin{figure}[h]
 \begin{center}
-\includegraphics[width=.7\columnwidth]{`r get_path("../figures/diagrams/predictive-power-simulations.png")`}
+\includegraphics[width=.99\columnwidth]{`r get_path("../figures/diagrams/predictive-power-simulations.png")`}
 \caption{The ASP framework can be used to derive predictions, or to fit to human behavior. ASP's change models describe how ASP's categorization model is predicted to change based on the inputs experienced during exposure. The updated categorization model can then be used to predict listeners' response distributions for any test token (as we do in Case Study 1), and/or to predict listeners' recognition accuracy (as we do in Case Study 2). As described in the text, researchers can choose to set some of ASP's parameters based on phonetic databases. By doing so, researchers commit to the assumptions (i) that listeners learn and store some statistics of previously experienced speech input, and (ii) that the database is a sufficiently good approximation of those statistics for an average listener in the experiment. Setting parameters based on phonetic databases reduces the degrees of freedom and functional flexibility of ASP's change models, leading to stronger (more easily falsifiable) predictions. This is the approach we employ in our case studies.}\label{fig:ASP-predictions}
 \end{center}
 \end{figure}
 
 ASP can be used to predict changes in perception from *weighted combinations* of all three change mechanisms. In the general discussion, we outline why this ability to make predictions based on combinations of mechanisms will likely be critical in moving the field forward. In that context, we discuss how future work can use ASP to address more advanced questions about the factors that determine the relative engagement of the three mechanisms---by investigating how the ASP parameters ($\kappa_0$, $\kappa_{c,0}$, $\nu_{c,0}$, and $\beta_{\pi}$) that best explain human behavior depend on factors such as stimulus properties, task demands, and individual differences between listeners.
 
-For our two case studies, however, we deliberately only consider ASP models that employ one of the three change mechanisms at a time. This allows us to assess which of the three mechanisms are *(in)sufficient* to explain the signature results of the two paradigms. Of particular theoretical interest is whether it is indeed the case that the computationally least parsimonious change model, changes in category representations, is the only model that can explain the signature results of both perceptual recalibration and accent adaptation paradigms (as seems to be often assumed). Beyond this specific question, we use these case studies to (i) illustrate how intuitions about the types of results each mechanism can(not) account for can be misleading, and (ii) to show how ASP can be used to inform researchers' intuitions, by predicting the effects of recent exposure on subsequent speech perception.
+For our two case studies, however, we deliberately only consider ASP models that employ one of the three change mechanisms at a time. This allows us to assess which of the three mechanisms are *sufficient*, and which ones are *insufficient*, to explain the signature results of the two paradigms. Of particular theoretical interest is whether it is indeed the case that the computationally least parsimonious change model, changes in category representations, is the only model that can explain the signature results of both perceptual recalibration and accent adaptation paradigms (as seems to be often assumed). 
+
+Beyond this specific question, we use the two case studies to (i) illustrate how intuitions about the types of results each mechanism can(not) account for can be misleading, and (ii) to show how ASP can be used to inform researchers' intuitions, by predicting the effects of recent exposure on subsequent speech perception. For these reasons, both case studies focus on *qualitative comparison* of ASP's predictions against the signature results from each paradigm, documented in previously published perception experiments (in the general discussion, we show how ASP can be used to compare change models in terms of their quantitative fit against listeners' behavior).
+
+The two case studies build on each other, each introducing new insights. Experiments on perceptual recalibration use comparatively simple stimuli designs, intended to elicit simple boundary shifts along a uni-dimensional perceptual continuum. And while the specific tasks employed during exposure and test can vary across studies, the general stimulus design is remarkably similar across experiments. This allows us to use Case Study 1 to introduce many of the relevant concepts while keeping the paradigm comparatively simple. Case Study 2 then introduces additional complexities that come with modeling *natural* accents, which can deviate from listeners' expectations in heterogeneous ways across multiple acoustic-phonetic dimensions. This allows us to work our way to an important insight: while all three change mechanisms predict that exposure should facilitate---or at least not hinder---subsequent processing of the same accent, the exact effects of exposure are predicted to depend on the specific accent properties and how they relate to listeners' prior expectations.
 
 ```{r MVG-make-models}
 cues <- c("VOT_centered", "f0_Mel_centered")
 
 items <- c("DOLLARS","TOPIC","DOES","TUNNELS","DAUGHTER","TALKING","DIED","TIME","DEFINITELY", "TELL", "DAY","TAKE", "DEAL", "TEACHER","DON'T","TOTALLY","DO","TOO")
 
-# sample a balanced set of voiced and voiceless tokens for each place of articulation 
+# sample a balanced set of voiced and voiceless tokens for each place of articulation
 # the specific number is determined by the min number of tokens per category for that contrast
-d.chodroff_wilson.selected <- 
+d.chodroff_wilson.selected <-
   d.chodroff_wilson %>%
   filter(Word %in% items) %>%
   group_by(Talker, category) %>%
@@ -882,10 +886,10 @@ d.chodroff_wilson.selected <-
   group_by(Talker) %>%
   # subsample n tokens, as determined by category with fewer tokens
   mutate(
-    n_min = min(n), 
+    n_min = min(n),
     n_category = n_distinct(category)) %>%
   # select talkers with both /d/ and /t/ observations
-  filter(n_category == 2) %>% 
+  filter(n_category == 2) %>%
   group_by(Talker, category) %>%
   sample_n(size = first(n_min)) %>%
   ungroup() %>%
@@ -893,7 +897,7 @@ d.chodroff_wilson.selected <-
       c("VOT", "f0", "f0_Mel", "f0_semitones"),
       list("centered" = function(x) apply_ccure(x, data = .)))
 
-prior_marginal_VOT_f0_stats <- 
+prior_marginal_VOT_f0_stats <-
   d.chodroff_wilson.selected %>%
   group_by(Talker) %>%
   summarise(across(c(VOT, f0_Mel), mean)) %>%
@@ -904,11 +908,9 @@ prior_marginal_VOT_f0_stats <-
     x_var_f0 = var(f0_Mel),
     x_cov = list(cov(cbind(VOT, f0_Mel))))
 
-m.VOT_f0_MVG <- 
+m.VOT_f0_MVG <-
   make_MVG_from_data(
-  data = d.chodroff_wilson.selected, 
+  data = d.chodroff_wilson.selected,
   category = "category",
-  cues = cues) 
+  cues = cues)
 ```
-
-

@@ -431,21 +431,191 @@ Next, we model the effects of changes in decision-making. Such changes have rare
 
 (ref:PR-result-changes-in-decision-making) Predictions of a model that derives perceptual recalibration as changes in decision-making. Predicted categorization responses are shown for the `r length(test_locations)` test locations after `r paste(categories.PR, collapse = "- and")`-shifted exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda$). The response biases towards `r categories.PR[1]` that results from $\beta_{\pi}$ are shown in the bottom row for each of the two exposure conditions, and are identical within each column (when all trials are lapses, as in the bottom row, the response distribution is identical to the response biases). 
 
-```{r PR-result-changes-in-decision-making, fig.width= base.width * 5, fig.height= base.height * 5 +.5, fig.cap="(ref:PR-result-changes-in-decision-making)"}
-d.PR <- 
-  d.PR.exposure %>%
-  add_prior_and_posterior_with_changed_response_biases_based_on_exposure(prior = m.ia.VOT_f0.PR) %>%
-  add_test_tokens(d.PR.test) %>%
-  add_categorization_functions() %>%
-  group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
-  add_categorization()
+```{r study-models-common-functions}
+# This and the next function collect code chunks that are repeated a few times below
+# (if test is null it won't be added and it's assumed that there already is a nested
+# column of test tokens called  x and another column indicating the mapping from x 
+# to intended categories; this is required only for the normalization updating).
+add_test_and_categorize <- function(data, test = NULL) {
+  assert_that(is_tibble(data))
+  assert_that(
+    "posterior" %in% names(data),
+    msg = "data must contain a column posterior that is a nested ideal adaptor.")
+  if (is.null(test)) {
+    assert_that(
+      all(c("x", "Item.Intended_category") %in% names(data)),
+      msg = "If test is NULL, data must contains column x with nested test tokens and Item.Intended_category with mappings of x to the intended/correct category.")
+    assert_that(is_list(data$x))
+  }
+  
+  data %>%
+    { if (!is.null(test)) add_test_tokens(., test) else select(., -Item.Intended_category) } %>%
+    add_categorization() %>%
+    # Keep only posterior of intended category
+    { if (!is.null(test)) {
+      left_join(
+        .,
+        test %>%
+          select(x, Item.Intended_category), 
+        by = "x") 
+    } else {
+      left_join(
+        .,
+        first(data$Item.Intended_category),
+        by = "x")
+    }} %>%
+    filter(category == Item.Intended_category)
+}
+```
 
+```{r study-models-changes-in-decision-making-functions, echo=FALSE, message=FALSE, warning=FALSE}
+update_bias_and_categorize_test <- function(
+  prior,
+  lapse_rate,
+  beta_pi,
+  exposure,
+  test,
+  cues = c("VOT", "f0_Mel"),
+  control = list(
+    min.simulations = 5, 
+    max.simulations = 10, 
+    step.simulations = 1, 
+    target_accuracy_se = .005),
+  add_updates = NULL,
+  verbose = FALSE
+) {
+  u <- 
+    lapply(
+    X = as_list(1:control[["min.simulations"]]),
+    FUN = function(x) 
+      update_NIW_response_bias_incrementally(
+        prior = prior,
+        beta = beta_pi,
+        # Reshuffle expose on each run
+        exposure = exposure %>% sample_frac(1, replace = F), 
+        exposure.category = "Item.Category",
+        exposure.cues = cues,
+        decision_rule = "proportional",
+        noise_treatment = "marginalize",
+        lapse_treatment = "marginalize",
+        keep.update_history = FALSE,
+        keep.exposure_data = FALSE) %>%
+      mutate(lapse_rate = .env$lapse_rate) %>%
+      nest(posterior = everything()) %>%
+      mutate(sim = x) %>%
+      add_test_and_categorize(test)) %>%
+    reduce(bind_rows) 
+  
+  # If existing updates were provided add them to the ones just created before
+  # checking whether one of the convergence criteria is reached.
+  if (!is.null(add_updates))
+    u %<>%
+    mutate(sim = sim + n_distinct(add_updates$sim)) %>%
+    bind_rows(add_updates)
+
+  u.test <- 
+    u %>%
+    group_by(sim) %>%
+    summarise(response.mean = mean(response)) %>%
+    ungroup() %>%
+    summarise(
+      n.sims_so_far = n_distinct(sim),
+      min.additional_simulations = .env$control[["min.simulations"]],
+      max.additional_simulations = .env$control[["max.simulations"]] - min.additional_simulations,
+      step.simulations = .env$control[["step.simulations"]],
+      target_accuracy_se = .env$control[["target_accuracy_se"]],
+      lapse_rate = first(.env$prior$lapse_rate), 
+      response.mean.mean = mean(response.mean),
+      response.mean.se = sd(response.mean) / sqrt(n_distinct(sim)))
+
+  if (verbose)
+    u.test %>%
+    print()
+  
+  
+  # If max simulations not yet reached AND target_se not yet reached, run more
+  # simulations.
+ if (control[["min.simulations"]] < control[["max.simulations"]] & (u.test %>%
+    pull(response.mean.se) %>%
+    { . > control[["target_accuracy_se"]]})) {
+
+   u <-
+     update_bias_and_categorize_test(
+       prior = prior,
+       lapse_rate = lapse_rate,
+       beta_pi = beta_pi,
+       exposure = exposure,
+       test = test,
+       cues = cues,
+       verbose = verbose,
+       control = list(
+         min.simulations = control[["step.simulations"]], # after running the minimal number of simulations (min.simulations), increase min.simulations by a few steps (step.simulations) until the max.simulations is reached or the standard error of the response mean (response.mean.se) reaches the predetermined criteria
+         max.simulations = control[["max.simulations"]] - control[["min.simulations"]],
+         step.simulations = control[["step.simulations"]],
+         target_accuracy_se = control[["target_accuracy_se"]]),
+       add_updates = u)
+
+ } 
+  return(u)
+}
+```
+
+```{r model-PR-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE}
+simulation.control <-
+  list(
+    min.simulations = 2, 
+    max.simulations = 3, 
+    step.simulations = 1, 
+    target_accuracy_se = .002)
+
+d.PR <- d.PR.exposure %>%
+  nest(data = -c(Condition, Subject)) %>%
+  crossing(
+    posterior.lapse_rate = c(.0005, .005, .05, .5, 1),
+    beta_pi = c(0, .01, .05, .1, .2, .8)) %>% 
+  crossing(
+    m.ia.VOT_f0.PR %>%
+      filter(prior_kappa == max(prior_kappa), prior_nu == max(prior_nu)) %>%
+      nest(prior = everything())) %>%
+  group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
+  group_modify(
+    ~ update_bias_and_categorize_test(
+      prior = .x$prior[[1]],
+      lapse_rate = .x$posterior.lapse_rate,
+      beta_pi = .x$beta_pi,
+      exposure = .x$data[[1]],
+      test = d.PR.test %>% mutate(Item.Intended_category = "/d/") %>% # here there is no intended category, but we would like to get the probability of /d/ response
+        filter(Condition == .x$Condition),
+      control = simulation.control), 
+    .keep = TRUE, verbose = T) %>%
+  mutate_at(vars(starts_with("prior_")), ~ factor(.x)) %>%
+  mutate_at(vars(starts_with("prior_")), fct_rev) %>%
+  ungroup() %>%
+  filter(category == categories.PR[1]) %>%
+  mutate(
+   posterior.lapse_bias1 = unlist(map(posterior, ~ .x %>% filter(category == categories.PR[1]) %>% pull(lapse_bias))),
+   posterior.lapse_bias2 = unlist(map(posterior, ~ .x %>% filter(category == categories.PR[2]) %>% pull(lapse_bias)))) %>%
+  ungroup() %>%
+  group_by(Condition, Subject, posterior.lapse_rate, beta_pi, observationID, x, category) %>%
+  summarise(
+    response.n_sims = n_distinct(sim),
+    response.se = sd(response) / sqrt(response.n_sims),
+    response = mean(response),
+    posterior.lapse_bias1.se = sd(posterior.lapse_bias1) / sqrt(response.n_sims),
+    posterior.lapse_bias2.se = sd(posterior.lapse_bias2) / sqrt(response.n_sims),
+    posterior.lapse_bias1 = mean(posterior.lapse_bias1),
+    posterior.lapse_bias2 = mean(posterior.lapse_bias2)
+  ) %>%
+  relocate(
+   !!! syms(setdiff(names(.), c("response", "response.se", "response.n_sims"))),
+   response, response.se, response.n_sims) %>%
+  ungroup()
+```
+
+
+```{r PR-result-changes-in-decision-making, fig.width= base.width * 5, fig.height= base.height * 5 +.5, fig.cap="(ref:PR-result-changes-in-decision-making)"}
 p.PR.results %+% 
-  (d.PR %>%
-     filter(category == categories.PR[1]) %>%
-     mutate(
-       posterior.lapse_bias1 = map(posterior, ~ .x %>% filter(category == categories.PR[1]) %>% pull(lapse_bias)),
-       posterior.lapse_bias2 = map(posterior, ~ .x %>% filter(category == categories.PR[2]) %>% pull(lapse_bias)))) +
+  d.PR +
   geom_text(
     data = . %>%
       group_by(Condition, posterior.lapse_rate, beta_pi) %>%
@@ -492,7 +662,6 @@ p.PR.results %+%
 #       cols = .(unlist(lapse_bias_expression)),
 #       rows = lambda[posterior] == ~.(posterior.lapse_rate)))
 ```
-
 Figure \@ref(fig:PR-result-changes-in-decision-making) shows the effects of changes in response biases for lapse rates ranging from negligible lapse rates ($\lambda = .0005$, top row) to a scenario in which listeners always lapse ($\lambda = 1$). In the latter---rather implausible---edge case, listeners' responses only reflect response biases and are completely stimulus-independent (bottom row). For reference, lapse rates for perception experiments like the ones modeled here typically fall between 1-10% [e.g., @clayards2008 constrained lapse rates to be $<5$%; @kleinschmidt-jaeger2016cogsci report a best-fitting value of 5%].
 
 The primary insight from Figure \@ref(fig:PR-result-changes-in-decision-making) is that changes in response biases can account for the type of boundary shift that is observed in perceptual recalibration experiments. This shows that the signature result of perceptual recalibration experiments is ambiguous between two explanations that evoke very different cognitive architectures. For this case study, perhaps the closest match to the findings from Kraljic and Samuel (2006) is observed for plausible lapse rates up to 5% and small changes in response bias (second or third column, top rows). 

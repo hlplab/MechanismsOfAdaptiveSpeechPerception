@@ -18,7 +18,7 @@ We used the following R packages to create this document: `r cite_r("latex-stuff
 
 The 3D figures require the [\texttt{orca} commandline tool](https://github.com/plotly/orca#installation). It is recommended that you use "Method 4" to install the standalone binaries. Some of the R libraries evoked in the R markdown code might require additional freely available non-R software (e.g., the R library \texttt{sf} requires non-R *gdal*). For line-by-line execution of this document, this is all you should need. If installation of any R library fails, follow the prompts in the error message.
 
-If you want to knit the document into a PDF file, you will some additional packages. First, make sure that your version of the R package \texttt{tinytex} is up-to-date. Then run \texttt{tinytex::install_tinytex()} to install latex on your computer and/or link it to R. As of 12/20/2022, it was also necessary to run \texttt{tinytex::tlmgr_install('biber')}, though that step might become unnecessary in the future. Next, download the IPA font [SIL Doulos](https://software.sil.org/doulos/download/), which is required for the IPA symbols in the paper. 
+If you want to knit the document into a PDF file, you will some additional packages. First, make sure that your version of the R package \texttt{tinytex} is up-to-date. Then run \texttt{tinytex::install\_tinytex()} to install latex on your computer and/or link it to R. As of 12/20/2022, it was also necessary to use \texttt{tinytex::tlmgr\_install('biber')} to install \texttt{biber}, though that step might become unnecessary in the future. Pandoc version 2.19.2 was tested. If you do not have at least that version then update RStudio, which will also install the newest version of pandoc (you can check by running \texttt{rmarkdown::pandoc\_version()}). Next, download the IPA font [SIL Doulos](https://software.sil.org/doulos/download/), which is required for the IPA symbols in the paper. 
 
 # A database of natural productions of word-initial stop voicing in L1 US English [@chodroff-wilson2018] {#sec:SI-chodroff}
 All case studies presented in the main text are based on a phonetically annotated database of word-initial stop voicing in L1 US English [@chodroff-wilson2018]. Chodroff and Wilson (2018, p. 3) describe the database:
@@ -547,14 +547,6 @@ scale_variable <- function(x){
 }
 
 
-set.seed(5612)
-
-categories.demo <- c("/d/", "/t/")
-cue.demo <- "VOT_scaled"
-
-# Lapse model
-bias.demo <- c(.5, .5)
-
 d.chodroff_wilson.selected %<>%
   ungroup() %>%
   mutate(mVOT = mean(VOT)) %>%
@@ -562,7 +554,7 @@ d.chodroff_wilson.selected %<>%
   mutate(VOT_scaled = scale_variable(VOT))
   
 make_asymmetric_variance_exposure_design <- function(
-  # Ideal observer describing the true perceptual system for two categories.
+    # Ideal observer describing the true perceptual system for two categories.
   experimenter.ideal_observer,
   experimenter.variability_reduction = my_experimenter.variability_reduction,
   exposure.tokens.L1.n = n.exposure.token,
@@ -571,8 +563,8 @@ make_asymmetric_variance_exposure_design <- function(
   if (!quiet) message(
     paste0("Making exposure design with ", exposure.tokens.L1.n, " ",  levels(factor(experimenter.ideal_observer$Condition))[1], " tokens and ", exposure.tokens.L2.n, " ",  levels(factor(experimenter.ideal_observer$Condition))[2], " tokens."))
   
-    # Create basic tibble
-tibble(
+  # Create basic tibble
+  tibble(
     Phase = "exposure",
     ItemID = as.character(1:(n.exposure.token + n.exposure.token)),
     Item.Type = factor(c(rep("Condition-1", n.exposure.token), rep("Condition-2", n.exposure.token)))) %>%
@@ -583,11 +575,11 @@ tibble(
       x = map2(
         Item.Type,
         Item.Category, ~ case_when(
-   .x == "Condition-1" & .y == experimenter.ideal_observer$category[[1]] ~ rmvnorm(1,  experimenter.ideal_observer$mu[[1]],  experimenter.ideal_observer$Sigma[[1]]),
-   .x == "Condition-1" & .y == experimenter.ideal_observer$category[[2]] ~ rmvnorm(1,  experimenter.ideal_observer$mu[[2]],  experimenter.ideal_observer$Sigma[[2]]),
-   .x == "Condition-2" & .y == experimenter.ideal_observer$category[[1]] ~ rmvnorm(1,  experimenter.ideal_observer$mu[[3]],  experimenter.ideal_observer$Sigma[[3]]),
-   .x == "Condition-2" & .y == experimenter.ideal_observer$category[[2]] ~ rmvnorm(1,  experimenter.ideal_observer$mu[[4]],  experimenter.ideal_observer$Sigma[[4]]),
-   T ~ NA_real_))) %>%
+          .x == "Condition-1" & .y == experimenter.ideal_observer$category[[1]] ~ rmvnorm(1,  experimenter.ideal_observer$mu[[1]],  experimenter.ideal_observer$Sigma[[1]]),
+          .x == "Condition-1" & .y == experimenter.ideal_observer$category[[2]] ~ rmvnorm(1,  experimenter.ideal_observer$mu[[2]],  experimenter.ideal_observer$Sigma[[2]]),
+          .x == "Condition-2" & .y == experimenter.ideal_observer$category[[1]] ~ rmvnorm(1,  experimenter.ideal_observer$mu[[3]],  experimenter.ideal_observer$Sigma[[3]]),
+          .x == "Condition-2" & .y == experimenter.ideal_observer$category[[2]] ~ rmvnorm(1,  experimenter.ideal_observer$mu[[4]],  experimenter.ideal_observer$Sigma[[4]]),
+          T ~ NA_real_))) %>%
     mutate(
       Condition = Item.Type,
       VOT = unlist(map(x, ~ .x[1])),
@@ -595,8 +587,8 @@ tibble(
 }
 
 make_asymmetric_variance_test_design = function(
-  experimenter.ideal_observer,
-  n_test = 30
+    experimenter.ideal_observer,
+    n_test = 30
 ) {
   x <- 
     c(
@@ -607,8 +599,7 @@ make_asymmetric_variance_test_design = function(
       rmvnorm(
         n_test,
         m.io.VOT.asym_var$mu[[4]], 
-        m.io.VOT.asym_var$Sigma[[4]])
-      )
+        m.io.VOT.asym_var$Sigma[[4]]))
   
   d.test <-
     tibble(
@@ -622,7 +613,7 @@ make_asymmetric_variance_test_design = function(
       Item.Category = NA,
     ) %>%
     crossing(  
-       Condition = factor(experimenter.ideal_observer$Condition)) %>%
+      Condition = factor(experimenter.ideal_observer$Condition)) %>%
     droplevels()
 }
 
@@ -630,16 +621,16 @@ make_asymmetric_variance_test_design = function(
 ```
 
 ```{r model-changes-in-representations-asym-var, message=FALSE, warning=FALSE, eval = FALSE}
+set.seed(5612)
 
-# set.seed(5612)
-# 
-# categories.demo <- c("/d/", "/t/")
-# cue.demo <- "VOT_scaled"
-# 
-# cue.renamed <- "VOT"
-# # Lapse model
-# bias.demo <- c(.5, .5)
-# lambdas.demo <- 0
+categories.demo <- c("/d/", "/t/")
+cue.demo <- "VOT_scaled"
+
+cue.renamed <- "VOT"
+# Lapse model
+bias.demo <- c(.5, .5)
+lambdas.demo <- 0
+
 
 # Ideal observers and adaptors
 m.io.VOT.con1 <- 
@@ -819,6 +810,7 @@ d.representations.asym_var <-
 #   group_by(Condition, !!! syms(my_groups), category, response.overall) %>%
 #   summarise(response = mean(response))
 
+
 # plot predictions from the representations model
 basic_AA_result_plot(d.representations.asym_var) +
   geom_text(
@@ -853,6 +845,7 @@ get_accuracy_from_updated_normalization.asym_var <- function(
     model %>% 
     droplevels() %>%
     lift_MVG_ideal_observer_to_NIW_ideal_adaptor(kappa = max_kappa_nu, nu = max_kappa_nu)
+
 
   u <- 
     update_normalization_and_categorize_test(
@@ -898,6 +891,7 @@ m.ia.VOT.asym_var.normalization <-
       ~ lift_MVG_ideal_observer_to_NIW_ideal_adaptor(x = m.io.VOT.asym_var, kappa = .x, nu = .y))) %>%
   unnest(posterior)  %>%
   mutate(lapse_rate = lambda)
+
 
 my_groups <- c("prior_kappa.normalization")
 

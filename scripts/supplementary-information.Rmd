@@ -546,39 +546,6 @@ scale_variable <- function(x){
   (x - mean(x, na.rm=TRUE)) / sd(x, na.rm=TRUE)
 }
 
-# Put figure here.
-# Exposure condition 1
-mu_A.exposure1 <- m.VOT_f0_MVG %>% filter(category == "/d/") %>% pull(mu) %>% .[[1]] %>% .[1]
-Sigma_A.exposure1 <- m.VOT_f0_MVG %>% filter(category == "/d/") %>% pull(Sigma) %>% .[[1]] %>% .[1]
-mu_B.exposure1 <- m.VOT_f0_MVG %>% filter(category == "/t/") %>% pull(mu) %>% .[[1]] %>% .[1]
-Sigma_B.exposure1 <- m.VOT_f0_MVG %>% filter(category == "/t/") %>% pull(Sigma) %>% .[[1]] %>% .[1]
-
-set.seed(5612)
-
-categories.demo <- c("/d/", "/t/")
-cue.demo <- "VOT_centered"
-
-# Lapse model
-bias.demo <- c(.5, .5)
-
-# Ideal observers and adaptors
-m.io.VOT.con1 <- 
-  make_MVG_from_data(
-  data = d.chodroff_wilson.selected,
-  category = "category",
-  cues = cue.demo) %>%
-  filter(category %in% categories.demo) %>%
-  lift_MVG_to_MVG_ideal_observer(
-    prior = bias.demo, 
-    lapse_rate = 0, 
-    lapse_bias = bias.demo, 
-    Sigma_noise = matrix(80, nrow = 1, dimnames = list("VOT_centered")))
-
-m.io.VOT.con2 <- m.io.VOT.con1 # create two conditions that have identical category means, but switched category variance
-m.io.VOT.con2$Sigma[1] = m.io.VOT.con1$Sigma[2] 
-m.io.VOT.con2$Sigma[2] = m.io.VOT.con1$Sigma[1] 
-m.io.VOT.asym_var <- bind_rows(m.io.VOT.con1 %>% mutate(Condition = "Condition-1"), 
-                               m.io.VOT.con2 %>% mutate(Condition = "Condition-2"))
 
 d.chodroff_wilson.selected %<>%
   ungroup() %>%
@@ -651,17 +618,6 @@ make_asymmetric_variance_test_design = function(
 }
 
 
-## Trying to use the plot_expected_categories_density1D function here, didn't work
-# colnames(m.io.VOT.asym_var) <- c("category","m", "S","prior", "lapse_rate", "lapse_bias", "Sigma_noise", "Condition")
-# m.io.VOT.asym_var.belief <- m.io.VOT.asym_var %>%
-#   mutate(kappa = 4, nu = 4)
-# plot_expected_categories_density1D(m.io.VOT.asym_var.belief, d.asym_var.exposure %>% mutate(category = Item.Category), d.asym_var.test %>% mutate(category = Item.Intended_category), categories = categories.demo)
-
-##--------------
-# Visualization
-##--------------
-VOT_range <- c(0, 110)
-VOT_resolution <- 100
 ```
 
 ```{r model-changes-in-representations-asym-var, message=FALSE, warning=FALSE, eval = FALSE}
@@ -674,6 +630,7 @@ cue.renamed <- "VOT"
 # Lapse model
 bias.demo <- c(.5, .5)
 lambdas.demo <- 0
+
 
 # Ideal observers and adaptors
 m.io.VOT.con1 <- 
@@ -759,8 +716,58 @@ best_performing_parameters.representations.asym_var <-
 history.optimization_representations.asym_var <- history.optimization_representations
 best_performing_parameters.representations.asym_var$par <- exp(best_performing_parameters.representations.asym_var$par)
 
+```
+
+```{r demonstrate-changes-in-representations-asym-var, fig.width=base.width*2*1.5, fig.height=base.height + 1, fig.cap="(ref:demonstrate-changes-in-representations-SI)", eval=FALSE}
+
+m.io.VOT.asym_var.mu <- m.io.VOT.asym_var %>%
+  select(-Sigma) %>%
+  mutate(mu = unlist(mu)) %>%
+  group_by(Condition) %>%
+  pivot_wider(names_from = category, values_from = mu, names_glue = "{.value}_{category}")
+
+m.io.VOT.asym_var.Sigma <- m.io.VOT.asym_var %>%
+  select(-mu) %>%
+  mutate(Sigma = unlist(Sigma)) %>%
+  group_by(Condition) %>%
+  pivot_wider(names_from = category, values_from = Sigma, names_glue = "{.value}_{category}")
+
+m.io.VOT.asym_var.dist <- left_join(m.io.VOT.asym_var.mu, m.io.VOT.asym_var.Sigma) %>%
+  mutate(likelihood1 = map2(`mu_/d/`, `Sigma_/d/`, ~ function(x) dnorm(x, .x, .y^.5)),
+         likelihood2 = map2(`mu_/t/`, `Sigma_/t/`, ~ function(x) dnorm(x, .x, .y^.5))
+         )
+
+
+##--------------
+# Visualization
+##--------------
+# VOT_range <- c(0, 110) # if using raw or c-cured cues
+
+VOT_range = c(-3,3) # if using standardized cues
+# cue distribution
+p.distribution.asym_var <- m.io.VOT.asym_var.dist %>%
+  ggplot(aes(x = !! sym(cue.renamed))) +
+  geom_line(
+    data = . %>% 
+      distinct(Condition, likelihood1, likelihood2) %>%
+      crossing(category = categories.demo, !! sym(cue.renamed) := seq(VOT_range[1], VOT_range[2], by = 0.01)) %>% 
+      ungroup() %>%
+      mutate(y = ifelse(
+        category == categories.demo[1],
+        map2(likelihood1, !! sym(cue.renamed), .f = mycall) %>% unlist(),
+        map2(likelihood2, !! sym(cue.renamed), .f = mycall) %>% unlist())),
+    aes(y = y, color = category, alpha = Condition))+
+  scale_x_continuous("VOT (msec)") +
+  scale_y_continuous("Density") +
+  scale_color_manual("Category", values = colors.voicing) +
+  theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank())
+
+```
+
+
+```{r plot-test-results-asym-var-DEBUG, eval= FALSE}
 # get predictions from best-performing representational model
-m.ia.VOT.asym_var <-
+m.ia.VOT.asym_var.representations <-
   crossing(
     prior_kappa = best_performing_parameters.representations.asym_var$par[1], 
     prior_nu = best_performing_parameters.representations.asym_var$par[2],
@@ -780,7 +787,7 @@ d.representations.asym_var <-
   mutate(category = Item.Category) %>%
   nest(data = -Condition) %>%
   crossing(
-    m.ia.VOT.asym_var %>% 
+    m.ia.VOT.asym_var.representations %>% 
       filter(lambda == 0) %>%
       filter(Condition == "Condition-1") %>% # DEBUG: simplify this. m.ia.VOT.asym_var does not need Condition-2?
       select(-Condition) %>%
@@ -802,45 +809,122 @@ d.representations.asym_var <-
 #   mutate(response.overall = mean(response)) %>%
 #   group_by(Condition, !!! syms(my_groups), category, response.overall) %>%
 #   summarise(response = mean(response))
+
+
+# plot predictions from the representations model
+basic_AA_result_plot(d.representations.asym_var) +
+  geom_text(
+      inherit.aes = FALSE, 
+      data = . %>%
+        group_by(Condition, prior_nu, prior_kappa) %>%
+        summarise(mAcc = round(mean(response), digits = 2)), 
+      mapping = aes(label = mAcc, x = Condition, y = 1.05), 
+      size = geom_text.size) +
+    facet_grid(
+      prior_nu ~ prior_kappa,
+      labeller = label_bquote(
+        cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)),
+        rows = {nu[.(categories.demo[1])~","~0] == nu[.(categories.demo[2])~","~0]} == .(as.character(prior_nu)))) +
+  scale_x_discrete(labels= c("Condition-1", "Condition-2"))
 ```
 
-```{r demonstrate-changes-in-representations-asym-var, fig.width=base.width*2*1.5, fig.height=base.height + 1, fig.cap="(ref:demonstrate-changes-in-representations-SI)", eval=FALSE}
 
-m.io.VOT.asym_var.mu <- m.io.VOT.asym_var %>%
-  select(-Sigma) %>%
-  mutate(mu = unlist(mu)) %>%
-  group_by(Condition) %>%
-  pivot_wider(names_from = category, values_from = mu, names_glue = "{.value}_{category}")
+```{r model-changes-in-normalization-asym-var-SCALED_CUES-DEBUG, message=FALSE, warning=FALSE, eval = FALSE}
 
-m.io.VOT.asym_var.Sigma <- m.io.VOT.asym_var %>%
-  select(-mu) %>%
-  mutate(Sigma = unlist(Sigma)) %>%
-  group_by(Condition) %>%
-  pivot_wider(names_from = category, values_from = Sigma, names_glue = "{.value}_{category}")
+history.optimization_normalization <- tibble(.rows = 0)
+get_accuracy_from_updated_normalization.asym_var <- function(
+    par, # only one parameter to optimize for
+    model = m.io.VOT.asym_var %>% filter(Condition == "Condition-1"), # specify prior
+    exposure = d.asym_var.exposure %>% filter(Condition == "Condition-2"), # optimize for the condition when exposure comes from Condition-2
+    test = d.asym_var.test %>% filter(Condition == "Condition-2")
+) {
+  kappa.normalization <- exp(par[1])
+  max_kappa_nu <- 10000
+  
+  prior <-
+    model %>% 
+    droplevels() %>%
+    lift_MVG_ideal_observer_to_NIW_ideal_adaptor(kappa = max_kappa_nu, nu = max_kappa_nu)
 
-m.io.VOT.asym_var <- left_join(m.io.VOT.asym_var.mu, m.io.VOT.asym_var.Sigma) %>%
+
+  u <- 
+    update_normalization_and_categorize_test(
+    prior = prior, 
+    mu_0 = 0, # prior mu is zero because scaled cues are used
+    kappa.normalization = kappa.normalization,
+    exposure = exposure,
+    test = test) %>%
+    get_accuracy()
+  
+  history.optimization_normalization <<- 
+    bind_rows(
+      history.optimization_normalization, 
+      tibble(kappa.normalization = kappa.normalization, accuracy = u)) 
+  
+  return(u)
+}
+
+best_performing_parameters.normalization.asym_var <-
+    optim(
+        par = log(mean(range.prior_kappa.normalization)),
+        fn = get_accuracy_from_updated_normalization.asym_var,
+        method = "L-BFGS-B",
+        lower = log(min(range.prior_kappa.normalization)),
+        upper = log(max(range.prior_kappa.normalization)),
+        control = list(
+          fnscale = -1,
+          factr = 10^8))
+   
+history.optimization_normalization.asym_var <- history.optimization_normalization
+best_performing_parameters.normalization$par <- exp(best_performing_parameters.normalization$par[1])
+
+
+# get predictions from best-performing representational model
+m.ia.VOT.asym_var.normalization <-
+  crossing(
+    prior_kappa.normalization = best_performing_parameters.normalization.asym_var$par[1], 
+    lambda = lambdas.demo) %>%
   mutate(
-    likelihood1 = map2(`mu_/d/`, `Sigma_/d/`, ~ function(x) dnorm(x, .x, .y^.5)),
-    likelihood2 = map2(`mu_/t/`, `Sigma_/t/`, ~ function(x) dnorm(x, .x, .y^.5)))
+    posterior = map2(
+      prior_kappa, 
+      prior_nu, 
+      ~ lift_MVG_ideal_observer_to_NIW_ideal_adaptor(x = m.io.VOT.asym_var, kappa = .x, nu = .y))) %>%
+  unnest(posterior)  %>%
+  mutate(lapse_rate = lambda)
 
-# cue distribution
-p.distribution.asym_var <- m.io.VOT.asym_var %>%
-  filter(Condition == "Condition-2") %>%
-  ggplot(aes(x = !! sym(cue.renamed))) +
-  geom_line(
-    data = . %>% 
-      distinct(Condition, likelihood1, likelihood2) %>%
-      crossing(category = categories.demo, !! sym(cue.renamed) := seq(VOT_range[1], VOT_range[2])) %>%
-      ungroup() %>%
-      mutate(y = ifelse(
-        category == categories.demo[1],
-        map2(likelihood1, !! sym(cue.renamed), .f = mycall) %>% unlist(),
-        map2(likelihood2, !! sym(cue.renamed), .f = mycall) %>% unlist())),
-    aes(y = y, color = category, alpha = Condition))+
-  scale_x_continuous("VOT (msec)") +
-  scale_y_continuous("Density") +
-  scale_color_manual("Category", values = colors.voicing) +
-  theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank())
+
+my_groups <- c("prior_kappa.normalization")
+
+d.normalization.asym_var <- 
+  d.asym_var.exposure %>%
+  mutate(category = Item.Category) %>%
+  nest(data = -Condition) %>%
+  crossing(
+    m.ia.VOT.asym_var %>% 
+      filter(Condition == "Condition-1") %>% # DEBUG: simplify this. m.ia.VOT.asym_var does not need Condition-2?
+      select(-Condition) %>%
+      nest(prior = -all_of(my_groups))) %>%
+  group_by(Condition, prior_kappa, prior_nu) %>%
+  # get the posterior category parameters and the predictions for the test tokens
+      group_modify(~ update_normalization_and_categorize_test(
+        mu_0 = 0,
+        prior = .x$prior[[1]],
+        exposure = .x$data[[1]],
+        test = d.asym_var.test %>% filter(Condition == "Condition-2")), .keep = TRUE) %>%
+  mutate_at(vars(starts_with("prior_")), ~factor(.x)) %>%
+  mutate_at(vars(starts_with("prior_")), fct_rev) %>%
+  ungroup()
+
+# sanity check
+# d.representations.asym_var.results <- d.representations.asym_var %>%
+#   group_by(Condition, !!! syms(my_groups)) %>%
+#   mutate(response.overall = mean(response)) %>%
+#   group_by(Condition, !!! syms(my_groups), category, response.overall) %>%
+#   summarise(response = mean(response))
+
+```
+
+```{r plot-changes-in-representations-DEBUG, message=FALSE, warning=FALSE, eval = FALSE}
 
 # plot posterior category distribution under best-performing parameterization
 # d.representations.asym_var %>%
@@ -880,30 +964,6 @@ p.distribution.asym_var <- m.io.VOT.asym_var %>%
 #       cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)))) +
 #   theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank())
 ```
-
-
-```{r plot-test-results-asym-var-DEBUG, eval= FALSE}
-# plot predictions from the representations model
-basic_AA_result_plot(d.representations.asym_var) +
-  geom_text(
-      inherit.aes = FALSE, 
-      data = . %>%
-        group_by(Condition, prior_nu, prior_kappa) %>%
-        summarise(mAcc = round(mean(response), digits = 2)), 
-      mapping = aes(label = mAcc, x = Condition, y = 1.05), 
-      size = geom_text.size) +
-    facet_grid(
-      prior_nu ~ prior_kappa,
-      labeller = label_bquote(
-        cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)),
-        rows = {nu[.(categories.demo[1])~","~0] == nu[.(categories.demo[2])~","~0]} == .(as.character(prior_nu)))) +
-  scale_x_discrete(labels= c("Condition-1", "Condition-2"))
-```
-```{r model-changes-in-normalization-asym-var-SCALED_CUES-DEBUG, message=FALSE, warning=FALSE, eval = FALSE}
-```
-
-
-
 
 ```{r model-changes-in-representations-asym-var-SCALED_CUES-DEBUG, message=FALSE, warning=FALSE, eval = FALSE}
 # 
@@ -979,3 +1039,13 @@ In Section \@ref(sec:framework), we showed that the limitations of change models
 Conversely, there are ways to assess whether representational changes alone are sufficient to explain all forms of adaptive speech perception. For example, if auditory input that arguably carries no information about category statistics affects subsequent speech perception, this provides evidence that changes in representations alone cannot explain all aspects of adaptive speech perception. Perhaps one of the most convincing demonstrations of this type comes from the findings of auditory enhancement effects, wherein non-speech stimuli (e.g., pure tones) can systematically alter the perception of subsequently played speech stimuli [@chodroff-wilson2020; @holt2001; @holt2005; @holt2006; @huang-holt2011; for review, see also @weatherholtz-jaeger2016]. While these demonstrations might be challenged for lack of ecological validity (potentially inviting meta-reasoning about experimenters' intentions that is unlikely to be present during everyday speech perception), it is unclear how representational changes---or, for that matter, changes in response biases---can explain such findings. At the very least then, these findings suggest that normalization *can* be involved in adaptive speech perception.
 
 In sum, by focusing on the computational assumptions of the different change models, it is possible to conduct behavioral experiments that can decisively determine whether either of the two computationally more parsimonious change models is *sufficient* to explain adaptive speech perception, or whether changes in representations are necessary to explain adaptive speech perception. 
+
+
+# Advanced standards of data annotation and sharing {#sec:DataSharing}
+As we mentioned under Recommendation 1, predicting adaptive changes of recognition requires estimates of the acoustic-phonetic properties of both input listeners have received prior to the experiment and the input they receive during the experiment. The former can be obtained from sufficiently large phonetically annotated databases that capture the type of speech input a typical participant in the experiment is likely to have received throughout their life. Fortunately, large and phonetically annotated databases can offer good estimates of the speech input of listeners receive. Such databases are now available for an increasing number of phonetic contrasts and languages [e.g., @chodroff-wilson2018; @clopper-pisoni2006; @hillenbrand1995; @newman2001; @theodore2009; @xie-jaeger2020, among many others].
+
+One caveat is that many of these databases either only contain a subset of the speech varieties that an average listener of a language has plausibly been exposed to or contain very little data for each variety. In particular, databases that contain both a large number of talkers and a large number of tokens per talker continue to be the exception. Researchers thus need to carefully consider these implications when employing databases. In some cases, researchers might find that the best way forward is to collect phonetically annotated data that meets the specific requirements for their study [see @mcmurray-jongman2011; @persson-jaeger2023; @xie2021cognition; @tan2021]. An alternative option is to eschew phonetically annotated data in favor of computational methods that work from the raw signal or some automatically obtained transformation of the raw data [e.g., mel-frequency cepstral coefficients, @Mermelstein1976]. Such models have been developed for automatic speech recognition and have been employed to model human language acquisition [@dupoux2018; @feldman2013]. More recently, they have also been applied to address questions about the effects of recent exposure [@richter2017]. The ASP framework can, at least in theory, be combined with such models.
+
+The second set of estimates---the acoustic-phonetic properties of the stimuli---require researchers to phonetically annotate the stimuli in their perception experiments. Such annotations entail a substantial but manageable effort: perception experiments typically employ a small number of speech stimuli that are repeated across participants. A typical perceptual recalibration experiment would require the annotation of fewer than 100 isolated word recordings. A large study on accent adaptation like Bradlow and Bent's (2008) Experiment 2 would require the annotation of about 1000 sentences. As a reference point, studies on phonetic production regularly annotate data sets many times larger. Researchers' efforts will be supported by clear standards for reproducibility and software developments that aid phonetic annotation and data sharing [e.g., @cassidy-schmidt2017; @picoral2021; @roettger2019; @winkelmann2017]. If annotations are not reported and shared—and ideally even if they are—then all audio recordings should be shared in an open and accessible way (e.g., OSF). This will require perception researchers to use human subject protocols that gives them the consent to distribute stimulus recordings for the purpose of scientific inquiry. In other words, perception and production researchers should make concerted efforts to link the listener's knowledge of productions and inferences they make during perception.
+
+

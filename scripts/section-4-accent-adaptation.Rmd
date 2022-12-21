@@ -1526,7 +1526,7 @@ parameters.results.best.cases <-
 
 colnames(parameters.results.best.cases) = c("L2 accent scenario", "Changes in representations", "Changes in decision-making", "Changes in normalization")
 
-knitr::kable(parameters.results.best.cases, caption = "Best-performing parameters across different accent scenarios (rounded to the nearest hundredth)", align = 'l', booktabs = TRUE, escape = FALSE) %>%
+knitr::kable(parameters.results.best.cases, caption = "Best-performing parameterizations across different accent scenarios (rounded). Recall that best-performing here refers to the parameterization that achieves the highest accuracy on L2-accented test tokens, rather than best quantitative fit against human data (which we do not have).", align = 'l', booktabs = TRUE, escape = FALSE) %>%
     kable_styling(latex_options = "scale_down")
 ```
 

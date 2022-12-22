@@ -344,3 +344,28 @@ compare_models.AA(d.AA.representations, d.AA.bias, d.AA.normalization, VOT_range
 #     response.mean.mean = mean(response.mean),
 #     response.mean.se = sd(response.mean) / sqrt(n_distinct(sim)))
 ```
+
+
+
+(ref:PR-result-summary) Predictions of the three models compared against human responses. **Panel A - Categorization functions observed from human perception experiment:** Same as Figure \@ref(fig:kraljic-samuel-2007-replotted). **Panel B - Change model predictions:** From left to right: predicted categorization responses from changes in representations, decision-making, and normalization, shown for the `r length(test_locations)` test locations after `r paste(categories.PR, collapse = "- and")`-shifted exposure. For each change model, a set of parameterization that yields performance similar to human responses is selected for illustrative purpose.
+
+```{r PR-result-summary, fig.width= base.width * 5, fig.height= base.height + 1, fig.cap="(ref:PR-result-summary)"}
+
+prow.B <- plot_grid(
+    p.PR.representations.highlighted + theme(legend.position="none") + myGplot.defaults(base_size = 12, set_theme = F),
+    p.PR.bias.highlighted + theme(legend.position="none") + myGplot.defaults(base_size = 12, set_theme = F),
+    p.PR.normalization.highlighted + theme(legend.position="none") + myGplot.defaults(base_size = 12, set_theme = F),
+    ncol = 3, 
+    rel_widths = c(0.25, 0.25, 0.23))
+prow <- 
+  plot_grid(
+    p20 + myGplot.defaults(base_size = 12, set_theme = F) + theme(legend.position="none", plot.margin = margin(t = 1.3, r = 1, b = 0.7, l = 0, unit = "cm")), 
+    prow.B,
+    labels = c('A)', 'B)'), 
+    ncol = 2, 
+    rel_widths = c(0.27, 0.73))
+
+# extract a legend that is laid out horizontally
+legend_prow <- get_legend(p.PR.representations.highlighted)
+plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.2, 1))  
+```

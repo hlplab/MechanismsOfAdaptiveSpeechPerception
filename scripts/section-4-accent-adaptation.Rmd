@@ -809,6 +809,18 @@ d.AA.bias <-
     beta_pi = beta_pi.plot)
 
 best_performing_parameters.bias <- find_best_model.bias.AA()
+
+# sanity check to see if the target_accuracy_se is achieved before the max.simulations
+# temp <- bias.pred %>%
+#   ungroup() %>%
+#   group_by(Condition, Subject, posterior.lapse_rate, beta_pi, sim) %>%
+#   summarise(response.mean = mean(response)) %>%
+#   group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
+#   summarise(
+#     n.sims_so_far = n_distinct(sim),
+#     response.mean.mean = mean(response.mean),
+#     response.mean.se = sd(response.mean) / sqrt(n_distinct(sim)))
+
 ```
 
 (ref:AA-result-changes-in-decision-making) Predictions of a model that derives accent adaptation as changes in decision-making. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda$). The highlighted panel is the one closest to the best-performing parameterization ($\beta_{\pi} = `r best_performing_parameters.bias$par[2]`$; $\lambda=`r best_performing_parameters.bias$par[1]`$; overall accuracy$=`r best_performing_parameters.bias$value`$).
@@ -853,7 +865,7 @@ make_results_plot_decision_making <- function(data, data_best){
 make_results_plot_decision_making(data = get_average_bias_results_across_simulations(d.AA.bias), data_best = best_performing_parameters.bias)
 ```
 
-Figure \@ref(fig:AA-result-changes-in-decision-making) shows the effects of changes in decision-making as a function of the rate at which response biases change $\beta_{\pi}$ and the lapse rate $\lambda$, averaged across all simulations for each parameterization. As in Case Study 1, the figure shows the average across 50 repeated simulations, each time randomizing the order of exposure. This was sufficient to achieve reproducible estimates even for the largest $\beta_{\pi}$s considered here (SEs of the mean accuracy after L2-accented exposure across repeated simulations were smaller than $0.0025$, meaning that the 95% CI across the simulations spanned less than 1% in accuracy). <!-- TO DO: Xin, could you please confirm this or let us know if it's not true? --> 
+Figure \@ref(fig:AA-result-changes-in-decision-making) shows the effects of changes in decision-making as a function of the rate at which response biases change $\beta_{\pi}$ and the lapse rate $\lambda$, averaged across all simulations for each parameterization. As in Case Study 1, the figure shows the average across 50 repeated simulations, each time randomizing the order of exposure. This was sufficient to achieve reproducible estimates even for the largest $\beta_{\pi}$s considered here (SEs of the mean accuracy after L2-accented exposure across repeated simulations were smaller than $0.002$, meaning that the 95% CI across the simulations spanned less than 1% in accuracy). 
 
 For L1-accented exposure, we again see that /d/ test tokens are categorized substantially less accurately than /t/ test tokens, regardless of the specific value of ($\beta_{\pi}$). The second signature result---improved accuracy after L2-accented exposure for /d/---is obtained for sufficiently large $\beta_{\pi}$. As $\beta_{\pi}$ increases, the overall recognition accuracy first increases and then plateaus. The largest improvements are found for the smallest lapse rates and relatively fast change rates (gray panel in Figure \@ref(fig:AA-result-changes-in-decision-making)). 
 

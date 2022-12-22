@@ -671,7 +671,7 @@ As $\kappa_{c,0}$s and $\nu_{c,0}$ get smaller (indicating weaker prior beliefs)
 simulation.control <-
   list(
     min.simulations = 2, 
-    max.simulations = 100, 
+    max.simulations = 50, 
     step.simulations = 1, 
     target_accuracy_se = .002)
 

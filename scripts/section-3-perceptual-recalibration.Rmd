@@ -278,8 +278,8 @@ p.PR.exposure <- d.PR.exposure %>%
   scale_color_manual("Category", breaks = categories.PR, values = colors.category) +
   scale_x_continuous(expression("VOT (ms)"), expand = expansion(mult = .1, add = 0)) +
   scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0),
-                     breaks=seq(180, 280, by = 20)) +
-  coord_cartesian(ylim = c(180, 280)) +
+                     breaks=seq(180, 300, by = 20)) +
+  coord_cartesian(ylim = c(180, 300)) +
   facet_grid(~ paste("Exposure:", Condition)) 
 
 limits <- get_plot_limits(p.PR.exposure)
@@ -296,7 +296,7 @@ p.PR.test <-
                      breaks = c(breaks$xbreaks), limits = c(limits$xmin, limits$xmax)) +
   scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0),
                      breaks=c(breaks$ybreaks), limits = c(limits$ymin, limits$ymax)) +
-  coord_cartesian(ylim = c(180, 280)) +
+  coord_cartesian(ylim = c(180, 300)) +
   scale_shape_discrete("Item type") +
   scale_color_gradient("", low = colors.category[2], high = colors.category[1], guide = NULL) +
   facet_grid(~ Condition)
@@ -580,7 +580,7 @@ update_bias_and_categorize_test <- function(
 simulation.control <-
   list(
     min.simulations = 2, 
-    max.simulations = 3, 
+    max.simulations = 50, 
     step.simulations = 1, 
     target_accuracy_se = .002)
 
@@ -787,14 +787,14 @@ Given these differences between the models, it seemed plausible that the simpler
 ```{r PR-result-summary, fig.width= base.width * 5, fig.height= base.height + 1, fig.cap="(ref:PR-result-summary)"}
 
 prow.B <- plot_grid(
-    p.PR.representations.highlighted + theme(legend.position="none"),
-    p.PR.bias.highlighted + theme(legend.position="none"),
-    p.PR.normalization.highlighted + theme(legend.position="none"),
+    p.PR.representations.highlighted + theme(legend.position="none") + myGplot.defaults(base_size = 12, set_theme = F),
+    p.PR.bias.highlighted + theme(legend.position="none") + myGplot.defaults(base_size = 12, set_theme = F),
+    p.PR.normalization.highlighted + theme(legend.position="none") + myGplot.defaults(base_size = 12, set_theme = F),
     ncol = 3, 
     rel_widths = c(0.25, 0.25, 0.23))
 prow <- 
   plot_grid(
-    p20 + myGplot.defaults(base_size = 14, set_theme = F) + theme(legend.position="none", plot.margin = margin(t = 1.3, r = 1, b = 0.7, l = 0, unit = "cm")), 
+    p20 + myGplot.defaults(base_size = 12, set_theme = F) + theme(legend.position="none", plot.margin = margin(t = 1.3, r = 1, b = 0.7, l = 0, unit = "cm")), 
     prow.B,
     labels = c('A)', 'B)'), 
     ncol = 2, 

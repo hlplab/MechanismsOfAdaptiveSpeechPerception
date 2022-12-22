@@ -806,42 +806,6 @@ update_bias_and_categorize_test <- function(
   return(u)
 }
 
-# add_prior_and_posterior_with_changed_response_biases_based_on_exposure <- function(
-#   data.exposure,
-#   prior,
-#   idealized = T,
-#   decision_rule = if (idealized) "proportional" else "sample",
-#   keep.update_history = FALSE,
-#   keep.exposure_data = FALSE
-# ) {
-#   suppressWarnings(data.exposure %>%
-#     nest(data = -c(Condition, Subject)) %>%
-#     crossing(
-#       posterior.lapse_rate = c(.0005, .005, .05, .5, 1),
-#       beta_pi = c(0, .01, .05, .1, .2, .8)) %>%
-#     crossing(
-#       prior %>%
-#         filter(prior_kappa == max(prior_kappa), prior_nu == max(prior_nu)) %>%
-#         nest(prior = everything())) %>%
-#     group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
-#     mutate(
-#       posterior = pmap(
-#         .l = list(data, prior, posterior.lapse_rate, beta_pi),
-#         .f = function(.data, .prior, .posterior.lapse_rate, .beta_pi)
-#           update_NIW_response_bias_incrementally(
-#             prior = .prior,
-#             exposure = .data,
-#             exposure.category = "Item.Category",
-#             exposure.cues = c("VOT", "f0_Mel"),
-#             beta = .beta_pi,
-#             decision_rule = decision_rule,
-#             noise_treatment = if (idealized) "marginalize" else "sample",
-#             lapse_treatment = if (idealized) "marginalize" else "sample",
-#             keep.update_history = keep.update_history,
-#             keep.exposure_data = keep.exposure_data) %>%
-#         mutate(lapse_rate = .posterior.lapse_rate))))
-# }
-
 
 # CHANGES IN NORMALIZATION ------------------------------------------------
 add_prior_and_normalize_test_tokens_based_on_exposure <- function(data.exposure, data.test, prior.normalization, prior.categories) {

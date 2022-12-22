@@ -82,7 +82,6 @@ min_f0_Mel = 20
 example_label = "Cue_reweighting"
 ```
 
-
 ```{r study-AA-exposure-functions}
 # Get acoustic locations that correspond to targeted response proportions.
 get_parameters_phonetic_contrast.AA <- function(ideal.observer,
@@ -207,24 +206,6 @@ make_accent_adaptation_exposure_design = function(
       f0_Mel = unlist(map(x, ~ max(min_f0_Mel, .x[2]))),  
       x = map2(VOT, f0_Mel, ~ c("VOT" = .x, "f0_Mel" = .y)))
 }
-
-#<!--TO DO remove this function if already existed in main file; leaving it here now so that this section can be knitted independently--!>
-add_subjects_to_exposure <- function(
-  d,
-  n.subject,
-  quiet = F
-) {
-  assert_that(!("Subject" %in% names(d)),
-              msg = "This data frame already seems to contain subjects")
-  if (!quiet) message(paste("Adding", n.subject, "subjects per exposure condition."))
-
-  d %>%
-    group_by(Condition) %>%
-    crossing(Subject = factor(1:n.subject)) %>%
-    mutate(Subject = paste(Condition, Subject, sep = ".")) %>%
-    select(Condition, Subject, Phase, ItemID, Item.Category, Item.Type, x, everything()) %>%
-    ungroup()
-}
 ```
 
 ```{r study-AA-exposure-make-data, message=FALSE}
@@ -306,7 +287,7 @@ make_accent_adaptation_test_design = function(
     droplevels()
 }
 
-add_subjects_to_test <- function(
+add_subjects_to_test.AA <- function(
   d,
   n.subject,
   quiet = F
@@ -319,7 +300,7 @@ add_subjects_to_test <- function(
     group_by(Condition) %>%
     crossing(Subject = factor(1:n.subject)) %>%
     mutate(Subject = paste(Condition, Subject, sep = ".")) %>%
-    select(Condition, Subject, Phase, ItemID, Item.Category,Item.Intended_category, Item.Type, x, everything()) %>%
+    select(Condition, Subject, Phase, ItemID, Item.Category, Item.Intended_category, Item.Type, x, everything()) %>%
     ungroup()
 }
 ```
@@ -395,8 +376,6 @@ make_exposure_test_plot <- function(exposure.data,
   p.output <-  plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.1, 1))
   return(p.output)
 }
-
-# appender <- function(string, prefix = "Changes in\n") paste0(prefix, string)
 ```
 
 ```{r study-AA-exposure-test-plot, fig.width=base.width*3 + .5, fig.height=base.height + .5, fig.cap="(ref:study-AA-exposure-test-plot)", warning=FALSE}
@@ -405,11 +384,10 @@ make_exposure_test_plot(exposure.data = d.AA.exposure, test.data = d.AA.test)
 
 ```{r add-subjects-AA-exposure-test-data}
 d.AA.exposure %<>% add_subjects_to_exposure(n.subject = n.subject)
-d.AA.test %<>% add_subjects_to_test(n.subject = n.subject)
+d.AA.test %<>% add_subjects_to_test.AA(n.subject = n.subject)
 
 d.AA.exposure.main <- d.AA.exposure # save this exposure dataset to be used by the figures in the general discussion which zooms in on specific parameterization of this case
 d.AA.test.main <- d.AA.test # similarly save this test dataset
-
 ```
 
 ## Results
@@ -546,7 +524,6 @@ get_accuracy_from_updated_representations <- function(
 }
 ```
 
-
 ```{r study-AA-models-changes-in-representations, echo=FALSE, message=FALSE, warning=FALSE}
 find_best_model.representations.AA <- function(){
   if (RESET_MODELS || !file.exists(paste0("../models/best_performing_parameters.representations_", example_label,".rds"))) {
@@ -620,7 +597,6 @@ best_performing_parameters.representations <- find_best_model.representations.AA
 (ref:AA-result-changes-in-representations) Predictions of a learning model that derives accent adaptation as changes in category representations. Predicted categorization accuracies for the L2-accented test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, as a function of the strength of the prior beliefs in category means ($\kappa_{c,0}$) and covariances ($\nu_{c,0}$). The average accuracy across /d/ and /t/ is shown above the bars for each exposure condition. Error bars show 95% bootstrapped confidence intervals. The highlighted panel is the one closest to the best-performing parameterization ($\kappa_{0,c} = `r best_performing_parameters.representations$par[1]`$; $\nu_{c,0}=`r best_performing_parameters.representations$par[2]`$; overall accuracy $=`r best_performing_parameters.representations$value`$). 
 
 ```{r plot-AA-results-representations-functions}
-
 make_results_plot_representations <- function(data, data_best) {
   p.results <- 
     basic_AA_result_plot(data) +
@@ -1081,7 +1057,7 @@ construct_three_models <- function(
       category_dist_ratio2 = dist.L2_category.cue2, 
       shift_mean_1 = shift.cue1, 
       shift_mean_2 = shift.cue2) %>%
-    add_subjects_to_test(n.subject = n.subject)
+    add_subjects_to_test.AA(n.subject = n.subject)
   
   p.exposure_test <- make_exposure_test_plot(d.AA.exposure, d.AA.test)
   ggsave(paste0('../figures/plotly/exposure_test_distribution_', example_label, '.png'), plot = p.exposure_test, width = base.width*3 + .5, height = base.height + .5, dpi = 300)
@@ -1192,43 +1168,6 @@ var.ratio <- 1
 example_label = "Contrast_collapse" #TO DO:COME BACK HERE AND FIX IT FOR get_parameters_phonetic_contrast.AA
 
 d.AA.results.contrast_collapse.best  <- construct_three_models(example_label = "Contrast_collapse", experimenter.ideal_observer = m.io.VOT_f0.AA)
-```
-
-```{r AA-result-comparison-additional-cases-history-DEBUG, warning=FALSE, eval = FALSE}
-#DEBUG remove if done
-cases = c("Cue_reweighting", "Contrast_shift", "Contrast_reduction", "Contrast_collapse")
-history.optimization.representations.all = data.frame()
-history.optimization.bias.all = data.frame()
-history.optimization.normalization.all = data.frame()
-
-for (i in 1:length(cases)){
-  example_label = cases[i]
-  
-  #load history of optimization for representations model
-  history.optimization.representations.current <- 
-    readRDS(get_path(paste0("../models/d.AA.history.optimization.representations_", example_label,".rds"))) %>%
-    mutate(Case = example_label) 
-  history.optimization.representations.all <- 
-    bind_rows(history.optimization.representations.all, history.optimization.representations.current)
-  rm(history.optimization.representations.current)
-  
-  #load history of optimization for bias model
-  history.optimization.bias.current <- 
-    readRDS(get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds"))) %>%
-    mutate(Case = example_label) 
-  history.optimization.bias.all <- 
-    bind_rows(history.optimization.bias.all, history.optimization.bias.current)
-  rm(history.optimization.bias.current)
-  
-  #load history of optimization for normalization model
-  history.optimization.normalization.current <- 
-    readRDS(get_path(paste0("../models/d.AA.history.optimization.normalization_", example_label,".rds"))) %>%
-    mutate(Case = example_label) 
-  
-  history.optimization.normalization.all <- 
-    bind_rows(history.optimization.normalization.all, history.optimization.normalization.current)
-  rm(history.optimization.normalization.current)
-}
 ```
 
 ```{r AA-result-comparison-additional-cases, warning=FALSE}

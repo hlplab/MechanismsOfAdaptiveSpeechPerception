@@ -331,3 +331,16 @@ prior_kappa.normalization.selected = d.AA.normalization$prior_kappa.normalizatio
 compare_models.AA(d.AA.representations, d.AA.bias, d.AA.normalization, VOT_range, f0_range, n_points)
 
 ```
+
+```{r code-from-bias-model-in-AA-section}
+# sanity check to see if the target_accuracy_se is achieved before the max.simulations
+# temp <- bias.pred %>%
+#   ungroup() %>%
+#   group_by(Condition, Subject, posterior.lapse_rate, beta_pi, sim) %>%
+#   summarise(response.mean = mean(response)) %>%
+#   group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
+#   summarise(
+#     n.sims_so_far = n_distinct(sim),
+#     response.mean.mean = mean(response.mean),
+#     response.mean.se = sd(response.mean) / sqrt(n_distinct(sim)))
+```

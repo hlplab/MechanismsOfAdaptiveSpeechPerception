@@ -421,7 +421,10 @@ simulation.control <-
     step.simulations = 1, 
     target_accuracy_se = .002)
 
-d.PR <- d.PR.exposure %>%
+if(SET_SEED) set.seed(42007)
+
+if (RESET_MODELS || !file.exists(get_path(paste0("../models/d.PR.results.bias.rds")))){
+  d.PR <- d.PR.exposure %>%
   nest(data = -c(Condition, Subject)) %>%
   crossing(
     posterior.lapse_rate = c(.0005, .005, .05, .5, 1),
@@ -463,6 +466,12 @@ d.PR <- d.PR.exposure %>%
    !!! syms(setdiff(names(.), c("response", "response.se", "response.n_sims"))),
    response, response.se, response.n_sims) %>%
   ungroup()
+  
+  saveRDS(d.PR, get_path(paste0("../models/d.PR.results.bias.rds"))) # save results for bias because it takes a long time to run
+} else {
+  d.PR <- readRDS(get_path(paste0("../models/d.PR.results.bias.rds")))
+}
+
 ```
 
 

@@ -434,12 +434,6 @@ Paralleling Case Study 1, we ask which of the three change models can account fo
 As in Case Study 1, we first model changes in representations, and then compare them against changes in decision-making and normalization. We consider a larger range of parameterizations than in Case Study 1, because the models with the highest accuracy for L2-accented exposure (henceforth, the best-performing parameterization) in some cases fell outside of the parameter ranges considered in Case Study 1. These best-performing parameterizations were determined by bounded quasi-Newton optimization of the recognition accuracy during test after L2-accented exposure [@byrd1995, implemented in function \texttt{optim()} in R], and are indicated in all result plots we present below. Table \@ref(tab:AA-table-models-parameter-setting) summarizes the parameter ranges considered by the optimization algorithm [$\nu_{c,0}$ must be larger than the number of cues $k$ + 1, @murphy2012, p. 134].^[In Case Study 1, there was no measure like accuracy for which performance can unambiguously be interpreted as 'better' or 'worse'.] We emphasize that we use the term "best-performing" to refer to the parameterization that achieves the highest recognition accuracy for L2-accented test tokens, rather than the best fit against human responses in a perception experiment. In the general discussion, we describe how the same approach can be used to fit change models to the results of perception experiments.
 
 ```{r study-AA-models-common-functions}
-get_accuracy <- function(categorizations) {
-  categorizations %>%
-    pull(response) %>%
-      mean()
-}
-
 basic_AA_result_plot <- function(data) {
   data %>%
     # Show the response only for intended category

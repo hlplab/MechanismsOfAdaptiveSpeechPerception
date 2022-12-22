@@ -125,7 +125,7 @@ knitr::knit_hooks$set(warning = color_block('orange'))
 ```
 
 ```{r analysis-preferences}
-INCLUDE_TODO = T     # switch on/off to get to do list.
+INCLUDE_TODO = F     # switch on/off to get to do list.
 SET_SEED = T         # switch on/off whether the same seed is set every time a randomization procedure is called
 ANIMATE_FIGURES = T  # switch on/off to replace animations with facets (not yet implemented for all instances)
 RESET_FIGURES = T    # switch on/off whether time-consuming 3D figures are re-run and overridden

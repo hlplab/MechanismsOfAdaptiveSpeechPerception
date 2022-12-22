@@ -1,9 +1,0 @@
-\newpage
-# References
-
-\begingroup
-\setlength{\parindent}{-0.5in}
-\setlength{\leftskip}{0.5in}
-
-<div id="refs" custom-style="Bibliography"></div>
-\endgroup

@@ -148,13 +148,13 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```{r, child="section-2-framework.Rmd", eval=TRUE}
 ```
 
-```{r, child="section-3-perceptual-recalibration.Rmd", eval=TRUE}
+```{r, child="section-3-overview-case-studies.Rmd", eval=TRUE}
 ```
 
-```{r, child="section-4-accent-adaptation.Rmd", eval=TRUE}
+```{r, child="section-4-perceptual-recalibration.Rmd", eval=TRUE}
 ```
 
-```{r, child="section-5-distributional-learning.Rmd", eval=FALSE}
+```{r, child="section-5-accent-adaptation.Rmd", eval=TRUE}
 ```
 
 ```{r, child="section-6-general-discussion.Rmd", eval=TRUE}

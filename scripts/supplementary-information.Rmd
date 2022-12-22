@@ -615,7 +615,8 @@ make_asymmetric_variance_test_design = function(
 ```{r proposed-experiment-asymmetric-variance-prep, message=FALSE, warning=FALSE}
 d.chodroff_wilson.selected %<>%
   ungroup() %>%
-  mutate(mVOT = mean(VOT)) %>%
+  mutate(mVOT = mean(VOT),
+         sdVOT = sd(VOT)) %>%
   group_by(Talker) %>%
   mutate(VOT_scaled = scale_variable(VOT)) # get standardized cues
   
@@ -637,6 +638,10 @@ m.io.VOT.con1 <-
   cues = cue.renamed) %>%
   filter(category %in% categories.demo) %>%
   lift_MVG_to_MVG_ideal_observer(prior = bias.demo, lapse_rate = 0, lapse_bias = bias.demo, Sigma_noise = matrix(0, nrow = 1, dimnames = list(cue.renamed)))
+
+# Increase the contrast in terms of the category variance between the two categories for demo presentation
+m.io.VOT.con1$Sigma[[1]] = m.io.VOT.con1$Sigma[[1]]/2
+m.io.VOT.con1$Sigma[[2]] = m.io.VOT.con1$Sigma[[2]]*2
 
 # create two conditions that have identical category means, but switched category variance
 m.io.VOT.con2 <- m.io.VOT.con1 
@@ -885,19 +890,49 @@ m.io.VOT.asym_var.dist <- left_join(m.io.VOT.asym_var.mu, m.io.VOT.asym_var.Sigm
 VOT_range = c(-3,3) # if using standardized cues
 
 # cue distribution
-p.distribution.asym_var <- m.io.VOT.asym_var.dist %>%
-  ggplot(aes(x = !! sym(cue.renamed))) +
+# p.distribution.asym_var <- m.io.VOT.asym_var.dist %>%
+#   ggplot() %>%
+#  # ggplot(aes(x = !! sym(cue.renamed))) +
+#   geom_line(
+#     data = . %>% 
+#       distinct(Condition, likelihood1, likelihood2) %>%
+#       crossing(category = categories.demo, !! sym(cue.renamed) := seq(VOT_range[1], VOT_range[2], by = 0.01)) %>% 
+#       ungroup() %>%
+#       mutate(VOT_raw = VOT * d.chodroff_wilson.selected$sdVOT[1] + d.chodroff_wilson.selected$mVOT[1]) %>%
+#       mutate(y = ifelse(
+#         category == categories.demo[1],
+#         map2(likelihood1, !! sym(cue.renamed), .f = mycall) %>% unlist(),
+#         map2(likelihood2, !! sym(cue.renamed), .f = mycall) %>% unlist())),
+#     aes(x = VOT_raw, y = y, color = category, alpha = Condition)) +
+#   scale_x_continuous("VOT (standardized)") +
+#   scale_y_continuous("Density") +
+#   scale_color_manual("Category", values = colors.voicing) +
+#   myGplot.defaults(base_size = 14, set_theme = F) +
+#   theme(legend.position = "top", panel.grid = element_blank())
+# 
+# temp <- m.io.VOT.asym_var.dist %>%
+#   group_by(!!! syms(setdiff(names(.), c("prior","lapse_rate", "lapse_bias", "Sigma_noise")))) %>%
+#       crossing(category = categories.demo, !! sym(cue.renamed) := seq(VOT_range[1], VOT_range[2], by = 0.01)) %>% 
+#       ungroup() %>%
+#   mutate(y = ifelse(
+#         category == categories.demo[1],
+#         map2(likelihood1, !! sym(cue.renamed), .f = mycall) %>% unlist(),
+#         map2(likelihood2, !! sym(cue.renamed), .f = mycall) %>% unlist())) %>%
+#     mutate(VOT_raw = VOT * d.chodroff_wilson.selected$sdVOT[1] + d.chodroff_wilson.selected$mVOT[1])
+
+p.distribution.asym_var <- ggplot() +
   geom_line(
-    data = . %>% 
+    data = m.io.VOT.asym_var.dist %>%
       distinct(Condition, likelihood1, likelihood2) %>%
       crossing(category = categories.demo, !! sym(cue.renamed) := seq(VOT_range[1], VOT_range[2], by = 0.01)) %>% 
       ungroup() %>%
+      mutate(VOT_raw = VOT * d.chodroff_wilson.selected$sdVOT[1] + d.chodroff_wilson.selected$mVOT[1]) %>%
       mutate(y = ifelse(
         category == categories.demo[1],
         map2(likelihood1, !! sym(cue.renamed), .f = mycall) %>% unlist(),
         map2(likelihood2, !! sym(cue.renamed), .f = mycall) %>% unlist())),
-    aes(y = y, color = category, alpha = Condition))+
-  scale_x_continuous("VOT (standardized)") +
+    aes(x = VOT_raw, y = y, color = category, alpha = Condition)) +
+  scale_x_continuous("VOT (msec)") +
   scale_y_continuous("Density") +
   scale_color_manual("Category", values = colors.voicing) +
   myGplot.defaults(base_size = 14, set_theme = F) +

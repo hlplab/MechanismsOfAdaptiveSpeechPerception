@@ -464,6 +464,13 @@ add_test_and_categorize <- function(data, test = NULL) {
     }} %>%
     filter(category == Item.Intended_category)
 }
+
+get_accuracy <- function(categorizations) {
+  categorizations %>%
+    pull(response) %>%
+    mean()
+}
+
 # CHANGES IN REPRESENTATIONS ----------------------------------------------
 plot_VOT_NIW_belief_1D <- function(
   belief,

@@ -368,6 +368,40 @@ make_psychometric_stat_functions <- function(intercept, slope, lambda, pi, cente
 }
 
 # FUNCTIONS FOR CASE STUDIES ----------------------------------------------
+add_subjects_to_exposure <- function(
+    d, 
+    n.subject, 
+    quiet = F
+) {
+  assert_that(!("Subject" %in% names(d)),
+              msg = "This data frame already seems to contain subjects")
+  if (!quiet) message(paste("Adding", n.subject, "subjects per exposure condition."))
+  
+  d %>%
+    group_by(Condition) %>%
+    crossing(Subject = factor(1:n.subject)) %>%
+    mutate(Subject = paste(Condition, Subject, sep = ".")) %>%
+    select(Condition, Subject, Phase, ItemID, Item.Category, Item.Type, x, everything()) %>%
+    ungroup()
+}
+
+add_subjects_to_test <- function(
+    d, 
+    n.subject, 
+    quiet = F
+) {
+  assert_that(!("Subject" %in% names(d)),
+              msg = "This data frame already seems to contain subjects")
+  if (!quiet) message(paste("Adding", n.subject, "subjects per exposure condition."))
+  
+  d %>%
+    group_by(Condition) %>%
+    crossing(Subject = factor(1:n.subject)) %>%
+    mutate(Subject = paste(Condition, Subject, sep = ".")) %>%
+    select(Condition, Subject, Phase, ItemID, Item.Category, Item.Type, x, everything()) %>%
+    ungroup()
+}
+
 add_test_tokens <- function(data, data.test) {
   data %>%
     crossing(data.test %>% distinct(x)) %>%
@@ -396,6 +430,40 @@ add_categorization <- function(data) {
     unnest(categorization)
 }
 
+
+# (if test is null it won't be added and it's assumed that there already is a nested
+# column of test tokens called  x and another column indicating the mapping from x 
+# to intended categories; this is required only for the normalization updating).
+add_test_and_categorize <- function(data, test = NULL) {
+  assert_that(is_tibble(data))
+  assert_that(
+    "posterior" %in% names(data),
+    msg = "data must contain a column posterior that is a nested ideal adaptor.")
+  if (is.null(test)) {
+    assert_that(
+      all(c("x", "Item.Intended_category") %in% names(data)),
+      msg = "If test is NULL, data must contains column x with nested test tokens and Item.Intended_category with mappings of x to the intended/correct category.")
+    assert_that(is_list(data$x))
+  }
+  
+  data %>%
+    { if (!is.null(test)) add_test_tokens(., test) else select(., -Item.Intended_category) } %>%
+    add_categorization() %>%
+    # Keep only posterior of intended category
+    { if (!is.null(test)) {
+      left_join(
+        .,
+        test %>%
+          select(x, Item.Intended_category), 
+        by = "x") 
+    } else {
+      left_join(
+        .,
+        first(data$Item.Intended_category),
+        by = "x")
+    }} %>%
+    filter(category == Item.Intended_category)
+}
 # CHANGES IN REPRESENTATIONS ----------------------------------------------
 plot_VOT_NIW_belief_1D <- function(
   belief,
@@ -648,42 +716,131 @@ update_NIW_response_bias_incrementally <- function(
   return(prior)
 }
 
-
-add_prior_and_posterior_with_changed_response_biases_based_on_exposure <- function(
-  data.exposure,
-  prior,
-  idealized = T,
-  decision_rule = if (idealized) "proportional" else "sample",
-  keep.update_history = FALSE,
-  keep.exposure_data = FALSE
+update_bias_and_categorize_test <- function(
+    prior,
+    lapse_rate,
+    beta_pi,
+    exposure,
+    test,
+    cues = c("VOT", "f0_Mel"),
+    control = list(
+      min.simulations = 5, 
+      max.simulations = 10, 
+      step.simulations = 1, 
+      target_accuracy_se = .005),
+    add_updates = NULL,
+    verbose = FALSE
 ) {
-  suppressWarnings(data.exposure %>%
-    nest(data = -c(Condition, Subject)) %>%
-    crossing(
-      posterior.lapse_rate = c(.0005, .005, .05, .5, 1),
-      beta_pi = c(0, .01, .05, .1, .2, .8)) %>%
-    crossing(
-      prior %>%
-        filter(prior_kappa == max(prior_kappa), prior_nu == max(prior_nu)) %>%
-        nest(prior = everything())) %>%
-    group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
-    mutate(
-      posterior = pmap(
-        .l = list(data, prior, posterior.lapse_rate, beta_pi),
-        .f = function(.data, .prior, .posterior.lapse_rate, .beta_pi)
-          update_NIW_response_bias_incrementally(
-            prior = .prior,
-            exposure = .data,
-            exposure.category = "Item.Category",
-            exposure.cues = c("VOT", "f0_Mel"),
-            beta = .beta_pi,
-            decision_rule = decision_rule,
-            noise_treatment = if (idealized) "marginalize" else "sample",
-            lapse_treatment = if (idealized) "marginalize" else "sample",
-            keep.update_history = keep.update_history,
-            keep.exposure_data = keep.exposure_data) %>%
-        mutate(lapse_rate = .posterior.lapse_rate))))
+  u <- 
+    lapply(
+      X = as_list(1:control[["min.simulations"]]),
+      FUN = function(x) 
+        update_NIW_response_bias_incrementally(
+          prior = prior,
+          beta = beta_pi,
+          # Reshuffle expose on each run
+          exposure = exposure %>% sample_frac(1, replace = F), 
+          exposure.category = "Item.Category",
+          exposure.cues = cues,
+          decision_rule = "proportional",
+          noise_treatment = "marginalize",
+          lapse_treatment = "marginalize",
+          keep.update_history = FALSE,
+          keep.exposure_data = FALSE) %>%
+        mutate(lapse_rate = .env$lapse_rate) %>%
+        nest(posterior = everything()) %>%
+        mutate(sim = x) %>%
+        add_test_and_categorize(test)) %>%
+    reduce(bind_rows) 
+  
+  # If existing updates were provided add them to the ones just created before
+  # checking whether one of the convergence criteria is reached.
+  if (!is.null(add_updates))
+    u %<>%
+    mutate(sim = sim + n_distinct(add_updates$sim)) %>%
+    bind_rows(add_updates)
+  
+  u.test <- 
+    u %>%
+    group_by(sim) %>%
+    summarise(response.mean = mean(response)) %>%
+    ungroup() %>%
+    summarise(
+      n.sims_so_far = n_distinct(sim),
+      min.additional_simulations = .env$control[["min.simulations"]],
+      max.additional_simulations = .env$control[["max.simulations"]] - min.additional_simulations,
+      step.simulations = .env$control[["step.simulations"]],
+      target_accuracy_se = .env$control[["target_accuracy_se"]],
+      lapse_rate = first(.env$prior$lapse_rate), 
+      response.mean.mean = mean(response.mean),
+      response.mean.se = sd(response.mean) / sqrt(n_distinct(sim)))
+  
+  if (verbose)
+    u.test %>%
+    print()
+  
+  
+  # If max simulations not yet reached AND target_se not yet reached, run more
+  # simulations.
+  if (control[["min.simulations"]] < control[["max.simulations"]] & (u.test %>%
+                                                                     pull(response.mean.se) %>%
+                                                                     { . > control[["target_accuracy_se"]]})) {
+    
+    u <-
+      update_bias_and_categorize_test(
+        prior = prior,
+        lapse_rate = lapse_rate,
+        beta_pi = beta_pi,
+        exposure = exposure,
+        test = test,
+        cues = cues,
+        verbose = verbose,
+        control = list(
+          min.simulations = control[["step.simulations"]], # after running the minimal number of simulations (min.simulations), increase min.simulations by a few steps (step.simulations) until the max.simulations is reached or the standard error of the response mean (response.mean.se) reaches the predetermined criteria
+          max.simulations = control[["max.simulations"]] - control[["min.simulations"]],
+          step.simulations = control[["step.simulations"]],
+          target_accuracy_se = control[["target_accuracy_se"]]),
+        add_updates = u)
+    
+  } 
+  return(u)
 }
+
+# add_prior_and_posterior_with_changed_response_biases_based_on_exposure <- function(
+#   data.exposure,
+#   prior,
+#   idealized = T,
+#   decision_rule = if (idealized) "proportional" else "sample",
+#   keep.update_history = FALSE,
+#   keep.exposure_data = FALSE
+# ) {
+#   suppressWarnings(data.exposure %>%
+#     nest(data = -c(Condition, Subject)) %>%
+#     crossing(
+#       posterior.lapse_rate = c(.0005, .005, .05, .5, 1),
+#       beta_pi = c(0, .01, .05, .1, .2, .8)) %>%
+#     crossing(
+#       prior %>%
+#         filter(prior_kappa == max(prior_kappa), prior_nu == max(prior_nu)) %>%
+#         nest(prior = everything())) %>%
+#     group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
+#     mutate(
+#       posterior = pmap(
+#         .l = list(data, prior, posterior.lapse_rate, beta_pi),
+#         .f = function(.data, .prior, .posterior.lapse_rate, .beta_pi)
+#           update_NIW_response_bias_incrementally(
+#             prior = .prior,
+#             exposure = .data,
+#             exposure.category = "Item.Category",
+#             exposure.cues = c("VOT", "f0_Mel"),
+#             beta = .beta_pi,
+#             decision_rule = decision_rule,
+#             noise_treatment = if (idealized) "marginalize" else "sample",
+#             lapse_treatment = if (idealized) "marginalize" else "sample",
+#             keep.update_history = keep.update_history,
+#             keep.exposure_data = keep.exposure_data) %>%
+#         mutate(lapse_rate = .posterior.lapse_rate))))
+# }
 
 
 # CHANGES IN NORMALIZATION ------------------------------------------------

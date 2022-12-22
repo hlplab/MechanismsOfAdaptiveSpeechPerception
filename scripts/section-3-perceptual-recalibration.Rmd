@@ -177,23 +177,6 @@ make_perceptual_recalibration_exposure_design = function(
           T ~ NA_real_))) %>%
   mutate(VOT = map(x, ~ .x[1]) %>% unlist(), f0_Mel = map(x, ~ .x[2]) %>% unlist())
 }
-    
-add_subjects_to_exposure <- function(
-  d, 
-  n.subject, 
-  quiet = F
-) {
-  assert_that(!("Subject" %in% names(d)),
-              msg = "This data frame already seems to contain subjects")
-  if (!quiet) message(paste("Adding", n.subject, "subjects per exposure condition."))
-  
-  d %>%
-    group_by(Condition) %>%
-    crossing(Subject = factor(1:n.subject)) %>%
-    mutate(Subject = paste(Condition, Subject, sep = ".")) %>%
-    select(Condition, Subject, Phase, ItemID, Item.Category, Item.Type, x, everything()) %>%
-    ungroup()
-}
 ```
 
 ```{r study-PR-exposure-make-data, message=FALSE}
@@ -226,23 +209,6 @@ make_perceptual_recalibration_test_design = function(
     Condition = factor(paste0(experimenter.ideal_observer$category, "-shifted")), 
     Block = 1:test.n_block)
 } 
-
-add_subjects_to_test <- function(
-  d, 
-  n.subject, 
-  quiet = F
-) {
-  assert_that(!("Subject" %in% names(d)),
-              msg = "This data frame already seems to contain subjects")
-  if (!quiet) message(paste("Adding", n.subject, "subjects per exposure condition."))
-  
-  d %>%
-    group_by(Condition) %>%
-    crossing(Subject = factor(1:n.subject)) %>%
-    mutate(Subject = paste(Condition, Subject, sep = ".")) %>%
-    select(Condition, Subject, Phase, ItemID, Item.Category, Item.Type, x, everything()) %>%
-    ungroup()
-}
 ```
 
 ```{r study-PR-test-make-data}
@@ -274,13 +240,17 @@ p.PR.exposure <- d.PR.exposure %>%
     arrow = arrow(type = "closed", angle = "24", length = unit(5, "points")),
     alpha = .4, 
     show.legend = F) +
-  scale_x_continuous(expression("VOT (ms)"), expand = expansion(mult = .1, add = 0)) +
-  scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0)) +
   scale_shape_manual("Item type", breaks = c("typical", "shifted"), values = shapes.category) +
   scale_color_manual("Category", breaks = categories.PR, values = colors.category) +
-  facet_grid(~ paste("Exposure:", Condition))
+  scale_x_continuous(expression("VOT (ms)"), expand = expansion(mult = .1, add = 0)) +
+  scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0),
+                     breaks=seq(180, 300, by = 20)) +
+  coord_cartesian(ylim = c(180, 300)) +
+  facet_grid(~ paste("Exposure:", Condition)) 
 
 limits <- get_plot_limits(p.PR.exposure)
+breaks <- get_plot_breaks(p.PR.exposure)
+
 p.PR.test <-
   d.PR.test %>%
   filter(Condition == conditions.PR[1]) %>%
@@ -288,11 +258,13 @@ p.PR.test <-
   ggplot(aes(x = VOT, y = f0_Mel, label = as.numeric(factor(ItemID)))) + 
   geom_line(color = "gray", alpha = .5) +
   geom_text(aes(color = as.numeric(as.character(Item.Intended_proportion_category1))), size = 3) +
-  scale_x_continuous(expression("VOT (ms)"), expand = expansion(mult = .1, add = 0)) +
-  scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0)) +
+  scale_x_continuous(expression("VOT (ms)"), expand = expansion(mult = .1, add = 0),
+                     breaks = c(breaks$xbreaks), limits = c(limits$xmin, limits$xmax)) +
+  scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0),
+                     breaks=c(breaks$ybreaks), limits = c(limits$ymin, limits$ymax)) +
+  coord_cartesian(ylim = c(180, 300)) +
   scale_shape_discrete("Item type") +
   scale_color_gradient("", low = colors.category[2], high = colors.category[1], guide = NULL) +
-  coord_cartesian(xlim = c(limits$xmin, limits$xmax), ylim = c(limits$ymin, limits$ymax)) +
   facet_grid(~ Condition)
 
 plot_grid(
@@ -317,12 +289,14 @@ d.PR.test %<>%
 The test phase consists of the six stimuli shown in Figure \@ref(fig:PR-exposure-test-plot)B, chosen to yield `r paste(paste0(as.numeric(rev(unique(d.PR.test$Item.Intended_proportion_category1))) * 100, "%"), collapse = ", ")` expected `r categories.PR[1]`-responses in a norming experiment without any prior exposure to the talker's speech. This closely resembles the test stimulus placement typical for perceptual recalibration experiments, which tend to examine tokens at the two ends of the continuum as well as those placed near the category boundary. 
 
 ## Results
-Next, we use ASP to illustrate to what extent changes in representations, response biases, or normalization can explain the typical behavioral signature of perceptual recalibration experiments: a shift in the category boundary in the same direction as the shifted tokens during exposure (optionally accompanied by a change in the slope of the categorization functions). The goal of these computational demonstrations is to illustrate the general type of pattern that the three different hypotheses can account for. Throughout this article, the results we present marginalize over the expected consequences of perceptual noise, attentional lapses, and decision-making (both for adaptation during exposure and for categorization during test). This can be seen as predicting the state of an 'average' listener after exposure to a specific set of stimuli in a specific order.^[For any particular experiment, however, researcher have to *estimate*, e.g., participants' categorization functions from their categorization responses. This is important to keep in mind, for example, when using ASP to estimate the statistical power of an experiment. To support predictive power simulations, the ASP functions provided in the OSF repository for this article also allow simulations that *sample* the effects of perceptual noise, attentional lapses, and decision-making for adaptation and categorization. This allows simulations of trial-level behavior for individual participants. We also note that our simulations predict the effects at the *beginning* of the test phase, prior to repeated exposure to the same stimuli over the course of testing. Recent work found that this repeated testing *reduces* the effects of exposure [@mitterer2011-perceptual-recalibration; @liu-jaeger2018; @liu-jaeger2019; @scharenborg-janse2013; for review, see @theodore2021]. As a consequence, averaging across all test blocks---as is commonly done---underestimates the effects of exposure [for early mention of this concern, see @norris2003, p. 11]. Here, we do not model changes throughout test blocks.]
+Next, we use ASP to illustrate to what extent changes in representations, response biases, or normalization can explain the typical behavioral signature of perceptual recalibration experiments: a shift in the category boundary in the same direction as the shifted tokens during exposure (optionally accompanied by a change in the slope of the categorization functions). The goal of these computational demonstrations is to illustrate the general type of pattern that the three different hypotheses can account for. 
 
-All three change models start from the same prior state. Specifically, we assume that listeners have acquired category representations with expected category means ($\mathbf{E}(\mu_{/d/}), \mathbf{E}(\mu_{/t/})$) and variances ($\mathbf{E}(\sigma_{/d/}), \mathbf{E}(\sigma_{/t/})$) that reflect the talker-normalized distributions in Chodroff and Wilson (2018; see Figure \@ref(fig:show-representations-plots)). Prior to any exposure, decision-making is assumed to employ uniform response biases ($\pi_{/d/}=\pi_{/t/}=.5$) and exhibit zero lapse rates. The findings we present below do not qualitatively depend on these specific assumptions. <!--For example, none of the qualitative patterns would change if listeners had non-uniform response biases or non-zero lapse rates at the start of the experiment.-->
+All three change models start from the same prior state. Specifically, we assume that listeners have acquired category representations with expected category means ($\mathbf{E}(\mu_{/d/}), \mathbf{E}(\mu_{/t/})$) and variances ($\mathbf{E}(\sigma_{/d/}), \mathbf{E}(\sigma_{/t/})$) that reflect the talker-normalized distributions in Chodroff and Wilson (2018; see Figure \@ref(fig:show-representations-plots)). Prior to any exposure, decision-making is assumed to employ uniform response biases ($\pi_{/d/}=\pi_{/t/}=.5$). Here and throughout this article, we marginalize over the expected consequences of perceptual noise, attentional lapses, and decision-making (both for adaptation during exposure and for categorization during test). This can be seen as predicting the state of an 'average' listener after exposure to a specific set of stimuli.^[For any particular experiment, however, researcher have to *estimate*, e.g., participants' categorization functions from their categorization responses. This is important to keep in mind, for example, when using ASP to estimate the statistical power of an experiment. To support predictive power simulations, the ASP functions provided on OSF also allow simulations that *sample* the effects of perceptual noise, attentional lapses, and decision-making for adaptation and categorization. This allows simulations of trial-level behavior for individual participants.] The findings we present below do not qualitatively depend on these specific assumptions. 
+
+Finally, we note that our simulations predict categorization at the *beginning* of the test phase, prior to repeated testing. This should be kept in mind when comparing our results against previous work, including the results of @kraljic-samuel2007 in Figure \@ref(fig:kraljic-samuel-2007-replotted). As is typical for experiments on perceptual recalibration, participants in Kraljic and Samuel's experiment heard the same six test tokens many times. In their visualizations and analyses, Kraljic and Samuel averaged participants' responses across these repetitions. While this approach continues to be the norm, it is now known to underestimate the true boundary shift, as repeated testing *reduces* the effects of exposure [@mitterer2011-perceptual-recalibration; @liu-jaeger2018; @liu-jaeger2019; @scharenborg-janse2013; for early discussion, see @norris2003, p. 11].
 
 ### Changes in representations
-We begin by modeling exposure-driven changes in the mapping from VOT and f0 to the /d/ and /t/ categories. This is arguably the mechanism that is most commonly assumed to underlie the boundary shift observed in perceptual recalibration experiments. Specifically, we use the $\mathcal{NW}^{-1}$ ideal adaptor model described in Section \@ref(sec:ideal-adaptor) while varying the $\kappa_{c,0}$ and $\nu_{c,0}$ parameters. We set the other two parameters of the $\mathcal{NW}^{-1}$ ideal adaptor ($\mathrm{m}$ and $\mathrm{S}$) so that they match the expected mean and covariance of the data in @chodroff-wilson2018 (as we did in Section \@ref(sec:ideal-adaptor)). Normalization and response biases did not change based on exposure ($\kappa_0 = \infty$; $\beta_{\pi}=0$).
+We begin by modeling exposure-driven changes in the mapping from VOT and f0 to the /d/ and /t/ categories. This is arguably the mechanism that is most commonly assumed to underlie the boundary shift observed in perceptual recalibration experiments. Specifically, we use the $\mathcal{NW}^{-1}$ ideal adaptor model described in Section \@ref(sec:ideal-adaptor) while varying the $\kappa_{c,0}$ and $\nu_{c,0}$ parameters. We set the other two parameters of the $\mathcal{NW}^{-1}$ ideal adaptor ($\mathrm{m}$ and $\mathrm{S}$) so that they match the expected mean and covariance of the data in @chodroff-wilson2018 (as we did in Section \@ref(sec:ideal-adaptor)). Normalization and response biases did not change based on exposure ($\kappa_0 = \infty$; $\beta_{\pi}=0$), and attentional lapses were assumed to be zero ($\lambda = 0$).
 
 ```{r study-PR-models-changes-in-representations}
 d.PR <- d.PR.exposure %>%
@@ -370,8 +344,18 @@ p.PR.results +
           T ~ F)), 
       aes(fill = highlight), alpha = .2, inherit.aes = F,
       xmin = -Inf,xmax = Inf, ymin = -Inf,ymax = Inf)) +
-  scale_fill_manual(breaks = c(T, F), values = c("darkgray", "white")) +
+  scale_fill_manual(breaks = c(T, F), values = c("gray20", "white")) +
   guides(fill = "none")
+
+d.PR.representations.highlighted <- d.PR %>%
+  filter(category == categories.PR[1]) %>%
+        mutate(highlight = case_when(
+          between(as.numeric(as.character(prior_kappa)), 75, 780) & between(as.numeric(as.character(prior_nu)), 160, 1000) ~ T,
+          T ~ F)) %>%
+  filter(highlight == T)
+
+p.PR.representations.highlighted <- p.PR.results %+%
+  d.PR.representations.highlighted
 ```
 
 Figure \@ref(fig:PR-result-changes-in-representations) demonstrates that distributional learning can account for the typical result of perceptual recalibration experiments. Of note, the range of parameterizations that best fit human responses in a series of distributional learning experiments on /b/ and /p/ [gray panel in Figure \@ref(fig:PR-result-changes-in-representations), $\kappa_{/b/,0}=\kappa_{/p/,0}=160$ (95% CI: 75-780) and $\nu_{/b/,0}=\nu_{/p/,0}=510$ (95% CI: 160-1000), @kleinschmidt2020] also provides a good qualitative fit against the /d/-/t/ perceptual recalibration results by Kraljic and Samuel [-@kraljic-samuel2007]. 
@@ -425,25 +409,75 @@ plot_expected_categories_contour2D(
 Finally, Figure \@ref(fig:PR-result-changes-in-representations) shows that distributional learning not only predicts shifts in the category boundary but can also predict changes in the slope of those boundaries. This is evident, for example, in the top-right panel. Although such changes in slopes are often not discussed, they are present in many perceptual recalibration experiments [e.g., @drouin2016; @liu-jaeger2018; @liu-jaeger2019; @myers-mesite2014].
 
 ### Changes in decision-making
-Next, we model the effects of changes in decision-making. Such changes have rarely been considered as an explanation for boundary shifts [but see @clarkedavidson2008]. In addition to varying the rate at which response biases change $\beta_{\pi}$, we also vary the lapse rate parameter $\lambda$. Normalization and representations did not change based on exposure ($\kappa_0 = \kappa_{c,0} = \nu_{c,0} = \infty$). Since the change model for decision-making is sensitive to the order of stimuli during exposure (see Section \@ref(sec:change-bias)), each panel of the figure averages over 20 simulations, each of them randomizing the order of exposure. We empirically confirmed that this number of simulations was sufficient to achieve stable estimates (for the range of $\beta_{\pi}$s considered here). <!-- TO DO: this still needs to be implemented. -->
+Next, we model the effects of changes in decision-making. Such changes have rarely been considered as an explanation for boundary shifts [but see @clarkedavidson2008]. In addition to varying the rate at which response biases change $\beta_{\pi}$, we also vary the lapse rate parameter $\lambda$. Normalization and representations did not change based on exposure ($\kappa_0 = \kappa_{c,0} = \nu_{c,0} = \infty$). Since the change model for decision-making is sensitive to the order of stimuli during exposure (see Section \@ref(sec:change-bias)), each panel of the figure averages over 50 simulations, each of them randomizing the order of exposure. We confirmed that this number of simulations was more than sufficient to achieve reproducible estimates for the range of $\beta_{\pi}$s considered here (the order-sensitivity of the change model increases for faster change rates, i.e., larger $\beta_{\pi}$).
 
 (ref:PR-result-changes-in-decision-making) Predictions of a model that derives perceptual recalibration as changes in decision-making. Predicted categorization responses are shown for the `r length(test_locations)` test locations after `r paste(categories.PR, collapse = "- and")`-shifted exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda$). The response biases towards `r categories.PR[1]` that results from $\beta_{\pi}$ are shown in the bottom row for each of the two exposure conditions, and are identical within each column (when all trials are lapses, as in the bottom row, the response distribution is identical to the response biases). 
 
-```{r PR-result-changes-in-decision-making, fig.width= base.width * 5, fig.height= base.height * 5 +.5, fig.cap="(ref:PR-result-changes-in-decision-making)"}
-d.PR <- 
-  d.PR.exposure %>%
-  add_prior_and_posterior_with_changed_response_biases_based_on_exposure(prior = m.ia.VOT_f0.PR) %>%
-  add_test_tokens(d.PR.test) %>%
-  add_categorization_functions() %>%
-  group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
-  add_categorization()
+```{r model-PR-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE}
+simulation.control <-
+  list(
+    min.simulations = 2, 
+    max.simulations = 50, 
+    step.simulations = 1, 
+    target_accuracy_se = .002)
 
-p.PR.results %+% 
-  (d.PR %>%
-     filter(category == categories.PR[1]) %>%
-     mutate(
-       posterior.lapse_bias1 = map(posterior, ~ .x %>% filter(category == categories.PR[1]) %>% pull(lapse_bias)),
-       posterior.lapse_bias2 = map(posterior, ~ .x %>% filter(category == categories.PR[2]) %>% pull(lapse_bias)))) +
+if(SET_SEED) set.seed(42007)
+
+if (RESET_MODELS || !file.exists(get_path(paste0("../models/d.PR.results.bias.rds")))){
+  d.PR <- d.PR.exposure %>%
+  nest(data = -c(Condition, Subject)) %>%
+  crossing(
+    posterior.lapse_rate = c(.0005, .005, .05, .5, 1),
+    beta_pi = c(0, .01, .05, .1, .2, .8)) %>% 
+  crossing(
+    m.ia.VOT_f0.PR %>%
+      filter(prior_kappa == max(prior_kappa), prior_nu == max(prior_nu)) %>%
+      nest(prior = everything())) %>%
+  group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
+  group_modify(
+    ~ update_bias_and_categorize_test(
+      prior = .x$prior[[1]],
+      lapse_rate = .x$posterior.lapse_rate,
+      beta_pi = .x$beta_pi,
+      exposure = .x$data[[1]],
+      test = d.PR.test %>% mutate(Item.Intended_category = "/d/") %>% # here there is no intended category, but we would like to get the probability of /d/ response
+        filter(Condition == .x$Condition),
+      control = simulation.control), 
+    .keep = TRUE, verbose = T) %>%
+  mutate_at(vars(starts_with("prior_")), ~ factor(.x)) %>%
+  mutate_at(vars(starts_with("prior_")), fct_rev) %>%
+  ungroup() %>%
+  filter(category == categories.PR[1]) %>%
+  mutate(
+   posterior.lapse_bias1 = unlist(map(posterior, ~ .x %>% filter(category == categories.PR[1]) %>% pull(lapse_bias))),
+   posterior.lapse_bias2 = unlist(map(posterior, ~ .x %>% filter(category == categories.PR[2]) %>% pull(lapse_bias)))) %>%
+  ungroup() %>%
+  group_by(Condition, Subject, posterior.lapse_rate, beta_pi, observationID, x, category) %>%
+  summarise(
+    response.n_sims = n_distinct(sim),
+    response.se = sd(response) / sqrt(response.n_sims),
+    response = mean(response),
+    posterior.lapse_bias1.se = sd(posterior.lapse_bias1) / sqrt(response.n_sims),
+    posterior.lapse_bias2.se = sd(posterior.lapse_bias2) / sqrt(response.n_sims),
+    posterior.lapse_bias1 = mean(posterior.lapse_bias1),
+    posterior.lapse_bias2 = mean(posterior.lapse_bias2)
+  ) %>%
+  relocate(
+   !!! syms(setdiff(names(.), c("response", "response.se", "response.n_sims"))),
+   response, response.se, response.n_sims) %>%
+  ungroup()
+  
+  saveRDS(d.PR, get_path(paste0("../models/d.PR.results.bias.rds"))) # save results for bias because it takes a long time to run
+} else {
+  d.PR <- readRDS(get_path(paste0("../models/d.PR.results.bias.rds")))
+}
+
+```
+
+
+```{r PR-result-changes-in-decision-making, fig.width= base.width * 5, fig.height= base.height * 5 +.5, fig.cap="(ref:PR-result-changes-in-decision-making)"}
+p.PR.results.bias <- p.PR.results %+% 
+  d.PR +
   geom_text(
     data = . %>%
       group_by(Condition, posterior.lapse_rate, beta_pi) %>%
@@ -468,29 +502,19 @@ p.PR.results %+%
       cols = beta[pi] == .(beta_pi),
       rows = lambda == ~.(posterior.lapse_rate))) +
   myGplot.defaults(base_size = 14, set_theme = F)
+p.PR.results.bias
 
-# p.PR.results %+% 
-#     (d.PR %>% 
-#        filter(category == categories.PR[1]) %>%
-#        mutate(
-#          posterior.lapse_bias1 = map(posterior, ~ .x %>% filter(category == categories.PR[1]) %>% pull(lapse_bias)),
-#          posterior.lapse_bias2 = map(posterior, ~ .x %>% filter(category == categories.PR[2]) %>% pull(lapse_bias))) %>%
-#        group_by(Condition, beta_pi) %>%
-#        mutate(
-#          lapse_bias_expression = list(
-#            bquote(
-#              atop(
-#                beta[delta[pi]] == .(beta_pi),
-#                atop(
-#                  bquote(pi[.(categories.PR[1])] == .(first(posterior.lapse_bias1))),
-#                  bquote(pi[.(categories.PR[2])] == .(first(posterior.lapse_bias2))))))))) +
-#   facet_grid(
-#     posterior.lapse_rate ~ beta_pi, 
-#     labeller = label_bquote(
-#       cols = .(unlist(lapse_bias_expression)),
-#       rows = lambda[posterior] == ~.(posterior.lapse_rate)))
+d.PR.bias.highlighted <- d.PR %>%
+  filter(category == categories.PR[1]) %>%
+        mutate(highlight = case_when(
+          beta_pi == 0.01 & posterior.lapse_rate == .0005 ~ T,
+          T ~ F)) %>%
+  filter(highlight == T)
+
+p.PR.bias.highlighted <- p.PR.results.bias %+%
+  d.PR.bias.highlighted
+
 ```
-
 Figure \@ref(fig:PR-result-changes-in-decision-making) shows the effects of changes in response biases for lapse rates ranging from negligible lapse rates ($\lambda = .0005$, top row) to a scenario in which listeners always lapse ($\lambda = 1$). In the latter---rather implausible---edge case, listeners' responses only reflect response biases and are completely stimulus-independent (bottom row). For reference, lapse rates for perception experiments like the ones modeled here typically fall between 1-10% [e.g., @clayards2008 constrained lapse rates to be $<5$%; @kleinschmidt-jaeger2016cogsci report a best-fitting value of 5%].
 
 The primary insight from Figure \@ref(fig:PR-result-changes-in-decision-making) is that changes in response biases can account for the type of boundary shift that is observed in perceptual recalibration experiments. This shows that the signature result of perceptual recalibration experiments is ambiguous between two explanations that evoke very different cognitive architectures. For this case study, perhaps the closest match to the findings from Kraljic and Samuel (2006) is observed for plausible lapse rates up to 5% and small changes in response bias (second or third column, top rows). 
@@ -558,7 +582,7 @@ if (ANIMATE_FIGURES) {
 (ref:PR-result-changes-in-normalization) Predictions of a model that derives perceptual recalibration from changes in normalization. Predicted categorization responses are shown for the `r length(test_locations)` test locations after `r paste(categories.PR, collapse = "- and")`-shifted exposure, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure. Smaller $\kappa_0$ indicate faster learning. 
 
 ```{r PR-result-changes-in-normalization, fig.width= base.width * 5, fig.height= base.height + 1, fig.cap="(ref:PR-result-changes-in-normalization)"}
-p.PR.results %+%
+p.PR.results.normalization <- p.PR.results %+%
   (d.PR %>%
      filter(category == categories.PR[1])) +
   facet_grid(
@@ -566,10 +590,43 @@ p.PR.results %+%
     labeller = label_bquote(
       cols = ~kappa[0] == .(as.character(prior_kappa.normalization)))) +
   myGplot.defaults(base_size = 14, set_theme = F)
+p.PR.results.normalization
+
+d.PR.normalization.highlighted <- d.PR %>%
+  filter(category == categories.PR[1]) %>%
+        mutate(highlight = case_when(
+          prior_kappa.normalization == 1024 ~ T,
+          T ~ F)) %>%
+  filter(highlight == T)
+
+p.PR.normalization.highlighted <- p.PR.results.normalization %+%
+  d.PR.normalization.highlighted
 ```
 
 ## Summary
-We applied the three change models developed in Section \@ref(sec:framework) to a (simulated) perceptual recalibration experiment. We found that all three change models can qualitatively predict the type of boundary shift characteristic of such experiments. The degree to which perceptual recalibration results do not distinguish between the three change mechanisms surprised us. On the one hand, all three change models were designed to explain adaptive speech perception. As such, it is not surprising that all three models predict changes in the 'right' direction, compared to the absence of an adaptive response---i.e., that all models change the categorization function in ways that is meant to accommodate the acoustic properties of the exposure stimuli.^[That the predicted changes in categorization functions indeed *improve* recognition accuracy will become more evident in Case Study 2.] On the other hand, the three change mechanisms assume very different cognitive architectures, and each of the three change models is subject to different computational limitations. Specifically, the two simpler change models for normalization and decision-making involve fewer degrees of freedom, and have access to less information, compared to the change model for category representations. Recall, for example, that normalization affects cue values regardless of category membership, or that changes in decision-making can only predict additive changes in the log-odds of categorization responses (at least when listeners have lapse rates of 0 or 1). 
+We applied the three change models developed in Section \@ref(sec:framework) to a (simulated) perceptual recalibration experiment. We found that all three change models can qualitatively predict the type of boundary shift characteristic of such experiments (see Figure \@ref(fig:PR-result-summary) for a direct comparison). The degree to which perceptual recalibration results do not distinguish between the three change mechanisms surprised us. On the one hand, all three change models were designed to explain adaptive speech perception. As such, it is not surprising that all three models predict changes in the 'right' direction, compared to the absence of an adaptive response---i.e., that all models change the categorization function in ways that is meant to accommodate the acoustic properties of the exposure stimuli.^[That the predicted changes in categorization functions indeed *improve* recognition accuracy will become more evident in Case Study 2.] On the other hand, the three change mechanisms assume very different cognitive architectures, and each of the three change models is subject to different computational limitations. Specifically, the two simpler change models for normalization and decision-making involve fewer degrees of freedom, and have access to less information, compared to the change model for category representations. Recall, for example, that normalization affects cue values regardless of category membership, or that changes in decision-making can only predict additive changes in the log-odds of categorization responses (at least when listeners have lapse rates of 0 or 1). 
 
 Given these differences between the models, it seemed plausible that the simpler models would have insufficient functional flexibility to account for the types of boundary shifts associated with perceptual recalibration. Case Study 1 suggests that this is not the case. At least at the level of analysis that is typically applied in these experiments, the signature result of perceptual recalibration experiments therefore does *not* constitute decisive evidence for changes in representations. Rather, boundary shifts could result from any of the three types of change mechanisms. This does not, of course, mean that perceptual recalibration experiments are *necessarily* uninformative about the mechanisms underlying adaptive speech perception. To anticipate the general discussion, if adequate approaches to data analysis are chosen, it is possible to distinguish between the three different change mechanisms (and even combinations of them). Before we discuss what would be required to achieve this goal, we present the second case study using another common experimental paradigm.
 
+(ref:PR-result-summary) Predictions of the three models compared against human responses. **Panel A - Categorization functions observed from human perception experiment:** Same as Figure \@ref(fig:kraljic-samuel-2007-replotted). **Panel B - Change model predictions:** From left to right: predicted categorization responses from changes in representations, decision-making, and normalization, shown for the `r length(test_locations)` test locations after `r paste(categories.PR, collapse = "- and")`-shifted exposure. For each change model, a set of parameterization that yields performance similar to human responses is selected for illustrative purpose.
+
+```{r PR-result-summary, fig.width= base.width * 5, fig.height= base.height + 1, fig.cap="(ref:PR-result-summary)"}
+
+prow.B <- plot_grid(
+    p.PR.representations.highlighted + theme(legend.position="none") + myGplot.defaults(base_size = 12, set_theme = F),
+    p.PR.bias.highlighted + theme(legend.position="none") + myGplot.defaults(base_size = 12, set_theme = F),
+    p.PR.normalization.highlighted + theme(legend.position="none") + myGplot.defaults(base_size = 12, set_theme = F),
+    ncol = 3, 
+    rel_widths = c(0.25, 0.25, 0.23))
+prow <- 
+  plot_grid(
+    p20 + myGplot.defaults(base_size = 12, set_theme = F) + theme(legend.position="none", plot.margin = margin(t = 1.3, r = 1, b = 0.7, l = 0, unit = "cm")), 
+    prow.B,
+    labels = c('A)', 'B)'), 
+    ncol = 2, 
+    rel_widths = c(0.27, 0.73))
+
+# extract a legend that is laid out horizontally
+legend_prow <- get_legend(p.PR.representations.highlighted)
+plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.2, 1))  
+```

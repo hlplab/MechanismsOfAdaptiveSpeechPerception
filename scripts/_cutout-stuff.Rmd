@@ -274,3 +274,73 @@ A third limitation of normalization accounts that can be productively explored i
 Conversely, there are ways to assess whether representational changes alone are sufficient to explain all forms of adaptive speech perception. For example, if auditory input that arguably carries no information about category statistics affects subsequent speech perception, this provides evidence that changes in representations alone cannot explain all aspects of adaptive speech perception. Perhaps one of the most convincing demonstrations of this type comes from the findings of auditory enhancement effects, wherein non-speech stimuli (e.g., pure tones) can systematically alter the perception of subsequently played speech stimuli [@chodroff-wilson2020; @holt2001; @holt2005; @holt2006; @huang-holt2011; for review, see also @weatherholtz-jaeger2016]. While these demonstrations might be challenged for lack of ecological validity (potentially inviting meta-reasoning about experimenters' intentions that is unlikely to be present during everyday speech perception), it is unclear how representational changes---or, for that matter, changes in response biases---can explain such findings. At the very least then, these findings suggest that normalization *can* be involved in adaptive speech perception.
 
 In sum, by focusing on the computational assumptions of the different change models, it is possible to conduct behavioral experiments that can decisively determine whether either of the two computationally more parsimonious change models is *sufficient* to explain adaptive speech perception, or whether changes in representations are necessary to explain adaptive speech perception. 
+
+```{r AA-result-comparison-additional-cases-history, warning=FALSE, eval = FALSE}
+#DEBUG remove if done
+cases = c("Cue_reweighting", "Contrast_shift", "Contrast_reduction", "Contrast_collapse")
+history.optimization.representations.all = data.frame()
+history.optimization.bias.all = data.frame()
+history.optimization.normalization.all = data.frame()
+
+for (i in 1:length(cases)){
+  example_label = cases[i]
+  
+  #load history of optimization for representations model
+  history.optimization.representations.current <- 
+    readRDS(get_path(paste0("../models/d.AA.history.optimization.representations_", example_label,".rds"))) %>%
+    mutate(Case = example_label) 
+  history.optimization.representations.all <- 
+    bind_rows(history.optimization.representations.all, history.optimization.representations.current)
+  rm(history.optimization.representations.current)
+  
+  #load history of optimization for bias model
+  history.optimization.bias.current <- 
+    readRDS(get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds"))) %>%
+    mutate(Case = example_label) 
+  history.optimization.bias.all <- 
+    bind_rows(history.optimization.bias.all, history.optimization.bias.current)
+  rm(history.optimization.bias.current)
+  
+  #load history of optimization for normalization model
+  history.optimization.normalization.current <- 
+    readRDS(get_path(paste0("../models/d.AA.history.optimization.normalization_", example_label,".rds"))) %>%
+    mutate(Case = example_label) 
+  
+  history.optimization.normalization.all <- 
+    bind_rows(history.optimization.normalization.all, history.optimization.normalization.current)
+  rm(history.optimization.normalization.current)
+}
+```
+
+```{r compare-AA-models-results-across-three-mechanisms-best-performing-nearest, warning=FALSE, eval= FALSE}
+# DEBUG: remove this chunk if we opt to use the exact best-performing parameters
+# load best-performing parameterization for the cue-reweighting case
+example_label = "Cue_reweighting"
+best_performing_parameters.representations <- readRDS(get_path(paste0("../models/best_performing_parameters.representations_", example_label,".rds")))
+best_performing_parameters.bias <- readRDS(get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
+best_performing_parameters.normalization <- readRDS(get_path(paste0("../models/best_performing_parameters.normalization_", example_label,".rds")))
+example_label = paste0(example_label, "_best-performing")
+# select the model parameters to be illustrated as an example where all three models predict a similar overall accuracy
+prior_kappa.selected = d.AA.representations$prior_kappa[which.min(abs(as.numeric(as.character(d.AA.representations$prior_kappa)) - best_performing_parameters.representations$par[1]))]
+prior_nu.selected = d.AA.representations$prior_nu[which.min(abs(as.numeric(as.character(d.AA.representations$prior_nu)) - best_performing_parameters.representations$par[2]))]
+posterior.lapse_rate.selected = d.AA.bias$posterior.lapse_rate[which.min(abs(d.AA.bias$posterior.lapse_rate - best_performing_parameters.bias$par[1]))]
+beta_pi.selected = d.AA.bias$beta_pi[which.min(abs(d.AA.bias$beta_pi - best_performing_parameters.bias$par[2]))]
+prior_kappa.normalization.selected = d.AA.normalization$prior_kappa.normalization[which.min(abs(as.numeric(as.character(d.AA.normalization$prior_kappa.normalization)) - best_performing_parameters.normalization$par[1]))]
+
+
+compare_models.AA(d.AA.representations, d.AA.bias, d.AA.normalization, VOT_range, f0_range, n_points)
+
+```
+
+```{r code-from-bias-model-in-AA-section}
+# sanity check to see if the target_accuracy_se is achieved before the max.simulations
+# temp <- bias.pred %>%
+#   ungroup() %>%
+#   group_by(Condition, Subject, posterior.lapse_rate, beta_pi, sim) %>%
+#   summarise(response.mean = mean(response)) %>%
+#   group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
+#   summarise(
+#     n.sims_so_far = n_distinct(sim),
+#     response.mean.mean = mean(response.mean),
+#     response.mean.se = sd(response.mean) / sqrt(n_distinct(sim)))
+```

@@ -858,7 +858,7 @@ Next, we present two case studies that illustrate the predictions of the three c
 
 \begin{figure}[h]
 \begin{center}
-\includegraphics[width=.9\columnwidth]{`r get_path("../figures/diagrams/predictive-power-simulations.png")`}
+\includegraphics[width=.99\columnwidth]{`r get_path("../figures/diagrams/predictive-power-simulations.png")`}
 \caption{The ASP framework can be used to derive predictions, or to fit to human behavior. ASP's change models describe how ASP's categorization model is predicted to change based on the inputs experienced during exposure. The updated categorization model can then be used to predict listeners' response distributions for any test token (as we do in Case Study 1), and/or to predict listeners' recognition accuracy (as we do in Case Study 2). As described in the text, researchers can choose to set some of ASP's parameters based on phonetic databases. By doing so, researchers commit to the assumptions (i) that listeners learn and store some statistics of previously experienced speech input, and (ii) that the database is a sufficiently good approximation of those statistics for an average listener in the experiment. Setting parameters based on phonetic databases reduces the degrees of freedom and functional flexibility of ASP's change models, leading to stronger (more easily falsifiable) predictions. This is the approach we employ in our case studies.}\label{fig:ASP-predictions}
 \end{center}
 \end{figure}

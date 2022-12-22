@@ -380,6 +380,16 @@ p.PR.results +
       xmin = -Inf,xmax = Inf, ymin = -Inf,ymax = Inf)) +
   scale_fill_manual(breaks = c(T, F), values = c("gray20", "white")) +
   guides(fill = "none")
+
+d.PR.representations.highlighted <- d.PR %>%
+  filter(category == categories.PR[1]) %>%
+        mutate(highlight = case_when(
+          between(as.numeric(as.character(prior_kappa)), 75, 780) & between(as.numeric(as.character(prior_nu)), 160, 1000) ~ T,
+          T ~ F)) %>%
+  filter(highlight == T)
+
+p.PR.representations.highlighted <- p.PR.results %+%
+  d.PR.representations.highlighted
 ```
 
 Figure \@ref(fig:PR-result-changes-in-representations) demonstrates that distributional learning can account for the typical result of perceptual recalibration experiments. Of note, the range of parameterizations that best fit human responses in a series of distributional learning experiments on /b/ and /p/ [gray panel in Figure \@ref(fig:PR-result-changes-in-representations), $\kappa_{/b/,0}=\kappa_{/p/,0}=160$ (95% CI: 75-780) and $\nu_{/b/,0}=\nu_{/p/,0}=510$ (95% CI: 160-1000), @kleinschmidt2020] also provides a good qualitative fit against the /d/-/t/ perceptual recalibration results by Kraljic and Samuel [-@kraljic-samuel2007]. 
@@ -620,7 +630,7 @@ d.PR <- d.PR.exposure %>%
 
 
 ```{r PR-result-changes-in-decision-making, fig.width= base.width * 5, fig.height= base.height * 5 +.5, fig.cap="(ref:PR-result-changes-in-decision-making)"}
-p.PR.results %+% 
+p.PR.results.bias <- p.PR.results %+% 
   d.PR +
   geom_text(
     data = . %>%
@@ -646,6 +656,17 @@ p.PR.results %+%
       cols = beta[pi] == .(beta_pi),
       rows = lambda == ~.(posterior.lapse_rate))) +
   myGplot.defaults(base_size = 14, set_theme = F)
+p.PR.results.bias
+
+d.PR.bias.highlighted <- d.PR %>%
+  filter(category == categories.PR[1]) %>%
+        mutate(highlight = case_when(
+          beta_pi == 0.01 & posterior.lapse_rate == .0005 ~ T,
+          T ~ F)) %>%
+  filter(highlight == T)
+
+p.PR.bias.highlighted <- p.PR.results.bias %+%
+  d.PR.bias.highlighted
 
 # p.PR.results %+% 
 #     (d.PR %>% 
@@ -735,7 +756,7 @@ if (ANIMATE_FIGURES) {
 (ref:PR-result-changes-in-normalization) Predictions of a model that derives perceptual recalibration from changes in normalization. Predicted categorization responses are shown for the `r length(test_locations)` test locations after `r paste(categories.PR, collapse = "- and")`-shifted exposure, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure. Smaller $\kappa_0$ indicate faster learning. 
 
 ```{r PR-result-changes-in-normalization, fig.width= base.width * 5, fig.height= base.height + 1, fig.cap="(ref:PR-result-changes-in-normalization)"}
-p.PR.results %+%
+p.PR.results.normalization <- p.PR.results %+%
   (d.PR %>%
      filter(category == categories.PR[1])) +
   facet_grid(
@@ -743,10 +764,43 @@ p.PR.results %+%
     labeller = label_bquote(
       cols = ~kappa[0] == .(as.character(prior_kappa.normalization)))) +
   myGplot.defaults(base_size = 14, set_theme = F)
+p.PR.results.normalization
+
+d.PR.normalization.highlighted <- d.PR %>%
+  filter(category == categories.PR[1]) %>%
+        mutate(highlight = case_when(
+          prior_kappa.normalization == 1024 ~ T,
+          T ~ F)) %>%
+  filter(highlight == T)
+
+p.PR.normalization.highlighted <- p.PR.results.normalization %+%
+  d.PR.normalization.highlighted
 ```
 
 ## Summary
-We applied the three change models developed in Section \@ref(sec:framework) to a (simulated) perceptual recalibration experiment. We found that all three change models can qualitatively predict the type of boundary shift characteristic of such experiments. The degree to which perceptual recalibration results do not distinguish between the three change mechanisms surprised us. On the one hand, all three change models were designed to explain adaptive speech perception. As such, it is not surprising that all three models predict changes in the 'right' direction, compared to the absence of an adaptive response---i.e., that all models change the categorization function in ways that is meant to accommodate the acoustic properties of the exposure stimuli.^[That the predicted changes in categorization functions indeed *improve* recognition accuracy will become more evident in Case Study 2.] On the other hand, the three change mechanisms assume very different cognitive architectures, and each of the three change models is subject to different computational limitations. Specifically, the two simpler change models for normalization and decision-making involve fewer degrees of freedom, and have access to less information, compared to the change model for category representations. Recall, for example, that normalization affects cue values regardless of category membership, or that changes in decision-making can only predict additive changes in the log-odds of categorization responses (at least when listeners have lapse rates of 0 or 1). 
+We applied the three change models developed in Section \@ref(sec:framework) to a (simulated) perceptual recalibration experiment. We found that all three change models can qualitatively predict the type of boundary shift characteristic of such experiments (see Figure \@ref(fig:PR-result-summary) for a direct comparison). The degree to which perceptual recalibration results do not distinguish between the three change mechanisms surprised us. On the one hand, all three change models were designed to explain adaptive speech perception. As such, it is not surprising that all three models predict changes in the 'right' direction, compared to the absence of an adaptive response---i.e., that all models change the categorization function in ways that is meant to accommodate the acoustic properties of the exposure stimuli.^[That the predicted changes in categorization functions indeed *improve* recognition accuracy will become more evident in Case Study 2.] On the other hand, the three change mechanisms assume very different cognitive architectures, and each of the three change models is subject to different computational limitations. Specifically, the two simpler change models for normalization and decision-making involve fewer degrees of freedom, and have access to less information, compared to the change model for category representations. Recall, for example, that normalization affects cue values regardless of category membership, or that changes in decision-making can only predict additive changes in the log-odds of categorization responses (at least when listeners have lapse rates of 0 or 1). 
 
 Given these differences between the models, it seemed plausible that the simpler models would have insufficient functional flexibility to account for the types of boundary shifts associated with perceptual recalibration. Case Study 1 suggests that this is not the case. At least at the level of analysis that is typically applied in these experiments, the signature result of perceptual recalibration experiments therefore does *not* constitute decisive evidence for changes in representations. Rather, boundary shifts could result from any of the three types of change mechanisms. This does not, of course, mean that perceptual recalibration experiments are *necessarily* uninformative about the mechanisms underlying adaptive speech perception. To anticipate the general discussion, if adequate approaches to data analysis are chosen, it is possible to distinguish between the three different change mechanisms (and even combinations of them). Before we discuss what would be required to achieve this goal, we present the second case study using another common experimental paradigm.
 
+(ref:PR-result-summary) Predictions of the three models compared against human responses. **Panel A - Categorization functions observed from human perception experiment:** Same as Figure \@ref(fig:kraljic-samuel-2007-replotted). **Panel B - Change model predictions:** From left to right: predicted categorization responses from changes in representations, decision-making, and normalization, shown for the `r length(test_locations)` test locations after `r paste(categories.PR, collapse = "- and")`-shifted exposure. For each change model, a set of parameterization that yields performance similar to human responses is selected for illustrative purpose.
+
+```{r PR-result-summary, fig.width= base.width * 5, fig.height= base.height + 1, fig.cap="(ref:PR-result-summary)"}
+
+prow.B <- plot_grid(
+    p.PR.representations.highlighted + theme(legend.position="none"),
+    p.PR.bias.highlighted + theme(legend.position="none"),
+    p.PR.normalization.highlighted + theme(legend.position="none"),
+    ncol = 3, 
+    rel_widths = c(0.25, 0.25, 0.23))
+prow <- 
+  plot_grid(
+    p20 + myGplot.defaults(base_size = 14, set_theme = F) + theme(legend.position="none", plot.margin = margin(t = 1.3, r = 1, b = 0.7, l = 0, unit = "cm")), 
+    prow.B,
+    labels = c('A)', 'B)'), 
+    ncol = 2, 
+    rel_widths = c(0.27, 0.73))
+
+# extract a legend that is laid out horizontally
+legend_prow <- get_legend(p.PR.representations.highlighted)
+plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.2, 1))  
+```

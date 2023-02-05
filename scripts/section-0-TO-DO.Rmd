@@ -2,7 +2,9 @@
 Let's delete to-dos after they have been addressed, and post in Slack what we've done. Thanks.
 
   * Everyone: 
+    * Integrate reference to Harmon et al 2019.
     * Should we make all parameters either 'confidence' / weight of prior knowledge OR learning rates? 
+    * Check the description of normalization accounts, and ask Anna for help to make it's all accurate and up to date.
 
 ## TO DOs identified in lab mtg
 

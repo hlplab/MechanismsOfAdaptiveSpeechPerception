@@ -2,6 +2,7 @@
 Let's delete to-dos after they have been addressed, and post in Slack what we've done. Thanks.
 
   * Everyone: 
+    * update references of unpublished manuscripts
     * Check use of computational and representational parsimony?
     * Check references and XXX introduced during revisions.
     * Integrate reference to Harmon et al 2019. Re-read Volya's comments about its relevance.

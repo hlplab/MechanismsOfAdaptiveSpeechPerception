@@ -2,13 +2,19 @@
 Let's delete to-dos after they have been addressed, and post in Slack what we've done. Thanks.
 
   * Everyone: 
-    * Integrate reference to Harmon et al 2019.
+    * Check use of computational and representational parsimony?
+    * Check references and XXX introduced during revisions.
+    * Integrate reference to Harmon et al 2019. Re-read Volya's comments about its relevance.
     * Should we make all parameters either 'confidence' / weight of prior knowledge OR learning rates? 
     * Check the description of normalization accounts, and ask Anna for help to make it's all accurate and up to date.
+  * Send paper out to emily myers and james mcqueen and ask whether they’d be willing to read this in their lab? It's now or never.
+  
+## Revision 3 --- things that have been done
 
-## TO DOs identified in lab mtg
-
- * Send paper out to emily myers and james mcqueen and ask whether they’d be willing to read this in their lab?
+  * changed computationally parsimoneous to "representationally and computationally parsimoneous" 
+  * added footnote about parsimony to introduction to address R1's comment. I tried to write it in a way that it also addressed R3's comment about talker-specificity.
+    
+  
 
 ## Things to perhaps do later:
 

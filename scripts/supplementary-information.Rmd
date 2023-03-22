@@ -321,7 +321,7 @@ Here, we model the prediction error as the surprisal experienced when observing 
 \end{split}
 \end{equation}
 
-The same amount that is added to the bias of the observed (labeled) category is subtracted from the response biases for all other categories (uniformly distributed across those categories). <!-- For the simple case of a 2AFC task, which involves only two categories, changes in the bias after $n$ observations are thus described by a logistic regression with intercept $\mathrm{logit}(\pi_{n-1,c})$ and surprisal slope $\beta_{\pi}$:
+The same amount that is added to the bias of the observed (labeled) category is subtracted from the response biases for all other categories (uniformly distributed across those categories). <!-- For the simple case of a 2AFC task, which involves only two categories, changes in the bias after $N$ observations are thus described by a logistic regression with intercept $\mathrm{logit}(\pi_{n-1,c})$ and surprisal slope $\beta_{\pi}$:
 
 \begin{equation}\label{eq:bias-probability}
 \begin{split}

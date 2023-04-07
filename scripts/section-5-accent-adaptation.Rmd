@@ -1145,7 +1145,7 @@ dist.L2_category.cue2 <- 0
 shift.cue1 <- 0
 shift.cue2 <- 0
 var.ratio <- 1
-example_label = "Contrast_collapse" #TO DO:COME BACK HERE AND FIX IT FOR get_parameters_phonetic_contrast.AA
+example_label = "Contrast_collapse"
 
 d.AA.results.contrast_collapse.best  <- construct_three_models(example_label = "Contrast_collapse", experimenter.ideal_observer = m.io.VOT_f0.AA)
 ```
@@ -1200,7 +1200,7 @@ d.AA.exposure.target.contrast.shift <-
     exposure.tokens.L2.n = n.token_for_plot)
 
 # simulating a case of contrast reduction
-example_label = "Contrast_reduction" # TO DO:COME BACK HERE TO FIX THE ASSIGNMENT OF EXAMPLE_LABEL
+example_label = "Contrast_reduction"
 min_VOT = 5
 var.ratio = 1
 d.AA.exposure.target.contrast.reduction <- 

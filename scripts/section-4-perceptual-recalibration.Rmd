@@ -548,7 +548,6 @@ if (ANIMATE_FIGURES) {
     group_by(Condition, Subject, prior_kappa.normalization) %>%
     ggplot(aes(x = VOT, y = f0_Mel, label = as.numeric(factor(observationID)))) + 
     geom_line(color = "gray", alpha = .5) +
-    geom_text(aes(color = Prior_proportion_category1), size = 3) +
     scale_x_continuous(expression("VOT (msec)"), expand = expansion(mult = .1, add = 0)) +
     scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0)) +
     scale_shape_discrete("Item type") +
@@ -559,7 +558,7 @@ if (ANIMATE_FIGURES) {
     # enter_fade() + exit_fade() +
     transition_states(prior_kappa.normalization) +
     ggtitle(label = expression(kappa[0]), subtitle = "{closest_state}")
-  p.animation
+  p.animation + geom_text(aes(color = Prior_proportion_category1), size = 3)
   if (SAVE_ANIMATED_VIDEO) {
     anim_save("demonstrate-PR-test-normalization.webm", animation = animate(p.animation +                                                                 geom_text(aes(color = Prior_proportion_category1), size = 10) + theme(
       plot.title = element_text(size = 20),

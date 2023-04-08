@@ -594,7 +594,13 @@ if (ANIMATE_FIGURES) {
     transition_states(observation.n, state_length = .5, transition_length = .5)
   p.animation
   if (SAVE_ANIMATED_VIDEO) {
-    anim_save("demonstrate-changes-in-representations.webm", animation = animate(p.animation, renderer = av_renderer(), width = 1280, height = 720), path = '../figures/knitted/')
+    anim_save("demonstrate-changes-in-representations.webm", animation = animate(p.animation  +  theme(strip.text.x = element_text(size = 20),
+                           axis.text.x = element_text(size = 20),
+                           axis.title.x = element_text(size = 20),
+                           axis.text.y = element_text(size = 20),
+                           axis.title.y = element_text(size = 20),
+                           legend.text = element_text(size = 20),
+                           legend.title = element_text(size = 20)), renderer = av_renderer(), width = 1280, height = 720), path = '../figures/knitted/')
   }
 } else {
   d.plot <- d.exposure %>% filter(observation.n == max(observation.n))
@@ -646,7 +652,13 @@ if (ANIMATE_FIGURES) {
     transition_states(observation.n, state_length = .5, transition_length = .5)
   p.animation
   if (SAVE_ANIMATED_VIDEO) {
-    anim_save("demonstrate-changes-in-representations-b.webm", animation = animate(p.animation, renderer = av_renderer(), width = 1280, height = 720), path = '../figures/knitted/')
+    anim_save("demonstrate-changes-in-representations-b.webm", animation = animate(p.animation  +  theme(strip.text.x = element_text(size = 20),
+                           axis.text.x = element_text(size = 20),
+                           axis.title.x = element_text(size = 20),
+                           axis.text.y = element_text(size = 20),
+                           axis.title.y = element_text(size = 20),
+                           legend.text = element_text(size = 20),
+                           legend.title = element_text(size = 20)), renderer = av_renderer(), width = 1280, height = 720), path = '../figures/knitted/')
   }
 } else {
   d.plot <- d.exposure %>% filter(observation.n == max(observation.n))
@@ -837,7 +849,15 @@ if (ANIMATE_FIGURES) {
     transition_states(observation.n, state_length = .5, transition_length = .5)
   p.animation
   if (SAVE_ANIMATED_VIDEO) {
-    anim_save("demonstrate-lapse-bias-change.webm", animation = animate(p.animation, renderer = av_renderer(), width = 1280, height = 720), path = '../figures/knitted/')
+    anim_save("demonstrate-lapse-bias-change.webm", animation = animate(
+      p.animation +  theme(strip.text.x = element_text(size = 20),
+                           axis.text.x = element_text(size = 20),
+                           axis.title.x = element_text(size = 20),
+                           axis.text.y = element_text(size = 20),
+                           axis.title.y = element_text(size = 20),
+                           legend.text = element_text(size = 20),
+                           legend.title = element_text(size = 20)
+                           ), renderer = av_renderer(), width = 1280, height = 720), path = '../figures/knitted/')
   }
 } else {
   d.plot <- d.exposure %>%
@@ -891,7 +911,13 @@ if (ANIMATE_FIGURES) {
     transition_states(observation.n, state_length = .5, transition_length = .5)
   p.animation
   if (SAVE_ANIMATED_VIDEO) {
-    anim_save("demonstrate-lapse-bias-change-nonzero-lapse.webm", animation = animate(p.animation, renderer = av_renderer(), width = 1280, height = 720), path = '../figures/knitted/')
+    anim_save("demonstrate-lapse-bias-change-nonzero-lapse.webm", animation = animate(p.animation  +  theme(strip.text.x = element_text(size = 20),
+                           axis.text.x = element_text(size = 20),
+                           axis.title.x = element_text(size = 20),
+                           axis.text.y = element_text(size = 20),
+                           axis.title.y = element_text(size = 20),
+                           legend.text = element_text(size = 20),
+                           legend.title = element_text(size = 20)), renderer = av_renderer(), width = 1280, height = 720), path = '../figures/knitted/')
   }
 } else {
   d.plot <- d.exposure %>%

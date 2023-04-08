@@ -561,7 +561,15 @@ if (ANIMATE_FIGURES) {
     ggtitle(label = expression(kappa[0]), subtitle = "{closest_state}")
   p.animation
   if (SAVE_ANIMATED_VIDEO) {
-    anim_save("demonstrate-PR-test-normalization.webm", animation = animate(p.animation, renderer = av_renderer(), width = 1280, height = 720), path = '../figures/knitted/')
+    anim_save("demonstrate-PR-test-normalization.webm", animation = animate(p.animation +                                                                 geom_text(aes(color = Prior_proportion_category1), size = 10) + theme(
+      plot.title = element_text(size = 20),
+      strip.text.x = element_text(size = 20),
+                           axis.text.x = element_text(size = 20),
+                           axis.title.x = element_text(size = 20),
+                           axis.text.y = element_text(size = 20),
+                           axis.title.y = element_text(size = 20),
+                           legend.text = element_text(size = 20),
+                           legend.title = element_text(size = 20)), renderer = av_renderer(), width = 1280, height = 720), path = '../figures/knitted/')
   }
 } else {
   d.PR %>%

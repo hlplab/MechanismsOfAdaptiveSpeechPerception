@@ -550,7 +550,8 @@ d.exposure %<>%
 ```
 
 ```{r demonstrate-changes-in-representations, fig.width=base.width*2*1.5, fig.height=base.height + 1, fig.cap="(ref:demonstrate-changes-in-representations)", fig.show='animate'}
-d.exposure %>%
+
+p <- d.exposure %>%
   ggplot(aes(x = !! sym(cue.demo))) +
   # categorization function
   geom_line(
@@ -586,16 +587,28 @@ d.exposure %>%
     . ~ prior_kappa,
     labeller = label_bquote(
       cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)))) +
-  theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank()) +
-  # ease_aes('linear') +
-  # enter_fade() + exit_fade() +
-  transition_states(observation.n, state_length = .5, transition_length = .5)
+  theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank()) 
+
+if (ANIMATE_FIGURES) {
+  p.animation <- p +
+    transition_states(observation.n, state_length = .5, transition_length = .5)
+  p.animation
+  if (SAVE_ANIMATED_VIDEO) {
+    anim_save("demonstrate-changes-in-representations.webm", animation = animate(p.animation, renderer = av_renderer(), width = 1280, height = 720), path = '../figures/knitted/')
+  }
+} else {
+  d.plot <- d.exposure %>% filter(observation.n == max(observation.n))
+  p %+% d.plot
+}
+
+
+
 ```
 
 (ref:demonstrate-changes-in-representations-b) Changes in expected categorization functions resulting from the changes in the expected category likelihoods in Figure \@ref(fig:demonstrate-changes-in-representations). We set the lapse rate $\lambda = 0$, the prior lapse biases to uniform ($\pi_{c,0}=.5$). Neither normalization, nor response biases changed as a function of the input. Animation controls require Acrobat PDF reader.
 
 ```{r demonstrate-changes-in-representations-b, fig.width=base.width*2*1.5, fig.height=base.height + 1, fig.cap="(ref:demonstrate-changes-in-representations-b)", warning=FALSE, message=FALSE, fig.show='animate'}
-d.exposure %>%
+p <- d.exposure %>%
   ggplot(aes(x = !! sym(cue.demo))) +
   # categorization function
   geom_line(
@@ -626,10 +639,19 @@ d.exposure %>%
     . ~ prior_kappa,
     labeller = label_bquote(
       cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)))) +
-  theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank()) +
-  # ease_aes('linear') +
-  # enter_fade() + exit_fade() +
-  transition_states(observation.n, state_length = .5, transition_length = .5)
+  theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank()) 
+
+if (ANIMATE_FIGURES) {
+  p.animation <- p +
+    transition_states(observation.n, state_length = .5, transition_length = .5)
+  p.animation
+  if (SAVE_ANIMATED_VIDEO) {
+    anim_save("demonstrate-changes-in-representations-b.webm", animation = animate(p.animation, renderer = av_renderer(), width = 1280, height = 720), path = '../figures/knitted/')
+  }
+} else {
+  d.plot <- d.exposure %>% filter(observation.n == max(observation.n))
+  p %+% d.plot
+}
 ```
 
 Unlike normalization, changes in category representations can capture *category-specific* changes in cue distributions. As we lay out in more detail in the general discussion, this makes representational changes computationally less parsimonious than normalization but also more expressive: there are ways in which talkers might differ from each other that can be better captured by changes in representations than by normalization (which of these two change mechanisms better describes *listeners'* abilities is, however, an open question).
@@ -807,10 +829,21 @@ p <-
   scale_alpha_manual(name = expression(beta[pi]), values = c(.2, .5, .8)) +
   coord_cartesian(xlim = VOT_range + c(-15, 15)) +
   facet_wrap(~ use_logit, scales = "free_y") +
-  theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "right", panel.grid = element_blank()) +
-  transition_states(observation.n, state_length = .5, transition_length = .5)
+  theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "right", panel.grid = element_blank()) 
 
-p
+
+if (ANIMATE_FIGURES) {
+  p.animation <- p +
+    transition_states(observation.n, state_length = .5, transition_length = .5)
+  p.animation
+  if (SAVE_ANIMATED_VIDEO) {
+    anim_save("demonstrate-lapse-bias-change.webm", animation = animate(p.animation, renderer = av_renderer(), width = 1280, height = 720), path = '../figures/knitted/')
+  }
+} else {
+  d.plot <- d.exposure %>%
+  mutate(use_logit = factor(ifelse(use_logit, "log-odds", "probability"), levels = c("probability", "log-odds"))) %>% filter(observation.n == max(observation.n))
+  p %+% d.plot
+}
 ```
 
 (ref:demonstrate-lapse-bias-change-nonzero-lapse) Same as Figure \@ref(fig:demonstrate-lapse-bias-change) but for a lapse rate $\lambda=$ `r lambdas.demo[2]`. For such non-zero lapse rates, changes to the response bias have *non*-additive effects on the posterior log-odds. This means that, even in log-odds, changes in response biases can have effects that go beyond purely additive changes in the categorization functions ('shifts in category boundaries'). Animation controls require Acrobat PDF reader.
@@ -849,9 +882,22 @@ d.exposure %<>%
       ~ get_categorization_function_from_NIW_ideal_adaptor(.x, logit = .y, noise_treatment = "marginalize"))) %>%
   select(-posterior)
 
-p %+%
+p <- p %+%
   (d.exposure %>%
   mutate(use_logit = factor(ifelse(use_logit, "log-odds", "probability"), levels = c("probability", "log-odds"))))
+
+if (ANIMATE_FIGURES) {
+  p.animation <- p +
+    transition_states(observation.n, state_length = .5, transition_length = .5)
+  p.animation
+  if (SAVE_ANIMATED_VIDEO) {
+    anim_save("demonstrate-lapse-bias-change-nonzero-lapse.webm", animation = animate(p.animation, renderer = av_renderer(), width = 1280, height = 720), path = '../figures/knitted/')
+  }
+} else {
+  d.plot <- d.exposure %>%
+  mutate(use_logit = factor(ifelse(use_logit, "log-odds", "probability"), levels = c("probability", "log-odds"))) %>% filter(observation.n == max(observation.n))
+  p %+% d.plot
+}
 ```
 
 

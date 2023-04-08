@@ -543,7 +543,7 @@ d.PR <- d.PR.exposure %>%
 
 limits <- get_plot_limits(p.PR.exposure)
 if (ANIMATE_FIGURES) {
-  d.PR %>%
+  p.animation <- d.PR %>%
     mutate(VOT = map(x, ~ .x[1]) %>% unlist(), f0_Mel = map(x, ~ .x[2]) %>% unlist()) %>%
     group_by(Condition, Subject, prior_kappa.normalization) %>%
     ggplot(aes(x = VOT, y = f0_Mel, label = as.numeric(factor(observationID)))) + 
@@ -559,6 +559,10 @@ if (ANIMATE_FIGURES) {
     # enter_fade() + exit_fade() +
     transition_states(prior_kappa.normalization) +
     ggtitle(label = expression(kappa[0]), subtitle = "{closest_state}")
+  p.animation
+  if (SAVE_ANIMATED_VIDEO) {
+    anim_save("demonstrate-PR-test-normalization.webm", animation = animate(p.animation, renderer = av_renderer(), width = 1280, height = 720), path = '../figures/knitted/')
+  }
 } else {
   d.PR %>%
     filter(prior_kappa.normalization %in% c(4, 64, 1024)) %>%

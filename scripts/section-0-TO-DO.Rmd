@@ -2,7 +2,18 @@
 Let's delete to-dos after they have been addressed, and post in Slack what we've done. Thanks.
 
   * Everyone: 
-    * giant new footnote in intro (p7) should be decomposed and mostly be moved into section 2.
+    * **move part of giant new footnote in intro (p7) into section 2.** and **go through paper to use computational and representational parsimony consistently (e.g., in SI 7.1)**. Specifically: integrate in Section 2 an edited version of:
+    
+    We submit that our claims about the relative parsimony of the different mechanisms hold regardless of the specific models chosen to implement the mechanisms, *as long as one compares like with like*. For example, learning talker-independent changes in category representations can be *more* parsimoneous than talker-specific normalization---learning and storing talker-specific cue statistics---but learning of talker-specific changes in category representations will be less parsimoneous than talker-specific normalization.   
+
+Once implicit association between mechanism and hypothesized properties of the mechanism (e.g., talker-specificity, longevity, generalizability, etc.) are separated, changes in category representations are the least parsimonious of the three mechanisms considered here.
+
+In some parts of the field, talker-specificity of adaptation is taken to implicate changes in representations---so strongly, in fact, that one reviewer initially assumed evidence of talker-specificity to necessarily be evidence against alternative mechanisms. However, it is equally possible for talker-specificity to be due any of the other adaptive mechanisms [and has, indeed, been proposed for, e.g., normalization: @barreda2012; @magnuson2021talker]. Vice versa, changes in category representations do not *have* to be talker-specific [e.g., learning of category-specific statistics over a moving time window, as discussed in @kleinschmidt2015, p. 173]. Once such implicit association between mechanism and hypothesized properties of the mechanism (e.g., talker-specificity, longevity, generalizability, etc.) are separated, changes in category representations are the least parsimonious of the three mechanisms considered here.
+
+
+another example: ^[Instead of a single $\kappa_0$, one could also allow different $\kappa_0$s for different cues, or types of cues (e.g., spectral vs. durational cues). Whether such additional complexity is required---e.g., because listeners expect different cues to vary in volatility---is an empirical question to be addressed in future work.]
+
+
     * update references of unpublished manuscripts
     * brain areas are sometimes abbreviated and sometimes not. Xin, what's the cortex guideline for this? in any case, I assume they should not be abbreviated on first mention? (unless always abbreviating them is ok?) Currently, we have an odd mix.
     * Check use of computational and representational parsimony?
@@ -18,7 +29,6 @@ Let's delete to-dos after they have been addressed, and post in Slack what we've
     * make a wrapper for categorization function (through optional argument) that makes the functions monotonic. do the math.
     * CHECK OUT WHETHER CHANGES IN NORMALIZATION CAN LEAD TO NON-LINEAR CHANGES *DESPITE THE FACT THAT WE'RE USING SIMPLE LINEAR INTERPOLATION*
     
-  * Move the part about ASP not being a new model to the top of the intro. It may help to signal that we’re aiming to summarize what is known. (Seth)
   * (Shawn) should you highlight “how far can you push normalization before it becomes changes in representations”? (I’m inclined not to get into these nuances in this paper).
   * Can we be clearer that even if one agrees on the three mechanisms, we need to figure out how these mechanisms work. But how do we communicate this? Essentially, it became abundantly clear to us that even minute details can make a big difference in the predictions a model ends up making, so that it’s important to actually implement models. The difference between theory and model. Could go to end of intro or beginning of section 2.
   *　Consider adding a footnote in PR section that nothing would change if ambiguous tokens were taken to be identical. note also that there is no ‘true’ identity since the context changes.

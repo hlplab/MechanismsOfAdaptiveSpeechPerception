@@ -289,7 +289,104 @@ d.PR.test %<>%
 The test phase consists of the six stimuli shown in Figure \@ref(fig:PR-exposure-test-plot)B, chosen to yield `r paste(paste0(as.numeric(rev(unique(d.PR.test$Item.Intended_proportion_category1))) * 100, "%"), collapse = ", ")` expected `r categories.PR[1]`-responses in a norming experiment without any prior exposure to the talker's speech. This closely resembles the test stimulus placement typical for perceptual recalibration experiments, which tend to examine tokens at the two ends of the continuum as well as those placed near the category boundary. 
 
 ## Results
-Next, we use ASP to illustrate the extent to which changes in representations, response biases, or normalization can explain the typical behavioral signature of perceptual recalibration experiments: a shift in the category boundary in the same direction as the shifted tokens during exposure (optionally accompanied by a change in the slope of the categorization functions). The goal of these computational demonstrations is to illustrate the general type of pattern that the three different hypotheses can account for. 
+Next, we use ASP to illustrate the extent to which changes in representations, response biases, or normalization can explain the typical behavioral signature of perceptual recalibration experiments: a shift in the category boundary in the same direction as the shifted tokens during exposure (optionally accompanied by a change in the slope of the categorization functions). The goal of these computational demonstrations is to illustrate the general type of pattern that the three different hypotheses can account for. Figure \@ref(fig:graphical-model-all) combines the graphical representations of the change models presented separately in Figure \@ref(fig:graphical-model-changes-normalization), Figure \@ref(fig:graphical-model-changes-representations), and Figure \@ref(fig:graphical-model-changes-decision-making).
+
+
+\begin{figure}
+\centering
+   \tikz{ %
+    \node[obs] (r) {$r$} ; %
+    \node[det, below=of r] (decision) {} ; %
+    \factor[below=of decision, xshift=-.009cm, yshift=-.5cm] {response-dist} {left: $\mathcal{M}$} {} {}; %
+% Change model for response biases
+    \factor[right=of response-dist, xshift=.8cm, yshift=-2cm] {prior-dist} {left: Multi} {} {}; %
+    \factor[below=of response-dist, xshift=-.009cm, yshift=-3cm] {multi} {left: Multi} {} {}; %
+    \node[latent, right=of response-dist, xshift=1.95cm] (l) {$\lambda$} ; %
+    \node[const, right=of l, xshift=-.009cm] (lapse) {{\em lapse rate} ($1$ DF)} ; %
+    \node[det, right=of prior-dist, xshift=.4cm, yshift=-.009cm] (pi_n) {$\pi_{c,n}$} ; %
+    \node[latent, right=of pi_n, yshift=1cm] (beta) {$\beta_{\pi}$} ; %
+    \node[right=of beta] (beta_description) {{\em learning rate for changes in response biases} ($1$ DF)} ;
+    \node[det, below=of beta, yshift=.5cm] (surprisal_i) {$I_{c_{i} | x_{i}}$} ; %    
+    \node[obs, right=of surprisal_i, yshift=.5cm] (x_i) {$x_{i}$} ; %
+    \node[right=of x_i, xshift=-.5cm] (x_i_description) {{\em acoustic inputs previously observed from unfamiliar talker}} ;
+    \node[obs, right=of surprisal_i, yshift=-.5cm] (c_i) {$c_{i}$} ; %
+    \node[right=of c_i, xshift=-.5cm] (c_i_description) {{\em category labels of previously observed from unfamiliar talker}} ;
+  % edges
+    \edge {decision} {r} ; %https://www.overleaf.com/project/641b120207fd72277b7566e6
+    \edge {response-dist} {decision} ; %
+    \edge {multi} {response-dist} ; %
+    \edge {prior-dist} {response-dist} ; %
+    \edge {prior-dist} {multi} ; %
+    \edge {l} {response-dist} ; %
+    \edge {pi_n} {prior-dist} ; %https://www.overleaf.com/project/641b120207fd72277b7566e6
+    \edge {beta} {pi_n} ; %
+    \edge {surprisal_i} {pi_n} ;
+    \edge {x_i} {surprisal_i} ; %
+    \edge {c_i} {surprisal_i} ; %
+
+%change model of representations 
+    \factor[below=of multi,  yshift=-4.5cm] {x_prime} {left:$\mathcal{N}$} {} {}; %
+     %\node[above=of x_prime] (dots) {$\vdots$} ; %
+    \node[det, right=of x_prime, yshift=2cm] (mu_n) {$\mu_{c,n}$} ; %
+    \node[det, right=of x_prime, yshift=-2cm] (sigma_n) {$\Sigma_{c,n}$} ; %
+% Change model for mean
+    \node[latent, right=of mu_n, yshift=.75cm] (m_0) {${\rm m}_{c,0}$} ; %
+    \node[right=of m_0] (m_0_description) {{\em prior beliefs about category mean} ($jk$ DF)} ;
+    \node[latent, above=of m_0, yshift=-.5cm] (kappa_0) {$\kappa_{c,0}$} ; %
+    \node[right=of kappa_0] (kappa_0_description) {{\em strength of prior beliefs about category mean} (up to $j$ DF)} ;
+    \node[obs, right=of mu_n, yshift=-.75cm] (xbar) {$\bar{x_c}$} ; %
+    \node[right=of xbar, xshift=.009cm] (xbar_description) {{\em category mean observed from unfamiliar talker}} ;
+    \node[obs, below=of xbar, yshift=.5cm] (n) {$N_c$} ; %
+    \node[right=of n] (n_description) {{\em number of observations for category from unfamiliar talker}} ;
+% Change model for covariance
+    \node[latent, right=of sigma_n, yshift=-.75cm] (s_0) {${\rm S}_{c,0}$} ; %
+    \node[right=of s_0] (sigma_0_description) {{\em prior beliefs about category covariance matrix} (up to $\frac{j}{2}(k^2+k)$ DF)} ;
+    \node[latent, below=of s_0, yshift=.5cm] (nu_0) {$\nu_{c,0}$} ; %
+    \node[right=of nu_0] (nu_0_description) {{\em strength of prior belief about category covariance} (up to $j$ DF)} ;
+    \node[obs, right=of sigma_n, yshift=.75cm] (sbar) {${\rm S}_c$} ; %
+    \node[right=of sbar] (sbar_description) {{\em category sums of squares observed from unfamiliar talker}} ;
+% edges
+    \edge {x_prime} {multi} ; %
+    \edge {mu_n} {x_prime} ; %
+    \edge {sigma_n} {x_prime} ; %
+    \edge {m_0} {mu_n} ; %
+    \edge {kappa_0} {mu_n} ; %
+    \edge {xbar} {mu_n} ; %
+    \edge {sbar} {sigma_n} ; %
+    \edge {s_0} {sigma_n} ; %
+    \edge {nu_0} {sigma_n} ; %
+    \edge {n} {mu_n} ; %
+    \edge {n} {sigma_n} ; %
+
+%Change model for normalization
+    \node[det, below=of x_prime, yshift=-6cm] (x_prime2) {} ; %
+    \node[obs, below=of x_prime2] (x) {x} ; %
+    %\node[above=of x_prime2] (dots) {$\vdots$} ; %
+    \node[det, right=of x_prime2] (mu_n) {$\mu_n$} ; %
+    \node[obs, right=of mu_n, yshift=-.75cm] (xbar) {$\bar{x}$} ; %
+    \node[right=of xbar, xshift=.009cm] (xbar_description) {{\em cue mean observed from unfamiliar talker}} ;
+    \node[obs, below=of xbar, yshift=.75cm] (n) {$N$} ; %
+    \node[right=of n] (n_description) {{\em number of observations from unfamiliar talker}} ;
+    \node[latent, right=of mu_n, yshift=.75cm] (mu_0) {$\mu_0$} ; %
+    \node[right=of mu_0, xshift=.1cm] (mu_0_description) {{\em prior beliefs about cue mean} ($k$ DF)} ;
+    \node[latent, above=of mu_0, xshift=.009cm, yshift=-.75cm] (kappa_0) {$\kappa_0$} ; %
+    \node[right=of kappa_0] (kappa_0_description) {{\em strength of prior beliefs about cue mean} ($1$ DF)} 
+    
+%edges
+    \edge {x} {x_prime2} ; %
+    \edge {x_prime2} {x_prime} ; %
+    \edge {mu_n} {x_prime2} ; %
+    \edge {mu_0} {mu_n} ; %
+    \edge {kappa_0} {mu_n} ; %
+    \edge {xbar} {mu_n} ; %
+    \edge {n} {mu_n} ; %
+}
+\caption{Combined graphical representation of the three change models. Each change model is identical to what is described in Figure \@ref(fig:graphical-model-changes-normalization), Figure \@ref(fig:graphical-model-changes-representations), and Figure \@ref(fig:graphical-model-changes-decision-making) in \ref{sec:framework}. 
+\label{fig:graphical-model-all}}
+\end{figure}
+
+
+
 
 All three change models start from the same prior state. Specifically, we assume that listeners have acquired category representations with expected category means ($\mathbf{E}(\mu_{/d/}), \mathbf{E}(\mu_{/t/})$) and variances ($\mathbf{E}(\sigma_{/d/}), \mathbf{E}(\sigma_{/t/})$) that reflect the talker-normalized distributions in Chodroff and Wilson (2018; see Figure \@ref(fig:show-representations-plots)). Prior to any exposure, decision-making is assumed to employ uniform response biases ($\pi_{/d/}=\pi_{/t/}=.5$). Here and throughout this article, we marginalize over the expected consequences of perceptual noise, attentional lapses, and decision-making (both for adaptation during exposure and for categorization during test). This can be seen as predicting the state of an 'average' listener after exposure to a specific set of stimuli.^[For any particular experiment, however, researcher have to *estimate*, e.g., participants' categorization functions from their categorization responses. This is important to keep in mind, for example, when using ASP to estimate the statistical power of an experiment. To support predictive power simulations, the ASP functions provided on OSF also allow simulations that *sample* the effects of perceptual noise, attentional lapses, and decision-making for adaptation and categorization. This allows simulations of trial-level behavior for individual participants.] The findings we present below do not qualitatively depend on these specific assumptions. 
 

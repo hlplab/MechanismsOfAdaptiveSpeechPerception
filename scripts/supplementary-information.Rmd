@@ -235,19 +235,19 @@ The updating of the four $\mathcal{NW^{-1}}$ parameters after $N$ observations o
   \centering
   \tikz{ %
     % exposure
-    \node[obs] (cue) {$x_n$} ; %
+    \node[obs] (cue) {$x_N$} ; %
     \factor[above=of cue] {cuedist} {left:$\mathcal{N}$} {} {}; %
-    \node[obs, right=of cuedist] (category) {$c_n$} ; %
+    \node[obs, right=of cuedist] (category) {$c_N$} ; %
     % category parameters
     \node[det, above=of cuedist] (mu) {$\mu_c$} ; %
     \node[det, right=of mu] (Sigma) {$\Sigma_c$} ; %
     \factor[above=of mu] {mudist} {left:$\mathcal{N}$} {} {}; %
     \factor[above=of Sigma] {Sigmadist} {left:$\mathcal{W}^{-1}$} {} {}; %
     % hyperparameters
-    \node[det, above=of mudist] (kappa) {$\kappa_{n,c}$} ; %
-    \node[det, left=of kappa] (m) {$\mathrm{m}_{n,c}$} ; %
-    \node[det, above=of Sigmadist] (S) {$\mathrm{S}_{n,c}$} ; %
-    \node[det, right=of S] (nu) {$\nu_{n,c}$} ; %
+    \node[det, above=of mudist] (kappa) {$\kappa_{N,c}$} ; %
+    \node[det, left=of kappa] (m) {$\mathrm{m}_{N,c}$} ; %
+    \node[det, above=of Sigmadist] (S) {$\mathrm{S}_{N,c}$} ; %
+    \node[det, right=of S] (nu) {$\nu_{N,c}$} ; %
     % prior
     \factor[above=1 of m] {update_m} {} {} {}; %
     \factor[above=1.05 of kappa] {update_kappa} {} {} {}; %
@@ -316,8 +316,8 @@ Here, we model the prediction error as the surprisal experienced when observing 
 
 \begin{equation}\label{eq:bias-updating}
 \begin{split}
-\mathrm{logit}(\pi_{n,c_{observed}}) & = \mathrm{logit}(\pi_{n-1,c}) + \beta_{\pi} I(c_{observed}) \\
-                          & = \mathrm{logit}(\pi_{n-1,c}) - \beta_{\pi} \log_2 p_{n-1}(c_{observed}) \\
+\mathrm{logit}(\pi_{N,c_{observed}}) & = \mathrm{logit}(\pi_{N-1,c}) + \beta_{\pi} I(c_{observed}) \\
+                          & = \mathrm{logit}(\pi_{N-1,c}) - \beta_{\pi} \log_2 p_{N-1}(c_{observed}) \\
 \end{split}
 \end{equation}
 

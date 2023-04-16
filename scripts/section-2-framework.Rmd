@@ -321,7 +321,7 @@ As anticipated in the introduction, the three change models differ in their comp
     \node[obs] (x_in) {x} ; %
     \node[det, above=of x_in] (x_prime) {} ; %
     \node[above=of x_prime] (dots) {$\vdots$} ; %
-    \node[det, right=of x_prime] (mu_n) {$\mu_n$} ; %
+    \node[det, right=of x_prime] (mu_n) {$\mu_N$} ; %
     \node[obs, right=of mu_n, yshift=-.75cm] (xbar) {$\bar{x}$} ; %
     \node[right=of xbar] (xbar_description) {{\em cue mean observed from unfamiliar talker}} ;
     \node[obs, below=of xbar, yshift=.5cm] (n) {$N$} ; %
@@ -338,7 +338,7 @@ As anticipated in the introduction, the three change models differ in their comp
     \edge {xbar} {mu_n} ; %
     \edge {n} {mu_n} ; %
 }
-\caption{Graphical representation of Equation \ref{eq:normalization-change}, describing how normalization changes with exposure. $\mu_n$ here substitutes $\mu$ in Figure \ref{fig:model-perceptual-decision-making} (removing those degrees of freedom from the categorization model). While we mark the prior cue mean $\mu_0$ as a latent variable, it can be estimated from phonetic databases (as we do in  Case Studies 1 and 2), leaving $\kappa_0$ as the only degree(s) of freedom for this change model.\label{fig:graphical-model-changes-normalization}}
+\caption{Graphical representation of Equation \ref{eq:normalization-change}, describing how normalization changes with exposure. $\mu_N$ here substitutes $\mu$ in Figure \ref{fig:model-perceptual-decision-making}, removing those DFs from the categorization model). While we mark the prior cue mean $\mu_0$ as a latent variable, it can be estimated from phonetic databases (as we do in  Case Studies 1 and 2), leaving $\kappa_0$ as the only DF for this change model.\label{fig:graphical-model-changes-normalization}}
 \end{figure}
 
 ```{r}
@@ -398,10 +398,10 @@ VOT_resolution <- 100
 
 C-CuRE and most other models of normalization assume that the theoretical quantities employed in normalization---for C-CuRE, the means of all cues---are *known* to the listeners [e.g., @apfelbaum-mcmurray2015; @mcmurray-jongman2011]. However, listeners must somehow *infer* these quantities from the observed inputs [see also @barreda2012; @magnuson-nusbaum2007; @weatherholtz-jaeger2016]. For example, in the types of experiments we consider below, listeners need to *infer* the unfamiliar talker's cue means from the inputs observed during exposure. At the beginning of exposure, the best estimates of the cue means for the unfamiliar talker are the mean expected based on listeners' longterm experience with various different talkers ($\mu_0$). With increasing exposure to the unfamiliar talker, listeners can update their estimates of the talker's cue means based on the input. ASP thus expands C-CuRE with a linking hypothesis that describes how listeners update their estimates of the unknown mean.
 
-Some proposals for such functions include moving-window algorithms that estimate the mean as the sample mean over a finite number of the most recent observations [@lee2002; @zhang-peng2021]. Here, we model listeners' estimate of the talker-specific cue mean $\mu_n$ after $N$ observations from that talker as simple linear interpolation between the cue mean observed in previous longterm experience ($\mu_0$) and the mean observed in the sample observed from the unfamiliar talker ($\bar{x}$). This approach has the advantage that listeners can draw on prior experience when they do not yet have much (or any) data from an unfamiliar talker. They can then update the inferred cue mean as they observe further data from the talker [see discussion of the flexibility-stability trade-off in @kleinschmidt-jaeger2015, p. 178-182]:
+Some proposals for such functions include moving-window algorithms that estimate the mean as the sample mean over a finite number of the most recent observations [@lee2002; @zhang-peng2021]. Here, we model listeners' estimate of the talker-specific cue mean $\mu_N$ after $N$ observations from that talker as simple linear interpolation between the cue mean observed in previous longterm experience ($\mu_0$) and the mean observed in the sample observed from the unfamiliar talker ($\bar{x}$). This approach has the advantage that listeners can draw on prior experience when they do not yet have much (or any) data from an unfamiliar talker. They can then update the inferred cue mean as they observe further data from the talker [see discussion of the flexibility-stability trade-off in @kleinschmidt-jaeger2015, p. 178-182]:
 
 \begin{equation}\label{eq:normalization-change}
-\mu_n = \frac{1}{\kappa_0 + N} \left( \kappa_0 \mu_0 + N \bar{x} \right) = \frac{\kappa_0}{\kappa_0 + N} \mu_0 + \frac{N}{\kappa_0 + N}\bar{x}
+\mu_N = \frac{1}{\kappa_0 + N} \left( \kappa_0 \mu_0 + N \bar{x} \right) = \frac{\kappa_0}{\kappa_0 + N} \mu_0 + \frac{N}{\kappa_0 + N}\bar{x}
 \end{equation}
 
 Figure \@ref(fig:graphical-model-changes-normalization) expresses Equation \@ref(eq:normalization-change) as a graphical model. The two parameters describing the input from the unfamiliar talker, $N$ and $\bar{x}$, are determined by the exposure data used in the experiment (the estimation of the cue means, $\bar{x}$ requires that the exposure stimuli are phonetically annotated). $\mu_0$ can be estimated from sufficiently large phonetically annotated databases of speech, essentially assuming that listeners have learned the overall cue means across talkers from previously experienced speech input. This is what we did to create Figure \@ref(fig:demonstrate-normalization), and it is what we assume in the remainder of this study. At the minimum, this leaves only one degree of freedom that is not independently determined: the relative weight of previous experience compared to the input received from the talker so far ($\kappa_0$). This is the parameter we vary in the case studies presented below to illustrate the types of results that can be explained through changes in normalization due to recent exposure.
@@ -442,8 +442,8 @@ my_plot_grid(plotlist = plotlist, legend.position = "top")
     \node (x_in) {$\vdots$} ; %
     \factor[above=of x_in] {x_prime} {left:$\mathcal{N}$} {} {}; %
     \node[above=of x_prime] (dots) {$\vdots$} ; %
-    \node[det, right=of x_prime, yshift=2cm] (mu_n) {$\mu_{c,n}$} ; %
-    \node[det, right=of x_prime, yshift=-2cm] (sigma_n) {$\Sigma_{c,n}$} ; %
+    \node[det, right=of x_prime, yshift=2cm] (mu_n) {$\mu_{c,N}$} ; %
+    \node[det, right=of x_prime, yshift=-2cm] (sigma_n) {$\Sigma_{c,N}$} ; %
     % Change model for mean
     \node[latent, right=of mu_n, yshift=.75cm] (m_0) {${\rm m}_{c,0}$} ; %
     \node[right=of m_0] (m_0_description) {{\em prior beliefs about category mean} ($jk$ DF)} ;
@@ -474,7 +474,7 @@ my_plot_grid(plotlist = plotlist, legend.position = "top")
     \edge {n} {mu_n} ; %
     \edge {n} {sigma_n} ; %
 }
-\caption{Simplified graphical representation of Equation \ref{eq:niw-updating}, describing how category representations change with exposure. $\mu_{c,n}$ and $\Sigma_{c,n}$ here substitutes $\mu_c$ and $\Sigma_c$ in Figure \ref{fig:model-perceptual-decision-making} (removing those degrees of freedom from the categorization model). While we mark the prior ${\rm m}_{c,0}$ and ${\rm S}_{c,0}$ as latent variables, they can be estimated from phonetic databases (as we do in  Case Studies 1 and 2), leaving the $\kappa_{c,0}$s and $\nu_{c,0}$s as the only degrees of freedom for this change model. A more detailed graphical model is provided in the SI (\ref{sec:SI-models-changes-in-representations}). \label{fig:graphical-model-changes-representations}}
+\caption{Simplified graphical representation of Equation \ref{eq:niw-updating}, describing how category representations change with exposure. $\mu_{c,N}$ and $\Sigma_{c,N}$ here substitutes $\mu_c$ and $\Sigma_c$ in Figure \ref{fig:model-perceptual-decision-making}, removing those DFs from the categorization model. While we mark the prior ${\rm m}_{c,0}$ and ${\rm S}_{c,0}$ as latent variables, they can be estimated from phonetic databases (as we do in  Case Studies 1 and 2), leaving the $\kappa_{c,0}$s and $\nu_{c,0}$s as the only DFs for this change model. A more detailed graphical model is provided in the SI (\ref{sec:SI-models-changes-in-representations}). \label{fig:graphical-model-changes-representations}}
 \end{figure}
 
 As listeners observe additional information from the unfamiliar talker, they update their beliefs (and thus uncertainty) about the distribution of that talker's category means and covariances by integrating their prior beliefs with the observed input. The updating formula for each parameter is provided in the SI (\@ref(sec:SI-models-changes-in-representations)). Figures \@ref(fig:demonstrate-changes-in-representations) and \@ref(fig:demonstrate-changes-in-representations-b) illustrate how speech input from a talker with unexpected pronunciations changes listeners' beliefs about the category likelihoods and, consequently, their categorization functions. We exposed the four models from Figure \@ref(fig:demonstrate-niw-prior-mu-sigma)---each of which reflects the expected category means and variances derived from Chodroff and Wilson (2018), but with different certainty---to input from a talker with unexpected pronunciations of /d/ and /t/. Specifically, the talker's /d/ and /t/ categories were shifted by +`r category_shift.demo` msecs VOT compared to a (C-CuRE normalized) talker in Chodroff and Wilson' (2018) data. Additionally, the talker's /t/-category exhibited half the variance found in Chodroff and Wilson' data. Figure \@ref(fig:demonstrate-changes-in-representations) shows how the expected category likelihoods of the four models change as a function of input from the new talker. Models with weak prior beliefs about category means ($\kappa_{c,0}=4$) accommodate the unfamiliar speech input by changing beliefs about the category mean---shifting categories 'horizontally'. Models with weak prior beliefs about category variance ($\nu_{c,0}=4$) accommodate the unfamiliar speech input by changing beliefs about the category variance---expanding the category. This is particularly apparent for the /d/ category. Figure \@ref(fig:demonstrate-changes-in-representations-b) demonstrates the consequences of these changes for the expected categorization function.
@@ -507,7 +507,7 @@ As listeners observe additional information from the unfamiliar talker, they upd
   <!--   \caption{A multivariate extension of the ideal adaptor model described in Kleinschmidt and Jaeger (2015). The model describes Bayesian belief-updating over multivariate Gaussian categories using a Normal-Inverse-Wishart ($\mathcal{NW}^{-1}$) prior. Filled circles indicate variables that are observable by the researcher, empty circles indicate variables that have to be inferred, and diamonds indicate variables that are determined by other the other variables. The model describes learning of the category likelihoods for $J$ categories based on $I$ observations (e.g., during an exposure phase of an experiment). For each observation, the category label $c_i$ and the cues $x_i$ are observed by the researcher (and the listener). In practice, two of the four parameters of the }\label{fig:niw} -->
   <!-- \end{figure} -->
 
-(ref:demonstrate-changes-in-representations) Illustrating the effects of $\kappa_{c,0}$ and $\nu_{c,0}$ on changes in the expected category likelihoods, assuming a binary phonetic contrast between two Gaussian categories (`r paste0(categories.demo, collapse = "-")`) along a unidimensional continuum (VOT). Updating is shown for the data points in the rug along the x-axis: `r n.demo` observations each of `r paste(categories.demo, collapse = "and")` from a talker who realized both categories with a shifted mean of `r category_shift.demo` msec, and exhibits typical variance for `r categories.demo[1]` but only half of the typical variance for `r categories.demo[2]`. We set the lapse rate $\lambda = 0$ and response biases to uniform ($\pi_{c,0}=.5$). Animation controls require Acrobat PDF reader.
+(ref:demonstrate-changes-in-representations) Illustrating the effects of $\kappa_{c,0}$ and $\nu_{c,0}$ on changes in the expected category likelihoods, assuming a binary phonetic contrast between two Gaussian categories (`r paste0(categories.demo, collapse = "-")`) along a unidimensional continuum (VOT). Updating is shown for the data points in the rug along the x-axis: `r n.demo` observations each of `r paste(categories.demo, collapse = "and")` from a talker who realized both categories with a shifted mean of `r category_shift.demo` msec, and exhibits typical variance for `r categories.demo[1]` but only half of the typical variance for `r categories.demo[2]`. We set the lapse rate $\lambda = 0$ and response biases to uniform ($\pi_{c,0}=.5$). 
 
 ```{r demonstrate-changes-in-representations-preparation, message=FALSE, warning=FALSE}
 my_groups <- c("prior_kappa", "prior_nu")
@@ -612,7 +612,7 @@ if (ANIMATE_FIGURES) {
 
 ```
 
-(ref:demonstrate-changes-in-representations-b) Changes in expected categorization functions resulting from the changes in the expected category likelihoods in Figure \@ref(fig:demonstrate-changes-in-representations). We set the lapse rate $\lambda = 0$, the prior lapse biases to uniform ($\pi_{c,0}=.5$). Neither normalization, nor response biases changed as a function of the input. Animation controls require Acrobat PDF reader.
+(ref:demonstrate-changes-in-representations-b) Changes in expected categorization functions resulting from the changes in the expected category likelihoods in Figure \@ref(fig:demonstrate-changes-in-representations). We set the lapse rate $\lambda = 0$, the prior lapse biases to uniform ($\pi_{c,0}=.5$). Neither normalization, nor response biases changed as a function of the input. 
 
 ```{r demonstrate-changes-in-representations-b, fig.width=base.width*2*1.5, fig.height=base.height + 1, fig.cap="(ref:demonstrate-changes-in-representations-b)", warning=FALSE, message=FALSE, fig.show='animate'}
 p <- d.exposure %>%
@@ -680,14 +680,14 @@ Consider a typical experiment on accent adaptation. A listener unfamiliar with t
     \node (x_in) {$\vdots$} ; %
     \factor[above=of x_in, xshift=1cm] {multi} {left: Multi} {} {}; %
     \node[above=of x_in] (dots) {$\vdots$} ; %
-    \node[det, right=of multi] (pi_n) {$\pi_{c,n}$} ; %
+    \node[det, right=of multi] (pi_n) {$\pi_{c,N}$} ; %
     % Change model for response biases
     \node[latent, right=of pi_n, yshift=1cm] (beta) {$\beta_{\pi}$} ; %
     \node[right=of beta] (beta_description) {{\em learning rate for changes in response biases} ($1$ DF)} ;
-    \node[det, below=of beta, yshift=.5cm] (surprisal_i) {$I_{c_{i} | x_{i}}$} ; %    
-    \node[obs, right=of surprisal_i, yshift=.5cm] (x_i) {$x_{i}$} ; %
+    \node[det, below=of beta, yshift=.5cm] (surprisal_i) {$I_{c_{N} | x_{N}}$} ; %    
+    \node[obs, right=of surprisal_i, yshift=.5cm] (x_i) {$x_{N}$} ; %
     \node[right=of x_i, xshift=-.5cm] (x_i_description) {{\em acoustic inputs previously observed from unfamiliar talker}} ;
-    \node[obs, right=of surprisal_i, yshift=-.5cm] (c_i) {$c_{i}$} ; %
+    \node[obs, right=of surprisal_i, yshift=-.5cm] (c_i) {$c_{N}$} ; %
     \node[right=of c_i, xshift=-.5cm] (c_i_description) {{\em category labels of previously observed from unfamiliar talker}} ;
     % edges
     \edge {multi} {x_in} ; %
@@ -698,12 +698,12 @@ Consider a typical experiment on accent adaptation. A listener unfamiliar with t
     \edge {x_i} {surprisal_i} ; %
     \edge {c_i} {surprisal_i} ; %
 }
-\caption{Graphical representation of change model for decision-making. $\pi_{c,n}$ here substitutes $\pi_c$ in Figure \ref{fig:model-perceptual-decision-making} (removing those degrees of freedom from the categorization model). $I$ refers to the surprisal experienced when the acoustic input $x_i$ is recognized (from context) to be of category $c_i$.\label{fig:graphical-model-changes-decision-making}}
+\caption{Graphical representation of change model for decision-making. $\pi_{c,N}$ here substitutes $\pi_c$ in Figure \ref{fig:model-perceptual-decision-making}, removing those DFs from the categorization model. $I$ refers to the surprisal experienced when the acoustic input $x_i$ is recognized (from context) to be of category $c_i$.\label{fig:graphical-model-changes-decision-making}}
 \end{figure}
 
 Figure \@ref(fig:demonstrate-lapse-bias-change) illustrates the proposed change model for three different values of $\beta_{\pi}$ when the lapse rate $\lambda=0$. Here and in the case studies in Sections \@ref(sec:PR) and \@ref(sec:AA), we assume uniform initial biases across all categories, leaving $\beta_{\pi}$ as the only degree of freedom. The right panel highlights an interesting limitation in the types of results that can be explained through changes in response biases: in the absence of lapses ($\lambda=0$) or when all responses are lapses ($\lambda=1$), changes in response biases can only explain *additive* effects on the log-odds of the categories, but not changes in the *slope* of the categorization function. This property does not depend on the specific change model assumed here (for derivation, see SI, \@ref(sec:consequences-of-lambda)). Critically, this strong constraint on changes in decision-making only follows if $\lambda \in \{0,1\}$. For $\lambda \not\in \{0,1\}$, changes in response biases lead to non-additive changes in the posterior log-odds. This is illustrated in Figure \@ref(fig:demonstrate-lapse-bias-change-nonzero-lapse). Once the possibility of non-zero lapse rates is considered, <!-- changes in the slope of the categorization function (even in log-odds) therefore do *not* rule out explanations in terms of changing response biases. This means that changes in response biases alone---in the presence of non-zero lapse rates,--> which applies to most experimental scenarios, changes in decision-biases alone may be able to account for complex accent adaptation patterns beyond a mere boundary shift [e.g., @xie2016jep]. This does not mean that changes in decision-making can explain *all* types of adaptive behavior, and we will return to this point in the general discussion (for further visualization, see also SI \@ref(sec:consequences-of-lambda)). It does, however, mean that changes in decision-making can explain a wider range of behavior than is typically considered, and we will observe examples of that in our case studies.
 
-(ref:demonstrate-lapse-bias-change) Illustrating the effects of $\beta_{\pi}$ on changes in the categorization function (**Left:** posterior probability, **Right:** posterior log-odds). The model has the same uncertain prior beliefs about category mean and variances as the model in Figure \@ref(fig:demonstrate-niw-prior-mu-sigma)D ($\kappa_{c,0} = \nu_{c,0}=0$). Neither normalization nor prior beliefs about the categories changes as a function of exposure. We set the lapse rate $\lambda = 0$, the prior lapse biases to uniform ($\pi_{c,0}=.5$). The input to this change model is identical to what was used in Figures \@ref(fig:demonstrate-changes-in-representations) and \@ref(fig:demonstrate-changes-in-representations-b). In the left panel, orange arrows indicate changes in the category boundary (point of subjective equality) for $\beta_{\pi} = 1$. In the right panel, orange arrows indicate the distance between the posterior log-odds resulting from the two most extreme $\beta_{\pi}$s. This highlights the fact that changes to response biases have additive effects on the log-odds of `r categories.demo[1]` responses when $\lambda = 0$. Animation controls require Acrobat PDF reader.
+(ref:demonstrate-lapse-bias-change) Illustrating the effects of $\beta_{\pi}$ on changes in the categorization function (**Left:** posterior probability, **Right:** posterior log-odds). The model has the same uncertain prior beliefs about category mean and variances as the model in Figure \@ref(fig:demonstrate-niw-prior-mu-sigma)D ($\kappa_{c,0} = \nu_{c,0}=0$). Neither normalization nor prior beliefs about the categories changes as a function of exposure. We set the lapse rate $\lambda = 0$, the prior lapse biases to uniform ($\pi_{c,0}=.5$). The input to this change model is identical to what was used in Figures \@ref(fig:demonstrate-changes-in-representations) and \@ref(fig:demonstrate-changes-in-representations-b). In the left panel, orange arrows indicate changes in the category boundary (point of subjective equality) for $\beta_{\pi} = 1$. In the right panel, orange arrows indicate the distance between the posterior log-odds resulting from the two most extreme $\beta_{\pi}$s. This highlights the fact that changes to response biases have additive effects on the log-odds of `r categories.demo[1]` responses when $\lambda = 0$. 
 
 ```{r demonstrate-lapse-bias-change, fig.width=base.width*2.5 + 1.5, fig.height=base.height + .5, fig.cap="(ref:demonstrate-lapse-bias-change)", fig.show='animate', warning=FALSE, message=FALSE}
 d.exposure <-
@@ -867,7 +867,7 @@ if (ANIMATE_FIGURES) {
 }
 ```
 
-(ref:demonstrate-lapse-bias-change-nonzero-lapse) Same as Figure \@ref(fig:demonstrate-lapse-bias-change) but for a lapse rate $\lambda=$ `r lambdas.demo[2]`. For such non-zero lapse rates, changes to the response bias have *non*-additive effects on the posterior log-odds. This means that, even in log-odds, changes in response biases can have effects that go beyond purely additive changes in the categorization functions ('shifts in category boundaries'). Animation controls require Acrobat PDF reader.
+(ref:demonstrate-lapse-bias-change-nonzero-lapse) Same as Figure \@ref(fig:demonstrate-lapse-bias-change) but for a lapse rate $\lambda=$ `r lambdas.demo[2]`. For such non-zero lapse rates, changes to the response bias have *non*-additive effects on the posterior log-odds. This means that, even in log-odds, changes in response biases can have effects that go beyond purely additive changes in the categorization functions ('shifts in category boundaries'). 
 
 ```{r demonstrate-lapse-bias-change-nonzero-lapse, fig.width=base.width*2.5 + 1.5, fig.height=base.height +.5, fig.cap="(ref:demonstrate-lapse-bias-change-nonzero-lapse)", fig.show='animate', warning=FALSE, message=FALSE}
 d.exposure <-

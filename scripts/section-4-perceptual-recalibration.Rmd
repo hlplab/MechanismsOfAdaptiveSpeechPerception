@@ -369,7 +369,7 @@ Next, we use ASP to illustrate the extent to which changes in representations, r
     \node[latent, right=of mu_n, yshift=.75cm] (mu_0) {$\mu_0$} ; %
     \node[right=of mu_0, xshift=.1cm] (mu_0_description) {{\em prior beliefs about cue mean} ($k$ DF)} ;
     \node[latent, above=of mu_0, xshift=.009cm, yshift=-.75cm] (kappa_0) {$\kappa_0$} ; %
-    \node[right=of kappa_0] (kappa_0_description) {{\em strength of prior beliefs about cue mean} ($1$ DF)} 
+    \node[right=of kappa_0] (kappa_0_description) {{\em strength of prior beliefs about cue mean} ($1$ DF)} ; 
     
 %edges
     \edge {x} {x_prime2} ; %

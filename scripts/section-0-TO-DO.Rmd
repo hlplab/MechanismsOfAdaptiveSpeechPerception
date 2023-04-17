@@ -2,9 +2,6 @@
 Let's delete to-dos after they have been addressed, and post in Slack what we've done. Thanks.
 
   * Everyone: 
-    * **move part of giant new footnote in intro (p7) into section 2.** and **go through paper to use computational and representational parsimony consistently (e.g., in SI 7.1)**. Specifically: integrate in Section 2 an edited version of:
-    
-
     * update references of unpublished manuscripts
     * brain areas are sometimes abbreviated and sometimes not. Xin, what's the cortex guideline for this? in any case, I assume they should not be abbreviated on first mention? (unless always abbreviating them is ok?) Currently, we have an odd mix.
     * Check use of computational and representational parsimony?

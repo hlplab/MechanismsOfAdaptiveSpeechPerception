@@ -588,9 +588,9 @@ Consider a typical experiment on accent adaptation. A listener unfamiliar with t
     \node[right=of beta] (beta_description) {{\em learning rate for changes in response biases} ($1$ DF)} ;
     \node[det, below=of beta, yshift=.5cm] (surprisal_i) {$I_{c_{N} | x_{N}}$} ; %    
     \node[obs, right=of surprisal_i, yshift=.5cm] (x_i) {$x_{N}$} ; %
-    \node[right=of x_i, xshift=-.5cm] (x_i_description) {{\em acoustic inputs previously observed from unfamiliar talker}} ;
+    \node[right=of x_i, xshift=-.5cm] (x_i_description) {{\em acoustic inputs from unfamiliar talker}} ;
     \node[obs, right=of surprisal_i, yshift=-.5cm] (c_i) {$c_{N}$} ; %
-    \node[right=of c_i, xshift=-.5cm] (c_i_description) {{\em category labels of previously observed from unfamiliar talker}} ;
+    \node[right=of c_i, xshift=-.5cm] (c_i_description) {{\em category labels of acoustic inputs}} ;
     % edges
     \edge {multi} {x_in} ; %
     \edge {multi} {dots} ; %
@@ -802,7 +802,7 @@ Next, we use ASP to illustrate the extent to which changes in representations, r
     \edge {xbar} {mu_n} ; %
     \edge {n} {mu_n} ; %
 }
-\caption{Graphical representation of ASP, combining the categorization model in Figure \ref{fig:model-perceptual-decision-making} with the three change models in Figures \ref{fig:graphical-model-changes-normalization}, \ref{fig:graphical-model-changes-representations}, and \ref{fig:graphical-model-changes-decision-making}.}\label{fig:graphical-model-all}
+\caption{Graphical representation of ASP, combining the categorization model from Figure \ref{fig:model-perceptual-decision-making} with the three change models from Figures \ref{fig:graphical-model-changes-normalization}, \ref{fig:graphical-model-changes-representations}, and \ref{fig:graphical-model-changes-decision-making}.}\label{fig:graphical-model-all}
 \end{figure}
 
 All three change models start from the same prior state. Specifically, we assume that listeners have acquired category representations with expected category means (\(\mathbf{E}(\mu_{/d/}), \mathbf{E}(\mu_{/t/})\)) and variances (\(\mathbf{E}(\sigma_{/d/}), \mathbf{E}(\sigma_{/t/})\)) that reflect the talker-normalized distributions in Chodroff and Wilson (2018; see Figure \ref{fig:show-representations-plots}). Prior to any exposure, decision-making is assumed to employ uniform response biases (\(\pi_{/d/}=\pi_{/t/}=.5\)). Here and throughout this article, we marginalize over the expected consequences of perceptual noise, attentional lapses, and decision-making (both for adaptation during exposure and for categorization during test). This can be seen as predicting the state of an `average' listener after exposure to a specific set of stimuli.\footnote{For any particular experiment, however, researcher have to \emph{estimate}, e.g., participants' categorization functions from their categorization responses. This is important to keep in mind, for example, when using ASP to estimate the statistical power of an experiment. To support predictive power simulations, the ASP functions provided on OSF also allow simulations that \emph{sample} the effects of perceptual noise, attentional lapses, and decision-making for adaptation and categorization. This allows simulations of trial-level behavior for individual participants.} The findings we present below do not qualitatively depend on these specific assumptions.

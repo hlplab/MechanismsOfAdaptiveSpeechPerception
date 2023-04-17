@@ -686,9 +686,9 @@ Consider a typical experiment on accent adaptation. A listener unfamiliar with t
     \node[right=of beta] (beta_description) {{\em learning rate for changes in response biases} ($1$ DF)} ;
     \node[det, below=of beta, yshift=.5cm] (surprisal_i) {$I_{c_{N} | x_{N}}$} ; %    
     \node[obs, right=of surprisal_i, yshift=.5cm] (x_i) {$x_{N}$} ; %
-    \node[right=of x_i, xshift=-.5cm] (x_i_description) {{\em acoustic inputs previously observed from unfamiliar talker}} ;
+    \node[right=of x_i, xshift=-.5cm] (x_i_description) {{\em acoustic inputs from unfamiliar talker}} ;
     \node[obs, right=of surprisal_i, yshift=-.5cm] (c_i) {$c_{N}$} ; %
-    \node[right=of c_i, xshift=-.5cm] (c_i_description) {{\em category labels of previously observed from unfamiliar talker}} ;
+    \node[right=of c_i, xshift=-.5cm] (c_i_description) {{\em category labels of acoustic inputs}} ;
     % edges
     \edge {multi} {x_in} ; %
     \edge {multi} {dots} ; %

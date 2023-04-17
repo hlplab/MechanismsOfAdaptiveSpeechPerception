@@ -4,15 +4,6 @@ Let's delete to-dos after they have been addressed, and post in Slack what we've
   * Everyone: 
     * **move part of giant new footnote in intro (p7) into section 2.** and **go through paper to use computational and representational parsimony consistently (e.g., in SI 7.1)**. Specifically: integrate in Section 2 an edited version of:
     
-    We submit that our claims about the relative parsimony of the different mechanisms hold regardless of the specific models chosen to implement the mechanisms, *as long as one compares like with like*. For example, learning talker-independent changes in category representations can be *more* parsimoneous than talker-specific normalization---learning and storing talker-specific cue statistics---but learning of talker-specific changes in category representations will be less parsimoneous than talker-specific normalization.   
-
-Once implicit association between mechanism and hypothesized properties of the mechanism (e.g., talker-specificity, longevity, generalizability, etc.) are separated, changes in category representations are the least parsimonious of the three mechanisms considered here.
-
-In some parts of the field, talker-specificity of adaptation is taken to implicate changes in representations---so strongly, in fact, that one reviewer initially assumed evidence of talker-specificity to necessarily be evidence against alternative mechanisms. However, it is equally possible for talker-specificity to be due any of the other adaptive mechanisms [and has, indeed, been proposed for, e.g., normalization: @barreda2012; @magnuson2021talker]. Vice versa, changes in category representations do not *have* to be talker-specific [e.g., learning of category-specific statistics over a moving time window, as discussed in @kleinschmidt2015, p. 173]. Once such implicit association between mechanism and hypothesized properties of the mechanism (e.g., talker-specificity, longevity, generalizability, etc.) are separated, changes in category representations are the least parsimonious of the three mechanisms considered here.
-
-
-another example: ^[Instead of a single $\kappa_0$, one could also allow different $\kappa_0$s for different cues, or types of cues (e.g., spectral vs. durational cues). Whether such additional complexity is required---e.g., because listeners expect different cues to vary in volatility---is an empirical question to be addressed in future work.]
-
 
     * update references of unpublished manuscripts
     * brain areas are sometimes abbreviated and sometimes not. Xin, what's the cortex guideline for this? in any case, I assume they should not be abbreviated on first mention? (unless always abbreviating them is ok?) Currently, we have an odd mix.

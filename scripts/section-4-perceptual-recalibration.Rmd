@@ -302,14 +302,14 @@ Next, we use ASP to illustrate the extent to which changes in representations, r
     \factor[below=of response-dist, xshift=-.009cm, yshift=-3cm] {multi} {left: Multi} {} {}; %
     \node[latent, right=of response-dist, xshift=1.95cm] (l) {$\lambda$} ; %
     \node[const, right=of l, xshift=-.009cm] (lapse) {{\em lapse rate} ($1$ DF)} ; %
-    \node[det, right=of prior-dist, xshift=.4cm, yshift=-.009cm] (pi_n) {$\pi_{c,n}$} ; %
+    \node[det, right=of prior-dist, xshift=.4cm, yshift=-.009cm] (pi_n) {$\pi_{c,N}$} ; %
     \node[latent, right=of pi_n, yshift=1cm] (beta) {$\beta_{\pi}$} ; %
     \node[right=of beta] (beta_description) {{\em learning rate for changes in response biases} ($1$ DF)} ;
-    \node[det, below=of beta, yshift=.5cm] (surprisal_i) {$I_{c_{i} | x_{i}}$} ; %    
-    \node[obs, right=of surprisal_i, yshift=.5cm] (x_i) {$x_{i}$} ; %
-    \node[right=of x_i, xshift=-.5cm] (x_i_description) {{\em acoustic inputs previously observed from unfamiliar talker}} ;
-    \node[obs, right=of surprisal_i, yshift=-.5cm] (c_i) {$c_{i}$} ; %
-    \node[right=of c_i, xshift=-.5cm] (c_i_description) {{\em category labels of previously observed from unfamiliar talker}} ;
+    \node[det, below=of beta, yshift=.5cm] (surprisal_i) {$I_{c_{N} | x_{N}}$} ; %    
+    \node[obs, right=of surprisal_i, yshift=.5cm] (x_i) {$x_{N}$} ; %
+    \node[right=of x_i, xshift=-.5cm] (x_i_description) {{\em acoustic inputs from unfamiliar talker}} ;
+    \node[obs, right=of surprisal_i, yshift=-.5cm] (c_i) {$c_{N}$} ; %
+    \node[right=of c_i, xshift=-.5cm] (c_i_description) {{\em category labels of acoustic inputs}} ;
   % edges
     \edge {decision} {r} ; 
     \edge {response-dist} {decision} ; %
@@ -326,8 +326,8 @@ Next, we use ASP to illustrate the extent to which changes in representations, r
 %change model of representations 
     \factor[below=of multi,  yshift=-4.5cm] {x_prime} {left:$\mathcal{N}$} {} {}; %
      %\node[above=of x_prime] (dots) {$\vdots$} ; %
-    \node[det, right=of x_prime, yshift=2cm] (mu_n) {$\mu_{c,n}$} ; %
-    \node[det, right=of x_prime, yshift=-2cm] (sigma_n) {$\Sigma_{c,n}$} ; %
+    \node[det, right=of x_prime, yshift=2cm] (mu_n) {$\mu_{c,N}$} ; %
+    \node[det, right=of x_prime, yshift=-2cm] (sigma_n) {$\Sigma_{c,N}$} ; %
 % Change model for mean
     \node[latent, right=of mu_n, yshift=.75cm] (m_0) {${\rm m}_{c,0}$} ; %
     \node[right=of m_0] (m_0_description) {{\em prior beliefs about category mean} ($jk$ DF)} ;
@@ -361,7 +361,7 @@ Next, we use ASP to illustrate the extent to which changes in representations, r
     \node[det, below=of x_prime, yshift=-6cm] (x_prime2) {} ; %
     \node[obs, below=of x_prime2] (x) {x} ; %
     %\node[above=of x_prime2] (dots) {$\vdots$} ; %
-    \node[det, right=of x_prime2] (mu_n) {$\mu_n$} ; %
+    \node[det, right=of x_prime2] (mu_n) {$\mu_N$} ; %
     \node[obs, right=of mu_n, yshift=-.75cm] (xbar) {$\bar{x}$} ; %
     \node[right=of xbar, xshift=.009cm] (xbar_description) {{\em cue mean observed from unfamiliar talker}} ;
     \node[obs, below=of xbar, yshift=.75cm] (n) {$N$} ; %

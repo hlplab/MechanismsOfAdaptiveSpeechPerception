@@ -700,8 +700,8 @@ update_NIW_response_bias_incrementally <- function(
           decision_rule = decision_rule,
           noise_treatment = noise_treatment,
           lapse_treatment = lapse_treatment,
-          verbose = verbose))
-
+          verbose = verbose)) 
+    
     if (keep.update_history) {
       posterior %<>%
         mutate(observation.n = i)
@@ -715,8 +715,7 @@ update_NIW_response_bias_incrementally <- function(
         rename(., observation.n = !! sym(exposure.order)) else
           mutate(., observation.n = 1:nrow(exposure)) } %>%
       rename_with(~ paste0("observation.", .x), !starts_with("observation.n"))
-
-    prior %<>%
+     prior %<>%
       left_join(exposure)
   }
 
@@ -745,7 +744,7 @@ update_bias_and_categorize_test <- function(
         update_NIW_response_bias_incrementally(
           prior = prior,
           beta = beta_pi,
-          # Reshuffle expose on each run
+          # Reshuffle exposure on each run
           exposure = exposure %>% sample_frac(1, replace = F), 
           exposure.category = "Item.Category",
           exposure.cues = cues,

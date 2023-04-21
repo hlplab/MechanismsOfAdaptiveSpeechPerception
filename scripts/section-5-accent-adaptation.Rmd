@@ -639,23 +639,39 @@ As $\kappa_{c,0}$s and $\nu_{c,0}$ get smaller (indicating weaker prior beliefs)
 simulation.control <-
   list(
     min.simulations = 2, 
-    max.simulations = 50, 
+    max.simulations = 200, 
     step.simulations = 1, 
     target_accuracy_se = .002)
 
 get_average_bias_results_across_simulations <- function(data){
+  # output <-    # this was the original data that get logged into history.optimization.bias. It computes the mean & se of the response for each token across simulations; and then in the logging stage, an average of the mean across tokens was computed as the mean accuracy for a parameterization
+  #   data %>%
+  #   group_by(!!! syms(setdiff(names(.), c("sim","posterior","response")))) %>%
+  #   summarise(
+  #     response.n_sims = n_distinct(sim),
+  #     response.se = sd(response) / sqrt(response.n_sims),
+  #     response = mean(response)) %>%
+  #   relocate(
+  #    !!! syms(setdiff(names(.), c("response", "response.se", "response.n_sims"))),
+  #    response, response.se, response.n_sims) %>%
+  #   ungroup()
+  # 
+  
   output <- 
     data %>%
-    group_by(!!! syms(setdiff(names(.), c("sim","posterior","response")))) %>%
+    group_by(sim) %>%
+    mutate(response.mean = mean(response)) %>%
+    ungroup() %>%
+    group_by(!!! syms(setdiff(names(.), c("sim", "posterior", "response.mean", "response")))) %>%
     summarise(
       response.n_sims = n_distinct(sim),
-      response.se = sd(response) / sqrt(response.n_sims),
-      response = mean(response)) %>%
+      response.mean.mean = mean(response.mean),
+      response.mean.se = sd(response.mean) / sqrt(n_distinct(sim))) %>%
     relocate(
-     !!! syms(setdiff(names(.), c("response", "response.se", "response.n_sims"))),
-     response, response.se, response.n_sims) %>%
+     !!! syms(setdiff(names(.), c("response.mean.mean","response.mean.se", "response.n_sims"))),
+     response.mean.mean, response.mean.se, response.n_sims) %>%
     ungroup()
-  
+      
   return(output)
 }
 
@@ -679,7 +695,7 @@ get_accuracy_from_updated_bias <- function(
     lift_MVG_ideal_observer_to_NIW_ideal_adaptor(kappa = max_kappa_nu, nu = max_kappa_nu)
   
   u <-
-    update_bias_and_categorize_test(
+    update_bias_and_categorize_test( # Exposure token order is reshuffled on each run
     prior = prior,
     lapse_rate = lapse_rate, 
     beta_pi = beta_pi,
@@ -688,15 +704,30 @@ get_accuracy_from_updated_bias <- function(
     verbose = verbose,
     control = control)
   
-  u <- get_average_bias_results_across_simulations(u) %>%
-    get_accuracy()
+  # u <- get_average_bias_results_across_simulations(u) %>%
+  #   get_accuracy()
+  
+  # history.optimization_bias <<-
+  #   bind_rows(
+  #     history.optimization_bias,
+  #     tibble(lapse_rate = lapse_rate, beta_pi = beta_pi, accuracy = u))
+  # 
+  #  return(u)
+  
+  u.across_simulations <- get_average_bias_results_across_simulations(u) %>%
+    distinct(response.mean.mean, response.mean.se, response.n_sims) 
   
   history.optimization_bias <<-
     bind_rows(
       history.optimization_bias,
-      tibble(lapse_rate = lapse_rate, beta_pi = beta_pi, accuracy = u))
-
-  return(u)
+      tibble(lapse_rate = lapse_rate, beta_pi = beta_pi, 
+             n_sims = u.across_simulations$response.n_sims,
+             accuracy = u.across_simulations$response.mean.mean, 
+             accuracy.se = u.across_simulations$response.mean.se))
+  
+  accuracy = u.across_simulations$response.mean.mean
+  return(accuracy)
+ 
 }
 ```
 
@@ -777,6 +808,16 @@ d.AA.bias <-
     beta_pi = beta_pi.plot)
 
 best_performing_parameters.bias <- find_best_model.bias.AA()
+
+## DEBUGGING
+d.AA.bias.summary <- d.AA.bias %>%
+  group_by(Condition, posterior.lapse_rate, beta_pi, sim) %>%
+  summarise(response.mean = mean(response)) %>%
+  group_by(Condition, posterior.lapse_rate, beta_pi) %>%
+  mutate(sim.max = max(sim),
+         accuracy = mean(response.mean),
+         response.se = sd(response.mean) / sqrt(n_distinct(sim))) %>%
+  distinct(posterior.lapse_rate, beta_pi, sim.max, accuracy, response.se)
 ```
 
 (ref:AA-result-changes-in-decision-making) Predictions of a model that derives accent adaptation as changes in decision-making. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda$). The highlighted panel is the one closest to the best-performing parameterization ($\beta_{\pi} = `r best_performing_parameters.bias$par[2]`$; $\lambda=`r best_performing_parameters.bias$par[1]`$; overall accuracy$=`r best_performing_parameters.bias$value`$).

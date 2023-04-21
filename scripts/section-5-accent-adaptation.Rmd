@@ -644,19 +644,6 @@ simulation.control <-
     target_accuracy_se = .002)
 
 get_average_bias_results_across_simulations <- function(data){
-  # output <-    # this was the original data that get logged into history.optimization.bias. It computes the mean & se of the response for each token across simulations; and then in the logging stage, an average of the mean across tokens was computed as the mean accuracy for a parameterization
-  #   data %>%
-  #   group_by(!!! syms(setdiff(names(.), c("sim","posterior","response")))) %>%
-  #   summarise(
-  #     response.n_sims = n_distinct(sim),
-  #     response.se = sd(response) / sqrt(response.n_sims),
-  #     response = mean(response)) %>%
-  #   relocate(
-  #    !!! syms(setdiff(names(.), c("response", "response.se", "response.n_sims"))),
-  #    response, response.se, response.n_sims) %>%
-  #   ungroup()
-  # 
-  
   output <- 
     data %>%
     group_by(sim) %>%
@@ -668,7 +655,7 @@ get_average_bias_results_across_simulations <- function(data){
       response.mean.mean = mean(response.mean),
       response.mean.se = sd(response.mean) / sqrt(n_distinct(sim))) %>%
     relocate(
-     !!! syms(setdiff(names(.), c("response.mean.mean","response.mean.se", "response.n_sims"))),
+     !!! syms(setdiff(names(.), c("response.mean.mean", "response.mean.se", "response.n_sims"))),
      response.mean.mean, response.mean.se, response.n_sims) %>%
     ungroup()
       
@@ -1378,35 +1365,20 @@ knitr::kable(parameters.results.best.cases, caption = "Best-performing parameter
     kable_styling(latex_options = "scale_down")
 ```
 
-Figure \@ref(fig:AA-plot-results-additional-cases)B shows how the three accent scenarios are predicted to affect L1 listeners' perception, both prior to informative exposure (L1-accented exposure condition) and after L2-accented exposure. Each panel shows the predictions of the best-performing parameterization for the change model, derived in the same way as for the cue-reweighting case described above (best-performing parameters are listed in Table \@ref(tab:AA-table-best-performing-parameterization)).
+Figure \@ref(fig:AA-plot-results-additional-cases)B shows how the three accent scenarios are predicted to affect L1 listeners' perception, both prior to informative exposure (L1-accented exposure condition) and after L2-accented exposure. Each panel shows the predictions of the best-performing parameterization for the change model, derived in the same way as for the cue-reweighting case described above (best-performing parameters are listed in Table \@ref(tab:AA-table-best-performing-parameterization)). The results of the three additional simulations serve to emphasize several important considerations for future research. 
 
+Foremost of all, Figure \@ref(fig:AA-plot-results-additional-cases)B shows that the predictions of the three change mechanisms *can* differ qualitatively, depending on the accent scenario. While all three change models achieve qualitatively similar accuracy for two of the three simulated accent scenarios (top and bottom row of Figure \@ref(fig:AA-plot-results-additional-cases)B), this is not the case for our example of contrast shift (middle row). For this simulated scenario, changes in category representations and normalization can yield qualitative improvements after exposure, whereas changes in decision-making only yield a zero-sum trade-off. This shows that experiments on accent adaptation *could* provide a lot of information about the underlying change mechanisms---even if analyses are limited to changes in recognition accuracy---*provided experimenters were to design and analyze their experiments in ways that explicitly link the acoustic-phonetic properties of the exposure and test items to participants' responses* (e.g., by selecting accent scenarios that are predicted to yield different adaptive responses under the three different change mechanisms). This is, however, hardly ever attempted in research on accent adaptation. The few existing exceptions, while insightful in their own right, have been limited to informal discussions of how the acoustic-phonetic properties of L1 and L2 accents might have qualitatively affected the results, rather than explicit comparisons of models [e.g., @xie; @schertz]. In the general discussion, we make concrete recommendations as to how the field can move beyond this status quo.
 
-XXXXXXXX--------------------------------------------------------------------------------
-EDIT BELOW HERE.
-XXXXXXXX--------------------------------------------------------------------------------
+Before we turn to these recommendations, we make two more observations about the results in Figure \@ref(fig:AA-plot-results-additional-cases)B that might be of interest to researchers, who plan to use ASP to design and interpret their experiments. First, accent scenarios can differ in the difficulties they are predicted to cause for L1 listeners prior to informative exposure. For example, without L2-accented exposure, contrast reduction (top row) and contrast collapse (bottom row) are predicted to cause difficulties similar to those predicted for cue reweigthing: L1 listeners unfamiliar with the accent are expected to struggle with the recognition of /d/ than the recognition of /t/. The opposite is observed for our example of contrast shift (middle row). This illustrates how differences in the realization of L2 vs. L1 accents can lead to different perceptual consequences for L1 listeners. 
 
-<!-- STHHERE IS WRONG. WE NEED TO SAY THE OBIOUS: IMPROVEMENTS AFTER EXPOSURE TO SOME TYPES OF ACCENTS ACTUALLY *DO* RULE OUT SOME MECHANISMS. THUS, IF RESEARCHERS BOTHERED TO DERIVE PREDICTIONS BASED ON THE SPECIFIC ACCENT SCENARIO/PHONETIC PROPERTIES, IT WOULD BE POSSIBLE TO RULE OUT SOME MECHANISMS. AND INTUITIVELY, THIS MIGHT ALSO HELP SHED LIGHT ON WHAT COMBINATIONS OF MECHANISMS ARE AT WORK.
+Second, the three scenarios in Figure \@ref(fig:AA-plot-results-additional-cases)A also differ in how much L2-accented exposure is predicted to affect L1 listeners' perception. This includes differences across the accent scenarios in terms of the maximum accuracy any particular change model can achieve. For example, changes in category representations can improve recognition accuracy to >90% for L2-accented exposure for both the example of cue reweighting in Case Study 2 and the example of contrast shift in Figure \@ref(fig:AA-plot-results-additional-cases)A. For the example, of contrast reduction, however, the improvements in recognition accuracy achievable by changes in category representations are much more modest (~72% after L2-accented exposure). There are even accent scenarios for which _none_ of the change models predicts any noteworthy benefits from L2-accented exposure (see bottom row of Figure \@ref(fig:AA-plot-results-additional-cases)B). This highlights an important, yet often under-appreciated, fact: sometimes null results are _predicted_ for exposure-test experiment, because of the specific stimulus statistics [see @tan2021; @zheng-samuel2020]. Put differently, an absence of improvements does not _necessarily_ constitute evidence against accent adaptation or any of the three mechanisms. It depends on the statistics of the L2 accent.
 
-ALSO REFRAME POINTS:
-"ACCENT SCENARIO" -- "L1-L2 DIFFERENCES?
-
-1) DIFFICULTY PRIOR
-2) HOW MUCH A MECHANISMS CAN HELP DIFFERS BASED ON L1-L2 DIFFERENCES. NULL EFFECT IS EXTREME EXAMPLE OF THAT
-3) CRITICALLY, WHETHER AND HOW MUCH A MECHANISM PREDICTS IMPROVEMENTS DEPENDS ON L1-L2 DIFFERENCES (INCL. WHICH MECHANISM 'WINS')
-
-WE NEED TO TIE THIS TOGETHER IN THE GENERAL DISCUSSION, TOO: IF YOU STUDY THE RIGHT ACCENT PROPERTIES (OR L2-L1 RELATIONS) YOU CAN ACTUALLY SHED LIGHT ON THE ROLE OF THE MECHANISMS. E.G., IF LISTENERS IMPROVE FOR THE TYPE OF CONTRAST SHIFT DISCUSSED HERE THAT WOULD MEAN THAT THEY EMPLOY MORE THAN CHANGES IN DECISION-MAKING.
--->
-
-
-As would be expected, accent scenarios can differ in the difficulties they cause for L1 listeners prior to informative exposure. For example, without L2-accented exposure, contrast reduction (top row) and contrast collapse (bottom row) are predicted to cause difficulties similar to those predicted for cue reweigthing: L1 listeners unfamiliar with the accent are expected to struggle with the recognition of /d/ than the recognition of /t/. The opposite is observed for our example of contrast shift (middle row). This illustrates how differences in the realization of L2 vs. L1 accents can lead to different perceptual consequences for L1 listeners. 
-
-Critically, the three scenarios also differ in how L2-accented exposure is predicted to affect L1 listeners' perception. Three aspects are worth highlighting. First, changes in category representations do not always outperform the other two mechanisms. For the case of contrast reduction (top row), changes in decision-making and normalization perform as well as, or better than, changes in category representations (replicating the results obtained for the cue reweighting in the main part of Case Study 2). This underscores that the additional computational complextity of the representational change model does not always result in higher recognition accuracy than the other two mechanisms.
-
-Second, the same change model can support more or less overall accuracy improvements (as gleaned from comparing the panels within each column), depending on the specific differences between the L2 and L1 accents. Consider the case of contrast shift (middle row). While changes in representations and normalization both predict large improvements in overall recognition accuracy in the L2-accented exposure, changes in decision-making do not (i.e., the difference in the predicted accuracy across L1- and L2-accented exposure conditions is negligible).<!-- ^[Note that the result predicted for changes in decision-making when applied to the contrast shift scenario is an example of the type of zero-sum trade-offs often attributed to this change mechanism (i.e., the recognition of /d/ improves at the cost of the recognition of /t/). The heterogeneity of the results across the three scenarios makes it clear that the trade-off is not an inherent property of changes in decision-making. It is instead a possible outcome arising from the specific way in which the L1 and L2 accent differ.]-->
-
-Third, _none_ of the change models predicts significant benefits from L2-accented exposure for contrast collapse (bottom row). This highlights an important, yet often under-appreciated, fact: sometimes null results are _predicted_ for exposure-test experiment, because of the specific stimulus statistics [see @tan2021; @zheng-samuel2020]. Put differently, an absence of improvements does not _necessarily_ constitute evidence against accent adaptation or any of the three mechanisms.
-<!-- ^[This also means that individual differences in accent adaptation around such a null effect are likely _not_ indicative of the individual’s ability to adapt to L2-accented speech but instead are likely to reflect random noise [under-mining the central argument made in, e.g., @zheng-samuel2020].]  -->
-
-The scenarios considered here cover only a subset of the L2 accent properties that exist in the world. Yet, they suffice to illustrate a general challenge: different types of cross-talker differences---including L2 accents---pose different types of challenges to listeners (this is further reflected in the fact that the best-performing parameterizations for the same mechanism vary across the different accent scenarios, cf. Table \@ref(tab:AA-table-best-performing-parameterization)). It follows that, depending on the specific accent, listeners can benefit from different _mechanisms_ and _rates_ of adaptation. Since the properties of unfamiliar accents are not _a priori_ known to listeners, this means that the optimal level of flexibility is achieved if the neural and cognitive systems underlying adaptive speech perception can adjust change rates based on the properties of the input [see discussion of the trade-off between flexibility and stability in @kleinschmidt-jaeger2015, pp. 180-182]. 
+The scenarios considered here cover only a subset of the L2 accent properties that exist in the world. They suffice, however, to illustrate a general challenge: different types of cross-talker differences---including L2 accents---pose different types of challenges to listeners (this is further reflected in the fact that the best-performing parameterizations for the same mechanism vary across the different accent scenarios, cf. Table \@ref(tab:AA-table-best-performing-parameterization)). It follows that, depending on the specific accent, listeners can benefit from different _mechanisms_ [and different _rates_ of adaptation, see discussion of the flexibility-stability trade-off in @kleinschmidt-jaeger2015, pp. 180-182]. 
 
 In summary, the expected benefits of L2-accented exposure under each change mechanism depend on the specifics of the L2-accented categories (and how they relate to L1 listeners' prior expectations). Beyond the accent scenarios examined here (cue-reweighting, contrast reduction, contrast shift, and contrast collapse), naturally produced L2 accents exhibit complex variations, which can pose difficulties to L1-listeners and researchers alike. At the same time, these differences may provide a useful opportunity to contrast the three change mechanism or even to investigate their *relative* engagement in adaptive speech perception. Since the three change mechanisms would predict different perceptual outcomes depending on the properties of the exposure and test stimuli, differences between accents can be natural testbeds for discriminating between model predictions. In the general discussion, we explore how such tests can be accomplished.
+
+<!--
+WE NEED TO TIE THIS TOGETHER IN THE GENERAL DISCUSSION, TOO: IF YOU STUDY THE RIGHT ACCENT PROPERTIES (OR L2-L1 RELATIONS) YOU CAN ACTUALLY SHED LIGHT ON THE ROLE OF THE MECHANISMS. E.G., IF LISTENERS IMPROVE FOR THE TYPE OF CONTRAST SHIFT DISCUSSED HERE THAT WOULD MEAN THAT THEY EMPLOY MORE THAN CHANGES IN DECISION-MAKING.
+
+in GD: mention this figure as an example of how sims can inform deisgn---e.g., by determining the accent one should investigate or the combination of accents
+-->

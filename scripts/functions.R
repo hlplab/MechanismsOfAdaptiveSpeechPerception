@@ -788,9 +788,9 @@ update_bias_and_categorize_test <- function(
   
   # If max simulations not yet reached AND target_se not yet reached, run more
   # simulations.
-  if (control[["min.simulations"]] < control[["max.simulations"]] & (u.test %>%
-                                                                     pull(response.mean.se) %>%
-                                                                     { . > control[["target_accuracy_se"]]})) {
+  if (
+    control[["min.simulations"]] < control[["max.simulations"]] & 
+    (u.test %>% pull(response.mean.se) %>% { . > control[["target_accuracy_se"]]})) {
     
     u <-
       update_bias_and_categorize_test(

@@ -1,6 +1,14 @@
 # THINGS TO DO
 Let's delete to-dos after they have been addressed, and post in Slack what we've done. Thanks.
-
+  
+  * Xin:
+    * fig 29:
+      * fix top margins in Figure 29
+      * consider adding cue reweighting case to fig 29?
+      * make sure that best-fitting decision-making model in Fig 29 is correct (using same max sims as in the previous figures)
+    * fig 26-28: increase number of sims for each panels *and make sure input order is randomized*
+    
+ 
   * Everyone: 
     * update references of unpublished manuscripts
     * brain areas are sometimes abbreviated and sometimes not. Xin, what's the cortex guideline for this? in any case, I assume they should not be abbreviated on first mention? (unless always abbreviating them is ok?) Currently, we have an odd mix.

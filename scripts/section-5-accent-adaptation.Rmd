@@ -638,8 +638,8 @@ As $\kappa_{c,0}$s and $\nu_{c,0}$ get smaller (indicating weaker prior beliefs)
 ```{r study-AA-models-changes-in-decision-making-functions, echo=FALSE, message=FALSE, warning=FALSE}
 simulation.control <-
   list(
-    min.simulations = 20, 
-    max.simulations = 100, 
+    min.simulations = 10, 
+    max.simulations = 40, 
     step.simulations = 1, 
     target_accuracy_se = .002)
 
@@ -824,6 +824,8 @@ d.AA.bias.summary <- d.AA.bias %>%
          response.se = sd(response.mean) / sqrt(n_distinct(sim))) %>%
   distinct(posterior.lapse_rate, beta_pi, sim.max, accuracy, response.se)
 
+
+history.optimization_bias1 <- readRDS(get_path(paste0("../models/debugging/bias_models_042223_min=10_max=40_startingat_beta=0.8_lambda=0.5_using_log_accuracy/d.AA.history.optimization.bias_", example_label,".rds")))
 ```
 
 (ref:AA-result-changes-in-decision-making) Predictions of a model that derives accent adaptation as changes in decision-making. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda$). The highlighted panel is the one closest to the best-performing parameterization ($\beta_{\pi} = `r best_performing_parameters.bias$par[2]`$; $\lambda=`r best_performing_parameters.bias$par[1]`$; overall accuracy$=`r best_performing_parameters.bias$value`$).
@@ -1342,7 +1344,7 @@ p.results.best.cases <- d.AA.results.best.cases %>%
   geom_text(inherit.aes = FALSE, data = . %>%
                  group_by(Case, Condition, ModelType) %>%
                  summarise(mAcc = round(mean(response), digits = 2)),
-            aes(label = mAcc, x = Condition, y = 1), size = geom_text.size) +
+            aes(label = mAcc, x = Condition, y = 1.05), size = geom_text.size) +
   facet_grid(Case ~ ModelType) +
   theme(legend.position = "top", 
         strip.text.y = element_blank(),

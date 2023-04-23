@@ -638,8 +638,8 @@ As $\kappa_{c,0}$s and $\nu_{c,0}$ get smaller (indicating weaker prior beliefs)
 ```{r study-AA-models-changes-in-decision-making-functions, echo=FALSE, message=FALSE, warning=FALSE}
 simulation.control <-
   list(
-    min.simulations = 2, 
-    max.simulations = 200, 
+    min.simulations = 20, 
+    max.simulations = 100, 
     step.simulations = 1, 
     target_accuracy_se = .002)
 
@@ -719,13 +719,20 @@ get_accuracy_from_updated_bias <- function(
 ```
 
 ```{r study-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE}
+start_time <- Sys.time() #DEBUG
+# cl <- makeCluster(detectCores())     # set the number of processor cores
+# setDefaultCluster(cl=cl) # set 'cl' as default cluster
+
 find_best_model.bias.AA <- function() {
   if(SET_SEED) set.seed(42007)
   
   if (RESET_MODELS || !file.exists(get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))) {
+    
+    print(paste0("The optim program starts at", Sys.time())) #DEBUG
     best_performing_parameters.bias <-
-      optim(
-        par = c(mean(range.lapse_rate), mean(log(range.beta_pi))),
+      optim( # DEBUG
+        # par = c(mean(range.lapse_rate), mean(log(range.beta_pi))), # DEBUG
+        par = c(0.5, log(0.8)),
         fn = get_accuracy_from_updated_bias,
         method = "L-BFGS-B",
         lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
@@ -733,6 +740,8 @@ find_best_model.bias.AA <- function() {
         control = list(
           fnscale = -1,
           factr = 10^8))
+    
+    print(paste0("The optim program ends at", Sys.time())) #DEBUG
     
     best_performing_parameters.bias$par <- c(best_performing_parameters.bias$par[1], exp(best_performing_parameters.bias$par[2]))
     saveRDS(best_performing_parameters.bias, get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
@@ -745,6 +754,14 @@ find_best_model.bias.AA <- function() {
   return(best_performing_parameters.bias)
 }
 
+best_performing_parameters.bias <- find_best_model.bias.AA()
+
+end_time <- Sys.time() #DEBUG
+end_time - start_time #DEBUG
+
+
+
+start_time <- Sys.time() #DEBUG
 get_decision_making_models_for_plot <- function(
     lapse_rate = lapse_rate,
     beta_pi = beta_pi,
@@ -794,7 +811,8 @@ d.AA.bias <-
     lapse_rate = posterior.lapse_rate.plot,
     beta_pi = beta_pi.plot)
 
-best_performing_parameters.bias <- find_best_model.bias.AA()
+end_time <- Sys.time() #DEBUG
+end_time - start_time #DEBUG
 
 ## DEBUGGING
 d.AA.bias.summary <- d.AA.bias %>%
@@ -805,6 +823,7 @@ d.AA.bias.summary <- d.AA.bias %>%
          accuracy = mean(response.mean),
          response.se = sd(response.mean) / sqrt(n_distinct(sim))) %>%
   distinct(posterior.lapse_rate, beta_pi, sim.max, accuracy, response.se)
+
 ```
 
 (ref:AA-result-changes-in-decision-making) Predictions of a model that derives accent adaptation as changes in decision-making. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda$). The highlighted panel is the one closest to the best-performing parameterization ($\beta_{\pi} = `r best_performing_parameters.bias$par[2]`$; $\lambda=`r best_performing_parameters.bias$par[1]`$; overall accuracy$=`r best_performing_parameters.bias$value`$).

@@ -638,8 +638,8 @@ As $\kappa_{c,0}$s and $\nu_{c,0}$ get smaller (indicating weaker prior beliefs)
 ```{r study-AA-models-changes-in-decision-making-functions, echo=FALSE, message=FALSE, warning=FALSE}
 simulation.control <-
   list(
-    min.simulations = 10, 
-    max.simulations = 40, 
+    min.simulations = 20, 
+    max.simulations = 100, 
     step.simulations = 1, 
     target_accuracy_se = .002)
 
@@ -732,7 +732,7 @@ find_best_model.bias.AA <- function() {
     best_performing_parameters.bias <-
       optim( # DEBUG
         # par = c(mean(range.lapse_rate), mean(log(range.beta_pi))), # DEBUG
-        par = c(0.5, -0.22),
+        par = c(0.5, log(0.8)),
         fn = get_accuracy_from_updated_bias,
         method = "L-BFGS-B",
         lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
@@ -759,6 +759,9 @@ best_performing_parameters.bias <- find_best_model.bias.AA()
 end_time <- Sys.time() #DEBUG
 end_time - start_time #DEBUG
 
+
+
+start_time <- Sys.time() #DEBUG
 get_decision_making_models_for_plot <- function(
     lapse_rate = lapse_rate,
     beta_pi = beta_pi,
@@ -808,7 +811,8 @@ d.AA.bias <-
     lapse_rate = posterior.lapse_rate.plot,
     beta_pi = beta_pi.plot)
 
-
+end_time <- Sys.time() #DEBUG
+end_time - start_time #DEBUG
 
 ## DEBUGGING
 d.AA.bias.summary <- d.AA.bias %>%

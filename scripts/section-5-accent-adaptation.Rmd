@@ -638,8 +638,8 @@ As $\kappa_{c,0}$s and $\nu_{c,0}$ get smaller (indicating weaker prior beliefs)
 ```{r study-AA-models-changes-in-decision-making-functions, echo=FALSE, message=FALSE, warning=FALSE}
 simulation.control <-
   list(
-    min.simulations = 10, 
-    max.simulations = 40, 
+    min.simulations = 50, 
+    max.simulations = 100, 
     step.simulations = 1, 
     target_accuracy_se = .002)
 
@@ -652,11 +652,11 @@ get_average_bias_results_across_simulations <- function(data){
     group_by(!!! syms(setdiff(names(.), c("sim", "posterior", "response.mean", "response")))) %>%
     summarise(
       response.n_sims = n_distinct(sim),
-      response.mean.mean = mean(response.mean),
+      response = mean(response.mean),
       response.mean.se = sd(response.mean) / sqrt(n_distinct(sim))) %>%
     relocate(
-     !!! syms(setdiff(names(.), c("response.mean.mean", "response.mean.se", "response.n_sims"))),
-     response.mean.mean, response.mean.se, response.n_sims) %>%
+     !!! syms(setdiff(names(.), c("response", "response.mean.se", "response.n_sims"))),
+     response, response.mean.se, response.n_sims) %>%
     ungroup()
       
   return(output)
@@ -702,6 +702,62 @@ get_accuracy_from_updated_bias <- function(
   #  return(u)
   
   u.across_simulations <- get_average_bias_results_across_simulations(u) %>%
+    distinct(response, response.mean.se, response.n_sims) 
+  
+  history.optimization_bias <<-
+    bind_rows(
+      history.optimization_bias,
+      tibble(lapse_rate = lapse_rate, beta_pi = beta_pi, 
+             n_sims = u.across_simulations$response.n_sims,
+             accuracy = u.across_simulations$response.mean.mean, 
+             accuracy.se = u.across_simulations$response.mean.se))
+  
+  accuracy = log(u.across_simulations$response.mean.mean)
+  return(accuracy)
+ 
+}
+
+
+#DEBUG
+get_accuracy_from_updated_bias1 <- function(
+    pars,
+    model = m.io.VOT_f0.AA,
+    exposure = d.AA.exposure %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1")), # find the best-performing parameterization for the L2-accented condition
+    test = d.AA.test %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1")),
+    control = simulation.control,
+    verbose = FALSE
+) {
+  lapse_rate <- 0
+  beta_pi <- exp(pars[1])
+  max_kappa_nu <- 10000
+
+  prior <-
+    model %>%
+    mutate(lapse_rate = .env$lapse_rate) %>%
+    droplevels() %>%
+    lift_MVG_ideal_observer_to_NIW_ideal_adaptor(kappa = max_kappa_nu, nu = max_kappa_nu)
+  
+  u <-
+    update_bias_and_categorize_test( # Exposure token order is reshuffled on each run
+    prior = prior,
+    lapse_rate = lapse_rate, 
+    beta_pi = beta_pi,
+    exposure = exposure,
+    test = test,
+    verbose = verbose,
+    control = control)
+  
+  # u <- get_average_bias_results_across_simulations(u) %>%
+  #   get_accuracy()
+  
+  # history.optimization_bias <<-
+  #   bind_rows(
+  #     history.optimization_bias,
+  #     tibble(lapse_rate = lapse_rate, beta_pi = beta_pi, accuracy = u))
+  # 
+  #  return(u)
+  
+  u.across_simulations <- get_average_bias_results_across_simulations(u) %>%
     distinct(response.mean.mean, response.mean.se, response.n_sims) 
   
   history.optimization_bias <<-
@@ -712,7 +768,7 @@ get_accuracy_from_updated_bias <- function(
              accuracy = u.across_simulations$response.mean.mean, 
              accuracy.se = u.across_simulations$response.mean.se))
   
-  accuracy = u.across_simulations$response.mean.mean
+  accuracy = log(u.across_simulations$response.mean.mean)
   return(accuracy)
  
 }
@@ -732,14 +788,19 @@ find_best_model.bias.AA <- function() {
     best_performing_parameters.bias <-
       optim( # DEBUG
         # par = c(mean(range.lapse_rate), mean(log(range.beta_pi))), # DEBUG
-        par = c(0.5, log(0.8)),
-        fn = get_accuracy_from_updated_bias,
+        # fn = get_accuracy_from_updated_bias,
+        par = c(log(0.1)),
+        fn = get_accuracy_from_updated_bias1, #DEBUG
         method = "L-BFGS-B",
-        lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
-        upper = c(max(range.lapse_rate), max(log(range.beta_pi))),
+        # lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
+        # upper = c(max(range.lapse_rate), max(log(range.beta_pi))),
+        lower = c(min(log(range.beta_pi))), # DEBUG
+        upper = c(max(log(range.beta_pi))), # DEBUG
         control = list(
           fnscale = -1,
-          factr = 10^8))
+        #  factr = 10^8))
+          #DEBUG
+          factr = 10^5))
     
     print(paste0("The optim program ends at", Sys.time())) #DEBUG
     
@@ -823,9 +884,6 @@ d.AA.bias.summary <- d.AA.bias %>%
          accuracy = mean(response.mean),
          response.se = sd(response.mean) / sqrt(n_distinct(sim))) %>%
   distinct(posterior.lapse_rate, beta_pi, sim.max, accuracy, response.se)
-
-
-history.optimization_bias1 <- readRDS(get_path(paste0("../models/debugging/bias_models_042223_min=10_max=40_startingat_beta=0.8_lambda=0.5_using_log_accuracy/d.AA.history.optimization.bias_", example_label,".rds")))
 ```
 
 (ref:AA-result-changes-in-decision-making) Predictions of a model that derives accent adaptation as changes in decision-making. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda$). The highlighted panel is the one closest to the best-performing parameterization ($\beta_{\pi} = `r best_performing_parameters.bias$par[2]`$; $\lambda=`r best_performing_parameters.bias$par[1]`$; overall accuracy$=`r best_performing_parameters.bias$value`$).
@@ -1335,16 +1393,17 @@ p.results.best.cases <- d.AA.results.best.cases %>%
                  fun.data = mean_cl_boot,
                  geom = "uperrorbar",
                  position = pos, width = 0.2) +
-  coord_cartesian(ylim =  c(0,1)) +
+  geom_text(inherit.aes = FALSE, data = . %>%
+                 group_by(Case, Condition, ModelType) %>%
+                 summarise(mAcc = round(mean(response), digits = 2)),
+            aes(label = mAcc, x = Condition, y = 1.05), size = geom_text.size) +
+  coord_cartesian(ylim = c(0, 1.1)) + 
+  scale_y_continuous(breaks = c(0, 0.25, 0.5, 0.75, 1)) +
   scale_color_manual("Category", values = colors.category) +
   scale_fill_manual("Category", values = colors.category) +
   scale_alpha_discrete(range = c(0.2, 1)) +
   xlab("Exposure condition") +
   ylab("Predicted \ncategorization accuracy") +
-  geom_text(inherit.aes = FALSE, data = . %>%
-                 group_by(Case, Condition, ModelType) %>%
-                 summarise(mAcc = round(mean(response), digits = 2)),
-            aes(label = mAcc, x = Condition, y = 1.05), size = geom_text.size) +
   facet_grid(Case ~ ModelType) +
   theme(legend.position = "top", 
         strip.text.y = element_blank(),

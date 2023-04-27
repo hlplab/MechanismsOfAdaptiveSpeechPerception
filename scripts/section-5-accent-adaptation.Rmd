@@ -709,11 +709,11 @@ get_accuracy_from_updated_bias <- function(
       history.optimization_bias,
       tibble(lapse_rate = lapse_rate, beta_pi = beta_pi, 
              n_sims = u.across_simulations$response.n_sims,
-             accuracy = u.across_simulations$response.mean.mean, 
+             accuracy = u.across_simulations$response, 
              accuracy.se = u.across_simulations$response.mean.se))
   
-  accuracy = log(u.across_simulations$response.mean.mean)
-  return(accuracy)
+  accuracy = log(u.across_simulations$response)
+  return(-accuracy)
  
 }
 
@@ -758,26 +758,77 @@ get_accuracy_from_updated_bias1 <- function(
   #  return(u)
   
   u.across_simulations <- get_average_bias_results_across_simulations(u) %>%
-    distinct(response.mean.mean, response.mean.se, response.n_sims) 
+    distinct(response, response.mean.se, response.n_sims) 
   
   history.optimization_bias <<-
     bind_rows(
       history.optimization_bias,
       tibble(lapse_rate = lapse_rate, beta_pi = beta_pi, 
              n_sims = u.across_simulations$response.n_sims,
-             accuracy = u.across_simulations$response.mean.mean, 
+             accuracy = u.across_simulations$response, 
              accuracy.se = u.across_simulations$response.mean.se))
   
-  accuracy = log(u.across_simulations$response.mean.mean)
+  accuracy = log(u.across_simulations$response)
   return(accuracy)
- 
 }
 ```
 
-```{r study-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE}
+```{r DEBUG-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE, eval= FALSE}
+library(NMOF) #DEBUG
+
 start_time <- Sys.time() #DEBUG
-# cl <- makeCluster(detectCores())     # set the number of processor cores
-# setDefaultCluster(cl=cl) # set 'cl' as default cluster
+res2 <- gridSearch(get_accuracy_from_updated_bias, #DEBUG,
+                  npar = 2,   ## length of x
+                  lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
+                  upper = c(max(range.lapse_rate), max(log(range.beta_pi))),
+                  n = 10)      ## number of levels per element in x
+## 2 variables with 5, 5 levels: 25 function evaluations required.
+end_time <- Sys.time() #DEBUG
+end_time - start_time #DEBUG
+
+res2 <- readRDS(file = "../res2")
+saveRDS(history.optimization_bias, "../models/history.optimization_bias_grid_search_min=50_max=100.rds")
+```
+
+
+```{r DEBUG-AA-models-changes-in-decision-making-visualization, echo=FALSE, message=FALSE, warning=FALSE, eval = FALSE}
+
+temp <- as.matrix(pivot_wider(history.optimization_bias %>% select(beta_pi, lapse_rate, accuracy), names_from = beta_pi, values_from = accuracy)[,-1])
+
+x <- seq(min(range.lapse_rate), max(range.lapse_rate), length = 10) 
+y <- exp(seq(min(log(range.beta_pi)), max(log(range.beta_pi)), length = 10))
+
+history.optimization_bias.list <- list(lapse_rate = x, beta_pi = y, accuracy = temp)
+  plot_ly() %>%
+    add_surface(
+      y = history.optimization_bias.list$lapse_rate, x = history.optimization_bias.list$beta_pi, z = temp,
+      opacity = 0.2,
+      colorscale = list(c(0, 1)),
+     # surfacecolor = color,
+      cauto = F,
+      cmax = 1,
+      cmin = 0,
+      showscale = FALSE) %>%
+    layout(
+      scene = list(
+        # zooming in on the plot, values larger than 0
+        aspectratio = list(x = 1.2, y = 1.2, z = 1), 
+        # perspective good for showing categorization curve
+        camera = list(
+          eye = list(x = -0.5, y = -2.5, z = 0.5), 
+          up =  list(x = 0, y = 0, z = 1)),
+        zaxis = list(title = "Overall accuracy", titlefont = list(size = 22)), 
+        yaxis = list(title = "lapse_rate",titlefont = list(size = 22)),
+        xaxis = list(title = "beta_pi", titlefont = list(size = 22))))
+
+
+```
+
+
+
+
+```{r study-AA-models-changes-in-decision-making-optimization, echo=FALSE, message=FALSE, warning=FALSE}
+start_time <- Sys.time() #DEBUG
 
 find_best_model.bias.AA <- function() {
   if(SET_SEED) set.seed(42007)
@@ -789,22 +840,25 @@ find_best_model.bias.AA <- function() {
       optim( # DEBUG
         # par = c(mean(range.lapse_rate), mean(log(range.beta_pi))), # DEBUG
         # fn = get_accuracy_from_updated_bias,
-        par = c(log(0.1)),
+        par = c(log(2.2)),
         fn = get_accuracy_from_updated_bias1, #DEBUG
-        method = "L-BFGS-B",
+        method = "SANN", 
+      #  method = "L-BFGS-B", # DEBUG
         # lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
         # upper = c(max(range.lapse_rate), max(log(range.beta_pi))),
         lower = c(min(log(range.beta_pi))), # DEBUG
         upper = c(max(log(range.beta_pi))), # DEBUG
-        control = list(
-          fnscale = -1,
-        #  factr = 10^8))
-          #DEBUG
-          factr = 10^5))
+      control = list(fnscale = -1, trace = 1, temp = 100, tmax = 100, maxit = 20000)
+        # control = list(
+        #   fnscale = -1,
+        # #  factr = 10^8))
+        #   #DEBUG
+        #   factr = 10^5)
+        )
     
     print(paste0("The optim program ends at", Sys.time())) #DEBUG
     
-    best_performing_parameters.bias$par <- c(best_performing_parameters.bias$par[1], exp(best_performing_parameters.bias$par[2]))
+    best_performing_parameters.bias$par <- c(0, exp(best_performing_parameters.bias$par[1]))
     saveRDS(best_performing_parameters.bias, get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
     saveRDS(history.optimization_bias, get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds")))
   } else {
@@ -819,9 +873,9 @@ best_performing_parameters.bias <- find_best_model.bias.AA()
 
 end_time <- Sys.time() #DEBUG
 end_time - start_time #DEBUG
+```
 
-
-
+```{r study-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE}
 start_time <- Sys.time() #DEBUG
 get_decision_making_models_for_plot <- function(
     lapse_rate = lapse_rate,
@@ -925,7 +979,23 @@ make_results_plot_decision_making <- function(data, data_best){
 ```
 
 ```{r AA-result-changes-in-decision-making, fig.width= base.width * 5, fig.height= base.height * 5 + 1, fig.cap="(ref:AA-result-changes-in-decision-making)", warning=FALSE}
-make_results_plot_decision_making(data = get_average_bias_results_across_simulations(d.AA.bias), data_best = best_performing_parameters.bias)
+get_average_bias_results_across_simulations.byItem <- function(data){
+    output <- 
+    data %>%
+    group_by(!!! syms(setdiff(names(.), c("sim","posterior","response")))) %>%
+    summarise(
+      response.n_sims = n_distinct(sim),
+      response.se = sd(response) / sqrt(response.n_sims),
+      response = mean(response)) %>%
+    relocate(
+     !!! syms(setdiff(names(.), c("response", "response.se", "response.n_sims"))),
+     response, response.se, response.n_sims) %>%
+    ungroup()
+  
+  return(output)
+} 
+
+make_results_plot_decision_making(data = get_average_bias_results_across_simulations.byItem(d.AA.bias), data_best = best_performing_parameters.bias)
 ```
 
 Figure \@ref(fig:AA-result-changes-in-decision-making) shows the effects of changes in decision-making as a function of the rate at which response biases change $\beta_{\pi}$ and the lapse rate $\lambda$, averaged across all simulations for each parameterization. As in Case Study 1, the figure shows the average across 50 repeated simulations, each time randomizing the order of exposure. This was sufficient to achieve reproducible estimates even for the largest $\beta_{\pi}$s considered here (SEs of the mean accuracy after L2-accented exposure across repeated simulations were smaller than $0.002$, meaning that the 95% CI across the simulations spanned less than 1% in recognition accuracy). 
@@ -1113,8 +1183,12 @@ For the hypothetical L2 accent considered in Case Study 2, the three change mode
 Fortunately for research on adaptive speech perception, it is not always the case that the three change models can explain similar ranges of performance. A critical insight of ASP is that the predicted benefit of L2-accented exposure under each mechanism depends on the acoustic-phonetic statistics of the accent, relative to L1 listeners’ prior expectations. For experiments using naturally accented stimuli, this means that the results are expected to depend on the specific acoustic-phonetic properties of the exposure and test tokens. To further illustrate this point, we simulated three additional scenarios, shown in Figure \@ref(fig:AA-plot-results-additional-cases)A. Each of these three scenarios is representative of commonly attested differences between L1- and L2-accents. The top row of Figure \@ref(fig:AA-plot-results-additional-cases) shows an example of *contrast reduction*, in which the L2 accent shows a greater category overlap than the L1 accent. Here it is simulated by shifting /d/ category towards /t/ along the VOT continuum while keeping the latter unchanged [as qualitatively attested for, e.g., vowels in Spanish-accented English, @wade2007]. The middle row shows an example of *contrast shift*, where two categories in L2-accented speech are shifted along one or more of the cue dimensions as compared to L1-accented speech. Here it is simulated by shifting both /d/ and /t/ categories towards lower VOT [qualitatively attested for, e.g., word-initial stops in French-accented English, @Sumner2011a]. The bottom row of Figure \@ref(fig:AA-plot-results-additional-cases) shows a more extreme example, exhibiting almost complete *contrast collapse* [similar to the loss of the /s/-/`r linguisticsdown::cond_cmpl("θ")`/ contrast that can occur in Mandarin-accented English, @zheng-samuel2020]. Here it is simulated by making /d/ identical to /t/. 
 
 ```{r compare-AA-models-best-three-functions}
+
+## COME BACK HERE: the best-performing parameter is not right for the cue reweighting case
+
+
 # Function to construct change model of each type and select the best performing parameter combination
-construct_three_models <- function(
+construct_accent_models <- function(
     example_label = "Cue_reweighting",
     experimenter.ideal_observer,
     category_dist_ratio1 = dist.L2_category.cue1,
@@ -1162,7 +1236,7 @@ construct_three_models <- function(
     lapse_rate = round(best_performing_parameters.bias$par[1], digits = 2), # here one can select to plot just the best-performing parameterization or to visualize a range of parameters by specifying the values assigned to lapse_rate and beta_pi
     beta_pi = round(best_performing_parameters.bias$par[2], digits = 2))
   
-  bias.pred %<>% get_average_bias_results_across_simulations() # average predictions across simulations for the bias model
+  bias.pred %<>% get_average_bias_results_across_simulations.byItem() # average predictions across simulations for the bias model
   
   history.optimization_normalization <<- tibble(.rows = 0)
   best_performing_parameters.normalization <- find_best_model.normalization.AA()
@@ -1219,7 +1293,7 @@ construct_three_models <- function(
 
 (ref:AA-plot-results-additional-cases) Predicted adaptation for three types of L2 accents, from top to bottom: contrast reduction, contrast shift and contrast collapse. Predictions were derived for one random experiment of the same number of exposure and test stimuli as in Case Study 2. Multiple simulations were performed following the same procedure described in the main scenario above. **Panel A - Distributions of L1-accented and L2-accented categories:** L1-accented categories, represented in light shades, are kept constant across the three scenarios and identical to that in the main scenario above; L2-accented categories, represented by solid ellipses, are varied across scenarios. **Panel B - Change model predictions:** Predicted categorization accuracies for the L2-accented test tokens after L1-accented and L2-accented exposure, for the best-performing parameterizations of each change model (cf. highlighted panels in Figure \@ref(fig:AA-result-changes-in-representations)-\@ref(fig:AA-result-changes-in-normalization)). The average accuracy across all test tokens for each condition is shown above the bars. Error bars show 95% bootstrapped confidence intervals.
 
-```{r AA-result-comparison-best-three-models-contrast-shift, warning=FALSE}
+```{r AA-result-comparison-best-models-contrast-shift, warning=FALSE}
 # Examine a new scenario: contrast shift
 min_VOT <- -100 # allows negative VOT when generating exposure and test data
 dist.L2_category.cue1 <- 1
@@ -1228,10 +1302,10 @@ shift.cue1 <- -1.2
 shift.cue2 <- 0
 var.ratio <- 1
 example_label = "Contrast_shift"
-d.AA.results.contrast_shift.best  <- construct_three_models(example_label = "Contrast_shift", experimenter.ideal_observer = m.io.VOT_f0.AA)
+d.AA.results.contrast_shift.best  <- construct_accent_models(example_label = "Contrast_shift", experimenter.ideal_observer = m.io.VOT_f0.AA)
 ```
 
-```{r AA-result-comparison-best-three-models-contrast-reduction, warning=FALSE}
+```{r AA-result-comparison-best-models-contrast-reduction, warning=FALSE}
 # Examine a new scenario: contrast reduction
 min_VOT <- 5
 dist.L2_category.cue1 <- 0.5
@@ -1240,10 +1314,10 @@ shift.cue1 <- 0
 shift.cue2 <- 0
 var.ratio <- 1
 example_label = "Contrast_reduction"
-d.AA.results.contrast_reduction.best  <- construct_three_models(example_label = "Contrast_reduction", experimenter.ideal_observer = m.io.VOT_f0.AA)
+d.AA.results.contrast_reduction.best  <- construct_accent_models(example_label = "Contrast_reduction", experimenter.ideal_observer = m.io.VOT_f0.AA)
 ```
 
-```{r AA-result-comparison-best-three-models-contrast-collapse, warning=FALSE}
+```{r AA-result-comparison-best-models-contrast-collapse, warning=FALSE}
 # Examine a new scenario: contrast collapse
 min_VOT <- -100 # allows negative VOT when generating exposure and test data
 dist.L2_category.cue1 <- 0
@@ -1253,7 +1327,14 @@ shift.cue2 <- 0
 var.ratio <- 1
 example_label = "Contrast_collapse"
 
-d.AA.results.contrast_collapse.best  <- construct_three_models(example_label = "Contrast_collapse", experimenter.ideal_observer = m.io.VOT_f0.AA)
+d.AA.results.contrast_collapse.best  <- construct_accent_models(example_label = "Contrast_collapse", experimenter.ideal_observer = m.io.VOT_f0.AA)
+```
+
+```{r AA-result-comparison-best-models-cue-reweighting, warning=FALSE}
+# Replot the main scenario: cue reweighting
+min_VOT = 5 # Set the minimal values for randomly generated test token cue values to make sure it is physiologically possible
+example_label = "Cue_reweighting"
+d.AA.results.cue_reweighting.best  <- construct_accent_models(example_label = "Cue_reweighting", experimenter.ideal_observer = m.io.VOT_f0.AA)
 ```
 
 ```{r AA-result-comparison-additional-cases, warning=FALSE}
@@ -1293,6 +1374,20 @@ for (i in 1:length(cases)){
 # plots (a larger number makes the ellipse estimation used in visualization more accurate). 
 # It does not affect the number of exposure tokens used in the simulation experiment
 n.token_for_plot = 5000 
+
+# simulating a case of cue reweighting: like Korean-accented English stops, as presented in case study as the main case
+min_VOT = 5
+var.ratio = 1
+example_label = "Cue_reweighting"
+d.AA.exposure.target.cue.reweighting <- 
+  make_accent_adaptation_exposure_design(
+    experimenter.ideal_observer = m.io.VOT_f0.AA, 
+    category_dist_ratio1 = 1, 
+    category_dist_ratio2 = 0.22, 
+    shift_mean_1 = 0.5, 
+    shift_mean_2 = 0.22, 
+    exposure.tokens.L1.n = n.token_for_plot, 
+    exposure.tokens.L2.n = n.token_for_plot)
 
 # simulating a case of contrast shift: like French-accented English stops, so allowing negative VOTs
 min_VOT = -100
@@ -1338,13 +1433,15 @@ d.AA.exposure.target.contrast.collapse <-
 
 # combine all three cases
 d.AA.exposure.target.cases <- rbind(
+  d.AA.exposure.target.cue.reweighting %>%
+    mutate(Case = "Cue reweighting"),
   d.AA.exposure.target.contrast.reduction %>%
     mutate(Case = "Contrast reduction"),
   d.AA.exposure.target.contrast.collapse %>%
     mutate(Case = "Contrast collapse"),
   d.AA.exposure.target.contrast.shift %>%
     mutate(Case = "Contrast shift")) %>%
-  mutate(Case = factor(Case, levels = c("Contrast reduction", "Contrast shift", "Contrast collapse")))
+  mutate(Case = factor(Case, levels = c("Cue reweighting", "Contrast reduction", "Contrast shift", "Contrast collapse")))
 
 # plot ellipses for actual exposure
 p.AA.exposure <- d.AA.exposure.target.cases %>%
@@ -1368,6 +1465,8 @@ p.AA.exposure <- d.AA.exposure.target.cases %>%
 
 ```{r AA-plot-results-additional-cases, fig.width=base.width*4 + .5, fig.height=base.height*3 + .5, fig.cap = "(ref:AA-plot-results-additional-cases)", warning=FALSE}
 d.AA.results.best.cases <- bind_rows(
+  d.AA.results.cue_reweighting.best %>%
+    mutate(Case = "Cue reweighting"),
   d.AA.results.contrast_reduction.best %>%
     mutate(Case = "Contrast reduction"),
   d.AA.results.contrast_collapse.best %>%
@@ -1375,7 +1474,7 @@ d.AA.results.best.cases <- bind_rows(
   d.AA.results.contrast_shift.best %>%
     mutate(Case = "Contrast shift") 
 ) %>%
-  mutate(Case = factor(Case, levels = c("Contrast reduction", "Contrast shift", "Contrast collapse"))) %>%  
+  mutate(Case = factor(Case, levels = c("Cue reweighting","Contrast reduction", "Contrast shift", "Contrast collapse"))) %>%  
   mutate(parameterization = case_when(
    ModelType == "representations" ~ paste0("kappa = ", prior_kappa, ", nu = ", prior_nu),
    ModelType == "decision-making" ~ paste0("lambda = ", posterior.lapse_rate, ", beta = ", beta_pi),

@@ -460,8 +460,8 @@ For the test phase, we randomly sample 60 tokens per category from the L2-accent
 
 <!-- We therefore recommend designs with a small number of within-subject tests, each sufficiently short compared to the length of exposure, and exposure phases that are shared by a sufficiently large number of participants (so that their effect can be reliably estimated). In recent work, we have approached the question of what constitutes “sufficient” through a combination of power analyses and pilot experiments [@burchill-jaeger2021]---an admittedly time- and resource-consuming approach that has, however, yielded a much better understanding of our data. [XX11]Finally, whenever possible, test and exposure phases should transition seamlessly into each other. Alternatively, instructions should use accessible language to highlight whether the upcoming stimuli come from the same source. -->
 
-# Optimization steps for Case Study 2
-Figure \@ref(fig:optimization-results) summarizes the effects of parameterizations for each of the three change models on the overall accuracy for L2-accented speech after L2-accented exposure in Case Study 2.
+# Finding the best-performing parameterizations for Case Study 2
+Figure \@ref(fig:optimization-results) summarizes the search history of the parameter optimization conducted in Case Study 2, for each of the three change models. The goal of this optimization was to determine the parameters that maximized recognition accuracy (during test) after L2-accented exposure. As mentioned in footnote \@ref(fn:optimization) of the main text, optimization of the change model for decision-making additionally required a grid search. The results of this grid search, as well as the grid searches for the additional accent scenarios mentioned in the summary section of Case Study 2, are summarized in Figure \@ref(fig:grid-search). 
 
 (ref:optimization-results) Parameter space explored by the search for the best-performing parameterizations of the three different change models in Case Study 2.
 
@@ -522,6 +522,12 @@ plot_grid(
     align = "hv", axis = "btlr",
     ncol = 3, rel_widths = c(1/3, 1/3, 1/3)),
   ncol = 1, rel_heights = c(.15, .85))
+```
+
+(ref:grid-search) Results of the grid search over the parameters for the change model for decision-making ($\beta_{\pi}$ and $\lambda$) for each of the four accent scenarios explored in Case Study 2.
+
+```{r grid-search, fig.width=base.width*4 + 1, fig.height=base.height + .5, fig.cap = "(ref:grid-search)"}
+
 ```
 
 # Computational limitations of change models afford qualitative tests of their *sufficiency* {#sec:sufficiency}

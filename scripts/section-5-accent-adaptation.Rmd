@@ -834,7 +834,6 @@ visualize_bias_parameter_space <- function(
 
 
 ```{r study-AA-models-changes-in-decision-making-optimization, echo=FALSE, message=FALSE, warning=FALSE}
-start_time <- Sys.time() #DEBUG
 
 find_best_model.bias.AA <- function() {
   if(SET_SEED) set.seed(42007)
@@ -876,9 +875,6 @@ find_best_model.bias.AA <- function() {
 }
 
 best_performing_parameters.bias <- find_best_model.bias.AA()
-
-end_time <- Sys.time() #DEBUG
-end_time - start_time #DEBUG
 
 # history.optimization_bias.temp <- readRDS(get_path(paste0("../models/d.AA.history.optimization.bias_Cue_reweighting_min=50_max=100_L-BFGS-B.rds"))) # DEBUG
 # history.optimization_bias.temp2 <- readRDS(get_path(paste0("../models/d.AA.history.optimization.bias_Cue_reweighting_min=50_max=100_SANN.rds")))# DEBUG
@@ -1197,7 +1193,7 @@ For the hypothetical L2 accent considered in Case Study 2, the three change mode
 
 Fortunately for research on adaptive speech perception, it is not always the case that the three change models can explain similar ranges of performance. A critical insight of ASP is that the predicted benefit of L2-accented exposure under each mechanism depends on the acoustic-phonetic statistics of the accent, relative to L1 listeners’ prior expectations. For experiments using naturally accented stimuli, this means that the results are expected to depend on the specific acoustic-phonetic properties of the exposure and test tokens. To further illustrate this point, we simulated three additional scenarios, shown in Figure \@ref(fig:AA-plot-results-additional-cases)A. Each of these three scenarios is representative of commonly attested differences between L1- and L2-accents. The top row of Figure \@ref(fig:AA-plot-results-additional-cases) shows an example of *contrast reduction*, in which the L2 accent shows a greater category overlap than the L1 accent. Here it is simulated by shifting /d/ category towards /t/ along the VOT continuum while keeping the latter unchanged [as qualitatively attested for, e.g., vowels in Spanish-accented English, @wade2007]. The middle row shows an example of *contrast shift*, where two categories in L2-accented speech are shifted along one or more of the cue dimensions as compared to L1-accented speech. Here it is simulated by shifting both /d/ and /t/ categories towards lower VOT [qualitatively attested for, e.g., word-initial stops in French-accented English, @Sumner2011a]. The bottom row of Figure \@ref(fig:AA-plot-results-additional-cases) shows a more extreme example, exhibiting almost complete *contrast collapse* [similar to the loss of the /s/-/`r linguisticsdown::cond_cmpl("θ")`/ contrast that can occur in Mandarin-accented English, @zheng-samuel2020]. Here it is simulated by making /d/ identical to /t/. 
 
-```{r compare-AA-models-best-three-functions-DEBUG}
+```{r compare-AA-models-best-three-functions-DEBUG, eval = FALSE}
 simulation.control <-
   list(
     min.simulations = 50, 

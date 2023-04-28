@@ -773,7 +773,7 @@ get_accuracy_from_updated_bias1 <- function(
 }
 ```
 
-```{r DEBUG-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE, eval= FALSE}
+```{r DEBUG-AA-models-changes-in-decision-making-grid-search, echo=FALSE, message=FALSE, warning=FALSE, eval= FALSE}
 library(NMOF) #DEBUG
 
 start_time <- Sys.time() #DEBUG
@@ -791,7 +791,7 @@ saveRDS(history.optimization_bias, "../models/history.optimization_bias_grid_sea
 ```
 
 
-```{r DEBUG-AA-models-changes-in-decision-making-visualization, echo=FALSE, message=FALSE, warning=FALSE, eval = FALSE}
+```{r DEBUG-AA-models-changes-in-decision-making-grid-search-visualization, echo=FALSE, message=FALSE, warning=FALSE, eval = FALSE}
 
 temp <- as.matrix(pivot_wider(history.optimization_bias %>% select(beta_pi, lapse_rate, accuracy), names_from = beta_pi, values_from = accuracy)[,-1])
 
@@ -820,7 +820,6 @@ history.optimization_bias.list <- list(lapse_rate = x, beta_pi = y, accuracy = t
         zaxis = list(title = "Overall accuracy", titlefont = list(size = 22)), 
         yaxis = list(title = "lapse_rate",titlefont = list(size = 22)),
         xaxis = list(title = "beta_pi", titlefont = list(size = 22))))
-
 
 ```
 
@@ -873,6 +872,15 @@ best_performing_parameters.bias <- find_best_model.bias.AA()
 
 end_time <- Sys.time() #DEBUG
 end_time - start_time #DEBUG
+
+# history.optimization_bias.temp <- readRDS(get_path(paste0("../models/d.AA.history.optimization.bias_Cue_reweighting_min=50_max=100_L-BFGS-B.rds"))) # DEBUG
+# history.optimization_bias.temp2 <- readRDS(get_path(paste0("../models/d.AA.history.optimization.bias_Cue_reweighting_min=50_max=100_SANN.rds")))# DEBUG
+# history.optimization_bias.temp %<>% mutate(beta_pi2 = sprintf("%.6f", beta_pi), accuracy2 = sprintf("%.6f", accuracy))
+# history.optimization_bias.temp2 %<>% mutate(beta_pi2 = sprintf("%.10f", beta_pi), accuracy2 = sprintf("%.10f", accuracy))
+# 
+# temp <- readRDS(get_path(paste0("../models/best_performing_parameters.bias_Cue_reweighting_min=50_max=100_SANN.rds")))
+# sprintf("%.6f", temp$value)
+
 ```
 
 ```{r study-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE}
@@ -1184,9 +1192,6 @@ Fortunately for research on adaptive speech perception, it is not always the cas
 
 ```{r compare-AA-models-best-three-functions}
 
-## COME BACK HERE: the best-performing parameter is not right for the cue reweighting case
-
-
 # Function to construct change model of each type and select the best performing parameter combination
 construct_accent_models <- function(
     example_label = "Cue_reweighting",
@@ -1334,6 +1339,11 @@ d.AA.results.contrast_collapse.best  <- construct_accent_models(example_label = 
 # Replot the main scenario: cue reweighting
 min_VOT = 5 # Set the minimal values for randomly generated test token cue values to make sure it is physiologically possible
 example_label = "Cue_reweighting"
+dist.L2_category.cue1 <- 1
+dist.L2_category.cue2 <- 0.22
+shift.cue1 <- 0.5
+shift.cue2 <- 0.22
+var.ratio <- 1
 d.AA.results.cue_reweighting.best  <- construct_accent_models(example_label = "Cue_reweighting", experimenter.ideal_observer = m.io.VOT_f0.AA)
 ```
 
@@ -1508,13 +1518,21 @@ p.results.best.cases <- d.AA.results.best.cases %>%
         strip.text.y = element_blank(),
         panel.grid.major.x = element_blank())
 
+# prow <- 
+#   plot_grid(
+#     p.AA.exposure, 
+#     p.results.best.cases + theme(legend.position="none"), 
+#     labels = c('A)', 'B)'), 
+#     ncol = 2, 
+#     rel_widths = c(1.2,3.3))
+
 prow <- 
   plot_grid(
     p.AA.exposure, 
     p.results.best.cases + theme(legend.position="none"), 
     labels = c('A)', 'B)'), 
     ncol = 2, 
-    rel_widths = c(1.2,3.3))
+    rel_widths = c(1.2,3.3)) # DEBUG
 
 # extract a legend that is laid out horizontally
 legend_prow <- get_legend(p.results.best.cases)

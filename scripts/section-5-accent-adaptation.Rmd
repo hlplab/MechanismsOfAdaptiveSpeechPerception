@@ -1273,10 +1273,10 @@ construct_accent_models2 <- function(
   history.optimization_bias <<- tibble(.rows = 0)
   
 
-  res <- gridSearch(get_accuracy_from_updated_bias, #DEBUG,
+  res <- NMOF::gridSearch(get_accuracy_from_updated_bias, #DEBUG,
                     npar = 2,   ## length of x
-                    method = "multicore",
-                    mc.control = list(mc.cores = detectCores()),
+                    # method = "multicore",
+                    # mc.control = list(mc.cores = detectCores()),
                     lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
                     upper = c(max(range.lapse_rate), max(log(range.beta_pi))),
                     n = 10)      ## number of levels per element in each variable during the grid search.
@@ -1299,16 +1299,24 @@ temp.gridSearch <- construct_accent_models2(example_label = example_label, exper
   end_time - start_time #DEBUG
 
   
-visualize_bias_parameter_space(data = history.optimization_bias,
-                               range.lapse_rate = range.lapse_rate,
-    range.beta_pi = range.beta_pi) %>%
-  layout(
-      scene = list(
-        aspectratio = list(x = 1.2, y = 1.2, z = 1), # zooming in on the plot, values larger than 0
-        camera = list(
-          eye = list(x = -0.5, y = -2.5, z = 0.5), # perspective good for showing categorization curve
-          up =  list(x = 0, y = 0, z = 1)),
-        zaxis = list(range = c(0.4,0.6))))
+# visualize_bias_parameter_space(data = history.optimization_bias.77,
+#                                range.lapse_rate = range.lapse_rate,
+#     range.beta_pi = range.beta_pi) %>%
+#   layout(
+#       scene = list(
+#         aspectratio = list(x = 1.2, y = 1.2, z = 1), # zooming in on the plot, values larger than 0
+#         camera = list(
+#           eye = list(x = -0.5, y = -2.5, z = 0.5), # perspective good for showing categorization curve
+#           up =  list(x = 0, y = 0, z = 1)),
+#         zaxis = list(range = c(0.4,0.6))))
+# 
+# example_label = "Contrast_shift"
+# history.optimization_bias.77 <- readRDS(paste0("../models/history.optimization_bias_gridSearch_", example_label, '77.rds'))
+# res.77 <- readRDS(paste0("../models/res.optimization_bias_gridSearch_", example_label, '77.rds'))
+# 
+# example_label = "Contrast_reduction"
+# history.optimization_bias.contrast_reduction <- readRDS(paste0("../models/history.optimization_bias_gridSearch_", example_label, '.rds'))
+# res.contrast_reduction <- readRDS(paste0("../models/res.optimization_bias_gridSearch_", example_label, '.rds'))
 ```
 
 

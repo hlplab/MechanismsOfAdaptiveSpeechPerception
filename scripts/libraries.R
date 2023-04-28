@@ -37,7 +37,7 @@ install_and_load_package("NMOF")               # for grid search
 install_and_load_package("parallel")           # use multicore to speed up grid search and optimization  
 install_and_load_package("LaplacesDemon")      # for additional density distributions (e.g., inverse-Wishart, W^-1)
 
-if (has_internet()) devtools::install_github("crsh/papaja", ref = "devel")
+if (has_internet()) install_github("crsh/papaja", ref = "devel")
 library(papaja)
-if (has_internet()) devtools::install_github("hlplab/MVBeliefUpdatr", ref = "add-exemplar-models")
+if (has_internet()) install_github("hlplab/MVBeliefUpdatr", ref = "add-exemplar-models", INSTALL_opts = "--no-lock", upgrade = "never")
 library(MVBeliefUpdatr)

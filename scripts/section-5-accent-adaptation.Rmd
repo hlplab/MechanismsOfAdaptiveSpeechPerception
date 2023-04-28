@@ -1201,7 +1201,8 @@ construct_accent_models <- function(
     shift_mean_1 = shift.cue1, 
     shift_mean_2 = shift.cue2,
     test.n_block = n.test_block,
-    n_test = n.test.token
+    n_test = n.test.token,
+    select_best_only = T
   ) {
   if(SET_SEED) set.seed(42007)
   
@@ -1234,6 +1235,12 @@ construct_accent_models <- function(
   representations.pred <- get_representation_models_for_plot(
     prior_kappa = round(best_performing_parameters.representations$par[1], digits =0), # here one can select to plot just the best-performing parameterization or to visualize a range of parameters by specifying the values assigned to prior_kappa and prior_nu
     prior_nu = round(best_performing_parameters.representations$par[2], digits = 0))
+  
+  if (select_best_only == T){
+    representations.pred %<>%
+      filter(prior_kappa %in% prior_kappa[which.min(abs(as.numeric(as.character(prior_kappa)) - best_performing_parameters.representations$par[1]))] & #highlight the parameters (within the plotted range) that are closest to the best performing parameterization
+                  prior_nu %in% prior_nu[which.min(abs(as.numeric(as.character(prior_nu)) - best_performing_parameters.representations$par[2]))])
+  }
 
   history.optimization_bias <<- tibble(.rows = 0)
   best_performing_parameters.bias <- find_best_model.bias.AA()
@@ -1243,11 +1250,23 @@ construct_accent_models <- function(
   
   bias.pred %<>% get_average_bias_results_across_simulations.byItem() # average predictions across simulations for the bias model
   
+  if (select_best_only == T){
+    bias.pred %<>%
+      filter(posterior.lapse_rate %in% posterior.lapse_rate[which.min(abs(posterior.lapse_rate - best_performing_parameters.bias$par[1]))] & 
+                  beta_pi %in% beta_pi[which.min(abs(beta_pi - best_performing_parameters.bias$par[2]))])
+  }
+  
+  
   history.optimization_normalization <<- tibble(.rows = 0)
   best_performing_parameters.normalization <- find_best_model.normalization.AA()
 
   normalization.pred <-get_normalization_models_for_plot(
     prior_kappa.normalization = round(best_performing_parameters.normalization$par[1], digits = 0))
+  
+  if (select_best_only == T){
+    normalization.pred %<>%
+      filter(prior_kappa.normalization %in% prior_kappa.normalization[which.min(abs(as.numeric(as.character(prior_kappa.normalization)) - best_performing_parameters.normalization$par[1]))])
+  }
 
   # plot the predicted results for all parameterization and save plots
   p.AA.representations <- 
@@ -1518,21 +1537,13 @@ p.results.best.cases <- d.AA.results.best.cases %>%
         strip.text.y = element_blank(),
         panel.grid.major.x = element_blank())
 
-# prow <- 
-#   plot_grid(
-#     p.AA.exposure, 
-#     p.results.best.cases + theme(legend.position="none"), 
-#     labels = c('A)', 'B)'), 
-#     ncol = 2, 
-#     rel_widths = c(1.2,3.3))
-
 prow <- 
   plot_grid(
     p.AA.exposure, 
     p.results.best.cases + theme(legend.position="none"), 
     labels = c('A)', 'B)'), 
     ncol = 2, 
-    rel_widths = c(1.2,3.3)) # DEBUG
+    rel_widths = c(1.2,3.3))
 
 # extract a legend that is laid out horizontally
 legend_prow <- get_legend(p.results.best.cases)

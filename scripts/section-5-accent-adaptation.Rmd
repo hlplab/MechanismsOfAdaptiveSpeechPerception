@@ -793,33 +793,40 @@ saveRDS(history.optimization_bias, "../models/history.optimization_bias_grid_sea
 
 ```{r DEBUG-AA-models-changes-in-decision-making-grid-search-visualization, echo=FALSE, message=FALSE, warning=FALSE, eval = FALSE}
 
-temp <- as.matrix(pivot_wider(history.optimization_bias %>% select(beta_pi, lapse_rate, accuracy), names_from = beta_pi, values_from = accuracy)[,-1])
+visualize_bias_parameter_space <- function(
+    data = data,
+    range.lapse_rate = range.lapse_rate,
+    range.beta_pi = range.beta_pi
+    ){
+  d.accuracy <- as.matrix(pivot_wider(data %>% select(beta_pi, lapse_rate, accuracy), names_from = beta_pi, values_from = accuracy)[,-1])
 
-x <- seq(min(range.lapse_rate), max(range.lapse_rate), length = 10) 
-y <- exp(seq(min(log(range.beta_pi)), max(log(range.beta_pi)), length = 10))
+  x <- seq(min(range.lapse_rate), max(range.lapse_rate), length = 10) 
+  y <- exp(seq(min(log(range.beta_pi)), max(log(range.beta_pi)), length = 10))
+  
+  history.optimization_bias.list <- list(lapse_rate = x, beta_pi = y, accuracy = d.accuracy)
+    plot_ly() %>%
+      add_surface(
+        y = history.optimization_bias.list$lapse_rate, x = history.optimization_bias.list$beta_pi, z = d.accuracy,
+        opacity = 0.2,
+        colorscale = list(c(0, 1)),
+       # surfacecolor = color,
+        cauto = F,
+        cmax = 1,
+        cmin = 0,
+        showscale = FALSE) %>%
+      layout(
+        scene = list(
+          # zooming in on the plot, values larger than 0
+          aspectratio = list(x = 1.2, y = 1.2, z = 1), 
+          # perspective good for showing categorization curve
+          camera = list(
+            eye = list(x = -0.5, y = -2.5, z = 0.5), 
+            up =  list(x = 0, y = 0, z = 1)),
+          zaxis = list(title = "Overall accuracy", titlefont = list(size = 22), range = c(0,1), tickvals = c(0, 0.2 ,0.4, 0.6, 0.8, 1)), 
+          yaxis = list(title = "lapse_rate",titlefont = list(size = 22)),
+          xaxis = list(title = "beta_pi", titlefont = list(size = 22))))
 
-history.optimization_bias.list <- list(lapse_rate = x, beta_pi = y, accuracy = temp)
-  plot_ly() %>%
-    add_surface(
-      y = history.optimization_bias.list$lapse_rate, x = history.optimization_bias.list$beta_pi, z = temp,
-      opacity = 0.2,
-      colorscale = list(c(0, 1)),
-     # surfacecolor = color,
-      cauto = F,
-      cmax = 1,
-      cmin = 0,
-      showscale = FALSE) %>%
-    layout(
-      scene = list(
-        # zooming in on the plot, values larger than 0
-        aspectratio = list(x = 1.2, y = 1.2, z = 1), 
-        # perspective good for showing categorization curve
-        camera = list(
-          eye = list(x = -0.5, y = -2.5, z = 0.5), 
-          up =  list(x = 0, y = 0, z = 1)),
-        zaxis = list(title = "Overall accuracy", titlefont = list(size = 22)), 
-        yaxis = list(title = "lapse_rate",titlefont = list(size = 22)),
-        xaxis = list(title = "beta_pi", titlefont = list(size = 22))))
+}
 
 ```
 
@@ -1216,7 +1223,14 @@ shift.cue2 <- 0
 var.ratio <- 1
 example_label = "Contrast_shift"
 
-
+# Examine a new scenario: contrast collapse
+min_VOT <- -100 # allows negative VOT when generating exposure and test data
+dist.L2_category.cue1 <- 0
+dist.L2_category.cue2 <- 0
+shift.cue1 <- 0
+shift.cue2 <- 0
+var.ratio <- 1
+example_label = "Contrast_collapse"
 
 # Function to construct change model of each type and select the best performing parameter combination
 construct_accent_models2 <- function(
@@ -1282,7 +1296,10 @@ temp.gridSearch <- construct_accent_models2(example_label = example_label, exper
   end_time <- Sys.time() #DEBUG
   end_time - start_time #DEBUG
 
-
+  
+visualize_bias_parameter_space(data = history.optimization_bias,
+                               range.lapse_rate = range.lapse_rate,
+    range.beta_pi = range.beta_pi)
 ```
 
 

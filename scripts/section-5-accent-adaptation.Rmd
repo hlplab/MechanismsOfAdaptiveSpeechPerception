@@ -822,8 +822,8 @@ d.bias.gridSearch <- grid_search_for_bias_model(example_label = example_label, e
 p.bias.gridSearch <- visualize_bias_parameter_space(data = d.bias.gridSearch,
                                 range.lapse_rate = range.lapse_rate, 
                                 range.beta_pi = range.beta_pi) 
-
-
+best_parameter.bias.gridSearch <- d.bias.gridSearch %>%
+  filter(accuracy == max(accuracy))
 ```
 
 ```{r study-AA-models-changes-in-decision-making-optimization, echo=FALSE, message=FALSE, warning=FALSE}
@@ -831,30 +831,24 @@ p.bias.gridSearch <- visualize_bias_parameter_space(data = d.bias.gridSearch,
 find_best_model.bias.AA <- function() {
   if(SET_SEED) set.seed(42007)
   
-  if (RESET_MODELS || !file.exists(get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))) {
+  if (RESET_MODELS || !file.exists(get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds")))) {
     
-    print(paste0("The optim program starts at", Sys.time())) #DEBUG
     best_performing_parameters.bias <-
-      optim( # DEBUG
-        # par = c(mean(range.lapse_rate), mean(log(range.beta_pi))), # DEBUG
+      optim( 
+        ### using the commented out lines if one wishes to optimize over both lapse rate and beta pi
+        # par = c(mean(range.lapse_rate), mean(log(range.beta_pi))), 
         # fn = get_accuracy_from_updated_bias,
-        par = c(log(2.2)),
-        fn = get_accuracy_from_updated_bias_beta_only, #DEBUG
-        method = "SANN", 
-      #  method = "L-BFGS-B", # DEBUG
         # lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
         # upper = c(max(range.lapse_rate), max(log(range.beta_pi))),
-        lower = c(min(log(range.beta_pi))), # DEBUG
-        upper = c(max(log(range.beta_pi))), # DEBUG
-      control = list(fnscale = -1, trace = 1, temp = 100, tmax = 100, maxit = 20000)
-        # control = list(
-        #   fnscale = -1,
-        # #  factr = 10^8))
-        #   #DEBUG
-        #   factr = 10^5)
+        par = c(log(best_parameter.bias.gridSearch$beta_pi)),
+        fn = get_accuracy_from_updated_bias_beta_only, 
+        method = "L-BFGS-B", 
+        lower = c(min(log(range.beta_pi))),
+        upper = c(max(log(range.beta_pi))), 
+        control = list(
+          fnscale = -1,
+          factr = 10^5)
         )
-    
-    print(paste0("The optim program ends at", Sys.time())) #DEBUG
     
     best_performing_parameters.bias$par <- c(0, exp(best_performing_parameters.bias$par[1]))
     saveRDS(best_performing_parameters.bias, get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
@@ -868,19 +862,11 @@ find_best_model.bias.AA <- function() {
 }
 
 best_performing_parameters.bias <- find_best_model.bias.AA()
-
-# history.optimization_bias.temp <- readRDS(get_path(paste0("../models/d.AA.history.optimization.bias_Cue_reweighting_min=50_max=100_L-BFGS-B.rds"))) # DEBUG
-# history.optimization_bias.temp2 <- readRDS(get_path(paste0("../models/d.AA.history.optimization.bias_Cue_reweighting_min=50_max=100_SANN.rds")))# DEBUG
-# history.optimization_bias.temp %<>% mutate(beta_pi2 = sprintf("%.6f", beta_pi), accuracy2 = sprintf("%.6f", accuracy))
-# history.optimization_bias.temp2 %<>% mutate(beta_pi2 = sprintf("%.10f", beta_pi), accuracy2 = sprintf("%.10f", accuracy))
-# 
-# temp <- readRDS(get_path(paste0("../models/best_performing_parameters.bias_Cue_reweighting_min=50_max=100_SANN.rds")))
-# sprintf("%.6f", temp$value)
-
+best_performing_parameters.bias$value %<>% exp(.)
 ```
 
 ```{r study-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE}
-start_time <- Sys.time() #DEBUG
+
 get_decision_making_models_for_plot <- function(
     lapse_rate = lapse_rate,
     beta_pi = beta_pi,
@@ -929,19 +915,6 @@ d.AA.bias <-
   get_decision_making_models_for_plot(
     lapse_rate = posterior.lapse_rate.plot,
     beta_pi = beta_pi.plot)
-
-end_time <- Sys.time() #DEBUG
-end_time - start_time #DEBUG
-
-## DEBUGGING
-d.AA.bias.summary <- d.AA.bias %>%
-  group_by(Condition, posterior.lapse_rate, beta_pi, sim) %>%
-  summarise(response.mean = mean(response)) %>%
-  group_by(Condition, posterior.lapse_rate, beta_pi) %>%
-  mutate(sim.max = max(sim),
-         accuracy = mean(response.mean),
-         response.se = sd(response.mean) / sqrt(n_distinct(sim))) %>%
-  distinct(posterior.lapse_rate, beta_pi, sim.max, accuracy, response.se)
 ```
 
 (ref:AA-result-changes-in-decision-making) Predictions of a model that derives accent adaptation as changes in decision-making. Predicted categorization responses for the test tokens after `r conditions.AA[1]` and `r conditions.AA[2]` exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda$). The highlighted panel is the one closest to the best-performing parameterization ($\beta_{\pi} = `r best_performing_parameters.bias$par[2]`$; $\lambda=`r best_performing_parameters.bias$par[1]`$; overall accuracy$=`r best_performing_parameters.bias$value`$).

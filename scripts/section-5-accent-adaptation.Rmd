@@ -1200,7 +1200,7 @@ Fortunately for research on adaptive speech perception, it is not always the cas
 ```{r compare-AA-models-best-three-functions-DEBUG}
 simulation.control <-
   list(
-    min.simulations = 10, 
+    min.simulations = 50, 
     max.simulations = 100, 
     step.simulations = 1, 
     target_accuracy_se = .002)
@@ -1269,7 +1269,7 @@ construct_accent_models2 <- function(
   p.exposure_test <- make_exposure_test_plot(d.AA.exposure, d.AA.test)
   ggsave(paste0('../figures/plotly/exposure_test_distribution_', example_label, '.png'), plot = p.exposure_test, width = base.width*3 + .5, height = base.height + .5, dpi = 300)
   
-  if (RESET_MODELS || !file.exists(get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))) {
+  if (RESET_MODELS || !file.exists(get_path(paste0("../models/history.optimization_bias_gridSearch_", example_label,".rds")))) {
   history.optimization_bias <<- tibble(.rows = 0)
   
 

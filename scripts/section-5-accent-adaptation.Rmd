@@ -1193,7 +1193,7 @@ Fortunately for research on adaptive speech perception, it is not always the cas
 ```{r compare-AA-models-best-three-functions-DEBUG}
 simulation.control <-
   list(
-    min.simulations = 50, 
+    min.simulations = 10, 
     max.simulations = 100, 
     step.simulations = 1, 
     target_accuracy_se = .002)
@@ -1206,6 +1206,17 @@ shift.cue1 <- 0
 shift.cue2 <- 0
 var.ratio <- 1
 example_label = "Contrast_reduction"
+
+# Examine a new scenario: contrast shift
+min_VOT <- -100 # allows negative VOT when generating exposure and test data
+dist.L2_category.cue1 <- 1
+dist.L2_category.cue2 <- 0
+shift.cue1 <- -1.2
+shift.cue2 <- 0
+var.ratio <- 1
+example_label = "Contrast_shift"
+
+
 
 # Function to construct change model of each type and select the best performing parameter combination
 construct_accent_models2 <- function(
@@ -1244,23 +1255,33 @@ construct_accent_models2 <- function(
   p.exposure_test <- make_exposure_test_plot(d.AA.exposure, d.AA.test)
   ggsave(paste0('../figures/plotly/exposure_test_distribution_', example_label, '.png'), plot = p.exposure_test, width = base.width*3 + .5, height = base.height + .5, dpi = 300)
   
+  if (RESET_MODELS || !file.exists(get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))) {
   history.optimization_bias <<- tibble(.rows = 0)
   
-  start_time <- Sys.time() #DEBUG
+
   res <- gridSearch(get_accuracy_from_updated_bias, #DEBUG,
                     npar = 2,   ## length of x
                     lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
                     upper = c(max(range.lapse_rate), max(log(range.beta_pi))),
                     n = 10)      ## number of levels per element in each variable during the grid search.
-  end_time <- Sys.time() #DEBUG
-  end_time - start_time #DEBUG
+
   
   saveRDS(history.optimization_bias, paste0("../models/history.optimization_bias_gridSearch_", example_label, '.rds'))
+  saveRDS(res, paste0("../models/res.optimization_bias_gridSearch_", example_label, '.rds'))
   
+  } else {
+    history.optimization_bias <- readRDS(paste0("../models/history.optimization_bias_gridSearch_", example_label, '.rds'))
+    
+    res <- readRDS(paste0("../models/res.optimization_bias_gridSearch_", example_label, '.rds'))
+  }
   return(res)
 }
 
+start_time <- Sys.time() #DEBUG
 temp.gridSearch <- construct_accent_models2(example_label = example_label, experimenter.ideal_observer = m.io.VOT_f0.AA)
+  end_time <- Sys.time() #DEBUG
+  end_time - start_time #DEBUG
+
 
 ```
 

@@ -1299,7 +1299,14 @@ temp.gridSearch <- construct_accent_models2(example_label = example_label, exper
   
 visualize_bias_parameter_space(data = history.optimization_bias,
                                range.lapse_rate = range.lapse_rate,
-    range.beta_pi = range.beta_pi)
+    range.beta_pi = range.beta_pi) %>%
+  layout(
+      scene = list(
+        aspectratio = list(x = 1.2, y = 1.2, z = 1), # zooming in on the plot, values larger than 0
+        camera = list(
+          eye = list(x = -0.5, y = -2.5, z = 0.5), # perspective good for showing categorization curve
+          up =  list(x = 0, y = 0, z = 1)),
+        zaxis = list(range = c(0.4,0.6))))
 ```
 
 

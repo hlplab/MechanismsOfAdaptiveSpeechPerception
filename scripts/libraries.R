@@ -32,6 +32,7 @@ install_and_load_package("mixtools")           # for drawing ellipses in the 3D 
 install_and_load_package("modelr")
 install_and_load_package("diptest")            # test for bimodality
 install_and_load_package("NOMF")               # for grid search
+install_and_load_package("parallel")           # use multicore to speed up grid search and optimization  
 install_and_load_package("LaplacesDemon")      # for additional density distributions (e.g., inverse-Wishart, W^-1)
 
 if (has_internet()) devtools::install_github("crsh/papaja", ref = "devel")

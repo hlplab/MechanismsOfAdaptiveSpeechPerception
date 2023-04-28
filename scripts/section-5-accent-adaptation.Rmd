@@ -663,7 +663,7 @@ get_average_bias_results_across_simulations <- function(data){
 }
 
 history.optimization_bias <- tibble(.rows = 0)
-get_accuracy_from_updated_bias <- function(
+get_accuracy_from_updated_bias <- function( #this function is used when both parameters (lapse_rate, beta_pi) are considered during grid search
     pars,
     model = m.io.VOT_f0.AA,
     exposure = d.AA.exposure %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1")), # find the best-performing parameterization for the L2-accented condition
@@ -691,16 +691,6 @@ get_accuracy_from_updated_bias <- function(
     verbose = verbose,
     control = control)
   
-  # u <- get_average_bias_results_across_simulations(u) %>%
-  #   get_accuracy()
-  
-  # history.optimization_bias <<-
-  #   bind_rows(
-  #     history.optimization_bias,
-  #     tibble(lapse_rate = lapse_rate, beta_pi = beta_pi, accuracy = u))
-  # 
-  #  return(u)
-  
   u.across_simulations <- get_average_bias_results_across_simulations(u) %>%
     distinct(response, response.mean.se, response.n_sims) 
   
@@ -713,13 +703,12 @@ get_accuracy_from_updated_bias <- function(
              accuracy.se = u.across_simulations$response.mean.se))
   
   accuracy = log(u.across_simulations$response)
-  return(-accuracy)
+  return(-accuracy) # here the opposite of accuracy is taken because grid search implements minimization and we would like to maximize accuracy
  
 }
 
 
-#DEBUG
-get_accuracy_from_updated_bias1 <- function(
+get_accuracy_from_updated_bias_beta_only <- function(#this function is used when lapse_rate is set to zero and only beta_pi is varied during optimization search
     pars,
     model = m.io.VOT_f0.AA,
     exposure = d.AA.exposure %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1")), # find the best-performing parameterization for the L2-accented condition
@@ -747,16 +736,6 @@ get_accuracy_from_updated_bias1 <- function(
     verbose = verbose,
     control = control)
   
-  # u <- get_average_bias_results_across_simulations(u) %>%
-  #   get_accuracy()
-  
-  # history.optimization_bias <<-
-  #   bind_rows(
-  #     history.optimization_bias,
-  #     tibble(lapse_rate = lapse_rate, beta_pi = beta_pi, accuracy = u))
-  # 
-  #  return(u)
-  
   u.across_simulations <- get_average_bias_results_across_simulations(u) %>%
     distinct(response, response.mean.se, response.n_sims) 
   
@@ -773,24 +752,34 @@ get_accuracy_from_updated_bias1 <- function(
 }
 ```
 
-```{r DEBUG-AA-models-changes-in-decision-making-grid-search, echo=FALSE, message=FALSE, warning=FALSE, eval= FALSE}
-library(NMOF) #DEBUG
-start_time <- Sys.time() #DEBUG
-res2 <- gridSearch(get_accuracy_from_updated_bias, #DEBUG,
-                  npar = 2,   ## length of x
-                  lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
-                  upper = c(max(range.lapse_rate), max(log(range.beta_pi))),
-                  n = 10)      ## number of levels per element in x
-## 2 variables with 5, 5 levels: 25 function evaluations required.
-end_time <- Sys.time() #DEBUG
-end_time - start_time #DEBUG
+```{r grid-search-AA-models-changes-in-decision-making-functions, echo=FALSE, message=FALSE, warning=FALSE}
 
-res2 <- readRDS(file = "../res2")
-saveRDS(history.optimization_bias, "../models/history.optimization_bias_grid_search_min=50_max=100.rds")
-```
+grid_search_for_bias_model <- function(
+    example_label = "Cue_reweighting",
+    experimenter.ideal_observer,
+    range.lapse_rate = range.lapse_rate,
+    range.beta_pi = range.beta_pi
+  ) {
 
+  history.optimization_bias <- tibble(.rows = 0)
+    
+  if (RESET_MODELS || !file.exists(get_path(paste0("../models/history.optimization_bias_gridSearch_", example_label,".rds")))) {
+  res <- NMOF::gridSearch(get_accuracy_from_updated_bias,
+                    npar = 2,   ## length of x
+                    # method = "multicore", # if one is not interested in saving se of accuracy and log them in a history file, then multicore can be used to speed up the grid search; "method" and "mc.contro" need to be specified
+                    # mc.control = list(mc.cores = detectCores()),
+                    lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
+                    upper = c(max(range.lapse_rate), max(log(range.beta_pi))),
+                    n = 10)      ## number of levels per element in each variable during the grid search.
 
-```{r DEBUG-AA-models-changes-in-decision-making-grid-search-visualization, echo=FALSE, message=FALSE, warning=FALSE, eval = FALSE}
+  saveRDS(history.optimization_bias, paste0("../models/history.optimization_bias_gridSearch_", example_label, '.rds'))
+  saveRDS(res, paste0("../models/res.optimization_bias_gridSearch_", example_label, '.rds'))
+
+  } else {
+    history.optimization_bias <- readRDS(paste0("../models/history.optimization_bias_gridSearch_", example_label, '.rds'))
+  }
+  return(history.optimization_bias)
+}
 
 visualize_bias_parameter_space <- function(
     data = data,
@@ -808,7 +797,6 @@ visualize_bias_parameter_space <- function(
         y = history.optimization_bias.list$lapse_rate, x = history.optimization_bias.list$beta_pi, z = d.accuracy,
         opacity = 0.2,
         colorscale = list(c(0, 1)),
-       # surfacecolor = color,
         cauto = F,
         cmax = 1,
         cmin = 0,
@@ -825,9 +813,18 @@ visualize_bias_parameter_space <- function(
           yaxis = list(title = "lapse_rate",titlefont = list(size = 22)),
           xaxis = list(title = "beta_pi", titlefont = list(size = 22))))
 }
+```
+  
+
+```{r grid-search-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE}
+d.bias.gridSearch <- grid_search_for_bias_model(example_label = example_label, experimenter.ideal_observer = m.io.VOT_f0.AA)
+
+p.bias.gridSearch <- visualize_bias_parameter_space(data = d.bias.gridSearch,
+                                range.lapse_rate = range.lapse_rate, 
+                                range.beta_pi = range.beta_pi) 
+
 
 ```
-
 
 ```{r study-AA-models-changes-in-decision-making-optimization, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -842,7 +839,7 @@ find_best_model.bias.AA <- function() {
         # par = c(mean(range.lapse_rate), mean(log(range.beta_pi))), # DEBUG
         # fn = get_accuracy_from_updated_bias,
         par = c(log(2.2)),
-        fn = get_accuracy_from_updated_bias1, #DEBUG
+        fn = get_accuracy_from_updated_bias_beta_only, #DEBUG
         method = "SANN", 
       #  method = "L-BFGS-B", # DEBUG
         # lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
@@ -1225,7 +1222,7 @@ example_label = "Contrast_shift"
 # example_label = "Contrast_collapse"
 
 # Function to construct change model of each type and select the best performing parameter combination
-construct_accent_models2 <- function(
+grid_search_for_bias_model <- function(
     example_label = "Cue_reweighting",
     experimenter.ideal_observer,
     category_dist_ratio1 = dist.L2_category.cue1,
@@ -1233,8 +1230,8 @@ construct_accent_models2 <- function(
     shift_mean_1 = shift.cue1, 
     shift_mean_2 = shift.cue2,
     test.n_block = n.test_block,
-    n_test = n.test.token,
-    select_best_only = T
+    n.subject = n.subject,
+    n_test = n.test.token
   ) {
   if(SET_SEED) set.seed(42007)
   
@@ -1264,7 +1261,6 @@ construct_accent_models2 <- function(
   if (RESET_MODELS || !file.exists(get_path(paste0("../models/history.optimization_bias_gridSearch_", example_label,".rds")))) {
   history.optimization_bias <<- tibble(.rows = 0)
   
-
   res <- NMOF::gridSearch(get_accuracy_from_updated_bias, #DEBUG,
                     npar = 2,   ## length of x
                     # method = "multicore",
@@ -1286,7 +1282,7 @@ construct_accent_models2 <- function(
 }
 
 start_time <- Sys.time() #DEBUG
-temp.gridSearch <- construct_accent_models2(example_label = example_label, experimenter.ideal_observer = m.io.VOT_f0.AA)
+temp.gridSearch <- grid_search_for_bias_model(example_label = example_label, experimenter.ideal_observer = m.io.VOT_f0.AA)
   end_time <- Sys.time() #DEBUG
   end_time - start_time #DEBUG
 

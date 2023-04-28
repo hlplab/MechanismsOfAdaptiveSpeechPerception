@@ -1223,14 +1223,14 @@ shift.cue2 <- 0
 var.ratio <- 1
 example_label = "Contrast_shift"
 
-# Examine a new scenario: contrast collapse
-min_VOT <- -100 # allows negative VOT when generating exposure and test data
-dist.L2_category.cue1 <- 0
-dist.L2_category.cue2 <- 0
-shift.cue1 <- 0
-shift.cue2 <- 0
-var.ratio <- 1
-example_label = "Contrast_collapse"
+# # Examine a new scenario: contrast collapse
+# min_VOT <- -100 # allows negative VOT when generating exposure and test data
+# dist.L2_category.cue1 <- 0
+# dist.L2_category.cue2 <- 0
+# shift.cue1 <- 0
+# shift.cue2 <- 0
+# var.ratio <- 1
+# example_label = "Contrast_collapse"
 
 # Function to construct change model of each type and select the best performing parameter combination
 construct_accent_models2 <- function(
@@ -1275,6 +1275,8 @@ construct_accent_models2 <- function(
 
   res <- gridSearch(get_accuracy_from_updated_bias, #DEBUG,
                     npar = 2,   ## length of x
+                    method = "multicore",
+                    mc.control = list(mc.cores = detectCores()),
                     lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
                     upper = c(max(range.lapse_rate), max(log(range.beta_pi))),
                     n = 10)      ## number of levels per element in each variable during the grid search.

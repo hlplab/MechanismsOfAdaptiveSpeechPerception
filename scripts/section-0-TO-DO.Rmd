@@ -1,24 +1,11 @@
 # THINGS TO DO
 Let's delete to-dos after they have been addressed, and post in Slack what we've done. Thanks.
-  
-  <!--
-WE NEED TO TIE THIS TOGETHER IN THE GENERAL DISCUSSION, TOO: IF YOU STUDY THE RIGHT ACCENT PROPERTIES (OR L2-L1 RELATIONS) YOU CAN ACTUALLY SHED LIGHT ON THE ROLE OF THE MECHANISMS. E.G., IF LISTENERS IMPROVE FOR THE TYPE OF CONTRAST SHIFT DISCUSSED HERE THAT WOULD MEAN THAT THEY EMPLOY MORE THAN CHANGES IN DECISION-MAKING.
-
-in GD: mention this figure as an example of how sims can inform deisgn---e.g., by determining the accent one should investigate or the combination of accents
--->
 
   * Xin:
     * fig 29:
-      * fix top margins in Figure 29
-      * consider adding cue reweighting case to fig 29?
       * make sure that best-fitting decision-making model in Fig 29 is correct (using same max sims as in the previous figures)
-    * fig 26-28: increase number of sims for each panels *and make sure input order is randomized*
-    
  
   * Everyone: 
-    * update references of unpublished manuscripts
-    * brain areas are sometimes abbreviated and sometimes not. Xin, what's the cortex guideline for this? in any case, I assume they should not be abbreviated on first mention? (unless always abbreviating them is ok?) Currently, we have an odd mix.
-    * Check use of computational and representational parsimony?
     * Re-read Volya's comments about its relevance.
   * Send paper out to emily myers and james mcqueen and ask whether they’d be willing to read this in their lab? It's now or never.
   
@@ -27,8 +14,6 @@ in GD: mention this figure as an example of how sims can inform deisgn---e.g., b
   * Florian
     * make a wrapper for categorization function (through optional argument) that makes the functions monotonic. do the math.
     * CHECK OUT WHETHER CHANGES IN NORMALIZATION CAN LEAD TO NON-LINEAR CHANGES *DESPITE THE FACT THAT WE'RE USING SIMPLE LINEAR INTERPOLATION*
-    
-  * (Shawn) should you highlight “how far can you push normalization before it becomes changes in representations”? (I’m inclined not to get into these nuances in this paper).
   * Can we be clearer that even if one agrees on the three mechanisms, we need to figure out how these mechanisms work. But how do we communicate this? Essentially, it became abundantly clear to us that even minute details can make a big difference in the predictions a model ends up making, so that it’s important to actually implement models. The difference between theory and model. Could go to end of intro or beginning of section 2.
   *　Consider adding a footnote in PR section that nothing would change if ambiguous tokens were taken to be identical. note also that there is no ‘true’ identity since the context changes.
 

@@ -1190,6 +1190,81 @@ For the hypothetical L2 accent considered in Case Study 2, the three change mode
 
 Fortunately for research on adaptive speech perception, it is not always the case that the three change models can explain similar ranges of performance. A critical insight of ASP is that the predicted benefit of L2-accented exposure under each mechanism depends on the acoustic-phonetic statistics of the accent, relative to L1 listeners’ prior expectations. For experiments using naturally accented stimuli, this means that the results are expected to depend on the specific acoustic-phonetic properties of the exposure and test tokens. To further illustrate this point, we simulated three additional scenarios, shown in Figure \@ref(fig:AA-plot-results-additional-cases)A. Each of these three scenarios is representative of commonly attested differences between L1- and L2-accents. The top row of Figure \@ref(fig:AA-plot-results-additional-cases) shows an example of *contrast reduction*, in which the L2 accent shows a greater category overlap than the L1 accent. Here it is simulated by shifting /d/ category towards /t/ along the VOT continuum while keeping the latter unchanged [as qualitatively attested for, e.g., vowels in Spanish-accented English, @wade2007]. The middle row shows an example of *contrast shift*, where two categories in L2-accented speech are shifted along one or more of the cue dimensions as compared to L1-accented speech. Here it is simulated by shifting both /d/ and /t/ categories towards lower VOT [qualitatively attested for, e.g., word-initial stops in French-accented English, @Sumner2011a]. The bottom row of Figure \@ref(fig:AA-plot-results-additional-cases) shows a more extreme example, exhibiting almost complete *contrast collapse* [similar to the loss of the /s/-/`r linguisticsdown::cond_cmpl("θ")`/ contrast that can occur in Mandarin-accented English, @zheng-samuel2020]. Here it is simulated by making /d/ identical to /t/. 
 
+```{r compare-AA-models-best-three-functions-DEBUG}
+simulation.control <-
+  list(
+    min.simulations = 50, 
+    max.simulations = 100, 
+    step.simulations = 1, 
+    target_accuracy_se = .002)
+
+# Examine a new scenario: contrast reduction
+min_VOT <- 5
+dist.L2_category.cue1 <- 0.5
+dist.L2_category.cue2 <- 0
+shift.cue1 <- 0
+shift.cue2 <- 0
+var.ratio <- 1
+example_label = "Contrast_reduction"
+
+# Function to construct change model of each type and select the best performing parameter combination
+construct_accent_models2 <- function(
+    example_label = "Cue_reweighting",
+    experimenter.ideal_observer,
+    category_dist_ratio1 = dist.L2_category.cue1,
+    category_dist_ratio2 = dist.L2_category.cue2,
+    shift_mean_1 = shift.cue1, 
+    shift_mean_2 = shift.cue2,
+    test.n_block = n.test_block,
+    n_test = n.test.token,
+    select_best_only = T
+  ) {
+  if(SET_SEED) set.seed(42007)
+  
+  d.AA.exposure <<-
+    make_accent_adaptation_exposure_design(
+      experimenter.ideal_observer = m.io.VOT_f0.AA, 
+      category_dist_ratio1 = dist.L2_category.cue1, 
+      category_dist_ratio2 = dist.L2_category.cue2, 
+      shift_mean_1 = shift.cue1, 
+      shift_mean_2 = shift.cue2) %>%
+    add_subjects_to_exposure(n.subject = n.subject)
+
+  d.AA.test <<- 
+    make_accent_adaptation_test_design(
+      experimenter.ideal_observer = m.io.VOT_f0.AA, 
+      test.n_block = n.test_block, 
+      n_test = n.test.token, 
+      category_dist_ratio1 = dist.L2_category.cue1, 
+      category_dist_ratio2 = dist.L2_category.cue2, 
+      shift_mean_1 = shift.cue1, 
+      shift_mean_2 = shift.cue2) %>%
+    add_subjects_to_test.AA(n.subject = n.subject)
+  
+  p.exposure_test <- make_exposure_test_plot(d.AA.exposure, d.AA.test)
+  ggsave(paste0('../figures/plotly/exposure_test_distribution_', example_label, '.png'), plot = p.exposure_test, width = base.width*3 + .5, height = base.height + .5, dpi = 300)
+  
+  history.optimization_bias <<- tibble(.rows = 0)
+  
+  start_time <- Sys.time() #DEBUG
+  res <- gridSearch(get_accuracy_from_updated_bias, #DEBUG,
+                    npar = 2,   ## length of x
+                    lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
+                    upper = c(max(range.lapse_rate), max(log(range.beta_pi))),
+                    n = 10)      ## number of levels per element in each variable during the grid search.
+  end_time <- Sys.time() #DEBUG
+  end_time - start_time #DEBUG
+  
+  saveRDS(history.optimization_bias, paste0("../models/history.optimization_bias_gridSearch_", example_label, '.rds'))
+  
+  return(res)
+}
+
+temp.gridSearch <- construct_accent_models2(example_label = example_label, experimenter.ideal_observer = m.io.VOT_f0.AA)
+
+```
+
+
 ```{r compare-AA-models-best-three-functions}
 
 # Function to construct change model of each type and select the best performing parameter combination
@@ -1241,7 +1316,7 @@ construct_accent_models <- function(
       filter(prior_kappa %in% prior_kappa[which.min(abs(as.numeric(as.character(prior_kappa)) - best_performing_parameters.representations$par[1]))] & #highlight the parameters (within the plotted range) that are closest to the best performing parameterization
                   prior_nu %in% prior_nu[which.min(abs(as.numeric(as.character(prior_nu)) - best_performing_parameters.representations$par[2]))])
   }
-
+  
   history.optimization_bias <<- tibble(.rows = 0)
   best_performing_parameters.bias <- find_best_model.bias.AA()
   bias.pred <- get_decision_making_models_for_plot(
@@ -1274,7 +1349,7 @@ construct_accent_models <- function(
       data = representations.pred, 
       data_best = best_performing_parameters.representations)
   ggsave(
-    paste0('../figures/plotly/representations_', example_label, '.png'), 
+    paste0('../figures/plotly/representations_', example_label, '.best.png'), 
     plot = p.AA.representations, 
     width = 2*(base.width*length(levels(factor(representations.pred$prior_kappa))) + .5), 
     height = 2*(base.height*length(levels(factor(representations.pred$prior_nu))) + .5), 
@@ -1285,7 +1360,7 @@ construct_accent_models <- function(
       data = bias.pred, 
       data_best = best_performing_parameters.bias)
   ggsave(
-    paste0('../figures/plotly/bias_', example_label, '.png'), 
+    paste0('../figures/plotly/bias_', example_label, '.best.png'), 
     plot = p.AA.bias, 
     width = 2*(base.width*length(levels(factor(bias.pred$beta_pi))) + .5), 
     height = 2*(base.height*length(levels(factor(bias.pred$posterior.lapse_rate))) + .5), 
@@ -1296,7 +1371,7 @@ construct_accent_models <- function(
       normalization.pred, 
       best_performing_parameters.normalization)
   ggsave(
-    paste0('../figures/plotly/normalization_', example_label, '.png'), 
+    paste0('../figures/plotly/normalization_', example_label, '.best.png'), 
     plot = p.AA.normalization, 
     width = 2*(base.width*length(levels(factor(normalization.pred$prior_kappa.normalization))) + .5), 
     height = 2*(base.height + .5), 

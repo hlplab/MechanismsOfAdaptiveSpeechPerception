@@ -4,6 +4,8 @@ install_and_load_package <- function (name) {
   if (!is.element(name, all_installed_packages)) {
     install.packages(name)
   }
+  
+  # cat(paste("Loading", name, "\n"))
   library(name, character.only = TRUE)
 }
 
@@ -31,9 +33,11 @@ install_and_load_package("lme4")               # for C-CuRE normalization throug
 install_and_load_package("mixtools")           # for drawing ellipses in the 3D plots
 install_and_load_package("modelr")
 install_and_load_package("diptest")            # test for bimodality
-install_and_load_package("NOMF")               # for grid search
+# install_and_load_package("NOMF")               # for grid search
 install_and_load_package("parallel")           # use multicore to speed up grid search and optimization  
 install_and_load_package("LaplacesDemon")      # for additional density distributions (e.g., inverse-Wishart, W^-1)
 
 if (has_internet()) devtools::install_github("crsh/papaja", ref = "devel")
-if (has_internet()) devtools::install_github("hlplab/MVBeliefUpdatr", INSTALL_opts = "--no-lock")
+library(papaja)
+if (has_internet()) devtools::install_github("hlplab/MVBeliefUpdatr", ref = "add-exemplar-models")
+library(MVBeliefUpdatr)

@@ -391,8 +391,9 @@ Finally, we note that our simulations predict categorization at the *beginning* 
 We begin by modeling exposure-driven changes in the mapping from VOT and f0 to the /d/ and /t/ categories. This is arguably the mechanism that is most commonly assumed to underlie the boundary shift observed in perceptual recalibration experiments. Specifically, we use the $\mathcal{NW}^{-1}$ ideal adaptor model described in Section \@ref(sec:ideal-adaptor) while varying the $\kappa_{c,0}$ and $\nu_{c,0}$ parameters. We set the other two parameters of the $\mathcal{NW}^{-1}$ ideal adaptor ($\mathrm{m}$ and $\mathrm{S}$) so that they match the expected mean and covariance of the data in @chodroff-wilson2018 (as we did in Section \@ref(sec:ideal-adaptor)). Normalization and response biases did not change based on exposure ($\kappa_0 = \infty$; $\beta_{\pi}=0$), and attentional lapses were assumed to be zero ($\lambda = 0$).
 
 ```{r study-PR-models-changes-in-representations}
-d.PR <- d.PR.exposure %>%
-  add_prior_and_get_posterior_beliefs_based_on_exposure(prior = m.ia.VOT_f0.PR) %>%
+d.PR <- 
+  d.PR.exposure %>%
+  add_prior_and_get_posterior_beliefs_based_on_exposure(prior = m.ia.VOT_f0.PR, idealized = F) %>%
   add_test_tokens(d.PR.test) %>%
   add_categorization_functions() %>%
   group_by(Condition, Subject, prior_kappa, prior_nu) %>%
@@ -439,7 +440,8 @@ p.PR.results +
   scale_fill_manual(breaks = c(T, F), values = c("gray20", "white")) +
   guides(fill = "none")
 
-d.PR.representations.highlighted <- d.PR %>%
+d.PR.representations.highlighted <- 
+  d.PR %>%
   filter(category == categories.PR[1]) %>%
         mutate(highlight = case_when(
           between(as.numeric(as.character(prior_kappa)), 75, 780) & between(as.numeric(as.character(prior_nu)), 160, 1000) ~ T,
@@ -483,7 +485,7 @@ plot_expected_categories_contour2D(
 Finally, Figure \@ref(fig:PR-result-changes-in-representations) shows that distributional learning not only predicts shifts in the category boundary but can also predict changes in the slope of those boundaries. This is evident, for example, in the top-right panel. Although such changes in slopes are often not discussed, they are present in many perceptual recalibration experiments [e.g., @drouin2016; @liu-jaeger2018; @liu-jaeger2019; @myers-mesite2014].
 
 ### Changes in decision-making
-Next, we model the effects of changes in decision-making. Such changes have rarely been considered as an explanation for boundary shifts [but see @clarkedavidson2008]. In addition to varying the rate at which response biases change $\beta_{\pi}$, we also vary the lapse rate parameter $\lambda$. Normalization and representations did not change based on exposure ($\kappa_0 = \kappa_{c,0} = \nu_{c,0} = \infty$). Since the change model for decision-making is sensitive to the order of stimuli during exposure (see Section \@ref(sec:change-bias)), each panel of the figure averages over 50 simulations, each of them randomizing the order of exposure. We confirmed that this number of simulations was more than sufficient to achieve reproducible estimates for the range of $\beta_{\pi}$s considered here (the order-sensitivity of the change model increases for faster change rates, i.e., larger $\beta_{\pi}$).
+Next, we model the effects of changes in decision-making. Such changes have rarely been considered as an explanation for boundary shifts [but see @clarkedavidson2008]. In addition to varying the rate at which response biases change $\beta_{\pi}$, we also vary the lapse rate parameter $\lambda$. Normalization and representations did not change based on exposure ($\kappa_0 = \kappa_{c,0} = \nu_{c,0} = \infty$). Since the change model for decision-making is sensitive to the order of exposure stimuli (see Section \@ref(sec:change-bias)), each panel of Figure \@ref(fig:PR-result-changes-in-decision-making) averages over 50 simulations, each randomizing the order of exposure. We confirmed that this number of simulations was sufficient to achieve reproducible estimates for the range of $\beta_{\pi}$s considered here (the order-sensitivity of the change model increases for faster change rates, i.e., larger $\beta_{\pi}$).
 
 (ref:PR-result-changes-in-decision-making) Predictions of a model that derives perceptual recalibration as changes in decision-making. Predicted categorization responses are shown for the `r length(test_locations)` test locations after `r paste(categories.PR, collapse = "- and")`-shifted exposure, depending on the rate at which response biases change ($\beta_{\pi}$) and the rate of attentional lapses ($\lambda$). The response biases towards `r categories.PR[1]` that results from $\beta_{\pi}$ are shown in the bottom row for each of the two exposure conditions, and are identical within each column (when all trials are lapses, as in the bottom row, the response distribution is identical to the response biases). 
 
@@ -589,7 +591,7 @@ p.PR.bias.highlighted <- p.PR.results.bias %+%
   d.PR.bias.highlighted
 
 ```
-Figure \@ref(fig:PR-result-changes-in-decision-making) shows the effects of changes in response biases for lapse rates ranging from negligible lapse rates ($\lambda = .0005$, top row) to a scenario in which listeners always lapse ($\lambda = 1$). In the latter---rather implausible---edge case, listeners' responses only reflect response biases and are completely stimulus-independent (bottom row). For reference, lapse rates for perception experiments like the ones modeled here typically fall between 1-10% [e.g., @clayards2008 constrained lapse rates to be $<5$%; @kleinschmidt-jaeger2016cogsci report a best-fitting value of 5%].
+Figure \@ref(fig:PR-result-changes-in-decision-making) shows the effects of changes in decision-making for lapse rates ranging from negligible lapse rates ($\lambda = .0005$, top row) to a scenario in which listeners always lapse ($\lambda = 1$). In the latter---rather implausible---edge case, listeners' responses only reflect response biases and are completely stimulus-independent (bottom row). For reference, lapse rates for perception experiments like the ones modeled here typically fall between 1-10% [e.g., @clayards2008 constrained lapse rates to be $<5$%; @kleinschmidt-jaeger2016cogsci report a best-fitting value of 5%].
 
 The primary insight from Figure \@ref(fig:PR-result-changes-in-decision-making) is that changes in response biases can account for the type of boundary shift that is observed in perceptual recalibration experiments. This shows that the signature result of perceptual recalibration experiments is ambiguous between two explanations that evoke very different cognitive architectures. For this case study, perhaps the closest match to the findings from Kraljic and Samuel (2006) is observed for plausible lapse rates up to 5% and small changes in response bias (second or third column, top rows). 
 

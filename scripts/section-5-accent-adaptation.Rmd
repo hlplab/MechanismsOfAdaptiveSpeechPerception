@@ -815,6 +815,18 @@ visualize_bias_parameter_space <- function(
 }
 ```
   
+```{r save-best-performing-models-changes-in-decision-making-from-grid-search, echo=FALSE, message=FALSE, warning=FALSE, eval = FALSE}
+# TO-DO: temporarily use best-performing parameters from grid search for all accent scenarios
+history.optimization_bias.gridSearch <-  readRDS(get_path(paste0("../models/history.optimization_bias_gridSearch_", example_label,".rds")))
+res_bias.gridSearch <- readRDS(get_path(paste0("../models/res.optimization_bias_gridSearch_", example_label,".rds")))
+
+
+best_performing_parameters.bias = list()
+best_performing_parameters.bias$par <- c(res_bias.gridSearch$minlevels[1], exp(res_bias.gridSearch$minlevels[2]))
+saveRDS(best_performing_parameters.bias, get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
+```
+
+
 ```{r study-AA-models-changes-in-decision-making-optimization, echo=FALSE, message=FALSE, warning=FALSE}
 
 find_best_model.bias.AA <- function() {
@@ -856,17 +868,6 @@ best_performing_parameters.bias <- find_best_model.bias.AA()
 
 
 ```
-
-```{r save-best-performing-models-changes-in-decision-making-from-grid-search, echo=FALSE, message=FALSE, warning=FALSE, eval = FALSE}
-# TO-DO: temporarily use best-performing parameters from grid search for all accent scenarios
-history.optimization_bias.gridSearch <-  readRDS(get_path(paste0("../models/history.optimization_bias_gridSearch_", example_label,".rds")))
-res_bias.gridSearch <- readRDS(get_path(paste0("../models/res.optimization_bias_gridSearch_", example_label,".rds")))
-best_performing_parameters.bias = list()
-best_performing_parameters.bias$par <- c(res_bias.gridSearch$minlevels[1], exp(res_bias.gridSearch$minlevels[2]))
-saveRDS(best_performing_parameters.bias, get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
-```
-
-
 
 ```{r study-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE}
 

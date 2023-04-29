@@ -1059,12 +1059,12 @@ plot_3D.categorization.diff <- function(df.resp, width, height){
 
 # Function to make categorization surface in 3D space based on the modeling results from the three change mechanisms
 prepare_3D.categorization_from_results <- function(data, cue1_range, cue2_range, n, fix_quadratic_effects = FALSE) {
-  x<-seq(cue1_range[1], cue1_range[2],length=n)  # generating the vector series cue 1
-  y<-seq(cue2_range[1], cue2_range[2],length=n) 
+  x<-seq(cue1_range[1], cue1_range[2],length=n)  # generating the vector sequence for cue 1
+  y<-seq(cue2_range[1], cue2_range[2],length=n)  # generating the vector sequence for cue 2
   
   d.input = expand.grid(x, y)
   colnames(d.input) = c("VOT", "f0")
-  temp2 = as.data.frame(d.input) %>%
+  temp2 = as.data.frame(d.input) %>% # create a grid of cue 1 and cue 2
     mutate(x = map2(VOT, f0, ~ c(.x, .y)))
   
   output = vector(mode = "list", length = length(conditions.AA))
@@ -1085,7 +1085,6 @@ prepare_3D.categorization_from_results <- function(data, cue1_range, cue2_range,
                x = map2(x, mu_inferred, ~ .x - (.y - prior_marginal_VOT_f0_stats$x_mean[[1]])))
     }
     
-
     ##----------------
     d.output.step1 <- data %>%
       crossing(temp2 %>% distinct(x)) %>%

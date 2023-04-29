@@ -452,7 +452,7 @@ basic_AA_result_plot <- function(data) {
       scale_alpha_discrete(range = c(0.2, 1), guide = "none"),
       scale_x_discrete(labels= c("L1-accented", "L2-accented")),
       xlab("Exposure condition"),
-      ylab("Predicted categorization accuracy"),
+      ylab("Categorization accuracy"),
       myGplot.defaults(base_size = 14, set_theme = F),
       theme(legend.position = "top", 
             axis.text.x = element_text(angle = 22.5, hjust = 1),
@@ -1154,7 +1154,7 @@ make_results_plot_normalization <- function(data, data_best){
     facet_grid(
       . ~ prior_kappa.normalization,
       labeller = label_bquote(
-        cols = ~kappa[0] == .(as.character(prior_kappa.normalization)))) 
+        cols = ~kappa[0] == .(as.character(prior_kappa.normalization))))
   
   p.results +
     ggnewscale::new_scale_fill() +

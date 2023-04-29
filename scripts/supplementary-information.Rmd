@@ -8,6 +8,13 @@ Both the main text and these supplementary information (SI) are derived from the
 
 \setcounter{section}{0}
 \setcounter{footnote}{0}
+\setcounter{figure}{0}
+\setcounter{table}{0}
+\setcounter{equation}{0}
+\renewcommand{\thefootnote}{S\arabic{footnote}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\theequation}{S\arabic{equation}}
 
 # Required software {#sec:SI-software}
 The document was compiled using \texttt{knitr} [@xie2021] in RStudio with R:

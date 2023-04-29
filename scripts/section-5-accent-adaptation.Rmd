@@ -1310,7 +1310,6 @@ temp.gridSearch <- grid_search_for_bias_model(example_label = example_label, exp
 
 
 ```{r compare-AA-models-best-three-functions}
-
 # Function to construct change model of each type and select the best performing parameter combination
 construct_accent_models <- function(
     example_label = "Cue_reweighting",
@@ -1322,7 +1321,7 @@ construct_accent_models <- function(
     test.n_block = n.test_block,
     n_test = n.test.token,
     select_best_only = T
-  ) {
+) {
   if(SET_SEED) set.seed(42007)
   
   d.AA.exposure <<-
@@ -1352,27 +1351,36 @@ construct_accent_models <- function(
   history.optimization_representations <<- tibble(.rows = 0)
   best_performing_parameters.representations <- find_best_model.representations.AA()
   representations.pred <- get_representation_models_for_plot(
-    prior_kappa = round(best_performing_parameters.representations$par[1], digits =0), # here one can select to plot just the best-performing parameterization or to visualize a range of parameters by specifying the values assigned to prior_kappa and prior_nu
+    # here one can select to plot just the best-performing parameterization or to visualize a range of 
+    # parameters by specifying the values assigned to prior_kappa and prior_nu
+    prior_kappa = round(best_performing_parameters.representations$par[1], digits = 0), 
     prior_nu = round(best_performing_parameters.representations$par[2], digits = 0))
   
   if (select_best_only == T){
     representations.pred %<>%
-      filter(prior_kappa %in% prior_kappa[which.min(abs(as.numeric(as.character(prior_kappa)) - best_performing_parameters.representations$par[1]))] & #highlight the parameters (within the plotted range) that are closest to the best performing parameterization
-                  prior_nu %in% prior_nu[which.min(abs(as.numeric(as.character(prior_nu)) - best_performing_parameters.representations$par[2]))])
+      # highlight the parameters (within the plotted range) that are closest to the best performing parameterization
+      filter(
+        prior_kappa %in% prior_kappa[which.min(abs(as.numeric(as.character(prior_kappa)) - best_performing_parameters.representations$par[1]))] & 
+          prior_nu %in% prior_nu[which.min(abs(as.numeric(as.character(prior_nu)) - best_performing_parameters.representations$par[2]))])
   }
   
   history.optimization_bias <<- tibble(.rows = 0)
   best_performing_parameters.bias <- find_best_model.bias.AA() #TO-DO: doubleck check the logged beta to see if it is in raw space or log space
+  
+  # here one can select to plot just the best-performing parameterization or to visualize a range of 
+  # parameters by specifying the values assigned to lapse_rate and beta_pi
   bias.pred <- get_decision_making_models_for_plot(
-    lapse_rate = round(best_performing_parameters.bias$par[1], digits = 2), # here one can select to plot just the best-performing parameterization or to visualize a range of parameters by specifying the values assigned to lapse_rate and beta_pi
+    lapse_rate = round(best_performing_parameters.bias$par[1], digits = 2), 
     beta_pi = round(best_performing_parameters.bias$par[2], digits = 2))
   
-  bias.pred %<>% get_average_bias_results_across_simulations.byItem() # average predictions across simulations for the bias model
+  # average predictions across simulations for the bias model
+  bias.pred %<>% get_average_bias_results_across_simulations.byItem() 
   
   if (select_best_only == T){
     bias.pred %<>%
-      filter(posterior.lapse_rate %in% posterior.lapse_rate[which.min(abs(posterior.lapse_rate - best_performing_parameters.bias$par[1]))] & 
-                  beta_pi %in% beta_pi[which.min(abs(beta_pi - best_performing_parameters.bias$par[2]))])
+      filter(
+        posterior.lapse_rate %in% posterior.lapse_rate[which.min(abs(posterior.lapse_rate - best_performing_parameters.bias$par[1]))] & 
+          beta_pi %in% beta_pi[which.min(abs(beta_pi - best_performing_parameters.bias$par[2]))])
   }
   
   
@@ -1420,16 +1428,16 @@ construct_accent_models <- function(
     width = 2*(base.width*length(levels(factor(normalization.pred$prior_kappa.normalization))) + .5), 
     height = 2*(base.height + .5), 
     dpi = 300)
-
-   d <- bind_rows(
+  
+  d <- bind_rows(
     representations.pred %>%
       mutate(ModelType = "representations"),
     bias.pred %>%
       mutate(ModelType = "decision-making"),
     normalization.pred %>%
-            mutate(ModelType = "normalization")) %>%
+      mutate(ModelType = "normalization")) %>%
     mutate(ModelType = factor(ModelType, levels = c("representations", "decision-making", "normalization")))
-
+  
   return(d)
 }
 ```
@@ -1457,7 +1465,8 @@ shift.cue1 <- 0
 shift.cue2 <- 0
 var.ratio <- 1
 example_label = "Contrast_reduction"
-d.AA.results.contrast_reduction.best  <- construct_accent_models(example_label = "Contrast_reduction", experimenter.ideal_observer = m.io.VOT_f0.AA)
+d.AA.results.contrast_reduction.best <- 
+  construct_accent_models(example_label = "Contrast_reduction", experimenter.ideal_observer = m.io.VOT_f0.AA)
 ```
 
 ```{r AA-result-comparison-best-models-contrast-collapse, warning=FALSE}
@@ -1470,7 +1479,8 @@ shift.cue2 <- 0
 var.ratio <- 1
 example_label = "Contrast_collapse"
 
-d.AA.results.contrast_collapse.best  <- construct_accent_models(example_label = "Contrast_collapse", experimenter.ideal_observer = m.io.VOT_f0.AA)
+d.AA.results.contrast_collapse.best <- 
+  construct_accent_models(example_label = "Contrast_collapse", experimenter.ideal_observer = m.io.VOT_f0.AA)
 ```
 
 ```{r AA-result-comparison-best-models-cue-reweighting, warning=FALSE}
@@ -1482,7 +1492,8 @@ dist.L2_category.cue2 <- 0.22
 shift.cue1 <- 0.5
 shift.cue2 <- 0.22
 var.ratio <- 1
-d.AA.results.cue_reweighting.best  <- construct_accent_models(example_label = "Cue_reweighting", experimenter.ideal_observer = m.io.VOT_f0.AA)
+d.AA.results.cue_reweighting.best <- 
+  construct_accent_models(example_label = "Cue_reweighting", experimenter.ideal_observer = m.io.VOT_f0.AA)
 ```
 
 ```{r AA-result-comparison-additional-cases, warning=FALSE}
@@ -1493,27 +1504,26 @@ best_performing_parameters.normalization.par = data.frame()
 
 for (i in 1:length(cases)){
   example_label = cases[i]
-  #load best-performing parameters for representation model
+  # load best-performing parameters for representation model
   best_performing_parameters.representations <- readRDS(get_path(paste0("../models/best_performing_parameters.representations_", example_label,".rds")))
   best_performing_parameters.representations.par.current = data.frame(prior_kappa = best_performing_parameters.representations$par[1],
            prior_nu = best_performing_parameters.representations$par[2])
   best_performing_parameters.representations.par %<>% bind_rows(., best_performing_parameters.representations.par.current %>% mutate(Case = example_label)) %>%
     mutate(ModelType = "representations")
   
-  #load best-performing parameters for bias model
+  # load best-performing parameters for bias model
   best_performing_parameters.bias <- readRDS(get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
   best_performing_parameters.bias.par.current = data.frame(lapse_rate = best_performing_parameters.bias$par[1],
            beta_pi = best_performing_parameters.bias$par[2])
   best_performing_parameters.bias.par %<>% bind_rows(., best_performing_parameters.bias.par.current %>% mutate(Case = example_label)) %>%
     mutate(ModelType = "decision-making")
   
-  #load best-performing parameters for normalization model
+  # load best-performing parameters for normalization model
   best_performing_parameters.normalization <- readRDS(get_path(paste0("../models/best_performing_parameters.normalization_", example_label,".rds")))
   best_performing_parameters.normalization.par.current = data.frame(prior_kappa = best_performing_parameters.normalization$par[1])
   best_performing_parameters.normalization.par %<>% bind_rows(., best_performing_parameters.normalization.par.current %>% mutate(Case = example_label)) %>%
     mutate(ModelType = "normalization")
 }
-
 ```
 
 ```{r AA-plot-target-exposure-additional-cases, message = FALSE, warning=FALSE}
@@ -1612,7 +1622,8 @@ p.AA.exposure <- d.AA.exposure.target.cases %>%
 ```
 
 ```{r AA-plot-results-additional-cases, fig.width=base.width*4 + .5, fig.height=base.height*3 + .5, fig.cap = "(ref:AA-plot-results-additional-cases)", warning=FALSE}
-d.AA.results.best.cases <- bind_rows(
+d.AA.results.best.cases <- 
+  bind_rows(
   d.AA.results.cue_reweighting.best %>%
     mutate(Case = "Cue reweighting"),
   d.AA.results.contrast_reduction.best %>%
@@ -1620,8 +1631,7 @@ d.AA.results.best.cases <- bind_rows(
   d.AA.results.contrast_collapse.best %>%
     mutate(Case = "Contrast collapse"),
   d.AA.results.contrast_shift.best %>%
-    mutate(Case = "Contrast shift") 
-) %>%
+    mutate(Case = "Contrast shift")) %>%
   mutate(Case = factor(Case, levels = c("Cue reweighting","Contrast reduction", "Contrast shift", "Contrast collapse"))) %>%  
   mutate(parameterization = case_when(
    ModelType == "representations" ~ paste0("kappa = ", prior_kappa, ", nu = ", prior_nu),
@@ -1650,7 +1660,7 @@ p.results.best.cases <- d.AA.results.best.cases %>%
   scale_fill_manual("Category", values = colors.category) +
   scale_alpha_discrete(range = c(0.2, 1)) +
   xlab("Exposure condition") +
-  ylab("Predicted \ncategorization accuracy") +
+  ylab("Categorization accuracy") +
   facet_grid(Case ~ ModelType) +
   theme(legend.position = "top", 
         strip.text.y = element_blank(),

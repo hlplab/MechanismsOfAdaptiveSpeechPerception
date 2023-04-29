@@ -393,7 +393,7 @@ We begin by modeling exposure-driven changes in the mapping from VOT and f0 to t
 ```{r study-PR-models-changes-in-representations}
 d.PR <- 
   d.PR.exposure %>%
-  add_prior_and_get_posterior_beliefs_based_on_exposure(prior = m.ia.VOT_f0.PR, idealized = F) %>%
+  add_prior_and_get_posterior_beliefs_based_on_exposure(prior = m.ia.VOT_f0.PR) %>%
   add_test_tokens(d.PR.test) %>%
   add_categorization_functions() %>%
   group_by(Condition, Subject, prior_kappa, prior_nu) %>%
@@ -589,7 +589,6 @@ d.PR.bias.highlighted <- d.PR %>%
 
 p.PR.bias.highlighted <- p.PR.results.bias %+%
   d.PR.bias.highlighted
-
 ```
 Figure \@ref(fig:PR-result-changes-in-decision-making) shows the effects of changes in decision-making for lapse rates ranging from negligible lapse rates ($\lambda = .0005$, top row) to a scenario in which listeners always lapse ($\lambda = 1$). In the latter---rather implausible---edge case, listeners' responses only reflect response biases and are completely stimulus-independent (bottom row). For reference, lapse rates for perception experiments like the ones modeled here typically fall between 1-10% [e.g., @clayards2008 constrained lapse rates to be $<5$%; @kleinschmidt-jaeger2016cogsci report a best-fitting value of 5%].
 

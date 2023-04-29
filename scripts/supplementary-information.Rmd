@@ -546,9 +546,8 @@ for (i in 1:length(cases)){
 
 ```{r show-3d-grid-search, fig.show='hold', fig.align='center', fig.cap="(ref:show-3d-grid-search)", fig.subcap=c('Cue reweighting', 'Contrast reduction', 'Contrast shift', 'Contrast collapse'), fig.ncol = 2}
 filename = c()
-for (i in 1:length(cases)){
-  example_label = cases[i]
-  filename = c(file.path(get_path(paste0('../figures/plotly/p.3d.bias.model_gridSearch_', example_label, '.png'))), filename)
+for (i in 1:length(cases)) {
+  filename = append(filename, file.path(get_path(paste0('../figures/plotly/p.3d.bias.model_gridSearch_', cases[i], '.png'))))
 }
 
 knitr::include_graphics(filename)

@@ -537,7 +537,7 @@ for (i in 1:length(cases)){
     p.bias.gridSearch <- visualize_bias_parameter_space(
       data = d.bias.gridSearch,
       range.lapse_rate = range.lapse_rate, 
-      range.beta_pi = range.beta_pi)
+      range.beta_pi = range.beta_pi) 
     
     save_3Dfigure(p.bias.gridSearch, paste0('p.3d.bias.model_gridSearch_', example_label, '.png'))
   }

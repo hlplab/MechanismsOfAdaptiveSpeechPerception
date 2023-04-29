@@ -800,11 +800,19 @@ visualize_bias_parameter_space <- function(
         cauto = F,
         cmax = 1,
         cmin = 0,
-        showscale = FALSE) %>%
+        showscale = FALSE,
+        width = 900, height = 900) %>%
       layout(
+        margin <- list(
+          l = -1,
+          r = -1,
+          b = 0,
+          t = -1,
+          # space between the plotting area and the axis lines; takes a number >=0
+          pad = 0), 
         scene = list(
           # zooming in on the plot, values larger than 0
-          aspectratio = list(x = 1.2, y = 1.2, z = 1), 
+          aspectratio = list(x = 1.8, y = 1.9, z = 1.6), 
           # perspective good for showing categorization curve
           camera = list(
             eye = list(x = -1.25, y = -3.25, z = 0.5), 

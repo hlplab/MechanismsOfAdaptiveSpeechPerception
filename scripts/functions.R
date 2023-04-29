@@ -1059,22 +1059,20 @@ plot_3D.categorization.diff <- function(df.resp, width, height){
 
 # Function to make categorization surface in 3D space based on the modeling results from the three change mechanisms
 prepare_3D.categorization_from_results <- function(data, cue1_range, cue2_range, n, fix_quadratic_effects = FALSE) {
-  x<-seq(cue1_range[1], cue1_range[2],length=n)  # generating the vector series cue 1
-  y<-seq(cue2_range[1], cue2_range[2],length=n) 
+  x <- seq(cue1_range[1], cue1_range[2],length=n)  
+  y <- seq(cue2_range[1], cue2_range[2],length=n) 
   
-  d.input = expand.grid(x, y)
-  colnames(d.input) = c("VOT", "f0")
-  temp2 = as.data.frame(d.input) %>%
+  d.input <- expand.grid(x, y)
+  colnames(d.input) <- c("VOT", "f0")
+  temp2 <- as.data.frame(d.input) %>%
     mutate(x = map2(VOT, f0, ~ c(.x, .y)))
   
-  output = vector(mode = "list", length = length(conditions.AA))
+  output <- vector(mode = "list", length = length(conditions.AA))
   for (i in 1:length(conditions.AA)){
     
     ##----------------
     #convert cue values based on the mu_inferred for the current parameter of prior_kappa.normalization
-
-    if("Normalization" %in% levels(factor(data$model))){
-
+    if("Normalization" %in% levels(factor(data$model))) {
       d.AA.normalization.step0 <- d.AA.normalization %>%
         filter(prior_kappa.normalization  == prior_kappa.normalization.selected) %>%
         filter(Condition == conditions.AA[i]) %>%
@@ -1085,7 +1083,6 @@ prepare_3D.categorization_from_results <- function(data, cue1_range, cue2_range,
                x = map2(x, mu_inferred, ~ .x - (.y - prior_marginal_VOT_f0_stats$x_mean[[1]])))
     }
     
-
     ##----------------
     d.output.step1 <- data %>%
       crossing(temp2 %>% distinct(x)) %>%
@@ -1115,9 +1112,9 @@ prepare_3D.categorization_from_results <- function(data, cue1_range, cue2_range,
       select(-nrow) %>%
       pivot_wider(values_from = x, names_from = cue_name)
 
-    df.resp = list()
-    df.resp$VOT = x
-    df.resp$f0 = y
+    df.resp <- list()
+    df.resp$VOT <- x
+    df.resp$f0 <- y
     
     # create categorization surface
     resp.prob <- t(matrix(d.output$response, ncol=n))

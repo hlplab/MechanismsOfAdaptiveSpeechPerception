@@ -83,20 +83,22 @@ compare_models.AA <- function(
         mutate(model = "Normalization"))
 
   for (j in 1:length(model_names)) {
-    data = d.model.compare %>%
+    message(paste("Preparing", model_names[j]))
+    data <- 
+      d.model.compare %>%
       filter(model == model_names[j])
     
     for (i in 1:length(conditions.AA)) {
-      
+
+      message(paste("...", conditions.AA[i]))
       fn <- paste0('p.3d.categorization.model_', model_names[j], '_', conditions.AA[i], '_', example_label, '.png')
       if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), fn))) {
-        message(paste("Creating and overriding"), fn)
         
         output.AA <- prepare_3D.categorization_from_results(data, VOT_range, f0_range, n_points)
         saveRDS(output.AA, "d.AA.compare_three_models_categorization.rds")
         
         df.resp <- output.AA[[i]]
-        
+        message(paste("Creating and overriding"), fn)
         p.3d.categorization <-
           plot_3D.categorization(df.resp, width = p_width, height = p_height) %>%
           # select perspective that is good for showing categorization curve
@@ -114,10 +116,10 @@ compare_models.AA <- function(
     fn <- paste0('p.3d.categorization.difference.model_', model_names[j], '_', example_label, '.png')
     if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), fn))) {
       message(paste("Creating and overriding"), fn)
-      df.diff = list()
-      df.diff$difference_in_logodds_d = qlogis(output.AA[[2]]$proportion_d) - qlogis(output.AA[[1]]$proportion_d)
-      df.diff$VOT = df.resp$VOT
-      df.diff$f0 = df.resp$f0
+      df.diff <- list()
+      df.diff$difference_in_logodds_d <- qlogis(output.AA[[2]]$proportion_d) - qlogis(output.AA[[1]]$proportion_d)
+      df.diff$VOT <- df.resp$VOT
+      df.diff$f0 <- df.resp$f0
       
       p.3d.categorization.diff <-
         plot_3D.categorization.diff(df.diff, width = p_width, height = p_height) %>%
@@ -233,18 +235,25 @@ lapse_rate.selected <- bias.parameters.select$posterior.lapse_rate
 beta_pi.selected <- bias.parameters.select$beta_pi
 prior_kappa.normalization.selected <- best_performing_parameters.normalization$par[1]
 
-compare_models.AA(
-  data1 <- 
+
+data1 <- 
     get_representation_models_for_plot(
       prior_kappa = prior_kappa.selected,
-      prior_nu = prior_nu.selected),
-  data2 <- 
+      prior_nu = prior_nu.selected)
+
+data2 <- 
     get_decision_making_models_for_plot(
       lapse_rate = lapse_rate.selected,
-      beta_pi = beta_pi.selected),
-  data3 <- 
+      beta_pi = beta_pi.selected)
+
+data3 <- 
     get_normalization_models_for_plot(prior_kappa.normalization = prior_kappa.normalization.selected) %>%
-    filter(prior_kappa.normalization == prior_kappa.normalization.selected),
+    filter(prior_kappa.normalization == prior_kappa.normalization.selected)
+
+compare_models.AA(
+  data1,
+  data2,
+  data3,
   VOT_range, f0_range, n_points)
 ```
 

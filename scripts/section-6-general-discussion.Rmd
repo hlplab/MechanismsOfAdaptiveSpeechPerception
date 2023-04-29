@@ -88,15 +88,14 @@ compare_models.AA <- function(
       d.model.compare %>%
       filter(model == model_names[j])
     
-    for (i in 1:length(conditions.AA)) {
-
-      message(paste("...", conditions.AA[i]))
-      fn <- paste0('p.3d.categorization.model_', model_names[j], '_', conditions.AA[i], '_', example_label, '.png')
-      if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), fn))) {
-        
-        output.AA <- prepare_3D.categorization_from_results(data, VOT_range, f0_range, n_points)
-        saveRDS(output.AA, "d.AA.compare_three_models_categorization.rds")
-        
+    fn.check <- paste0('p.3d.categorization.model_', model_names[j], '_', conditions.AA[1], '_', example_label, '.png')
+    if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), fn.check))) {
+      output.AA <- prepare_3D.categorization_from_results(data, VOT_range, f0_range, n_points)
+      saveRDS(output.AA, paste0("d.AA.compare_three_models_categorization_", model_names[j], '.rds'))
+      
+      for (i in 1:length(conditions.AA)) {
+        message(paste("...", conditions.AA[i]))
+        fn <- paste0('p.3d.categorization.model_', model_names[j], '_', conditions.AA[i], '_', example_label, '.png')
         df.resp <- output.AA[[i]]
         message(paste("Creating and overriding"), fn)
         p.3d.categorization <-
@@ -109,7 +108,7 @@ compare_models.AA <- function(
                 eye = list(x = -0.5, y = -2.5, z = 0.1))))
         
         save_3Dfigure(p.3d.categorization, fn)
-      }
+        }
     }
     
     # show differences between exposure conditions in log odds space

@@ -7,6 +7,8 @@
 Both the main text and these supplementary information (SI) are derived from the same R markdown document available via OSF at [https://osf.io/q7gjp/](https://osf.io/q7gjp/). **The PDFs for both the main text and the SI are best viewed using Acrobat Reader.** Some links and animations might not work in other PDF viewers.
 
 \setcounter{section}{0}
+\setcounter{footnote}{0}
+
 # Required software {#sec:SI-software}
 The document was compiled using \texttt{knitr} [@xie2021] in RStudio with R:
 

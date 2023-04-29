@@ -707,11 +707,12 @@ get_accuracy_from_updated_bias <- function( #this function is used when both par
  
 }
 
-
-get_accuracy_from_updated_bias_beta_only <- function(#this function is used when lapse_rate is set to zero and only beta_pi is varied during optimization search
+# This function is used when lapse_rate is set to zero and only beta_pi is varied during optimization search
+get_accuracy_from_updated_bias_beta_only <- function(
     pars,
     model = m.io.VOT_f0.AA,
-    exposure = d.AA.exposure %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1")), # find the best-performing parameterization for the L2-accented condition
+    # find the best-performing parameterization for the L2-accented condition
+    exposure = d.AA.exposure %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1")), 
     test = d.AA.test %>% filter(Condition == "L2-accented", Subject == paste0(Condition, ".1")),
     control = simulation.control,
     verbose = FALSE
@@ -754,24 +755,24 @@ get_accuracy_from_updated_bias_beta_only <- function(#this function is used when
 ```
 
 ```{r grid-search-AA-models-changes-in-decision-making-functions, echo=FALSE, message=FALSE, warning=FALSE}
-
 grid_search_for_bias_model <- function(
     example_label = "Cue_reweighting",
     range.lapse_rate = range.lapse_rate,
     range.beta_pi = range.beta_pi
-  ) {
-
+) {
   history.optimization_bias <- tibble(.rows = 0)
     
   if (RESET_MODELS || !file.exists(get_path(paste0("../models/history.optimization_bias_gridSearch_", example_label,".rds")))) {
-  res <- NMOF::gridSearch(get_accuracy_from_updated_bias,
-                    npar = 2,   ## length of x
-                    # method = "multicore", # if one is not interested in saving se of accuracy and log them in a history file, then multicore can be used to speed up the grid search; "method" and "mc.contro" need to be specified
-                    # mc.control = list(mc.cores = detectCores()),
-                    lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
-                    upper = c(max(range.lapse_rate), max(log(range.beta_pi))),
-                    n = 10)      ## number of levels per element in each variable during the grid search.
-
+    res <- NMOF::gridSearch(
+      get_accuracy_from_updated_bias,
+      npar = 2,   ## length of x
+      # method = "multicore", # if one is not interested in saving se of accuracy and log them in a history file, 
+      # then multicore can be used to speed up the grid search; "method" and "mc.control" need to be specified
+      # mc.control = list(mc.cores = detectCores()),
+      lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
+      upper = c(max(range.lapse_rate), max(log(range.beta_pi))),
+      n = 10)      ## number of levels per element in each variable during the grid search.
+    
   saveRDS(history.optimization_bias, paste0("../models/history.optimization_bias_gridSearch_", example_label, '.rds'))
   saveRDS(res, paste0("../models/res.optimization_bias_gridSearch_", example_label, '.rds'))
 
@@ -785,8 +786,14 @@ visualize_bias_parameter_space <- function(
     data = data,
     range.lapse_rate = range.lapse_rate,
     range.beta_pi = range.beta_pi
-    ){
-  d.accuracy <- as.matrix(pivot_wider(data %>% select(beta_pi, lapse_rate, accuracy), names_from = beta_pi, values_from = accuracy)[,-1])
+){
+  d.accuracy <- 
+    as.matrix(
+      pivot_wider(
+        data %>% 
+          select(beta_pi, lapse_rate, accuracy), 
+        names_from = beta_pi, 
+        values_from = accuracy)[,-1])
 
   x <- seq(min(range.lapse_rate), max(range.lapse_rate), length = 10) 
   y <- exp(seq(min(log(range.beta_pi)), max(log(range.beta_pi)), length = 10))
@@ -803,22 +810,20 @@ visualize_bias_parameter_space <- function(
         showscale = FALSE,
         width = 900, height = 900) %>%
       layout(
-        margin <- list(
-          l = -1,
-          r = -1,
-          b = 0,
-          t = -1,
-          # space between the plotting area and the axis lines; takes a number >=0
-          pad = 0), 
+        margin = margin,
         scene = list(
           # zooming in on the plot, values larger than 0
-          aspectratio = list(x = 1.8, y = 1.9, z = 1.6), 
+          aspectratio = list(x = 1.8, y = 1.8, z = 1.5), 
           # perspective good for showing categorization curve
           camera = list(
             eye = list(x = -1.25, y = -3.25, z = 0.5), 
             up =  list(x = 0, y = 0, z = -1)),
-          zaxis = list(title = "Overall<br>accuracy", titlefont = list(size = 16), range = c(0,1), tickvals = c(0, 0.2 ,0.4, 0.6, 0.8, 1)), 
-          yaxis = list(title = "lapse rate",titlefont = list(size = 16)),
+          zaxis = list(
+            title = "Overall<br>accuracy", 
+            titlefont = list(size = 16), 
+            range = c(0,1), 
+            tickvals = c(0, 0.2 ,0.4, 0.6, 0.8, 1)), 
+          yaxis = list(title = "lapse rate", titlefont = list(size = 16)),
           xaxis = list(title = "beta pi", titlefont = list(size = 16))))
 }
 ```

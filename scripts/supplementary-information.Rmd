@@ -552,8 +552,8 @@ for (i in 1:length(cases)){
 # }
 # 
 # knitr::include_graphics(filename)
-
-knitr::include_graphics(file.path(get_path(paste0('../figures/plotly/p.model_comparison_', example_label, '.png'))))
+# 
+# knitr::include_graphics(file.path(get_path('../figures/plotly/p.3d.categorization.difference.model_Decision_making_Cue_reweighting_best-performing_zoomed_in.png')))
 ```
 
 ```{r grid-search, fig.width=base.width*4 + 1, fig.height=base.height + .5, fig.cap = "(ref:grid-search)"}

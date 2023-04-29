@@ -5,7 +5,8 @@ Let's delete to-dos after they have been addressed, and post in Slack what we've
     * fig 29:
       * check why the L2 number for the contrast reduction is 0.72 not 0.78 (previously it was)
       * make sure that best-fitting decision-making model in Fig 29 is correct (using same max sims as in the previous figures)
- 
+    * SI: grid search figures cannot be correctly shown
+    
   * Everyone: 
     * Re-read Volya's comments about its relevance.
   * Send paper out to emily myers and james mcqueen and ask whether they’d be willing to read this in their lab? It's now or never.

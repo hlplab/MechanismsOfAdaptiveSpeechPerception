@@ -526,7 +526,7 @@ plot_grid(
 
 (ref:show-3d-grid-search) Results of the grid search over the parameters for the change model for decision-making ($\beta_{\pi}$ and $\lambda$) for each of the four accent scenarios explored in Case Study 2.
 
-```{r grid-search-parameter-space-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
+```{r grid-search-parameter-space-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE}
 cases = c("Cue_reweighting", "Contrast_reduction", "Contrast_shift", "Contrast_collapse")
 for (i in 1:length(cases)){
   example_label = cases[i]
@@ -544,15 +544,13 @@ for (i in 1:length(cases)){
 ```
 
 ```{r show-3d-grid-search, fig.show='hold', fig.align='center', out.width= c(rep("24%",4)), fig.cap="(ref:show-3d-grid-search)", fig.subcap=c('Cue_reweighting', 'Contrast_reduction', 'Contrast_shift', 'Contrast_collapse')}
-# filename = c()
-# for (i in 1:length(cases)){
-#   example_label = cases[i]
-#   filename = c(file.path(get_path(paste0('../figures/plotly/p.3d.bias.model_gridSearch_', example_label, '.png'))), filename)
-# }
-# 
-# knitr::include_graphics(filename)
-# 
-# knitr::include_graphics(file.path(get_path('../figures/plotly/p.3d.categorization.difference.model_Decision_making_Cue_reweighting_best-performing_zoomed_in.png')))
+filename = c()
+for (i in 1:length(cases)){
+  example_label = cases[i]
+  filename = c(file.path(get_path(paste0('../figures/plotly/p.3d.bias.model_gridSearch_', example_label, '.png'))), filename)
+}
+
+knitr::include_graphics(filename)
 ```
 
 # Computational limitations of change models afford qualitative tests of their *sufficiency* {#sec:sufficiency}

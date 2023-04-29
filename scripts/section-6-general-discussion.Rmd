@@ -5,20 +5,6 @@ As already mentioned, this does not mean that normalization, representation, and
 
 Key to these recommendations is the second insight derived from our case studies: as we illustrated at the end of Case Study 2, each of the three mechanisms is subject to different computational limitations, and thus yields different predictions depending on the specific acoustic-phonetic properties of the exposure and test stimuli. Below we discuss how future experiments can be designed and analyzed so as to maximize researchers' ability to detect the differences in the predictions of the different change models, and to determine the relative engagement of each mechanism. Central to our recommendations is the use of ASP or similar frameworks to inform experiment design and analysis through simulations and quantitative model comparisons. First, however, we discuss *why* we believe that computational simulations and model comparisons will be critical to advancing the field.
 
-<!-- This flexibility is not a weakness of the change models but rather a necessity: since human listeners are sensitive to the acoustic-phonetic properties of the input, any adequate model of adaptive speech perception must be so, too. Critically, however, the flexibility of each change models is constrained by its computational limitations.
-
-This is schematically illustrated in Figure \@ref(fig:underlying-states-and-measures). On the one hand, since listeners generally benefit from exposure, any plausible change model has to predict changes that move the model from its state before exposure in the direction of the ideal state (an idealized learner with perfect knowledge of all relevant statistics). This causes the models to be similar to each other (and to listeners) in their predictions (Panel B). On the other hand, the _specific_ states that can be reached given both the state prior to exposure and the input received during exposure differ between change models (Panel C). By recognizing this, we can simulate categorization responses under different hypothesized mechanisms post exposure to specific instances of acoustic inputs. By employing designs and analysis approaches that take advantage of this link between acoustics and participants' responses, it is possible to move towards more informative experiments (Panel D).  -->
-
-<!-- \begin{figure}[h] -->
-<!-- \begin{center} -->
-<!-- \includegraphics[width=1 \columnwidth]{`r get_path("../figures/diagrams/underlying-states-and-measures.png")`} -->
-<!-- \caption{CAPTION. MAKE SURE THAT THE INFO MATCHES THE BODY OF THE TEXT}\label{fig:underlying-states-and-measures} -->
-<!-- \end{center} -->
-<!-- \end{figure} -->
-
-
-
-
 ## Beyond sufficiency tests
 For our two case studies, we considered each of the three change models of the ASP framework _separately_. This served two purposes. The first was presentational: by presenting the predictions of each model while the other two change models were 'switched off', we hope to have provided readers with clearer intuitions about the inner workings of each model. The second purpose was the test of _(in)sufficiency_ of each change mechanism in explaining the signature results from the two paradigms. We asked whether each of the mechanisms alone is sufficient to predict adaptive changes of speech perception. Ultimately, however, research on adaptive speech perception will have to go beyond such sufficiency tests. With a phenomenon as complex as human speech perception, it is most plausible that multiple mechanisms, from early perception to decision-making, _jointly_ contribute to the observed adaptive behavior.
 

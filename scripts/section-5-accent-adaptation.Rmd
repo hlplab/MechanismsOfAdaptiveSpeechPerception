@@ -748,6 +748,7 @@ get_accuracy_from_updated_bias_beta_only <- function(#this function is used when
              accuracy.se = u.across_simulations$response.mean.se))
   
   accuracy = log(u.across_simulations$response)
+
   return(accuracy)
 }
 ```
@@ -756,7 +757,6 @@ get_accuracy_from_updated_bias_beta_only <- function(#this function is used when
 
 grid_search_for_bias_model <- function(
     example_label = "Cue_reweighting",
-    experimenter.ideal_observer,
     range.lapse_rate = range.lapse_rate,
     range.beta_pi = range.beta_pi
   ) {
@@ -814,11 +814,20 @@ visualize_bias_parameter_space <- function(
           xaxis = list(title = "beta pi", titlefont = list(size = 16))))
 }
 ```
-  
+
+```{r grid-search-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE}
+history.optimization_bias.gridSearch <- grid_search_for_bias_model(example_label = example_label)
+
+best_performing_parameters.bias.gridSearch <- history.optimization_bias.gridSearch %>%
+  filter(accuracy == max(accuracy))
+```
+
 ```{r save-best-performing-models-changes-in-decision-making-from-grid-search, echo=FALSE, message=FALSE, warning=FALSE, eval = FALSE}
+
 # TO-DO: temporarily use best-performing parameters from grid search for all accent scenarios
-history.optimization_bias.gridSearch <-  readRDS(get_path(paste0("../models/history.optimization_bias_gridSearch_", example_label,".rds")))
-res_bias.gridSearch <- readRDS(get_path(paste0("../models/res.optimization_bias_gridSearch_", example_label,".rds")))
+#these files exist for the three additional cases
+# history.optimization_bias.gridSearch <-  readRDS(get_path(paste0("../models/history.optimization_bias_gridSearch_", example_label,".rds")))
+# res_bias.gridSearch <- readRDS(get_path(paste0("../models/res.optimization_bias_gridSearch_", example_label,".rds")))
 
 
 best_performing_parameters.bias = list()
@@ -831,17 +840,18 @@ saveRDS(best_performing_parameters.bias, get_path(paste0("../models/best_perform
 
 find_best_model.bias.AA <- function() {
   if(SET_SEED) set.seed(42007)
+  history.optimization_bias <- tibble(.rows = 0)
   
-  if (RESET_MODELS || !file.exists(get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds")))) {
+  if (RESET_MODELS || !file.exists(get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))) {
     
-    best_performing_parameters.bias <-
+    best_performing_parameters.bias.optimization <-
       optim( 
         ### using the commented out lines if one wishes to optimize over both lapse rate and beta pi
         # par = c(mean(range.lapse_rate), mean(log(range.beta_pi))), 
         # fn = get_accuracy_from_updated_bias,
         # lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
         # upper = c(max(range.lapse_rate), max(log(range.beta_pi))),
-        par = c(log(best_parameter.bias.gridSearch$beta_pi)),
+        par = c(log(best_performing_parameters.bias.gridSearch$beta_pi)),
         fn = get_accuracy_from_updated_bias_beta_only, 
         method = "L-BFGS-B", 
         lower = c(min(log(range.beta_pi))),
@@ -851,23 +861,25 @@ find_best_model.bias.AA <- function() {
           factr = 10^5)
         )
     
-    best_performing_parameters.bias$par <- c(0, exp(best_performing_parameters.bias$par[1]))
-    best_performing_parameters.bias$value %<>% exp(.)
+   best_performing_parameters.bias.optimization$par <- c(0, exp(best_performing_parameters.bias.optimization$par[1]))
+    best_performing_parameters.bias.optimization$value %<>% exp(.)
+    
+    history.bias.optimization <- history.optimization_bias
+    print(paste0("history has rows", nrow(history.bias.optimization))) # DEBUG
     
     saveRDS(best_performing_parameters.bias, get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
-    saveRDS(history.optimization_bias, get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds")))
+    saveRDS(history.bias.optimization, get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds")))
   } else {
     best_performing_parameters.bias <- readRDS(get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
-    history.optimization_bias <- readRDS(get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds")))
+    history.bias.optimization <- readRDS(get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds")))
   }
   
   return(best_performing_parameters.bias)
 }
 
 best_performing_parameters.bias <- find_best_model.bias.AA()
-
-
 ```
+
 
 ```{r study-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE}
 

@@ -548,7 +548,7 @@ for (i in 1:length(cases)){
 filename = c()
 for (i in 1:length(cases)){
   example_label = cases[i]
-  filename = c(file.path(get_path(paste0('../figures/plotly/p.3d.bias.model_gridSearch_', example_label, '.png'))), filename)
+  filename = c(filename, file.path(get_path(paste0('../figures/plotly/p.3d.bias.model_gridSearch_', example_label, '.png'))))
 }
 
 knitr::include_graphics(filename)

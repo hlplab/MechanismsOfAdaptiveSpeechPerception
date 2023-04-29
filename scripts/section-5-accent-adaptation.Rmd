@@ -807,8 +807,7 @@ visualize_bias_parameter_space <- function(
         cauto = F,
         cmax = 1,
         cmin = 0,
-        showscale = FALSE,
-        width = 900, height = 900) %>%
+        showscale = FALSE) %>%
       layout(
         margin = margin,
         scene = list(

@@ -524,10 +524,39 @@ plot_grid(
   ncol = 1, rel_heights = c(.15, .85))
 ```
 
-(ref:grid-search) Results of the grid search over the parameters for the change model for decision-making ($\beta_{\pi}$ and $\lambda$) for each of the four accent scenarios explored in Case Study 2.
+(ref:show-3d-grid-search) Results of the grid search over the parameters for the change model for decision-making for each of the four accent scenarios explored in Case Study 2.
+
+```{r grid-search-parameter-space-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
+#($\beta_{\pi}$ and $\lambda$) 
+cases = c("Cue_reweighting", "Contrast_reduction", "Contrast_shift", "Contrast_collapse")
+for (i in 1:length(cases)){
+  example_label = cases[i]
+  
+  if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.bias.model_gridSearch_', example_label, '.png')))) {
+  
+    d.bias.gridSearch <- grid_search_for_bias_model(example_label = example_label, experimenter.ideal_observer = m.io.VOT_f0.AA)
+    p.bias.gridSearch <- visualize_bias_parameter_space(data = d.bias.gridSearch,
+                                  range.lapse_rate = range.lapse_rate, 
+                                  range.beta_pi = range.beta_pi)
+      
+    save_3Dfigure(p.bias.gridSearch, paste0('p.3d.bias.model_gridSearch_', example_label, '.png'))
+  }
+}
+```
+
+```{r show-3d-grid-search, fig.show='hold', fig.align='center', out.width= c(rep("24%",4)), fig.cap="(ref:show-3d-grid-search)", fig.subcap=c('Cue_reweighting', 'Contrast_reduction', 'Contrast_shift', 'Contrast_collapse')}
+# filename = c()
+# for (i in 1:length(cases)){
+#   example_label = cases[i]
+#   filename = c(file.path(get_path(paste0('../figures/plotly/p.3d.bias.model_gridSearch_', example_label, '.png'))), filename)
+# }
+# 
+# knitr::include_graphics(filename)
+
+knitr::include_graphics(file.path(get_path(paste0('../figures/plotly/p.model_comparison_', example_label, '.png'))))
+```
 
 ```{r grid-search, fig.width=base.width*4 + 1, fig.height=base.height + .5, fig.cap = "(ref:grid-search)"}
-
 ```
 
 # Computational limitations of change models afford qualitative tests of their *sufficiency* {#sec:sufficiency}

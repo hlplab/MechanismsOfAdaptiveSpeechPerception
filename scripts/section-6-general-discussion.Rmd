@@ -46,6 +46,10 @@ To sum up, experimental psychologists and neuroscientists stand to benefit from 
 ### Recommendation 2: Analyses that link the acoustic-phonetic properties of stimuli and participants' responses
 
 ```{r set-3D-plot-parameters, warning=FALSE}
+# retrieve the exact dataset used for the cue-reweighting case
+d.AA.exposure <- d.AA.exposure.main
+d.AA.test <- d.AA.test.main
+
 p.current <- d.AA.exposure %>%
     mutate(Condition = paste0("Exposure: ", Condition)) %>%
     ggplot(aes(x = VOT, y = f0_Mel, color = Item.Category)) +
@@ -71,9 +75,11 @@ compare_models.AA <- function(
   d.model.compare <-
     bind_rows(
       data1 %>%
+        # mutate(prior_kappa = as.numeric(prior_kappa),
+        #        prior_nu = as.numeric(prior_nu)) %>%
         filter(category == Item.Intended_category) %>%
-        filter(prior_kappa == prior_kappa.selected & prior_nu == prior_nu.selected) %>%
-        droplevels() %>%
+        # filter(prior_kappa == prior_kappa.selected & prior_nu == prior_nu.selected) %>%
+        droplevels() %>% #TO-DO:fix it here
         distinct(Condition, Subject, prior_kappa, prior_nu, posterior) %>%
         mutate(model = "Representations"),
       data2 %>%
@@ -89,27 +95,27 @@ compare_models.AA <- function(
         distinct(Condition, Subject, prior_kappa.normalization, posterior) %>%
         mutate(model = "Normalization"))
 
-  for (j in 1:length(model_names)) {
-    data = d.model.compare %>%
-      filter(model == model_names[j])
+for (j in 1:length(model_names)) {
+  data = d.model.compare %>%
+    filter(model == model_names[j])
 
-    for (i in 1:length(conditions.AA)) {
-      output.AA <- prepare_3D.categorization_from_results(data, VOT_range, f0_range, n_points)
-      df.resp <- output.AA[[i]]
+  for (i in 1:length(conditions.AA)) {
+    output.AA <- prepare_3D.categorization_from_results(data, VOT_range, f0_range, n_points)
+    df.resp <- output.AA[[i]]
 
-      if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[j], '_', conditions.AA[i], '_', example_label, '.png')))) {
-        p.3d.categorization <-
-          plot_3D.categorization(df.resp, width = p_width, height = p_height) %>%
-          # select perspective that is good for showing categorization curve
-          layout(
-            margin = margin,
-            scene = list(
-              camera = list(
-                eye = list(x = -0.5, y = -2.5, z = 0.1))))
+    if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.model_', model_names[j], '_', conditions.AA[i], '_', example_label, '.png')))) {
+      p.3d.categorization <-
+        plot_3D.categorization(df.resp, width = p_width, height = p_height) %>%
+        # select perspective that is good for showing categorization curve
+        layout(
+          margin = margin,
+          scene = list(
+            camera = list(
+              eye = list(x = -0.5, y = -2.5, z = 0.1))))
 
-        save_3Dfigure(p.3d.categorization, paste0('p.3d.categorization.model_', model_names[j], '_', conditions.AA[i], '_', example_label, '.png'))
-      }
+      save_3Dfigure(p.3d.categorization, paste0('p.3d.categorization.model_', model_names[j], '_', conditions.AA[i], '_', example_label, '.png'))
     }
+  }
 
     # show differences between exposure conditions in log odds space
     if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.difference.model_', model_names[j], '_', example_label, '.png')))) {
@@ -199,15 +205,11 @@ make_plot_compare_models.AA <- function(
 (ref:show-model-categorization-3D-plots-best-performing) Using the best-performing parameterization for each model, the three change models predict different categorization functions when applied to the data from Case Study 2. From **left to right:** predictions for changes in representations, decision-making, and normalization. **Top row:** Predicted recognition accuracy from the three change models. **Second row:** Predicted categorization functions after L1-accented exposure. **Third row:** Same but after L2-accented exposure. **Bottom row:** Differences in predicted posterior log-odds of /d/ between the two exposure conditions. Blue indicates higher predicted posterior log-odds of /d/ in the L2-accented exposure condition, relative to the L1-accented exposure condition. Red indicates the opposite. Gray indicates a difference of 0. The three models make distinct predictions about how exposure affects the perception of specific tokens across the VOT-f0 space.
 
 ```{r compare-AA-models-results-across-three-mechanisms-best-performing, warning=FALSE}
-# retrieve the exact dataset used for the cue-reweighting case
-d.AA.exposure <- d.AA.exposure.main
-d.AA.test <- d.AA.test.main
-
 # load best-performing parameterization for the cue-reweighting case
 example_label = "Cue_reweighting"
 best_performing_parameters.representations <- readRDS(get_path(paste0("../models/best_performing_parameters.representations_", example_label,".rds")))
 best_performing_parameters.bias <- readRDS(get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
-best_performing_parameters.normalization <- readRDS(get_path(paste0("../models/best_performing_parameters.normalization_", example_label,".rds")))
+best_performing_parameters.normalization <- readRDS(get_path(paste0("../models/best_performing_parameters.normalization_", example_label,".rds"))) # TO-DO: double check these files are saved
 
 
 compare_model_label = "best-performing"
@@ -215,19 +217,23 @@ example_label = paste0(example_label, "_best-performing") # rename the example_l
 
 prior_kappa.selected = best_performing_parameters.representations$par[1]
 prior_nu.selected = best_performing_parameters.representations$par[2]
-lapse_rate.selected = best_performing_parameters.bias$par[1]
-beta_pi.selected = best_performing_parameters.bias$par[2]
+bias.parameters.select = d.AA.bias %>% filter(posterior.lapse_rate %in% posterior.lapse_rate[which.min(abs(posterior.lapse_rate - best_performing_parameters.bias$par[1]))] & 
+                  beta_pi %in% beta_pi[which.min(abs(beta_pi - best_performing_parameters.bias$par[2]))]) %>%
+  distinct(posterior.lapse_rate, beta_pi)
+lapse_rate.selected = bias.parameters.select$posterior.lapse_rate
+beta_pi.selected = bias.parameters.select$beta_pi
 prior_kappa.normalization.selected = best_performing_parameters.normalization$par[1]
 
 compare_models.AA(
-  get_representation_models_for_plot(
+  data1 <- get_representation_models_for_plot(
     prior_kappa = prior_kappa.selected,
     prior_nu = prior_nu.selected),
-  get_decision_making_models_for_plot(
+ data2 <- get_decision_making_models_for_plot(
     lapse_rate = lapse_rate.selected,
     beta_pi = beta_pi.selected),
-  get_normalization_models_for_plot(
-    prior_kappa.normalization = prior_kappa.normalization.selected),
+ data3 <- get_normalization_models_for_plot(
+    prior_kappa.normalization = prior_kappa.normalization.selected) %>%
+    filter(prior_kappa.normalization == prior_kappa.normalization.selected),
   VOT_range, f0_range, n_points)
 ```
 

@@ -851,6 +851,8 @@ find_best_model.bias.AA <- function() {
         )
     
     best_performing_parameters.bias$par <- c(0, exp(best_performing_parameters.bias$par[1]))
+    best_performing_parameters.bias$value %<>% exp(.)
+    
     saveRDS(best_performing_parameters.bias, get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
     saveRDS(history.optimization_bias, get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds")))
   } else {
@@ -862,8 +864,20 @@ find_best_model.bias.AA <- function() {
 }
 
 best_performing_parameters.bias <- find_best_model.bias.AA()
-best_performing_parameters.bias$value %<>% exp(.)
+
+
 ```
+
+```{r save-best-performing-models-changes-in-decision-making-from-grid-search, echo=FALSE, message=FALSE, warning=FALSE, eval = FALSE}
+# TO-DO: temporarily use best-performing parameters from grid search for all accent scenarios
+history.optimization_bias.gridSearch <-  readRDS(get_path(paste0("../models/history.optimization_bias_gridSearch_", example_label,".rds")))
+res_bias.gridSearch <- readRDS(get_path(paste0("../models/res.optimization_bias_gridSearch_", example_label,".rds")))
+best_performing_parameters.bias = list()
+best_performing_parameters.bias$par <- c(res_bias.gridSearch$minlevels[1], exp(res_bias.gridSearch$minlevels[2]))
+saveRDS(best_performing_parameters.bias, get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
+```
+
+
 
 ```{r study-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -1334,7 +1348,7 @@ construct_accent_models <- function(
   }
   
   history.optimization_bias <<- tibble(.rows = 0)
-  best_performing_parameters.bias <- find_best_model.bias.AA()
+  best_performing_parameters.bias <- find_best_model.bias.AA() #TO-DO: doubleck check the logged beta to see if it is in raw space or log space
   bias.pred <- get_decision_making_models_for_plot(
     lapse_rate = round(best_performing_parameters.bias$par[1], digits = 2), # here one can select to plot just the best-performing parameterization or to visualize a range of parameters by specifying the values assigned to lapse_rate and beta_pi
     beta_pi = round(best_performing_parameters.bias$par[2], digits = 2))

@@ -1096,7 +1096,7 @@ prepare_3D.categorization_from_results <- function(data, cue1_range, cue2_range,
     ##----------------
     # For the bias model, get the average response predictions from multiple simulations
     if("Decision_making" %in% levels(factor(data$model))){
-    d.output.step1%<>%
+      d.output.step1 %<>%
       group_by(!!! syms(setdiff(names(.), c("sim", "posterior", "response")))) %>% 
       summarise(
         response.n_sims = n_distinct(sim),

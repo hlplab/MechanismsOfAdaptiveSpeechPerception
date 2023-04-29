@@ -1262,23 +1262,23 @@ grid_search_for_bias_model <- function(
   if (RESET_MODELS || !file.exists(get_path(paste0("../models/history.optimization_bias_gridSearch_", example_label,".rds")))) {
   history.optimization_bias <<- tibble(.rows = 0)
   
-  res <- NMOF::gridSearch(get_accuracy_from_updated_bias, #DEBUG,
-                    npar = 2,   ## length of x
-                    # method = "multicore",
-                    # mc.control = list(mc.cores = detectCores()),
-                    lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
-                    upper = c(max(range.lapse_rate), max(log(range.beta_pi))),
-                    n = 10)      ## number of levels per element in each variable during the grid search.
+  res <- NMOF::gridSearch(
+    get_accuracy_from_updated_bias, #DEBUG,
+    npar = 2,   ## length of x
+    # method = "multicore",
+    # mc.control = list(mc.cores = detectCores()),
+    lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
+    upper = c(max(range.lapse_rate), max(log(range.beta_pi))),
+    n = 10)      ## number of levels per element in each variable during the grid search.
 
-  
   saveRDS(history.optimization_bias, paste0("../models/history.optimization_bias_gridSearch_", example_label, '.rds'))
   saveRDS(res, paste0("../models/res.optimization_bias_gridSearch_", example_label, '.rds'))
   
   } else {
     history.optimization_bias <- readRDS(paste0("../models/history.optimization_bias_gridSearch_", example_label, '.rds'))
-    
     res <- readRDS(paste0("../models/res.optimization_bias_gridSearch_", example_label, '.rds'))
   }
+  
   return(res)
 }
 

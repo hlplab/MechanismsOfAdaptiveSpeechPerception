@@ -869,7 +869,6 @@ find_best_model.bias.AA <- function() {
     best_performing_parameters.bias.optimization$value %<>% exp(.)
     
     history.bias.optimization <- history.optimization_bias
-    print(paste0("history has rows", nrow(history.bias.optimization))) # DEBUG
     
     saveRDS(best_performing_parameters.bias, get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
     saveRDS(history.bias.optimization, get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds")))

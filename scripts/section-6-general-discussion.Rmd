@@ -62,10 +62,7 @@ compare_models.AA <- function(
   d.model.compare <-
     bind_rows(
       data1 %>%
-        # mutate(prior_kappa = as.numeric(prior_kappa),
-        #        prior_nu = as.numeric(prior_nu)) %>%
         filter(category == Item.Intended_category) %>%
-        # filter(prior_kappa == prior_kappa.selected & prior_nu == prior_nu.selected) %>%
         droplevels() %>%
         distinct(Condition, Subject, prior_kappa, prior_nu, posterior) %>%
         mutate(model = "Representations"),

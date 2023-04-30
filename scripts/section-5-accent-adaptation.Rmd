@@ -1490,7 +1490,7 @@ p.AA.exposure <- d.AA.exposure.target.cases %>%
   facet_grid(Case ~ Title, switch = "y") + theme(legend.position="top") 
 ```
 
-```{r AA-plot-results-additional-cases, fig.width=base.width*4 + .5, fig.height=base.height*3 + .5, fig.cap = "(ref:AA-plot-results-additional-cases)", warning=FALSE}
+```{r AA-plot-results-additional-cases, fig.width=base.width*4 + .5, fig.height=base.height*4 + .5, fig.cap = "(ref:AA-plot-results-additional-cases)", warning=FALSE}
 d.AA.results.best.cases <- 
   bind_rows(
   d.AA.results.cue_reweighting.best %>%

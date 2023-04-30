@@ -6,9 +6,9 @@ Let's delete to-dos after they have been addressed, and post in Slack what we've
       * make sure that best-fitting decision-making model in Fig 29 is correct (using same max sims as in the previous figures)
     * SI and Discussion, improve 3d figures by removing white space around them. Might be achieved by zoom, or by handing orca the right parameters.
     
-  * Everyone: 
-  * Send paper out to emily myers and james mcqueen and ask whether they’d be willing to read this in their lab? It's now or never.
-  
+  * Everyone:
+    * FILL in URL-PLACEHOLDER in 4 figure captions in Section 2. 
+
 ## Things to perhaps do later:
 
   * Florian

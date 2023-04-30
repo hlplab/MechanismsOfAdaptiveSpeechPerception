@@ -228,15 +228,15 @@ p.means +
 This section contains additional details about the change models.
 
 ## Changes in category representations {#sec:SI-models-changes-in-representations}
-The updating of the four $\mathcal{NW^{-1}}$ parameters after $N$ observations of a category $c$ from the talker is described by the equations in \@ref(eq:niw-updating-parameters), and is deterministic [for details and derivation, see @murphy2012, p. 134]. $\kappa_c$ and $\nu_c$ simply increase by 1 with each observation, capturing the fact that each observation adds additional information about the talker's category mean and covariances. $\mathrm{m}_{c,n}$ is a weighted combination of its prior value $\mathrm{m}_{c,0}$ and the category mean of the $N$ observations $\bar{x}$---following the same logic that we applied to the inference of the overall cue mean in Equation \@ref(eq:normalization-change). Similarly, $\mathrm{S}_{c,n}$ is a weighted combination of its prior value $\mathrm{S}_{c,0}$ and the category variability of the $N$ observations,^[$\mathrm{S}_c \triangleq \Sigma_{i=1}^N x_{i,c} x_{i,c}^T$ is the uncentered sum of squares matrix of the $N$ observations [@murphy2012].] plus an additional term that captures the uncertainty about the category mean. Figure \ref{fig:model-belief-updating} visualizes the belief-updating process in Equations \@ref(eq:niw-updating)-\@ref(eq:niw-updating-parameters) as a graphical model.
+The updating of the four $\mathcal{NW^{-1}}$ parameters after $N$ observations of a category $c$ from the talker is described by the equations in \@ref(eq:niw-updating-parameters), and is deterministic [for details and derivation, see @murphy2012, p. 134]. $\kappa_c$ and $\nu_c$ simply increase by 1 with each observation, capturing the fact that each observation adds additional information about the talker's category mean and covariances. $\mathrm{m}_{c,N}$ is a weighted combination of its prior value $\mathrm{m}_{c,0}$ and the category mean of the $N$ observations $\bar{x}$---following the same logic that we applied to the inference of the overall cue mean in Equation \@ref(eq:normalization-change). Similarly, $\mathrm{S}_{c,N}$ is a weighted combination of its prior value $\mathrm{S}_{c,0}$ and the category variability of the $N$ observations,^[$\mathrm{S}_c \triangleq \Sigma_{i=1}^N x_{c,i} x_{c,i}^T$ is the uncentered sum of squares matrix of the $N$ observations [@murphy2012].] plus an additional term that captures the uncertainty about the category mean. Figure \ref{fig:model-belief-updating} visualizes the belief-updating process in Equation \@ref(eq:niw-updating-parameters) as a graphical model.
 
 \begin{equation}\label{eq:niw-updating-parameters}
 \begin{split}
-\mathrm{m}_{c,n} & = \frac{\kappa_{c,0} \mathrm{m}_{c,0} + N_c \bar{x}}{\kappa_{c,n}} = \frac{\kappa_{c,0}}{\kappa_{c,0} + N_c} \mathrm{m}_{c,0} + \frac{N_c}{\kappa_{c,0} + N_c}\bar{x}_c \\
-\kappa_{c,n} & = \kappa_{c,0} + N_c \\
-\nu_{c,n} & = \nu_{c,0} + N_c \\
-\mathrm{S}_{c,n} & = \mathrm{S}_{c,0} + \mathrm{S}_{\bar{x}_c} + \frac{\kappa_{c,0} N_c}{\kappa_{c,0} + N_c}\left( \bar{x}_c-\mathrm{m}_{c,0} \right) \left( \bar{x}_c-\mathrm{m}_{c,0} \right)^T \\
- & = \mathrm{S}_{c,0} + \mathrm{S}_c + \kappa_{c,0} \mathrm{m}_{c,0} \mathrm{m}_{c,0}^T - \kappa_{c,n} \mathrm{m}_{c,n} \mathrm{m}_{c,n}^T
+\mathrm{m}_{c,N} & = \frac{\kappa_{c,0} \mathrm{m}_{c,0} + N_c \bar{x}}{\kappa_{c,N}} = \frac{\kappa_{c,0}}{\kappa_{c,0} + N_c} \mathrm{m}_{c,0} + \frac{N_c}{\kappa_{c,0} + N_c}\bar{x}_c \\
+\kappa_{c,N} & = \kappa_{c,0} + N_c \\
+\nu_{c,N} & = \nu_{c,0} + N_c \\
+\mathrm{S}_{c,N} & = \mathrm{S}_{c,0} + \mathrm{S}_{\bar{x}_c} + \frac{\kappa_{c,0} N_c}{\kappa_{c,0} + N_c}\left( \bar{x}_c-\mathrm{m}_{c,0} \right) \left( \bar{x}_c-\mathrm{m}_{c,0} \right)^T \\
+ & = \mathrm{S}_{c,0} + \mathrm{S}_c + \kappa_{c,0} \mathrm{m}_{c,0} \mathrm{m}_{c,0}^T - \kappa_{c,N} \mathrm{m}_{c,N} \mathrm{m}_{c,N}^T
 \end{split}
 \end{equation}
 
@@ -253,10 +253,10 @@ The updating of the four $\mathcal{NW^{-1}}$ parameters after $N$ observations o
     \factor[above=of mu] {mudist} {left:$\mathcal{N}$} {} {}; %
     \factor[above=of Sigma] {Sigmadist} {left:$\mathcal{W}^{-1}$} {} {}; %
     % hyperparameters
-    \node[det, above=of mudist] (kappa) {$\kappa_{c,n}$} ; %
-    \node[det, left=of kappa] (m) {$\mathrm{m}_{c,n}$} ; %
-    \node[det, above=of Sigmadist] (S) {$\mathrm{S}_{c,n}$} ; %
-    \node[det, right=of S] (nu) {$\nu_{c,n}$} ; %
+    \node[det, above=of mudist] (kappa) {$\kappa_{c,N}$} ; %
+    \node[det, left=of kappa] (m) {$\mathrm{m}_{c,N}$} ; %
+    \node[det, above=of Sigmadist] (S) {$\mathrm{S}_{c,N}$} ; %
+    \node[det, right=of S] (nu) {$\nu_{c,N}$} ; %
     % prior
     \factor[above=1 of m] {update_m} {} {} {}; %
     \factor[above=1.05 of kappa] {update_kappa} {} {} {}; %
@@ -325,8 +325,8 @@ Here, we model the prediction error as the surprisal experienced when observing 
 
 \begin{equation}\label{eq:bias-updating}
 \begin{split}
-\mathrm{logit}(\pi_{c,n_{observed}}) & = \mathrm{logit}(\pi_{N-1,c}) + \beta_{\pi} I(c_{observed}) \\
-                          & = \mathrm{logit}(\pi_{N-1,c}) - \beta_{\pi} \log_2 p_{N-1}(c_{observed}) \\
+\mathrm{logit}(\pi_{c_{observed},N}) & = \mathrm{logit}(\pi_{c_{observed},N-1}) + \beta_{\pi} I(c_{observed}) \\
+                          & = \mathrm{logit}(\pi_{c_{observed},N-1}) - \beta_{\pi} \log_2 p_{N-1}(c_{observed}) \\
 \end{split}
 \end{equation}
 
@@ -334,7 +334,7 @@ The same amount that is added to the bias of the observed (labeled) category is 
 
 \begin{equation}\label{eq:bias-probability}
 \begin{split}
-\pi_{c,n} = \frac{1}{1+ e^{\mathrm{logit}(\pi_{n-1,c}) + \beta_{\pi} I(c_{observed}) }}
+\pi_{c,N} = \frac{1}{1+ e^{\mathrm{logit}(\pi_{n-1,c}) + \beta_{\pi} I(c_{observed}) }}
 \end{split}
 \end{equation}
 

@@ -109,7 +109,7 @@ p.talkers +
         vars(VOT, f0_Mel),
         mean),
     mapping = aes(group = Talker),
-    alpha = .9, size = .3, color = "gray") +
+    alpha = .9, linewidth = .3, color = "gray") +
   geom_point(
     data = . %>%
       group_by(Talker, gender, category, poa, voicing) %>%
@@ -141,7 +141,7 @@ p.means +
         vars(VOT, f0_Mel),
         mean),
     mapping = aes(group = Talker),
-    alpha = .1, size = .3, color = "gray") +
+    alpha = .1, linewidth = .3, color = "gray") +
   geom_point(
     data = . %>%
       group_by(Talker, gender, category, poa, voicing) %>%
@@ -191,7 +191,7 @@ p.talkers +
         vars(VOT_centered, f0_Mel_centered),
         mean),
     mapping = aes(group = Talker),
-    alpha = .9, size = .3, color = "gray") +
+    alpha = .9, linewidth = .3, color = "gray") +
   geom_point(
     data = . %>%
       group_by(Talker, gender, category, poa, voicing) %>%
@@ -213,7 +213,7 @@ p.means +
         vars(VOT_centered, f0_Mel_centered),
         mean),
     mapping = aes(group = Talker),
-    alpha = .1, size = .3, color = "gray") +
+    alpha = .1, linewidth = .3, color = "gray") +
   geom_point(
     data = . %>%
       group_by(Talker, gender, category, poa, voicing) %>%

@@ -1,9 +1,6 @@
 # THINGS TO DO
-Let's delete to-dos after they have been addressed, and post in Slack what we've done. Thanks.
-
   * Xin:
-    * fig 29:
-      * make sure that best-fitting decision-making model in Fig 29 is correct (using same max sims as in the previous figures)
+    * fig 29: make sure that best-fitting decision-making model in Fig 29 is correct (using same max sims as in the previous figures)
     * SI and Discussion, improve 3d figures by removing white space around them. Might be achieved by zoom, or by handing orca the right parameters.
     
   * Everyone:

@@ -834,19 +834,11 @@ best_performing_parameters.bias.gridSearch <- history.optimization_bias.gridSear
   filter(accuracy == max(accuracy))
 ```
 
-```{r save-best-performing-models-changes-in-decision-making-from-grid-search, echo=FALSE, message=FALSE, warning=FALSE, eval = FALSE}
-
-# TO-DO: temporarily use best-performing parameters from grid search for all accent scenarios
-#these files exist for the three additional cases
-# history.optimization_bias.gridSearch <-  readRDS(get_path(paste0("../models/history.optimization_bias_gridSearch_", example_label,".rds")))
-# res_bias.gridSearch <- readRDS(get_path(paste0("../models/res.optimization_bias_gridSearch_", example_label,".rds")))
-
-
+```{r save-best-performing-models-changes-in-decision-making-from-grid-search-place-holder, echo=FALSE, message=FALSE, warning=FALSE, eval = FALSE}
 best_performing_parameters.bias = list()
 best_performing_parameters.bias$par <- c(res_bias.gridSearch$minlevels[1], exp(res_bias.gridSearch$minlevels[2]))
 saveRDS(best_performing_parameters.bias, get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
 ```
-
 
 ```{r study-AA-models-changes-in-decision-making-optimization, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -1187,128 +1179,6 @@ For the hypothetical L2 accent considered in Case Study 2, the three change mode
 
 Fortunately for research on adaptive speech perception, it is not always the case that the three change models can explain similar ranges of performance. A critical insight of ASP is that the predicted benefit of L2-accented exposure under each mechanism depends on the acoustic-phonetic statistics of the accent, relative to L1 listeners’ prior expectations. For experiments using naturally accented stimuli, this means that the results are expected to depend on the specific acoustic-phonetic properties of the exposure and test tokens. To further illustrate this point, we simulated three additional scenarios, shown in Figure \@ref(fig:AA-plot-results-additional-cases)A. The top row of Figure \@ref(fig:AA-plot-results-additional-cases) replot the example of cue weighting presented above for comparison. Each of the three additional scenarios (2nd to bottom rows) is representative of commonly attested differences between L1- and L2-accents. The second row of Figure \@ref(fig:AA-plot-results-additional-cases) shows an example of *contrast reduction*, in which the L2 accent shows a greater category overlap than the L1 accent. Here it is simulated by shifting /d/ category towards /t/ along the VOT continuum while keeping the latter unchanged [as qualitatively attested for, e.g., vowels in Spanish-accented English, @wade2007]. The third row shows an example of *contrast shift*, where two categories in L2-accented speech are shifted along one or more of the cue dimensions as compared to L1-accented speech. Here it is simulated by shifting both /d/ and /t/ categories towards lower VOT [qualitatively attested for, e.g., word-initial stops in French-accented English, @Sumner2011a]. The bottom row of Figure \@ref(fig:AA-plot-results-additional-cases) shows a more extreme example, exhibiting almost complete *contrast collapse* [similar to the loss of the /s/-/`r linguisticsdown::cond_cmpl("θ")`/ contrast that can occur in Mandarin-accented English, @zheng-samuel2020]. Here it is simulated by making /d/ identical to /t/. 
 
-```{r compare-AA-models-best-three-functions-DEBUG, eval = FALSE}
-simulation.control <-
-  list(
-    min.simulations = 50, 
-    max.simulations = 100, 
-    step.simulations = 1, 
-    target_accuracy_se = .002)
-
-# Examine a new scenario: contrast reduction
-min_VOT <- 5
-dist.L2_category.cue1 <- 0.5
-dist.L2_category.cue2 <- 0
-shift.cue1 <- 0
-shift.cue2 <- 0
-var.ratio <- 1
-example_label = "Contrast_reduction"
-
-# Examine a new scenario: contrast shift
-min_VOT <- -100 # allows negative VOT when generating exposure and test data
-dist.L2_category.cue1 <- 1
-dist.L2_category.cue2 <- 0
-shift.cue1 <- -1.2
-shift.cue2 <- 0
-var.ratio <- 1
-example_label = "Contrast_shift"
-
-# # Examine a new scenario: contrast collapse
-# min_VOT <- -100 # allows negative VOT when generating exposure and test data
-# dist.L2_category.cue1 <- 0
-# dist.L2_category.cue2 <- 0
-# shift.cue1 <- 0
-# shift.cue2 <- 0
-# var.ratio <- 1
-# example_label = "Contrast_collapse"
-
-# Function to construct change model of each type and select the best performing parameter combination
-grid_search_for_bias_model <- function(
-    example_label = "Cue_reweighting",
-    experimenter.ideal_observer,
-    category_dist_ratio1 = dist.L2_category.cue1,
-    category_dist_ratio2 = dist.L2_category.cue2,
-    shift_mean_1 = shift.cue1, 
-    shift_mean_2 = shift.cue2,
-    test.n_block = n.test_block,
-    n.subject = n.subject,
-    n_test = n.test.token
-  ) {
-  if(SET_SEED) set.seed(42007)
-  
-  d.AA.exposure <<-
-    make_accent_adaptation_exposure_design(
-      experimenter.ideal_observer = m.io.VOT_f0.AA, 
-      category_dist_ratio1 = dist.L2_category.cue1, 
-      category_dist_ratio2 = dist.L2_category.cue2, 
-      shift_mean_1 = shift.cue1, 
-      shift_mean_2 = shift.cue2) %>%
-    add_subjects_to_exposure(n.subject = n.subject)
-
-  d.AA.test <<- 
-    make_accent_adaptation_test_design(
-      experimenter.ideal_observer = m.io.VOT_f0.AA, 
-      test.n_block = n.test_block, 
-      n_test = n.test.token, 
-      category_dist_ratio1 = dist.L2_category.cue1, 
-      category_dist_ratio2 = dist.L2_category.cue2, 
-      shift_mean_1 = shift.cue1, 
-      shift_mean_2 = shift.cue2) %>%
-    add_subjects_to_test.AA(n.subject = n.subject)
-  
-  p.exposure_test <- make_exposure_test_plot(d.AA.exposure, d.AA.test)
-  ggsave(paste0('../figures/plotly/exposure_test_distribution_', example_label, '.png'), plot = p.exposure_test, width = base.width*3 + .5, height = base.height + .5, dpi = 300)
-  
-  if (RESET_MODELS || !file.exists(get_path(paste0("../models/history.optimization_bias_gridSearch_", example_label,".rds")))) {
-  history.optimization_bias <<- tibble(.rows = 0)
-  
-  res <- NMOF::gridSearch(
-    get_accuracy_from_updated_bias, #DEBUG,
-    npar = 2,   ## length of x
-    # method = "multicore",
-    # mc.control = list(mc.cores = detectCores()),
-    lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
-    upper = c(max(range.lapse_rate), max(log(range.beta_pi))),
-    n = 10)      ## number of levels per element in each variable during the grid search.
-
-  saveRDS(history.optimization_bias, paste0("../models/history.optimization_bias_gridSearch_", example_label, '.rds'))
-  saveRDS(res, paste0("../models/res.optimization_bias_gridSearch_", example_label, '.rds'))
-  
-  } else {
-    history.optimization_bias <- readRDS(paste0("../models/history.optimization_bias_gridSearch_", example_label, '.rds'))
-    res <- readRDS(paste0("../models/res.optimization_bias_gridSearch_", example_label, '.rds'))
-  }
-  
-  return(res)
-}
-
-start_time <- Sys.time() #DEBUG
-temp.gridSearch <- grid_search_for_bias_model(example_label = example_label, experimenter.ideal_observer = m.io.VOT_f0.AA)
-  end_time <- Sys.time() #DEBUG
-  end_time - start_time #DEBUG
-
-  
-# visualize_bias_parameter_space(data = history.optimization_bias.77,
-#                                range.lapse_rate = range.lapse_rate,
-#     range.beta_pi = range.beta_pi) %>%
-#   layout(
-#       scene = list(
-#         aspectratio = list(x = 1.2, y = 1.2, z = 1), # zooming in on the plot, values larger than 0
-#         camera = list(
-#           eye = list(x = -0.5, y = -2.5, z = 0.5), # perspective good for showing categorization curve
-#           up =  list(x = 0, y = 0, z = 1)),
-#         zaxis = list(range = c(0.4,0.6))))
-# 
-# example_label = "Contrast_shift"
-# history.optimization_bias.77 <- readRDS(paste0("../models/history.optimization_bias_gridSearch_", example_label, '77.rds'))
-# res.77 <- readRDS(paste0("../models/res.optimization_bias_gridSearch_", example_label, '77.rds'))
-# 
-# example_label = "Contrast_reduction"
-# history.optimization_bias.contrast_reduction <- readRDS(paste0("../models/history.optimization_bias_gridSearch_", example_label, '.rds'))
-# res.contrast_reduction <- readRDS(paste0("../models/res.optimization_bias_gridSearch_", example_label, '.rds'))
-```
-
-
 ```{r compare-AA-models-best-three-functions}
 # Function to construct change model of each type and select the best performing parameter combination
 construct_accent_models <- function(
@@ -1365,7 +1235,7 @@ construct_accent_models <- function(
   }
   
   history.optimization_bias <<- tibble(.rows = 0)
-  best_performing_parameters.bias <- find_best_model.bias.AA() #TO-DO: doubleck check the logged beta to see if it is in raw space or log space
+  best_performing_parameters.bias <- find_best_model.bias.AA() 
   
   # here one can select to plot just the best-performing parameterization or to visualize a range of 
   # parameters by specifying the values assigned to lapse_rate and beta_pi

@@ -91,11 +91,6 @@ compare_models.AA <- function(
     fn.check <- paste0('p.3d.categorization.model_', model_names[j], '_', conditions.AA[1], '_', example_label, '.png')
     if (RESET_FIGURES || !file.exists(file.path(get_path('../figures/plotly/'), fn.check))) {
       output.AA <- prepare_3D.categorization_from_results(data, VOT_range, f0_range, n_points)
-      saveRDS(
-        output.AA, 
-        file.path(
-          get_path('../models/'), 
-          paste0("d.AA.compare_three_models_categorization_", model_names[j], '.rds')))
       
       for (i in 1:length(conditions.AA)) {
         message(paste("...", conditions.AA[i]))

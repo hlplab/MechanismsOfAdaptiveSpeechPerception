@@ -428,7 +428,7 @@ This completes the description of the categorization model in Figure \ref{fig:mo
 \hypertarget{sec:change-models}{%
 \subsection{The change models (`adaptation'/`learning')}\label{sec:change-models}}
 
-Next, we extend this model to capture \emph{changes} at any of the three mechanistic levels. That is, we specify \emph{change models} that describe how \(\pi_c\), \(\mu_c\), \(\Sigma_c\), and \(\mu\) can change with exposure. It is these change models that make it possible to use ASP to derive predictions for human responses following exposure---for example, during the test phase of an experiment on perceptual recalibration or accent adaptation (see Figure \ref{fig:overview-change}). Each of the three change models introduces at least one new parameter. These parameter determine the speed of adaption (similar to learning rates), and must be estimated from perceptual data.
+Next, we extend this model to capture \emph{changes} at any of the three mechanistic levels. That is, we specify \emph{change models} that describe how \(\pi_c\), \(\mu_c\), \(\Sigma_c\), and \(\mu\) can change with exposure. It is these change models that make it possible to use ASP to derive predictions for human responses following exposure---for example, during the test phase of an experiment on perceptual recalibration or accent adaptation (see Figure \ref{fig:overview-change}). Each of the three change models introduces at least one new parameter. These parameter determine the speed of adaptation (similar to learning rates), and must be estimated from perceptual data.
 
 As anticipated in the introduction, the three change models differ in their computational and representational parsimony---i.e., in the number of parameters that listeners (and researchers) need to infer as well as the amount of information that listeners are assumed to keep in memory.
 
@@ -549,22 +549,22 @@ As listeners observe additional information from the unfamiliar talker, they upd
 
 \begin{figure}
 
-{\centering \animategraphics[,controls,loop]{5}{../figures/knitted/demonstrate-changes-in-representations-}{1}{1}
+{\centering \includegraphics{../figures/knitted/demonstrate-changes-in-representations-1} 
 
 }
 
-\caption[Illustrating the effects of the strength of prior beliefs about the category means (\(\kappa_{c,0}\)) and covariances (\(\nu_{c,0}\)) on changes in the expected category likelihoods, assuming a binary phonetic contrast between two Gaussian categories (/d/-/t/) along a unidimensional continuum (VOT). Updating is shown for the data points in the rug along the x-axis: 20 observations each of /d/and/t/ from a talker who realized both categories with a shifted mean of 25 msec, and exhibits typical variance for /d/ but only half of the typical variance for /t/. We set the lapse rate \(\lambda = 0\) and response biases to uniform (\(\pi_{c,0}=.5\)).]{Illustrating the effects of the strength of prior beliefs about the category means (\(\kappa_{c,0}\)) and covariances (\(\nu_{c,0}\)) on changes in the expected category likelihoods, assuming a binary phonetic contrast between two Gaussian categories (/d/-/t/) along a unidimensional continuum (VOT). Updating is shown for the data points in the rug along the x-axis: 20 observations each of /d/and/t/ from a talker who realized both categories with a shifted mean of 25 msec, and exhibits typical variance for /d/ but only half of the typical variance for /t/. We set the lapse rate \(\lambda = 0\) and response biases to uniform (\(\pi_{c,0}=.5\)).}\label{fig:demonstrate-changes-in-representations}
+\caption{Illustrating the effects of the strength of prior beliefs about the category means (\(\kappa_{c,0}\)) and covariances (\(\nu_{c,0}\)) on changes in the expected category likelihoods. We demonstrate this for a binary phonetic contrast between two Gaussian categories (/d/-/t/) along a unidimensional continuum (VOT). Shown are the results after updating. A video animation of the incremental updating process is available online at URL-PLACEHOLDER. We simulate exposure to 20 observations each of /d/and/t/ from a talker who realized both categories with a shifted mean of 25 msec, and exhibits typical variance for /d/ but only half of the typical variance for /t/. We set the lapse rate \(\lambda = 0\) and response biases to uniform (\(\pi_{c,0}=.5\)).}\label{fig:demonstrate-changes-in-representations}
 \end{figure}
 
 
 
 \begin{figure}
 
-{\centering \animategraphics[,controls,loop]{5}{../figures/knitted/demonstrate-changes-in-representations-b-}{1}{1}
+{\centering \includegraphics{../figures/knitted/demonstrate-changes-in-representations-b-1} 
 
 }
 
-\caption[Changes in expected categorization functions resulting from the changes in the expected category likelihoods in Figure \ref{fig:demonstrate-changes-in-representations}. We set the lapse rate \(\lambda = 0\), the prior lapse biases to uniform (\(\pi_{c,0}=.5\)). Neither normalization, nor response biases changed as a function of the input.]{Changes in expected categorization functions resulting from the changes in the expected category likelihoods in Figure \ref{fig:demonstrate-changes-in-representations}. We set the lapse rate \(\lambda = 0\), the prior lapse biases to uniform (\(\pi_{c,0}=.5\)). Neither normalization, nor response biases changed as a function of the input.}\label{fig:demonstrate-changes-in-representations-b}
+\caption{Changes in expected categorization functions resulting from the changes in the expected category likelihoods in Figure \ref{fig:demonstrate-changes-in-representations}. Shown are the results after updating. A video animation of the incremental updating process is available online at URL-PLACEHOLDER. Neither normalization, nor response biases changed as a function of the input.}\label{fig:demonstrate-changes-in-representations-b}
 \end{figure}
 
 Unlike normalization, changes in category representations can capture \emph{category-specific} changes in cue distributions. As we lay out in more detail in the general discussion, this makes representational changes less parsimonious than normalization but also more expressive: there are ways in which talkers might differ from each other that can be better captured by changes in representations than by normalization (which of these two change mechanisms better describes \emph{listeners'} abilities is, however, an open question).
@@ -611,22 +611,22 @@ Critically, this strong constraint on changes in decision-making only follows if
 
 \begin{figure}
 
-{\centering \animategraphics[,controls,loop]{5}{../figures/knitted/demonstrate-lapse-bias-change-}{1}{1}
+{\centering \includegraphics{../figures/knitted/demonstrate-lapse-bias-change-1} 
 
 }
 
-\caption[Illustrating the effects of \(\beta_{\pi}\) on changes in the categorization function (\textbf{Left:} posterior probability, \textbf{Right:} posterior log-odds). The model has the same uncertain prior beliefs about category mean and variances as the model in Figure \ref{fig:demonstrate-niw-prior-mu-sigma}D (\(\kappa_{c,0} = \nu_{c,0}=0\)). Neither normalization nor prior beliefs about the categories changes as a function of exposure. We set the lapse rate \(\lambda = 0\), the prior lapse biases to uniform (\(\pi_{c,0}=.5\)). The input to this change model is identical to what was used in Figures \ref{fig:demonstrate-changes-in-representations} and \ref{fig:demonstrate-changes-in-representations-b}. In the left panel, orange arrows indicate changes in the category boundary (point of subjective equality) for \(\beta_{\pi} = 1\). In the right panel, orange arrows indicate the distance between the posterior log-odds resulting from the two most extreme \(\beta_{\pi}\)s. This highlights the fact that changes to response biases have additive effects on the log-odds of /d/ responses when \(\lambda = 0\).]{Illustrating the effects of \(\beta_{\pi}\) on changes in the categorization function (\textbf{Left:} posterior probability, \textbf{Right:} posterior log-odds). The model has the same uncertain prior beliefs about category mean and variances as the model in Figure \ref{fig:demonstrate-niw-prior-mu-sigma}D (\(\kappa_{c,0} = \nu_{c,0}=0\)). Neither normalization nor prior beliefs about the categories changes as a function of exposure. We set the lapse rate \(\lambda = 0\), the prior lapse biases to uniform (\(\pi_{c,0}=.5\)). The input to this change model is identical to what was used in Figures \ref{fig:demonstrate-changes-in-representations} and \ref{fig:demonstrate-changes-in-representations-b}. In the left panel, orange arrows indicate changes in the category boundary (point of subjective equality) for \(\beta_{\pi} = 1\). In the right panel, orange arrows indicate the distance between the posterior log-odds resulting from the two most extreme \(\beta_{\pi}\)s. This highlights the fact that changes to response biases have additive effects on the log-odds of /d/ responses when \(\lambda = 0\).}\label{fig:demonstrate-lapse-bias-change}
+\caption{Illustrating the effects of \(\beta_{\pi}\) on changes in the categorization function (\textbf{Left:} posterior probability, \textbf{Right:} posterior log-odds). Shown are the results after updating. A video animation of the incremental updating process is available online at URL-PLACEHOLDER The model has the same uncertain prior beliefs about category mean and variances as the model in Figure \ref{fig:demonstrate-niw-prior-mu-sigma}D (\(\kappa_{c,0} = \nu_{c,0}=0\)). Neither normalization nor prior beliefs about the categories changes as a function of exposure. We set the lapse rate \(\lambda = 0\), the prior lapse biases to uniform (\(\pi_{c,0}=.5\)). The input to this change model is identical to the input in Figures \ref{fig:demonstrate-changes-in-representations} and \ref{fig:demonstrate-changes-in-representations-b}. In the left panel, orange arrows indicate changes in the category boundary (point of subjective equality) for \(\beta_{\pi} = 1\). In the right panel, orange arrows indicate the distance between the posterior log-odds resulting from the two most extreme \(\beta_{\pi}\)s. This highlights the fact that changes to response biases have additive effects on the log-odds of /d/ responses when \(\lambda = 0\).}\label{fig:demonstrate-lapse-bias-change}
 \end{figure}
 
 
 
 \begin{figure}
 
-{\centering \animategraphics[,controls,loop]{5}{../figures/knitted/demonstrate-lapse-bias-change-nonzero-lapse-}{1}{1}
+{\centering \includegraphics{../figures/knitted/demonstrate-lapse-bias-change-nonzero-lapse-1} 
 
 }
 
-\caption[Same as Figure \ref{fig:demonstrate-lapse-bias-change} but for a lapse rate \(\lambda=\) 0.05. For such non-zero lapse rates, changes to the response bias have \emph{non}-additive effects on the posterior log-odds. This means that, even in log-odds, changes in response biases can have effects that go beyond purely additive changes in the categorization functions (`shifts in category boundaries').]{Same as Figure \ref{fig:demonstrate-lapse-bias-change} but for a lapse rate \(\lambda=\) 0.05. For such non-zero lapse rates, changes to the response bias have \emph{non}-additive effects on the posterior log-odds. This means that, even in log-odds, changes in response biases can have effects that go beyond purely additive changes in the categorization functions (`shifts in category boundaries').}\label{fig:demonstrate-lapse-bias-change-nonzero-lapse}
+\caption{Same as Figure \ref{fig:demonstrate-lapse-bias-change} but for a lapse rate \(\lambda=\) 0.05. For such non-zero lapse rates, changes to the response bias have \emph{non}-additive effects on the posterior log-odds. This means that, even in log-odds, changes in response biases can have effects that go beyond purely additive changes in the categorization functions (`shifts in category boundaries'). Shown are the results after updating. A video animation of the incremental updating process is available online at URL-PLACEHOLDER}\label{fig:demonstrate-lapse-bias-change-nonzero-lapse}
 \end{figure}
 
 \hypertarget{sec:parsimony}{%
@@ -1216,23 +1216,23 @@ The document was compiled using \texttt{knitr} \autocite{xie2021} in RStudio wit
 
 \begin{verbatim}
 ##                _                           
-## platform       aarch64-apple-darwin20      
-## arch           aarch64                     
-## os             darwin20                    
-## system         aarch64, darwin20           
+## platform       x86_64-apple-darwin17.0     
+## arch           x86_64                      
+## os             darwin17.0                  
+## system         x86_64, darwin17.0          
 ## status                                     
 ## major          4                           
-## minor          2.3                         
-## year           2023                        
-## month          03                          
-## day            15                          
-## svn rev        83980                       
+## minor          2.1                         
+## year           2022                        
+## month          06                          
+## day            23                          
+## svn rev        82513                       
 ## language       R                           
-## version.string R version 4.2.3 (2023-03-15)
-## nickname       Shortstop Beagle
+## version.string R version 4.2.1 (2022-06-23)
+## nickname       Funny-Looking Kid
 \end{verbatim}
 
-We used the following R packages to create this document: R \autocite[Version 4.2.3;][]{R-base} and the R-packages \emph{assertthat} \autocite[Version 0.2.1;][]{R-assertthat}, \emph{cowplot} \autocite[Version 1.1.1;][]{R-cowplot}, \emph{curl} \autocite[Version 4.3.2;][]{R-curl}, \emph{data.table} \autocite[Version 1.14.8;][]{R-data.table}, \emph{devtools} \autocite[Version 2.4.4;][]{R-devtools}, \emph{diptest} \autocite[Version 0.76.0;][]{R-diptest}, \emph{dplyr} \autocite[Version 1.1.2;][]{R-dplyr}, \emph{forcats} \autocite[Version 1.0.0;][]{R-forcats}, \emph{gganimate} \autocite[Version 1.0.8;][]{R-gganimate}, \emph{ggplot2} \autocite[Version 3.4.2;][]{R-ggplot2}, \emph{kableExtra} \autocite[Version 1.3.4;][]{R-kableExtra}, \emph{LaplacesDemon} \autocite[Version 16.1.6;][]{R-LaplacesDemon}, \emph{latexdiffr} \autocite[Version 0.1.0;][]{R-latexdiffr}, \emph{linguisticsdown} \autocite[Version 1.2.0;][]{R-linguisticsdown}, \emph{lme4} \autocite[Version 1.1.30;][]{R-lme4}, \emph{lubridate} \autocite[Version 1.8.0;][]{R-lubridate}, \emph{magrittr} \autocite[Version 2.0.3;][]{R-magrittr}, \emph{Matrix} \autocite[Version 1.5.3;][]{R-Matrix}, \emph{mixtools} \autocite[Version 1.2.0;][]{R-mixtools}, \emph{modelr} \autocite[Version 0.1.9;][]{R-modelr}, \emph{NMOF} \autocite[Version 2.7.1;][]{R-NMOF}, \emph{papaja} \autocite[Version 0.1.1.9,001;][]{R-papaja}, \emph{phonR} \autocite[Version 1.0.7;][]{R-phonR}, \emph{plotly} \autocite[Version 4.10.0;][]{R-plotly}, \emph{processx} \autocite[Version 3.8.1;][]{R-processx}, \emph{purrr} \autocite[Version 1.0.1;][]{R-purrr}, \emph{readr} \autocite[Version 2.1.2;][]{R-readr}, \emph{remotes} \autocite[Version 2.4.2;][]{R-remotes}, \emph{rlang} \autocite[Version 1.1.0;][]{R-rlang}, \emph{stringr} \autocite[Version 1.5.0;][]{R-stringr}, \emph{tibble} \autocite[Version 3.2.1;][]{R-tibble}, \emph{tidyr} \autocite[Version 1.3.0;][]{R-tidyr}, \emph{tidyverse} \autocite[Version 1.3.2;][]{R-tidyverse}, \emph{tinylabels} \autocite[Version 0.2.3;][]{R-tinylabels}, \emph{tufte} \autocite[Version 0.12;][]{R-tufte}, and \emph{usethis} \autocite[Version 2.1.6;][]{R-usethis}. If opened in RStudio, the top of the R markdown document should alert you to any libraries you will need to download, if you have not already installed them. This includes the \texttt{MVBeliefUpdatr} library that supports working with multivariate Gaussian ideal observers and adaptors (see also Dave Kleinschmidt's \texttt{beliefupdatr} library that this library is based on). The full session information is provided at the end of this document.
+We used the following R packages to create this document: R \autocite[Version 4.2.1;][]{R-base} and the R-packages \emph{assertthat} \autocite[Version 0.2.1;][]{R-assertthat}, \emph{cowplot} \autocite[Version 1.1.1;][]{R-cowplot}, \emph{curl} \autocite[Version 5.0.0;][]{R-curl}, \emph{data.table} \autocite[Version 1.14.8;][]{R-data.table}, \emph{devtools} \autocite[Version 2.4.5;][]{R-devtools}, \emph{diptest} \autocite[Version 0.76.0;][]{R-diptest}, \emph{dplyr} \autocite[Version 1.1.2;][]{R-dplyr}, \emph{forcats} \autocite[Version 1.0.0;][]{R-forcats}, \emph{gganimate} \autocite[Version 1.0.8;][]{R-gganimate}, \emph{ggplot2} \autocite[Version 3.4.2;][]{R-ggplot2}, \emph{kableExtra} \autocite[Version 1.3.4;][]{R-kableExtra}, \emph{LaplacesDemon} \autocite[Version 16.1.6;][]{R-LaplacesDemon}, \emph{latexdiffr} \autocite[Version 0.1.0;][]{R-latexdiffr}, \emph{linguisticsdown} \autocite[Version 1.2.0;][]{R-linguisticsdown}, \emph{lme4} \autocite[Version 1.1.33;][]{R-lme4}, \emph{lubridate} \autocite[Version 1.9.2;][]{R-lubridate}, \emph{magrittr} \autocite[Version 2.0.3;][]{R-magrittr}, \emph{Matrix} \autocite[Version 1.5.4;][]{R-Matrix}, \emph{mixtools} \autocite[Version 2.0.0;][]{R-mixtools}, \emph{modelr} \autocite[Version 0.1.11;][]{R-modelr}, \emph{NMOF} \autocite[Version 2.7.1;][]{R-NMOF}, \emph{papaja} \autocite[Version 0.1.1.9,001;][]{R-papaja}, \emph{phonR} \autocite[Version 1.0.7;][]{R-phonR}, \emph{plotly} \autocite[Version 4.10.1;][]{R-plotly}, \emph{processx} \autocite[Version 3.8.1;][]{R-processx}, \emph{purrr} \autocite[Version 1.0.1;][]{R-purrr}, \emph{readr} \autocite[Version 2.1.4;][]{R-readr}, \emph{remotes} \autocite[Version 2.4.2;][]{R-remotes}, \emph{rlang} \autocite[Version 1.1.0;][]{R-rlang}, \emph{stringr} \autocite[Version 1.5.0;][]{R-stringr}, \emph{tibble} \autocite[Version 3.2.1;][]{R-tibble}, \emph{tidyr} \autocite[Version 1.3.0;][]{R-tidyr}, \emph{tidyverse} \autocite[Version 2.0.0;][]{R-tidyverse}, \emph{tinylabels} \autocite[Version 0.2.3;][]{R-tinylabels}, \emph{tufte} \autocite[Version 0.12;][]{R-tufte}, and \emph{usethis} \autocite[Version 2.1.6;][]{R-usethis}. If opened in RStudio, the top of the R markdown document should alert you to any libraries you will need to download, if you have not already installed them. This includes the \texttt{MVBeliefUpdatr} library that supports working with multivariate Gaussian ideal observers and adaptors (see also Dave Kleinschmidt's \texttt{beliefupdatr} library that this library is based on). The full session information is provided at the end of this document.
 
 The 3D figures require the \href{https://github.com/plotly/orca\#installation}{\texttt{orca} commandline tool}. It is recommended that you use ``Method 4'' to install the standalone binaries. Some of the R libraries evoked in the R markdown code might require additional freely available non-R software (e.g., the R library \texttt{sf} requires non-R \emph{gdal}). For line-by-line execution of this document, this is all you should need. If installation of any R library fails, follow the prompts in the error message.
 

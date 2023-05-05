@@ -231,7 +231,7 @@
 
 \title{What we do (not) know about the mechanisms underlying adaptive speech perception: A computational framework and review}
 \author{Xin Xie\textsuperscript{1,2}, T. Florian Jaeger\textsuperscript{2,3}, \& Chigusa Kurumada\textsuperscript{2}}
-\date{April 30, 2023}
+\date{May 05, 2023}
 
 
 \shorttitle{Exposure effects in speech perception}
@@ -1216,23 +1216,23 @@ The document was compiled using \texttt{knitr} \autocite{xie2021} in RStudio wit
 
 \begin{verbatim}
 ##                _                           
-## platform       x86_64-apple-darwin17.0     
-## arch           x86_64                      
-## os             darwin17.0                  
-## system         x86_64, darwin17.0          
+## platform       aarch64-apple-darwin20      
+## arch           aarch64                     
+## os             darwin20                    
+## system         aarch64, darwin20           
 ## status                                     
 ## major          4                           
-## minor          2.1                         
-## year           2022                        
-## month          06                          
-## day            23                          
-## svn rev        82513                       
+## minor          3.0                         
+## year           2023                        
+## month          04                          
+## day            21                          
+## svn rev        84292                       
 ## language       R                           
-## version.string R version 4.2.1 (2022-06-23)
-## nickname       Funny-Looking Kid
+## version.string R version 4.3.0 (2023-04-21)
+## nickname       Already Tomorrow
 \end{verbatim}
 
-We used the following R packages to create this document: R \autocite[Version 4.2.1;][]{R-base} and the R-packages \emph{assertthat} \autocite[Version 0.2.1;][]{R-assertthat}, \emph{cowplot} \autocite[Version 1.1.1;][]{R-cowplot}, \emph{curl} \autocite[Version 5.0.0;][]{R-curl}, \emph{data.table} \autocite[Version 1.14.8;][]{R-data.table}, \emph{devtools} \autocite[Version 2.4.5;][]{R-devtools}, \emph{diptest} \autocite[Version 0.76.0;][]{R-diptest}, \emph{dplyr} \autocite[Version 1.1.2;][]{R-dplyr}, \emph{forcats} \autocite[Version 1.0.0;][]{R-forcats}, \emph{gganimate} \autocite[Version 1.0.8;][]{R-gganimate}, \emph{ggplot2} \autocite[Version 3.4.2;][]{R-ggplot2}, \emph{kableExtra} \autocite[Version 1.3.4;][]{R-kableExtra}, \emph{LaplacesDemon} \autocite[Version 16.1.6;][]{R-LaplacesDemon}, \emph{latexdiffr} \autocite[Version 0.1.0;][]{R-latexdiffr}, \emph{linguisticsdown} \autocite[Version 1.2.0;][]{R-linguisticsdown}, \emph{lme4} \autocite[Version 1.1.33;][]{R-lme4}, \emph{lubridate} \autocite[Version 1.9.2;][]{R-lubridate}, \emph{magrittr} \autocite[Version 2.0.3;][]{R-magrittr}, \emph{Matrix} \autocite[Version 1.5.4;][]{R-Matrix}, \emph{mixtools} \autocite[Version 2.0.0;][]{R-mixtools}, \emph{modelr} \autocite[Version 0.1.11;][]{R-modelr}, \emph{NMOF} \autocite[Version 2.7.1;][]{R-NMOF}, \emph{papaja} \autocite[Version 0.1.1.9,001;][]{R-papaja}, \emph{phonR} \autocite[Version 1.0.7;][]{R-phonR}, \emph{plotly} \autocite[Version 4.10.1;][]{R-plotly}, \emph{processx} \autocite[Version 3.8.1;][]{R-processx}, \emph{purrr} \autocite[Version 1.0.1;][]{R-purrr}, \emph{readr} \autocite[Version 2.1.4;][]{R-readr}, \emph{remotes} \autocite[Version 2.4.2;][]{R-remotes}, \emph{rlang} \autocite[Version 1.1.0;][]{R-rlang}, \emph{stringr} \autocite[Version 1.5.0;][]{R-stringr}, \emph{tibble} \autocite[Version 3.2.1;][]{R-tibble}, \emph{tidyr} \autocite[Version 1.3.0;][]{R-tidyr}, \emph{tidyverse} \autocite[Version 2.0.0;][]{R-tidyverse}, \emph{tinylabels} \autocite[Version 0.2.3;][]{R-tinylabels}, \emph{tufte} \autocite[Version 0.12;][]{R-tufte}, and \emph{usethis} \autocite[Version 2.1.6;][]{R-usethis}. If opened in RStudio, the top of the R markdown document should alert you to any libraries you will need to download, if you have not already installed them. This includes the \texttt{MVBeliefUpdatr} library that supports working with multivariate Gaussian ideal observers and adaptors (see also Dave Kleinschmidt's \texttt{beliefupdatr} library that this library is based on). The full session information is provided at the end of this document.
+We used the following R packages to create this document: R \autocite[Version 4.3.0;][]{R-base} and the R-packages \emph{assertthat} \autocite[Version 0.2.1;][]{R-assertthat}, \emph{cowplot} \autocite[Version 1.1.1;][]{R-cowplot}, \emph{curl} \autocite[Version 5.0.0;][]{R-curl}, \emph{data.table} \autocite[Version 1.14.8;][]{R-data.table}, \emph{devtools} \autocite[Version 2.4.5;][]{R-devtools}, \emph{diptest} \autocite[Version 0.76.0;][]{R-diptest}, \emph{dplyr} \autocite[Version 1.1.2;][]{R-dplyr}, \emph{forcats} \autocite[Version 1.0.0;][]{R-forcats}, \emph{gganimate} \autocite[Version 1.0.8;][]{R-gganimate}, \emph{ggplot2} \autocite[Version 3.4.2;][]{R-ggplot2}, \emph{kableExtra} \autocite[Version 1.3.4;][]{R-kableExtra}, \emph{LaplacesDemon} \autocite[Version 16.1.6;][]{R-LaplacesDemon}, \emph{latexdiffr} \autocite[Version 0.1.0;][]{R-latexdiffr}, \emph{linguisticsdown} \autocite[Version 1.2.0;][]{R-linguisticsdown}, \emph{lme4} \autocite[Version 1.1.33;][]{R-lme4}, \emph{lubridate} \autocite[Version 1.9.2;][]{R-lubridate}, \emph{magrittr} \autocite[Version 2.0.3;][]{R-magrittr}, \emph{Matrix} \autocite[Version 1.5.4;][]{R-Matrix}, \emph{mixtools} \autocite[Version 2.0.0;][]{R-mixtools}, \emph{modelr} \autocite[Version 0.1.11;][]{R-modelr}, \emph{NMOF} \autocite[Version 2.7.1;][]{R-NMOF}, \emph{papaja} \autocite[Version 0.1.1.9,001;][]{R-papaja}, \emph{phonR} \autocite[Version 1.0.7;][]{R-phonR}, \emph{plotly} \autocite[Version 4.10.1;][]{R-plotly}, \emph{processx} \autocite[Version 3.8.1;][]{R-processx}, \emph{purrr} \autocite[Version 1.0.1;][]{R-purrr}, \emph{readr} \autocite[Version 2.1.4;][]{R-readr}, \emph{remotes} \autocite[Version 2.4.2;][]{R-remotes}, \emph{rlang} \autocite[Version 1.1.1;][]{R-rlang}, \emph{stringr} \autocite[Version 1.5.0;][]{R-stringr}, \emph{tibble} \autocite[Version 3.2.1;][]{R-tibble}, \emph{tidyr} \autocite[Version 1.3.0;][]{R-tidyr}, \emph{tidyverse} \autocite[Version 2.0.0;][]{R-tidyverse}, \emph{tinylabels} \autocite[Version 0.2.3;][]{R-tinylabels}, \emph{tufte} \autocite[Version 0.12;][]{R-tufte}, and \emph{usethis} \autocite[Version 2.1.6;][]{R-usethis}. If opened in RStudio, the top of the R markdown document should alert you to any libraries you will need to download, if you have not already installed them. This includes the \texttt{MVBeliefUpdatr} library that supports working with multivariate Gaussian ideal observers and adaptors (see also Dave Kleinschmidt's \texttt{beliefupdatr} library that this library is based on). The full session information is provided at the end of this document.
 
 The 3D figures require the \href{https://github.com/plotly/orca\#installation}{\texttt{orca} commandline tool}. It is recommended that you use ``Method 4'' to install the standalone binaries. Some of the R libraries evoked in the R markdown code might require additional freely available non-R software (e.g., the R library \texttt{sf} requires non-R \emph{gdal}). For line-by-line execution of this document, this is all you should need. If installation of any R library fails, follow the prompts in the error message.
 
@@ -1573,7 +1573,7 @@ As mentioned in footnote \ref{fn:optimization} of the main text, optimization of
 
 \begin{figure}
 
-{\centering \subfloat[Cue reweighting\label{fig:show-3d-grid-search-1}]{\includegraphics[width=2.33in]{../figures/plotly/p.3d.bias.model_gridSearch_Cue_reweighting} }\subfloat[Contrast reduction\label{fig:show-3d-grid-search-2}]{\includegraphics[width=2.33in]{../figures/plotly/p.3d.bias.model_gridSearch_Contrast_reduction} }\newline\subfloat[Contrast shift\label{fig:show-3d-grid-search-3}]{\includegraphics[width=2.33in]{../figures/plotly/p.3d.bias.model_gridSearch_Contrast_shift} }\subfloat[Contrast collapse\label{fig:show-3d-grid-search-4}]{\includegraphics[width=2.33in]{../figures/plotly/p.3d.bias.model_gridSearch_Contrast_collapse} }
+{\centering \subfloat[Cue reweighting\label{fig:show-3d-grid-search-1}]{\includegraphics[width=0.49\linewidth]{../figures/plotly/p.3d.bias.model_gridSearch_Cue_reweighting} }\subfloat[Contrast reduction\label{fig:show-3d-grid-search-2}]{\includegraphics[width=0.49\linewidth]{../figures/plotly/p.3d.bias.model_gridSearch_Contrast_reduction} }\newline\subfloat[Contrast shift\label{fig:show-3d-grid-search-3}]{\includegraphics[width=0.49\linewidth]{../figures/plotly/p.3d.bias.model_gridSearch_Contrast_shift} }\subfloat[Contrast collapse\label{fig:show-3d-grid-search-4}]{\includegraphics[width=0.49\linewidth]{../figures/plotly/p.3d.bias.model_gridSearch_Contrast_collapse} }
 
 }
 

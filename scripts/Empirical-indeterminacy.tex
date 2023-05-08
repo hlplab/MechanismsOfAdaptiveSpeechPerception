@@ -231,7 +231,7 @@
 
 \title{What we do (not) know about the mechanisms underlying adaptive speech perception: A computational framework and review}
 \author{Xin Xie\textsuperscript{1,2}, T. Florian Jaeger\textsuperscript{2,3}, \& Chigusa Kurumada\textsuperscript{2}}
-\date{May 05, 2023}
+\date{May 07, 2023}
 
 
 \shorttitle{Exposure effects in speech perception}
@@ -549,22 +549,22 @@ As listeners observe additional information from the unfamiliar talker, they upd
 
 \begin{figure}
 
-{\centering \includegraphics{../figures/knitted/demonstrate-changes-in-representations-1} 
+{\centering \animategraphics[,controls,loop]{5}{../figures/knitted/demonstrate-changes-in-representations-}{1}{100}
 
 }
 
-\caption{Illustrating the effects of the strength of prior beliefs about the category means (\(\kappa_{c,0}\)) and covariances (\(\nu_{c,0}\)) on changes in the expected category likelihoods. We demonstrate this for a binary phonetic contrast between two Gaussian categories (/d/-/t/) along a unidimensional continuum (VOT). Shown are the results after updating. A video animation of the incremental updating process is available online at URL-PLACEHOLDER. We simulate exposure to 20 observations each of /d/and/t/ from a talker who realized both categories with a shifted mean of 25 msec, and exhibits typical variance for /d/ but only half of the typical variance for /t/. We set the lapse rate \(\lambda = 0\) and response biases to uniform (\(\pi_{c,0}=.5\)).}\label{fig:demonstrate-changes-in-representations}
+\caption[Illustrating the effects of the strength of prior beliefs about the category means (\(\kappa_{c,0}\)) and covariances (\(\nu_{c,0}\)) on changes in the expected category likelihoods. We demonstrate this for a binary phonetic contrast between two Gaussian categories (/d/-/t/) along a unidimensional continuum (VOT). We simulate exposure to 20 observations each of /d/and/t/ from a talker who realized both categories with a shifted mean of 25 msec, and exhibits typical variance for /d/ but only half of the typical variance for /t/. We set the lapse rate \(\lambda = 0\) and response biases to uniform (\(\pi_{c,0}=.5\)).]{Illustrating the effects of the strength of prior beliefs about the category means (\(\kappa_{c,0}\)) and covariances (\(\nu_{c,0}\)) on changes in the expected category likelihoods. We demonstrate this for a binary phonetic contrast between two Gaussian categories (/d/-/t/) along a unidimensional continuum (VOT). We simulate exposure to 20 observations each of /d/and/t/ from a talker who realized both categories with a shifted mean of 25 msec, and exhibits typical variance for /d/ but only half of the typical variance for /t/. We set the lapse rate \(\lambda = 0\) and response biases to uniform (\(\pi_{c,0}=.5\)).}\label{fig:demonstrate-changes-in-representations}
 \end{figure}
 
 
 
 \begin{figure}
 
-{\centering \includegraphics{../figures/knitted/demonstrate-changes-in-representations-b-1} 
+{\centering \animategraphics[,controls,loop]{5}{../figures/knitted/demonstrate-changes-in-representations-b-}{1}{100}
 
 }
 
-\caption{Changes in expected categorization functions resulting from the changes in the expected category likelihoods in Figure \ref{fig:demonstrate-changes-in-representations}. Shown are the results after updating. A video animation of the incremental updating process is available online at URL-PLACEHOLDER. Neither normalization, nor response biases changed as a function of the input.}\label{fig:demonstrate-changes-in-representations-b}
+\caption[Changes in expected categorization functions resulting from the changes in the expected category likelihoods in Figure \ref{fig:demonstrate-changes-in-representations}. Neither normalization, nor response biases changed as a function of the input.]{Changes in expected categorization functions resulting from the changes in the expected category likelihoods in Figure \ref{fig:demonstrate-changes-in-representations}. Neither normalization, nor response biases changed as a function of the input.}\label{fig:demonstrate-changes-in-representations-b}
 \end{figure}
 
 Unlike normalization, changes in category representations can capture \emph{category-specific} changes in cue distributions. As we lay out in more detail in the general discussion, this makes representational changes less parsimonious than normalization but also more expressive: there are ways in which talkers might differ from each other that can be better captured by changes in representations than by normalization (which of these two change mechanisms better describes \emph{listeners'} abilities is, however, an open question).
@@ -611,22 +611,22 @@ Critically, this strong constraint on changes in decision-making only follows if
 
 \begin{figure}
 
-{\centering \includegraphics{../figures/knitted/demonstrate-lapse-bias-change-1} 
+{\centering \animategraphics[,controls,loop]{5}{../figures/knitted/demonstrate-lapse-bias-change-}{1}{100}
 
 }
 
-\caption{Illustrating the effects of \(\beta_{\pi}\) on changes in the categorization function (\textbf{Left:} posterior probability, \textbf{Right:} posterior log-odds). Shown are the results after updating. A video animation of the incremental updating process is available online at URL-PLACEHOLDER The model has the same uncertain prior beliefs about category mean and variances as the model in Figure \ref{fig:demonstrate-niw-prior-mu-sigma}D (\(\kappa_{c,0} = \nu_{c,0}=0\)). Neither normalization nor prior beliefs about the categories changes as a function of exposure. We set the lapse rate \(\lambda = 0\), the prior lapse biases to uniform (\(\pi_{c,0}=.5\)). The input to this change model is identical to the input in Figures \ref{fig:demonstrate-changes-in-representations} and \ref{fig:demonstrate-changes-in-representations-b}. In the left panel, orange arrows indicate changes in the category boundary (point of subjective equality) for \(\beta_{\pi} = 1\). In the right panel, orange arrows indicate the distance between the posterior log-odds resulting from the two most extreme \(\beta_{\pi}\)s. This highlights the fact that changes to response biases have additive effects on the log-odds of /d/ responses when \(\lambda = 0\).}\label{fig:demonstrate-lapse-bias-change}
+\caption[Illustrating the effects of \(\beta_{\pi}\) on changes in the categorization function (\textbf{Left:} posterior probability, \textbf{Right:} posterior log-odds). The model has the same uncertain prior beliefs about category mean and variances as the model in Figure \ref{fig:demonstrate-niw-prior-mu-sigma}D (\(\kappa_{c,0} = \nu_{c,0}=0\)). Neither normalization nor prior beliefs about the categories changes as a function of exposure. We set the lapse rate \(\lambda = 0\), the prior lapse biases to uniform (\(\pi_{c,0}=.5\)). The input to this change model is identical to the input in Figures \ref{fig:demonstrate-changes-in-representations} and \ref{fig:demonstrate-changes-in-representations-b}. In the left panel, orange arrows indicate changes in the category boundary (point of subjective equality) for \(\beta_{\pi} = 1\). In the right panel, orange arrows indicate the distance between the posterior log-odds resulting from the two most extreme \(\beta_{\pi}\)s. This highlights the fact that changes to response biases have additive effects on the log-odds of /d/ responses when \(\lambda = 0\).]{Illustrating the effects of \(\beta_{\pi}\) on changes in the categorization function (\textbf{Left:} posterior probability, \textbf{Right:} posterior log-odds). The model has the same uncertain prior beliefs about category mean and variances as the model in Figure \ref{fig:demonstrate-niw-prior-mu-sigma}D (\(\kappa_{c,0} = \nu_{c,0}=0\)). Neither normalization nor prior beliefs about the categories changes as a function of exposure. We set the lapse rate \(\lambda = 0\), the prior lapse biases to uniform (\(\pi_{c,0}=.5\)). The input to this change model is identical to the input in Figures \ref{fig:demonstrate-changes-in-representations} and \ref{fig:demonstrate-changes-in-representations-b}. In the left panel, orange arrows indicate changes in the category boundary (point of subjective equality) for \(\beta_{\pi} = 1\). In the right panel, orange arrows indicate the distance between the posterior log-odds resulting from the two most extreme \(\beta_{\pi}\)s. This highlights the fact that changes to response biases have additive effects on the log-odds of /d/ responses when \(\lambda = 0\).}\label{fig:demonstrate-lapse-bias-change}
 \end{figure}
 
 
 
 \begin{figure}
 
-{\centering \includegraphics{../figures/knitted/demonstrate-lapse-bias-change-nonzero-lapse-1} 
+{\centering \animategraphics[,controls,loop]{5}{../figures/knitted/demonstrate-lapse-bias-change-nonzero-lapse-}{1}{100}
 
 }
 
-\caption{Same as Figure \ref{fig:demonstrate-lapse-bias-change} but for a lapse rate \(\lambda=\) 0.05. For such non-zero lapse rates, changes to the response bias have \emph{non}-additive effects on the posterior log-odds. This means that, even in log-odds, changes in response biases can have effects that go beyond purely additive changes in the categorization functions (`shifts in category boundaries'). Shown are the results after updating. A video animation of the incremental updating process is available online at URL-PLACEHOLDER}\label{fig:demonstrate-lapse-bias-change-nonzero-lapse}
+\caption[Same as Figure \ref{fig:demonstrate-lapse-bias-change} but for a lapse rate \(\lambda=\) 0.05. For such non-zero lapse rates, changes to the response bias have \emph{non}-additive effects on the posterior log-odds. This means that, even in log-odds, changes in response biases can have effects that go beyond purely additive changes in the categorization functions (`shifts in category boundaries').]{Same as Figure \ref{fig:demonstrate-lapse-bias-change} but for a lapse rate \(\lambda=\) 0.05. For such non-zero lapse rates, changes to the response bias have \emph{non}-additive effects on the posterior log-odds. This means that, even in log-odds, changes in response biases can have effects that go beyond purely additive changes in the categorization functions (`shifts in category boundaries').}\label{fig:demonstrate-lapse-bias-change-nonzero-lapse}
 \end{figure}
 
 \hypertarget{sec:parsimony}{%
@@ -878,11 +878,11 @@ To illustrate the consequences of normalization, we vary the only parameter of o
 
 \begin{figure}
 
-{\centering \includegraphics{../figures/knitted/PR-test-normalization-1} 
+{\centering \animategraphics[,controls,loop]{5}{../figures/knitted/PR-test-normalization-}{1}{100}
 
 }
 
-\caption{Effects of changes in normalization on the perception of test locations, depending on the relative weighting of previous experience (\(\kappa_0\)) during the inference of the cue mean during exposure. Normalization based on exposure results in a shift in the perception of the test stimuli. The magnitude of that shift depends on \(\kappa_0\), with larger shifts (more learning) for smaller \(\kappa_0\) (see Equation \eqref{eq:normalization-change}). Color indicates the posterior probability of /d/ for each test token predicted by the categorization model after normalization (from red = 0 to blue = 1).}\label{fig:PR-test-normalization}
+\caption[Effects of changes in normalization on the perception of test locations, depending on the relative weighting of previous experience (\(\kappa_0\)) during the inference of the cue mean during exposure. Normalization based on exposure results in a shift in the perception of the test stimuli. The magnitude of that shift depends on \(\kappa_0\), with larger shifts (more learning) for smaller \(\kappa_0\) (see Equation \eqref{eq:normalization-change}). Color indicates the posterior probability of /d/ for each test token predicted by the categorization model after normalization (from red = 0 to blue = 1).]{Effects of changes in normalization on the perception of test locations, depending on the relative weighting of previous experience (\(\kappa_0\)) during the inference of the cue mean during exposure. Normalization based on exposure results in a shift in the perception of the test stimuli. The magnitude of that shift depends on \(\kappa_0\), with larger shifts (more learning) for smaller \(\kappa_0\) (see Equation \eqref{eq:normalization-change}). Color indicates the posterior probability of /d/ for each test token predicted by the categorization model after normalization (from red = 0 to blue = 1).}\label{fig:PR-test-normalization}
 \end{figure}
 
 

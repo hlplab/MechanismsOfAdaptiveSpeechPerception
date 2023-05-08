@@ -550,8 +550,9 @@ d.exposure %<>%
       ~ get_categorization_function_from_NIW_ideal_adaptor(.x, noise_treatment = "marginalize")))
 ```
 
-```{r demonstrate-changes-in-representations, fig.width=base.width*2*1.5, fig.height=base.height + 1, fig.cap="(ref:demonstrate-changes-in-representations)", fig.show=if(ANIMATE_FIGURES) 'animate' else 'asis'}
-p <- d.exposure %>%
+```{r demonstrate-changes-in-representations, fig.width=base.width*2*1.5, fig.height=base.height + 1, fig.cap="(ref:demonstrate-changes-in-representations)", fig.show='animate'}
+p <- 
+  d.exposure %>%
   ggplot(aes(x = !! sym(cue.demo))) +
   # categorization function
   geom_line(
@@ -590,18 +591,8 @@ p <- d.exposure %>%
   theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank()) 
 
 if (ANIMATE_FIGURES) {
-  p.animation <- p +
-    transition_states(observation.n, state_length = .5, transition_length = .5)
+  p.animation <- p + transition_states(observation.n, state_length = .5, transition_length = .5)
   p.animation
-  if (SAVE_ANIMATED_VIDEO) {
-    anim_save("demonstrate-changes-in-representations.webm", animation = animate(p.animation  +  theme(strip.text.x = element_text(size = 20),
-                           axis.text.x = element_text(size = 20),
-                           axis.title.x = element_text(size = 20),
-                           axis.text.y = element_text(size = 20),
-                           axis.title.y = element_text(size = 20),
-                           legend.text = element_text(size = 20),
-                           legend.title = element_text(size = 20)), renderer = av_renderer(), width = 1280, height = 720), path = '../figures/knitted/')
-  }
 } else {
   d.plot <- d.exposure %>% filter(observation.n == max(observation.n))
   p %+% d.plot +
@@ -609,6 +600,25 @@ if (ANIMATE_FIGURES) {
     data = d.exposure,
     aes(x = !! sym(paste0("observation.", cue.demo)), color = observation.category),
     size = 2)
+}
+
+if (SAVE_ANIMATED_VIDEO) {
+  p.animation <- p + transition_states(observation.n, state_length = .5, transition_length = .5)
+  anim_save(
+    "demonstrate-changes-in-representations.webm", 
+    animation = animate(
+      p.animation + theme(
+        strip.text.x = element_text(size = 20),
+        axis.text.x = element_text(size = 20),
+        axis.title.x = element_text(size = 20),
+        axis.text.y = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        legend.text = element_text(size = 20),
+        legend.title = element_text(size = 20)), 
+      renderer = av_renderer(), 
+      width = 1280, 
+      height = 720), 
+    path = '../figures/knitted/')
 }
 ```
 
@@ -649,18 +659,10 @@ p <- d.exposure %>%
   theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank()) 
 
 if (ANIMATE_FIGURES) {
-  p.animation <- p +
+  p.animation <- 
+    p +
     transition_states(observation.n, state_length = .5, transition_length = .5)
   p.animation
-  if (SAVE_ANIMATED_VIDEO) {
-    anim_save("demonstrate-changes-in-representations-b.webm", animation = animate(p.animation  +  theme(strip.text.x = element_text(size = 20),
-                           axis.text.x = element_text(size = 20),
-                           axis.title.x = element_text(size = 20),
-                           axis.text.y = element_text(size = 20),
-                           axis.title.y = element_text(size = 20),
-                           legend.text = element_text(size = 20),
-                           legend.title = element_text(size = 20)), renderer = av_renderer(), width = 1280, height = 720), path = '../figures/knitted/')
-  }
 } else {
   d.plot <- d.exposure %>% filter(observation.n == max(observation.n))
   p %+% d.plot +
@@ -668,6 +670,27 @@ if (ANIMATE_FIGURES) {
     data = d.exposure,
     aes(x = !! sym(paste0("observation.", cue.demo)), color = observation.category),
     size = 2)
+}
+
+if (SAVE_ANIMATED_VIDEO) {
+  p.animation <- 
+    p +
+    transition_states(observation.n, state_length = .5, transition_length = .5)
+  
+  anim_save(
+    "demonstrate-changes-in-representations-b.webm", 
+    animation = animate(
+      p.animation + theme(
+        strip.text.x = element_text(size = 20),
+        axis.text.x = element_text(size = 20),
+        axis.title.x = element_text(size = 20),
+        axis.text.y = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        legend.text = element_text(size = 20),
+        legend.title = element_text(size = 20)), 
+      renderer = av_renderer(), 
+      width = 1280, height = 720), 
+    path = '../figures/knitted/')
 }
 ```
 
@@ -711,7 +734,7 @@ Critically, this strong constraint on changes in decision-making only follows if
 
 (ref:demonstrate-lapse-bias-change) Illustrating the effects of $\beta_{\pi}$ on changes in the categorization function (**Left:** posterior probability, **Right:** posterior log-odds). `r if (!ANIMATE_FIGURES) "Shown are the results after updating. A video animation of the incremental updating process is available online at URL-PLACEHOLDER."` The model has the same uncertain prior beliefs about category mean and variances as the model in Figure \@ref(fig:demonstrate-niw-prior-mu-sigma)D ($\kappa_{c,0} = \nu_{c,0}=0$). Neither normalization nor prior beliefs about the categories changes as a function of exposure. We set the lapse rate $\lambda = 0$, the prior lapse biases to uniform ($\pi_{c,0}=.5$). The input to this change model is identical to the input in Figures \@ref(fig:demonstrate-changes-in-representations) and \@ref(fig:demonstrate-changes-in-representations-b). In the left panel, orange arrows indicate changes in the category boundary (point of subjective equality) for $\beta_{\pi} = 1$. In the right panel, orange arrows indicate the distance between the posterior log-odds resulting from the two most extreme $\beta_{\pi}$s. This highlights the fact that changes to response biases have additive effects on the log-odds of `r categories.demo[1]` responses when $\lambda = 0$.  
 
-```{r demonstrate-lapse-bias-change, fig.width=base.width*2.5 + 1.5, fig.height=base.height + .5, fig.cap="(ref:demonstrate-lapse-bias-change)", fig.show=if (ANIMATE_FIGURES) 'animate' else 'asis', warning=FALSE, message=FALSE}
+```{r demonstrate-lapse-bias-change, fig.cap="(ref:demonstrate-lapse-bias-change)", fig.height=base.height + .5, fig.show=if (ANIMATE_FIGURES) 'animate' else 'asis', fig.width=base.width*2.5 + 1.5, message=FALSE, warning=FALSE}
 d.exposure <-
   d.exposure.demo %>%
   crossing(
@@ -855,17 +878,6 @@ if (ANIMATE_FIGURES) {
   p.animation <- p +
     transition_states(observation.n, state_length = .5, transition_length = .5)
   p.animation
-  if (SAVE_ANIMATED_VIDEO) {
-    anim_save("demonstrate-lapse-bias-change.webm", animation = animate(
-      p.animation +  theme(strip.text.x = element_text(size = 20),
-                           axis.text.x = element_text(size = 20),
-                           axis.title.x = element_text(size = 20),
-                           axis.text.y = element_text(size = 20),
-                           axis.title.y = element_text(size = 20),
-                           legend.text = element_text(size = 20),
-                           legend.title = element_text(size = 20)
-                           ), renderer = av_renderer(), width = 1280, height = 720), path = '../figures/knitted/')
-  }
 } else {
   d.plot <- 
     d.exposure %>%
@@ -888,6 +900,27 @@ if (ANIMATE_FIGURES) {
           levels = c("probability", "log-odds"))),
       aes(x = !! sym(paste0("observation.", cue.demo)), color = observation.category),
       size = 2)
+}
+
+if (SAVE_ANIMATED_VIDEO) {
+  p.animation <- p +
+    transition_states(observation.n, state_length = .5, transition_length = .5)
+  anim_save(
+    "demonstrate-lapse-bias-change.webm", 
+    animation = animate(
+      p.animation + theme(
+        strip.text.x = element_text(size = 20),
+        axis.text.x = element_text(size = 20),
+        axis.title.x = element_text(size = 20),
+        axis.text.y = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        legend.text = element_text(size = 20),
+        legend.title = element_text(size = 20)
+      ), 
+      renderer = av_renderer(), 
+      width = 1280, 
+      height = 720), 
+    path = '../figures/knitted/')
 }
 ```
 
@@ -927,23 +960,14 @@ d.exposure %<>%
       ~ get_categorization_function_from_NIW_ideal_adaptor(.x, logit = .y, noise_treatment = "marginalize"))) %>%
   select(-posterior)
 
-p <- p %+%
+p <- 
+  p %+%
   (d.exposure %>%
   mutate(use_logit = factor(ifelse(use_logit, "log-odds", "probability"), levels = c("probability", "log-odds"))))
 
 if (ANIMATE_FIGURES) {
-  p.animation <- p +
-    transition_states(observation.n, state_length = .5, transition_length = .5)
+  p.animation <- p + transition_states(observation.n, state_length = .5, transition_length = .5)
   p.animation
-  if (SAVE_ANIMATED_VIDEO) {
-    anim_save("demonstrate-lapse-bias-change-nonzero-lapse.webm", animation = animate(p.animation  +  theme(strip.text.x = element_text(size = 20),
-                           axis.text.x = element_text(size = 20),
-                           axis.title.x = element_text(size = 20),
-                           axis.text.y = element_text(size = 20),
-                           axis.title.y = element_text(size = 20),
-                           legend.text = element_text(size = 20),
-                           legend.title = element_text(size = 20)), renderer = av_renderer(), width = 1280, height = 720), path = '../figures/knitted/')
-  }
 } else {
   d.plot <- 
     d.exposure %>%
@@ -963,6 +987,25 @@ if (ANIMATE_FIGURES) {
           levels = c("probability", "log-odds"))),
       aes(x = !! sym(paste0("observation.", cue.demo)), color = observation.category),
       size = 2)
+}
+
+if (SAVE_ANIMATED_VIDEO) {
+  p.animation <- p +
+    transition_states(observation.n, state_length = .5, transition_length = .5)
+  
+  anim_save(
+    "demonstrate-lapse-bias-change-nonzero-lapse.webm", 
+    animation = animate(
+      p.animation + theme(
+        strip.text.x = element_text(size = 20),
+        axis.text.x = element_text(size = 20),
+        axis.title.x = element_text(size = 20),
+        axis.text.y = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        legend.text = element_text(size = 20),
+        legend.title = element_text(size = 20)), 
+      renderer = av_renderer(), 
+      width = 1280, height = 720), path = '../figures/knitted/')
 }
 ```
 

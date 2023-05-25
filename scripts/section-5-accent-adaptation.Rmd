@@ -647,8 +647,8 @@ As $\kappa_{c,0}$ and $\nu_{c,0}$ get smaller (indicating weaker prior beliefs),
 ```{r study-AA-models-changes-in-decision-making-functions, echo=FALSE, message=FALSE, warning=FALSE}
 simulation.control <-
   list(
-    min.simulations = 2, 
-    max.simulations = 5, 
+    min.simulations = 1, 
+    max.simulations = 1, 
     step.simulations = 1, 
     target_accuracy_se = .002)
 
@@ -853,13 +853,12 @@ saveRDS(best_performing_parameters.bias, get_path(paste0("../models/best_perform
 ```{r functions-AA-models-changes-in-decision-making-optimization, echo=FALSE, message=FALSE, warning=FALSE}
 find_best_model.bias.AA <- function() {
   if(SET_SEED) set.seed(42007)
-  history.optimization_bias <- tibble(.rows = 0)
-  
-  if (RESET_MODELS || !file.exists(get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))) {
+  history.optimization_bias <<- tibble(.rows = 0)
     
-    if (best_performing_parameters.bias.gridSearch$lapse_rate == 0){
+  if (best_performing_parameters.bias.gridSearch$lapse_rate == 0){
+    print("route1")
       # if the best-performing lapse rate from the grid search is 0, then only optimize over beta pi
-      best_performing_parameters.bias.optimization <-
+    best_performing_parameters.bias.optimization <-
         optim(
           par = c(log(best_performing_parameters.bias.gridSearch$beta_pi)),
           fn = get_accuracy_from_updated_bias_beta_only, 
@@ -872,40 +871,53 @@ find_best_model.bias.AA <- function() {
           )
       
      best_performing_parameters.bias.optimization$par <- c(0, exp(best_performing_parameters.bias.optimization$par[1]))
+     
     } else {
-       best_performing_parameters.bias.optimization <-
-        optim( 
-          # if the best-performing lapse rate from the grid search is not 0, then optimize over both lapse rate and beta pi
-          par = c(mean(range.lapse_rate), mean(log(range.beta_pi))),
-          fn = get_accuracy_from_updated_bias,
-          lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
-          upper = c(max(range.lapse_rate), max(log(range.beta_pi))),
-          method = "L-BFGS-B", 
-          control = list(
-            fnscale = 1,
-            factr = 10^5)
-          )
+   print("route2")
+   best_performing_parameters.bias.optimization <-
+    optim( 
+      # if the best-performing lapse rate from the grid search is not 0, then optimize over both lapse rate and beta pi
+      par = c(best_performing_parameters.bias.gridSearch$lapse_rate,log(best_performing_parameters.bias.gridSearch$beta_pi)),
+      fn = get_accuracy_from_updated_bias,
+      lower = c(min(range.lapse_rate), min(log(range.beta_pi))),
+      upper = c(max(range.lapse_rate), max(log(range.beta_pi))),
+      method = "L-BFGS-B", 
+      control = list(
+        fnscale = 1,
+        factr = 10^5)
+      )
       
      best_performing_parameters.bias.optimization$par <- c(best_performing_parameters.bias.optimization$par[1], exp(best_performing_parameters.bias.optimization$par[2]))
-     }
-    
+    }
+  
     best_performing_parameters.bias.optimization$value <-  exp(-(best_performing_parameters.bias.optimization$value))
     
-    saveRDS(best_performing_parameters.bias.optimization, get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
-    saveRDS(history.optimization_bias, get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds")))
-  } else {
-    best_performing_parameters.bias.optimization <- readRDS(get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
-    history.optimization_bias <- readRDS(get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds")))
-  }
-  
-  return(best_performing_parameters.bias.optimization)
+  output = list("parameters" = best_performing_parameters.bias.optimization, "history" = history.optimization_bias)
+  return(output)
 }
-
 ```
 
 
 ```{r study-AA-models-changes-in-decision-making-optimization, echo=FALSE, message=FALSE, warning=FALSE}
-best_performing_parameters.bias <- find_best_model.bias.AA()
+read_output_bias <- function(){
+    if (RESET_MODELS || !file.exists(get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))){
+    output.bias <- find_best_model.bias.AA()
+    
+    best_performing_parameters.bias <- output.bias$parameters
+    history.optimization_bias <- output.bias$history
+    
+    saveRDS(best_performing_parameters.bias, get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
+      saveRDS(history.optimization_bias, get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds")))
+  } else {
+    best_performing_parameters.bias <- readRDS(get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
+      history.optimization_bias <- readRDS(get_path(paste0("../models/d.AA.history.optimization.bias_", example_label,".rds")))
+  } 
+  
+  output <- list("parameters" = best_performing_parameters.bias, "history" = history.optimization_bias)
+  return(output)
+}
+
+best_performing_parameters.bias <- read_output_bias()$parameters
 ```
 
 
@@ -1279,12 +1291,14 @@ construct_accent_models <- function(
           prior_nu %in% prior_nu[which.min(abs(as.numeric(as.character(prior_nu)) - best_performing_parameters.representations$par[2]))])
   }
   
-  history.optimization_bias <<- tibble(.rows = 0)
-  history.optimization_bias.gridSearch <- grid_search_for_bias_model(example_label = example_label)
-  best_performing_parameters.bias.gridSearch <- history.optimization_bias.gridSearch %>%
+#  history.optimization_bias <<- tibble(.rows = 0)
+  history.optimization_bias.gridSearch <<- grid_search_for_bias_model(example_label = example_label)
+  best_performing_parameters.bias.gridSearch <<- history.optimization_bias.gridSearch %>%
     filter(accuracy == max(accuracy))
   
-  best_performing_parameters.bias <- find_best_model.bias.AA() 
+  print(paste0("lapse_rate is ", best_performing_parameters.bias.gridSearch$lapse_rate))
+  
+  best_performing_parameters.bias <- read_output_bias()$parameters
   
   # here one can select to plot just the best-performing parameterization or to visualize a range of 
   # parameters by specifying the values assigned to lapse_rate and beta_pi
@@ -1374,7 +1388,6 @@ var.ratio <- 1
 example_label = "Contrast_shift"
 d.AA.results.contrast_shift.best  <- construct_accent_models(example_label = "Contrast_shift", experimenter.ideal_observer = m.io.VOT_f0.AA)
 
-temp <- readRDS(file = "../models/best_performing_parameters.bias_Contrast_shift.rds")
 ```
 
 ```{r AA-result-comparison-best-models-contrast-reduction, warning=FALSE}
@@ -1389,8 +1402,6 @@ example_label = "Contrast_reduction"
 d.AA.results.contrast_reduction.best <- 
   construct_accent_models(example_label = "Contrast_reduction", experimenter.ideal_observer = m.io.VOT_f0.AA)
 
-
-temp <- readRDS(file = "../models/best_performing_parameters.bias_Contrast_reduction.rds")
 ```
 
 ```{r AA-result-comparison-best-models-contrast-collapse, warning=FALSE}
@@ -1406,8 +1417,6 @@ example_label = "Contrast_collapse"
 d.AA.results.contrast_collapse.best <- 
   construct_accent_models(example_label = "Contrast_collapse", experimenter.ideal_observer = m.io.VOT_f0.AA)
 
-temp <- readRDS(file = "../models/best_performing_parameters.bias_Contrast_collapse.rds")
-temp2 <- readRDS(file = "../models/d.AA.history.optimization.bias_Contrast_reduction.rds")
 ```
 
 ```{r AA-result-comparison-best-models-cue-reweighting, warning=FALSE}

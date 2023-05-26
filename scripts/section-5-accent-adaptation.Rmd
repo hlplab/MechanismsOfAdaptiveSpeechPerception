@@ -647,8 +647,8 @@ As $\kappa_{c,0}$ and $\nu_{c,0}$ get smaller (indicating weaker prior beliefs),
 ```{r study-AA-models-changes-in-decision-making-functions, echo=FALSE, message=FALSE, warning=FALSE}
 simulation.control <-
   list(
-    min.simulations = 1, 
-    max.simulations = 1, 
+    min.simulations = 50, 
+    max.simulations = 100, 
     step.simulations = 1, 
     target_accuracy_se = .002)
 
@@ -1401,7 +1401,6 @@ var.ratio <- 1
 example_label = "Contrast_reduction"
 d.AA.results.contrast_reduction.best <- 
   construct_accent_models(example_label = "Contrast_reduction", experimenter.ideal_observer = m.io.VOT_f0.AA)
-
 ```
 
 ```{r AA-result-comparison-best-models-contrast-collapse, warning=FALSE}

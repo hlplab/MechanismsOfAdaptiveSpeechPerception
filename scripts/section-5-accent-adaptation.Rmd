@@ -629,15 +629,6 @@ make_results_plot_representations <- function(data, data_best) {
 make_results_plot_representations(data = d.AA.representations, data_best = best_performing_parameters.representations)
 ```
 
-```{r AA-result-changes-in-representations-plot-for-ASA, fig.width= base.width, fig.height= base.height + 1, fig.cap="(ref:AA-result-changes-in-representations-ASA)", warning=FALSE, eval = FALSE}
-data_best = best_performing_parameters.representations
-
-make_results_plot_representations(data = d.AA.representations %>% 
-                                    filter(prior_kappa %in% prior_kappa[which.min(abs(as.numeric(as.character(prior_kappa)) - data_best$par[1]))] & #highlight the parameters (within the plotted range) that are closest to the best performing parameterization
-                  prior_nu %in% prior_nu[which.min(abs(as.numeric(as.character(prior_nu)) - data_best$par[2]))]), data_best = best_performing_parameters.representations) + 
-  scale_fill_manual(breaks = c(T, F), values = c("white", "white"))
-```
-
 Figure \@ref(fig:AA-result-changes-in-representations) shows the predicted categorization accuracy after exposure to L1- or L2-accented speech, as a function of the strength of the prior beliefs for the category means and variances. First consider the top left panel, where both $\kappa_{c,0}$ and $\nu_{c,0}$ have very high values. This simulates a very slow learner with strong prior beliefs for both category means and variances, so that the small number of exposure tokens has minimal influence on subsequent perception of the L2-accented test tokens. Therefore, the performance seen in the L1- and L2-accented exposure conditions is more or less identical, reflecting how a listener would draw primarily on their long-term prior experience to categorize the test tokens.
 
 As $\kappa_{c,0}$ and $\nu_{c,0}$ get smaller (indicating weaker prior beliefs), the effects of exposure become more noticeable, and both of the signature results of experiments on accent adaptation begin to emerge. First, for L1-accented exposure, the accuracy is always predicted to be lower for /d/ than for /t/, indicating that /d/ is often misheard as /t/. Second, L2-accented exposure is predicted to improve recognition accuracy of /d/ compared to L1-accented exposure, and this improvement occurs without corresponding decreases in the recognition accuracy of /t/. Looking across the range of $\kappa_{c,0}$s and $\nu_{c,0}$s, we make two more observations. First, for the scenario studied here, faster learning of category means improves recognition accuracy. When listeners' beliefs about category covariances are held constant (i.e., looking within each row), smaller $\kappa_{c,0}$ values yield higher categorization accuracy. Second, faster updating of beliefs about the _(co)variance_ also leads to accuracy improvements, although these improvements are less pronounced. Both results follow from the way that the Korean-accented stimuli differ from the L1 accented stimuli: as shown in Figure \@ref(fig:study-AA-exposure-test-plot), the category means of Korean-accented /d/ and /t/ are shifted relative to the L1-accented stimuli. In comparison, differences in category (co)variances are relatively subtle between the two sets of stimuli. For the present exposure stimuli, adapting to the L2 accent thus primarily hinges on learning the new category means. Taken together, these results demonstrate how changes in representation can explain the types of results that are considered to be the signature of accent adaptation.
@@ -843,20 +834,13 @@ best_performing_parameters.bias.gridSearch <- history.optimization_bias.gridSear
   filter(accuracy == max(accuracy))
 ```
 
-```{r save-best-performing-models-changes-in-decision-making-from-grid-search-place-holder, echo=FALSE, message=FALSE, warning=FALSE, eval = FALSE}
-best_performing_parameters.bias = list()
-best_performing_parameters.bias$par <- c(res_bias.gridSearch$minlevels[1], exp(res_bias.gridSearch$minlevels[2]))
-saveRDS(best_performing_parameters.bias, get_path(paste0("../models/best_performing_parameters.bias_", example_label,".rds")))
-```
-
-
 ```{r functions-AA-models-changes-in-decision-making-optimization, echo=FALSE, message=FALSE, warning=FALSE}
 find_best_model.bias.AA <- function() {
   if(SET_SEED) set.seed(42007)
   history.optimization_bias <<- tibble(.rows = 0)
     
   if (best_performing_parameters.bias.gridSearch$lapse_rate == 0){
-    print("route1")
+
       # if the best-performing lapse rate from the grid search is 0, then only optimize over beta pi
     best_performing_parameters.bias.optimization <-
         optim(
@@ -873,7 +857,7 @@ find_best_model.bias.AA <- function() {
      best_performing_parameters.bias.optimization$par <- c(0, exp(best_performing_parameters.bias.optimization$par[1]))
      
     } else {
-   print("route2")
+
    best_performing_parameters.bias.optimization <-
     optim( 
       # if the best-performing lapse rate from the grid search is not 0, then optimize over both lapse rate and beta pi
@@ -896,7 +880,6 @@ find_best_model.bias.AA <- function() {
   return(output)
 }
 ```
-
 
 ```{r study-AA-models-changes-in-decision-making-optimization, echo=FALSE, message=FALSE, warning=FALSE}
 read_output_bias <- function(){
@@ -1033,17 +1016,6 @@ make_results_plot_decision_making <- function(data, data_best){
 
 ```{r AA-result-changes-in-decision-making, fig.width= base.width * 5, fig.height= base.height * 5 + 1, fig.cap="(ref:AA-result-changes-in-decision-making)", warning=FALSE}
 make_results_plot_decision_making(data = get_average_bias_results_across_simulations.byItem(d.AA.bias), data_best = best_performing_parameters.bias)
-```
-
-
-```{r AA-result-changes-in-decision-making-plot-for-ASA, fig.width= base.width, fig.height= base.height + 1, fig.cap="(ref:AA-result-changes-in-representations-ASA)", warning=FALSE, eval = FALSE}
-data_best = best_performing_parameters.bias
-d.AA.bias.highlight <- d.AA.bias %>% 
-  filter(posterior.lapse_rate %in% posterior.lapse_rate[which.min(abs(posterior.lapse_rate - data_best$par[1]))] & 
-                  beta_pi %in% beta_pi[which.min(abs(beta_pi - data_best$par[2]))])
-
-make_results_plot_decision_making(data = get_average_bias_results_across_simulations.byItem(d.AA.bias.highlight), data_best = best_performing_parameters.bias) + 
-  scale_fill_manual(breaks = c(T, F), values = c("white", "white"))
 ```
 
 Figure \@ref(fig:AA-result-changes-in-decision-making) shows the effects of changes in decision-making as a function of the rate at which response biases change $\beta_{\pi}$ and the lapse rate $\lambda$, averaged across all simulations for each parameterization. As in Case Study 1, the figure shows the average across a minimum of 50 repeated simulations, each time randomizing the order of exposure. This was sufficient to achieve reproducible estimates even for the largest $\beta_{\pi}$s considered here (SEs of the mean accuracy after L2-accented exposure across repeated simulations were smaller than $0.002$, meaning that the 95% CI across the simulations spanned less than 1% in recognition accuracy). 
@@ -1223,12 +1195,6 @@ make_results_plot_normalization <- function(data, data_best){
 make_results_plot_normalization(d.AA.normalization, best_performing_parameters.normalization)
 ```
 
-```{r AA-result-changes-in-normalization-plot-for-ASA, fig.width= base.width, fig.height= base.height + 1, fig.cap="(ref:AA-result-changes-in-representations-ASA)", warning=FALSE, eval = FALSE}
-make_results_plot_normalization(d.AA.normalization %>% 
-  filter(prior_kappa.normalization %in% prior_kappa.normalization[which.min(abs(as.numeric(as.character(prior_kappa.normalization)) - best_performing_parameters.normalization$par[1]))]), best_performing_parameters.normalization) + 
-  scale_fill_manual(breaks = c(T, F), values = c("white", "white"))
-```
-
 ## Summary
 Paralleling Case Study 1 on perceptual recalibration, we find that any of the three change mechanisms can qualitatively explain the signature results for accent adaptation---at least for the hypothetical L2 accent considered here. Although this L2 accent differs from L1 listeners’ prior expectations in complex ways---specifically, the relative weighting of VOT and f0---even computationally simple, non-representational change mechanisms (normalization and decision-making) predict improved recognition accuracy after L2-accented exposure. For example, contrary to common assumptions, changes in decision-making can lead to _overall_ improvements in recognition accuracy, not just zero-sum trade-offs. This supports the conclusion of Case Study 1: at the level of analysis that is commonly applied in previous work (and thus in our case studies), experiments on accent adaptation do not necessarily rule out any of the three mechanisms.
 
@@ -1295,8 +1261,6 @@ construct_accent_models <- function(
   history.optimization_bias.gridSearch <<- grid_search_for_bias_model(example_label = example_label)
   best_performing_parameters.bias.gridSearch <<- history.optimization_bias.gridSearch %>%
     filter(accuracy == max(accuracy))
-  
-  print(paste0("lapse_rate is ", best_performing_parameters.bias.gridSearch$lapse_rate))
   
   best_performing_parameters.bias <- read_output_bias()$parameters
   
@@ -1648,40 +1612,3 @@ Second, the four scenarios in Figure \@ref(fig:AA-plot-results-additional-cases)
 The scenarios considered here only cover a subset of the L2 accent properties that exist in the world. They suffice, however, to illustrate a general challenge: different types of cross-talker differences---including L2 accents---pose different types of challenges to listeners (this is further reflected in the fact that the best-performing parameterizations for the same mechanism vary across the different accent scenarios, cf. Table \@ref(tab:AA-table-best-performing-parameterization)). It follows that, depending on the specific accent properties, listeners can benefit from different engagement of the three mechanisms [and different rates of adaptation, see discussion of the flexibility-stability trade-off in @kleinschmidt-jaeger2015, pp. 180-182]. This means that differences between accents can be a natural testbed for distinguishing between hypotheses about the change mechanisms affording adaptive speech perception. In the general discussion, we explore how such tests can be accomplished.
 
 <!-- In summary, the expected benefits of L2-accented exposure under each change mechanism depend on the specifics of the L2-accented categories (and how they relate to L1 listeners' prior expectations). Beyond the accent scenarios examined here (cue-reweighting, contrast reduction, contrast shift, and contrast collapse), naturally produced L2 accents exhibit complex variations, which can pose difficulties to L1-listeners and researchers alike. At the same time, these differences may provide a useful opportunity to contrast the three change mechanism or even to investigate their *relative* engagement in adaptive speech perception.  -->
-
-```{r replot-sleep-LCN-data}
-d.sleep <- read.csv(file = "/Users/xxie14/Dropbox/Projects/Completed/Sleep_studies_LCN/SleepAA/Results/Exp1/test_data.csv") %>% 
-  filter(Speaker == 5) %>%
-  mutate(Condition = case_when(
-    Group == 1 ~ "L2-accented",
-    Group == 2 ~ "L1-accented"
-  ),
-  Item.Intended_category = case_when(
-    WordType == "d" ~ "/d/",
-    WordType == "t" ~ "/t/"
-  ),
-  response = Acc,
-  category = Item.Intended_category) 
-
-
-d.jephpp <- read.csv(file = "/Users/xxie14/Documents/github_projects/computational_modeling_of_accent_adaptation_swedish_english-master/data/English/English_perception_identification_Xie et al 2017.csv") %>% 
-  mutate(Condition = case_when(
-    Group == "control" ~ "L1-accented",
-    Group == "experimental" ~ "L2-accented"
-  ),
-  Item.Intended_category = case_when(
-    Sound == "d" ~ "/d/",
-    Sound == "t" ~ "/t/"
-  ),
-  response = Spelling1.ACC,
-  category = Item.Intended_category) 
-
-basic_AA_result_plot(d.jephpp)+
-  geom_text(
-      inherit.aes = FALSE, 
-      data = . %>%
-        group_by(Condition) %>%
-        summarise(mAcc = round(mean(response), digits = 2)), 
-      mapping = aes(label = mAcc, x = Condition, y = 1.05), 
-      size = geom_text.size)
-```

@@ -452,42 +452,6 @@ p.PR.representations.highlighted <- p.PR.results %+%
   d.PR.representations.highlighted
 ```
 
-```{r PR-result-changes-in-representations-ASA, fig.width= base.width, fig.height= base.height +.5, fig.cap="(ref:PR-result-changes-in-representations)"}
-p.PR.results <-
-  d.PR %>%
-  filter(between(as.numeric(as.character(prior_kappa)), 75, 780) & between(as.numeric(as.character(prior_nu)), 160, 1000)) %>%
-  filter(category == categories.PR[1]) %>%
-  ggplot(aes(x = observationID, y = response, color = Condition, l = Condition)) +
-  geom_line(aes(group = Condition), alpha = .75) +
-  # , breaks = 1:length(unique(d.PR$observationID)), labels = c(categories.PR[1], rep("", length(unique(d.PR$observationID)) - 2), categories.PR[2])
-  scale_x_continuous(name = "Test token") + 
-  scale_y_continuous(paste0('Proportion ', categories.PR[1], '-responses'), limits = c(0, 1)) +
-  scale_linetype_manual("Exposure condition", breaks = conditions.PR, values = linetypes.condition) +
-  scale_color_manual("Exposure condition", breaks = conditions.PR, values = colors.condition) +
-  facet_grid(
-    prior_nu ~ prior_kappa, 
-    labeller = label_bquote(
-      cols = {kappa[.(categories.PR[1])~","~0] == kappa[.(categories.PR[2])~","~0]} == .(as.character(prior_kappa)), 
-      rows = {nu[.(categories.PR[1])~","~0] == nu[.(categories.PR[2])~","~0]} == .(as.character(prior_nu)))) + # as.table = T doesn't seem to work
-  theme(legend.position = "top") +
-  myGplot.defaults(base_size = 14, set_theme = F)
-
-p.PR.results +
-  insert_layers(
-    geom_rect(
-      data = . %>%
-        distinct(prior_kappa, prior_nu) %>%
-        mutate(highlight = case_when(
-          between(as.numeric(as.character(prior_kappa)), 75, 780) & between(as.numeric(as.character(prior_nu)), 160, 1000) ~ T,
-          T ~ F)), 
-      aes(fill = highlight), alpha = .2, inherit.aes = F,
-      xmin = -Inf,xmax = Inf, ymin = -Inf,ymax = Inf)) +
-  scale_fill_manual(breaks = c(T, F), values = c("white", "white")) +
-  guides(fill = "none")
-
-
-```
-
 Figure \@ref(fig:PR-result-changes-in-representations) demonstrates that distributional learning can account for the typical result of perceptual recalibration experiments. Of note, the range of parameterizations that best fit human responses in a series of distributional learning experiments on /b/ and /p/ [gray panel in Figure \@ref(fig:PR-result-changes-in-representations), $\kappa_{/b/,0}=\kappa_{/p/,0}=160$ (95% CI: 75-780) and $\nu_{/b/,0}=\nu_{/p/,0}=510$ (95% CI: 160-1000), @kleinschmidt2020] also provides a good qualitative fit against the /d/-/t/ perceptual recalibration results by Kraljic and Samuel [-@kraljic-samuel2007]. 
 
 Figure \@ref(fig:PR-result-changes-in-representations) further shows that boundary shifts can result from either changes in the beliefs about category means (small $\kappa_{c,0}s$, e.g. right column of Figure \@ref(fig:PR-result-changes-in-representations)) or changes in the beliefs about category covariances (small $\nu_{c,0}s$, e.g., bottom row in Figure \@ref(fig:PR-result-changes-in-representations)). This replicates an observation made by Kleinschmidt and Jaeger [-@kleinschmidt-jaeger2015, p. 168; see also @hitczenko-feldman2016; @theodore-monto2019], and highlights that "category expansion" and "category shifts" can both be seen as consequences of distributional learning [see also @bent-baeseberk2021; @schertz-clare2020; @hitczenko-feldman2016]. Figure \@ref(fig:PR-result-changes-in-representations-categories) serves to further clarify how the different parameter settings for $\kappa_{c,0}$ and $\nu_{c,0}s$ affect the expected category likelihoods for a subset of the panels of Figure \@ref(fig:PR-result-changes-in-representations), leading to category shifts, expansion, shrinkage, or rotation, depending on both the model parameters and the input during exposure.
@@ -627,48 +591,6 @@ p.PR.bias.highlighted <- p.PR.results.bias %+%
   d.PR.bias.highlighted
 ```
 
-```{r PR-result-changes-in-decision-making-ASA, fig.width= base.width, fig.height= base.height +.5, fig.cap="(ref:PR-result-changes-in-decision-making)"}
-d.PR %<>% 
-  filter(beta_pi == 0.01 & posterior.lapse_rate == .0005)
-p.PR.results.bias <- p.PR.results %+% 
-  d.PR +
-  geom_text(
-    data = . %>%
-      filter(beta_pi == 0.01 & posterior.lapse_rate == .0005) %>%
-      group_by(Condition, posterior.lapse_rate, beta_pi) %>%
-      summarise(
-        minObservationID = min(observationID),
-        maxObservationID = max(observationID),
-        lapse_bias_expression = list(bquote(pi[.(categories.PR[1])] == .(first(posterior.lapse_bias1))))) %>%
-      ungroup() %>%
-      filter(posterior.lapse_rate == max(posterior.lapse_rate)),
-    mapping = aes(
-      x = ifelse(Condition == conditions.PR[2], minObservationID, maxObservationID),
-      y = ifelse(Condition == conditions.PR[2], 0, 1),
-      hjust = ifelse(Condition == conditions.PR[2], 0, 1),
-      vjust = ifelse(Condition == conditions.PR[2], 0, 1),
-      label = unlist(lapse_bias_expression)),
-    size = 4,
-    parse = T,
-    show.legend = F) +
-  facet_grid(
-    posterior.lapse_rate ~ beta_pi, 
-    labeller = label_bquote(
-      cols = beta[pi] == .(beta_pi),
-      rows = lambda == ~.(posterior.lapse_rate))) +
-  myGplot.defaults(base_size = 14, set_theme = F)
-p.PR.results.bias
-
-d.PR.bias.highlighted <- d.PR %>%
-  filter(category == categories.PR[1]) %>%
-        mutate(highlight = case_when(
-          beta_pi == 0.01 & posterior.lapse_rate == .0005 ~ T,
-          T ~ F)) %>%
-  filter(highlight == T)
-
-p.PR.bias.highlighted <- p.PR.results.bias %+%
-  d.PR.bias.highlighted
-```
 Figure \@ref(fig:PR-result-changes-in-decision-making) shows the effects of changes in decision-making for lapse rates ranging from negligible lapse rates ($\lambda = .0005$, top row) to a scenario in which listeners always lapse ($\lambda = 1$). In the latter---rather implausible---edge case, listeners' responses only reflect response biases and are completely stimulus-independent (bottom row). For reference, lapse rates for perception experiments like the ones modeled here typically fall between 1-10% [e.g., @clayards2008 constrained lapse rates to be $<5$%; @kleinschmidt-jaeger2016cogsci report a best-fitting value of 5%].
 
 The primary insight from Figure \@ref(fig:PR-result-changes-in-decision-making) is that changes in response biases can account for the type of boundary shift that is observed in perceptual recalibration experiments. This shows that the signature result of perceptual recalibration experiments is ambiguous between two explanations that evoke very different cognitive architectures. For this case study, perhaps the closest match to the findings from Kraljic and Samuel (2006) is observed for plausible lapse rates up to 5% and small changes in response bias (second or third column, top rows). 

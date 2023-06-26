@@ -54,7 +54,7 @@ floatsintext      : yes
 figurelist        : no
 tablelist         : no
 footnotelist      : no
-linenumbers       : yes
+linenumbers       : no
 numbersections    : false
 mask              : no
 draft             : no
@@ -126,7 +126,7 @@ knitr::knit_hooks$set(warning = color_block('orange'))
 ```{r analysis-preferences}
 INCLUDE_TODO = F        # switch on/off to get to do list.
 SET_SEED = T            # switch on/off whether the same seed is set every time a randomization procedure is called
-ANIMATE_FIGURES = T     # switch on/off to replace animations with facets
+ANIMATE_FIGURES = F     # switch on/off to replace animations with facets
 SAVE_ANIMATED_VIDEO = F # switch on/off to save animations as videos (e.g., mp4, webm)
 RESET_FIGURES = F       # switch on/off whether time-consuming 3D figures are re-run and overridden
 RESET_MODELS = F        # switch on/off whether model optimization etc. is re-run even if it's already in the repo 

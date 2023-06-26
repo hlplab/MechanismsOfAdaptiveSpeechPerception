@@ -122,7 +122,8 @@ p2 <-
 plot_grid(
   plotlist = list(p1, p2),
   nrow = 2, labels = c("A)", "B)"),
-  align = "h",
+  rel_widths = c(1,1),
+  align = "hv",
   axis = "lrtb")
 ```
 

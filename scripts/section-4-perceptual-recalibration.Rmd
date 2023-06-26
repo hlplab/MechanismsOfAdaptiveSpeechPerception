@@ -272,7 +272,7 @@ plot_grid(
   align = "hv",
   axis = "btlr",
   labels = c("A)", "B)"),
-  rel_widths = c(.6, .4))
+  rel_widths = c(2,1.1))
 ```
 
 ```{r}
@@ -424,7 +424,9 @@ p.PR.results <-
     labeller = label_bquote(
       cols = {kappa[.(categories.PR[1])~","~0] == kappa[.(categories.PR[2])~","~0]} == .(as.character(prior_kappa)), 
       rows = {nu[.(categories.PR[1])~","~0] == nu[.(categories.PR[2])~","~0]} == .(as.character(prior_nu)))) + # as.table = T doesn't seem to work
-  theme(legend.position = "top") +
+  theme(legend.position = "top",
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank()) +
   myGplot.defaults(base_size = 14, set_theme = F)
 
 p.PR.results +
@@ -479,7 +481,10 @@ plot_expected_categories_contour2D(
     labeller = label_bquote(
       cols = atop({kappa[0~","~ .(categories.PR[1])] == kappa[0~","~ .(categories.PR[2])]} == .(as.character(prior_kappa)), 
                   {nu[0~","~ .(categories.PR[1])] == nu[0~","~ .(categories.PR[2])]} == .(as.character(prior_nu))))) +
-  theme(legend.position = "top", panel.spacing = unit(1, "lines"))
+  theme(legend.position = "top", 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.spacing = unit(1, "lines"))
 ```
 
 Finally, Figure \@ref(fig:PR-result-changes-in-representations) shows that distributional learning not only predicts shifts in the category boundary but can also predict changes in the slope of those boundaries. This is evident, for example, in the top-right panel. Although such changes in slopes are often not discussed, they are present in many perceptual recalibration experiments [e.g., @drouin2016; @liu-jaeger2018; @liu-jaeger2019; @myers-mesite2014].
@@ -634,7 +639,9 @@ if (ANIMATE_FIGURES) {
     # ease_aes('linear') +
     # enter_fade() + exit_fade() +
     transition_states(prior_kappa.normalization) +
-    ggtitle(label = expression(kappa[0]), subtitle = "{closest_state}")
+    ggtitle(label = expression(kappa[0]), subtitle = "{closest_state}") +
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank())
   p.animation + geom_text(aes(color = Prior_proportion_category1), size = 3)
 } else {
   d.PR %>%
@@ -652,7 +659,9 @@ if (ANIMATE_FIGURES) {
     facet_grid(
       prior_kappa.normalization ~ Condition,
       labeller = label_bquote(
-        rows = ~kappa[0] == .(as.character(prior_kappa.normalization))))
+        rows = ~kappa[0] == .(as.character(prior_kappa.normalization)))) +
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank())
 }
   if (SAVE_ANIMATED_VIDEO) {
     p.animation <- 
@@ -670,7 +679,9 @@ if (ANIMATE_FIGURES) {
     # ease_aes('linear') +
     # enter_fade() + exit_fade() +
     transition_states(prior_kappa.normalization) +
-    ggtitle(label = expression(kappa[0]), subtitle = "{closest_state}")
+    ggtitle(label = expression(kappa[0]), subtitle = "{closest_state}") +
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank())
     
     anim_save(
       "demonstrate-PR-test-normalization.webm", 

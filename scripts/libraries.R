@@ -4,7 +4,7 @@ install_and_load_package <- function (name) {
   if (!is.element(name, all_installed_packages)) {
     install.packages(name)
   }
-  
+
   cat(paste("Loading", name, "\n"))
   library(name, character.only = TRUE)
 }
@@ -22,6 +22,7 @@ install_and_load_package("data.table")
 install_and_load_package("linguisticsdown")    # IPA symbols
 install_and_load_package("phonR")
 install_and_load_package("latexdiffr")         # track changes
+install_and_load_package("ggh4x")              # sizing plot panels
 install_and_load_package("cowplot")            # combining plots
 install_and_load_package("gganimate")          # animations
 install_and_load_package("plotly")             # 3D plots
@@ -34,11 +35,11 @@ install_and_load_package("mixtools")           # for drawing ellipses in the 3D 
 install_and_load_package("modelr")
 install_and_load_package("diptest")            # test for bimodality
 install_and_load_package("NMOF")               # for grid search
-install_and_load_package("parallel")           # use multicore to speed up grid search and optimization  
+install_and_load_package("parallel")           # use multicore to speed up grid search and optimization
 install_and_load_package("LaplacesDemon")      # for additional density distributions (e.g., inverse-Wishart, W^-1)
 
 
 if (has_internet()) install_github("crsh/papaja", ref = "devel")
 library(papaja)
-if (has_internet()) install_github("hlplab/MVBeliefUpdatr", ref = "add-exemplar-models", INSTALL_opts = "--no-lock", upgrade = "never")
+if (has_internet()) install_github("hlplab/MVBeliefUpdatr", INSTALL_opts = "--no-lock", upgrade = "never")
 library(MVBeliefUpdatr)

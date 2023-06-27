@@ -11,8 +11,6 @@ For Case Study 2, we construct a hypothetical experiment that closely follows th
 The stimulus generation procedure is described in detail in the SI (\@ref(sec:SI-AA)).
 
 ```{r study-AA-setup, message=FALSE}
-# Set plotting aesthetics
-geom_text.size <- theme_get()$text$size *5/14 # change from mm to point scale; keeping the size of geom_text the same as the rest of text in ggplot
 pos <- position_dodge(.6)
 
 # Random seed for this study
@@ -581,7 +579,6 @@ get_representation_models_for_plot <- function(
   return(representations.pred)
 }
 
-
 d.AA.representations <- get_representation_models_for_plot(prior_kappa = prior_kappa.plot, prior_nu = prior_nu.plot)
 best_performing_parameters.representations <- find_best_model.representations.AA()
 ```
@@ -598,12 +595,14 @@ make_results_plot_representations <- function(data, data_best) {
         group_by(Condition, prior_nu, prior_kappa) %>%
         summarise(mAcc = round(mean(response), digits = 2)), 
       mapping = aes(label = mAcc, x = Condition, y = 1.05), 
-      size = geom_text.size) +
+      size = convert_fontsize_to_textsize(result.base.size)) +
     facet_grid(
       prior_nu ~ prior_kappa,
       labeller = label_bquote(
         cols = {kappa[.(categories.AA[1])~","~0] == kappa[.(categories.AA[2])~","~0]} == .(as.character(prior_kappa)),
-        rows = {nu[.(categories.AA[1])~","~0] == nu[.(categories.AA[2])~","~0]} == .(as.character(prior_nu)))) 
+        rows = {nu[.(categories.AA[1])~","~0] == nu[.(categories.AA[2])~","~0]} == .(as.character(prior_nu)))) +   
+    myGplot.defaults(base_size = result.base.size, set_theme = F) + 
+    ggh4x::force_panelsizes(cols = result.panel.size, rows = result.panel.size)
   
   p.results +
     ggnewscale::new_scale_fill() +
@@ -946,7 +945,6 @@ get_decision_making_models_for_plot <- function(
   return(bias.pred) 
 }
 
-
 get_average_bias_results_across_simulations.byItem <- function(data){
     output <- 
     data %>%
@@ -984,12 +982,14 @@ make_results_plot_decision_making <- function(data, data_best){
     geom_text(
       inherit.aes = FALSE, data = . %>%
         group_by(Condition, posterior.lapse_rate, beta_pi) %>%
-        summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1.05), size = geom_text.size) +
+        summarise(mAcc = round(mean(response), digits = 2)), aes(label = mAcc, x = Condition, y = 1.05), size = convert_fontsize_to_textsize(result.base.size)) +
     facet_grid(
       posterior.lapse_rate ~ beta_pi,
       labeller = label_bquote(
         cols = beta[pi] == .(beta_pi),
-        rows = lambda == ~.(posterior.lapse_rate))) 
+        rows = lambda == ~.(posterior.lapse_rate)))  +   
+    myGplot.defaults(base_size = result.base.size, set_theme = F) + 
+    ggh4x::force_panelsizes(cols = result.panel.size, rows = result.panel.size)
 
   p.results +
     ggnewscale::new_scale_fill() +
@@ -1011,7 +1011,6 @@ make_results_plot_decision_making <- function(data, data_best){
     scale_fill_manual(breaks = c(T, F), values = c("gray20", "white")) +
     guides(fill = "none")
 }
-
 ```
 
 ```{r AA-result-changes-in-decision-making, fig.width= base.width * 5, fig.height= base.height * 5 + 1, fig.cap="(ref:AA-result-changes-in-decision-making)", warning=FALSE}
@@ -1165,11 +1164,13 @@ make_results_plot_normalization <- function(data, data_best){
         group_by(Condition, prior_kappa.normalization) %>%
         summarise(mAcc = round(mean(response), digits = 2)), 
       mapping = aes(label = mAcc, x = Condition, y = 1.05), 
-      size = geom_text.size) +
+      size = convert_fontsize_to_textsize(result.base.size)) +
     facet_grid(
       . ~ prior_kappa.normalization,
       labeller = label_bquote(
-        cols = ~kappa[0] == .(as.character(prior_kappa.normalization))))
+        cols = ~kappa[0] == .(as.character(prior_kappa.normalization)))) +   
+    myGplot.defaults(base_size = result.base.size, set_theme = F) + 
+    ggh4x::force_panelsizes(cols = result.panel.size, rows = result.panel.size)
   
   p.results +
     ggnewscale::new_scale_fill() +
@@ -1239,7 +1240,6 @@ construct_accent_models <- function(
   
   p.exposure_test <- make_exposure_test_plot(d.AA.exposure, d.AA.test)
   ggsave(paste0('../figures/plotly/exposure_test_distribution_', example_label, '.png'), plot = p.exposure_test, width = base.width*3 + .5, height = base.height + .5, dpi = 300)
-
 
   history.optimization_representations <<- tibble(.rows = 0)
   best_performing_parameters.representations <- find_best_model.representations.AA()
@@ -1351,7 +1351,6 @@ shift.cue2 <- 0
 var.ratio <- 1
 example_label = "Contrast_shift"
 d.AA.results.contrast_shift.best  <- construct_accent_models(example_label = "Contrast_shift", experimenter.ideal_observer = m.io.VOT_f0.AA)
-
 ```
 
 ```{r AA-result-comparison-best-models-contrast-reduction, warning=FALSE}
@@ -1379,7 +1378,6 @@ example_label = "Contrast_collapse"
 
 d.AA.results.contrast_collapse.best <- 
   construct_accent_models(example_label = "Contrast_collapse", experimenter.ideal_observer = m.io.VOT_f0.AA)
-
 ```
 
 ```{r AA-result-comparison-best-models-cue-reweighting, warning=FALSE}
@@ -1517,7 +1515,9 @@ p.AA.exposure <- d.AA.exposure.target.cases %>%
   coord_cartesian(ylim = c(0, 500)) +
   scale_fill_manual("Category",  values = c(colors.category), guide = "none") +
   scale_color_manual("Category", values = c(colors.category), guide = "none") +
-  facet_grid(Case ~ Title, switch = "y") + theme(legend.position="top") 
+  facet_grid(Case ~ Title, switch = "y") + theme(legend.position="top")  +   
+  myGplot.defaults(base_size = result.base.size, set_theme = F) + 
+  ggh4x::force_panelsizes(cols = result.panel.size, rows = result.panel.size)
 ```
 
 ```{r AA-plot-results-additional-cases, fig.width=base.width*4 + .5, fig.height=base.height*4 + .5, fig.cap = "(ref:AA-plot-results-additional-cases)", warning=FALSE}
@@ -1563,7 +1563,9 @@ p.results.best.cases <- d.AA.results.best.cases %>%
   facet_grid(Case ~ ModelType) +
   theme(legend.position = "top", 
         strip.text.y = element_blank(),
-        panel.grid.major.x = element_blank())
+        panel.grid.major.x = element_blank()) +   
+  myGplot.defaults(base_size = result.base.size, set_theme = F) + 
+  ggh4x::force_panelsizes(cols = result.panel.size, rows = result.panel.size)
 
 prow <- 
   plot_grid(

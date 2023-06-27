@@ -21,14 +21,14 @@ get_plot_breaks <- function(plot) {
 myGplot.defaults = function(
   type = c("paper","poster","slides")[1],
   base_size = if (type == "paper") { 10 } else if (type == "slides") { 32 } else if (type == "poster") { 36 } else { 10 },
-  margin=c("t" = 0.6, "r" = 0.5, "b" = 0.5, "l" = 0.3),
+  margin = c("t" = 0.6, "r" = 0.5, "b" = 0.5, "l" = 0.3),
   set_theme = T
 )
 {
   require(ggplot2)
-  t <- theme(axis.text.x = element_text(size=base_size, vjust=1),
-            axis.text.y = element_text(size=base_size, hjust=1, vjust=.5),
-            axis.title.x = element_text(size=base_size , vjust=0, hjust=0.5, face = "bold"),
+  t <- theme(axis.text.x = element_text(size=base_size-1, vjust=1),
+            axis.text.y = element_text(size=base_size-1, hjust=1, vjust=.5),
+            axis.title.x = element_text(size=base_size , vjust=1, hjust=0.5, face = "bold"),
             axis.title.y = element_text(size=base_size, hjust= 0.5, vjust=0.5, face = "bold"),
             strip.text = element_text(size=base_size, color = "white"),
             strip.background = element_rect(fill = "black", color = "black"),
@@ -369,14 +369,14 @@ make_psychometric_stat_functions <- function(intercept, slope, lambda, pi, cente
 
 # FUNCTIONS FOR CASE STUDIES ----------------------------------------------
 add_subjects_to_exposure <- function(
-    d, 
-    n.subject, 
+    d,
+    n.subject,
     quiet = F
 ) {
   assert_that(!("Subject" %in% names(d)),
               msg = "This data frame already seems to contain subjects")
   if (!quiet) message(paste("Adding", n.subject, "subjects per exposure condition."))
-  
+
   d %>%
     group_by(Condition) %>%
     crossing(Subject = factor(1:n.subject)) %>%
@@ -386,14 +386,14 @@ add_subjects_to_exposure <- function(
 }
 
 add_subjects_to_test <- function(
-    d, 
-    n.subject, 
+    d,
+    n.subject,
     quiet = F
 ) {
   assert_that(!("Subject" %in% names(d)),
               msg = "This data frame already seems to contain subjects")
   if (!quiet) message(paste("Adding", n.subject, "subjects per exposure condition."))
-  
+
   d %>%
     group_by(Condition) %>%
     crossing(Subject = factor(1:n.subject)) %>%
@@ -432,7 +432,7 @@ add_categorization <- function(data) {
 
 
 # (if test is null it won't be added and it's assumed that there already is a nested
-# column of test tokens called  x and another column indicating the mapping from x 
+# column of test tokens called  x and another column indicating the mapping from x
 # to intended categories; this is required only for the normalization updating).
 add_test_and_categorize <- function(data, test = NULL) {
   assert_that(is_tibble(data))
@@ -445,7 +445,7 @@ add_test_and_categorize <- function(data, test = NULL) {
       msg = "If test is NULL, data must contains column x with nested test tokens and Item.Intended_category with mappings of x to the intended/correct category.")
     assert_that(is_list(data$x))
   }
-  
+
   data %>%
     { if (!is.null(test)) add_test_tokens(., test) else select(., -Item.Intended_category) } %>%
     add_categorization() %>%
@@ -454,8 +454,8 @@ add_test_and_categorize <- function(data, test = NULL) {
       left_join(
         .,
         test %>%
-          select(x, Item.Intended_category), 
-        by = "x") 
+          select(x, Item.Intended_category),
+        by = "x")
     } else {
       left_join(
         .,
@@ -700,8 +700,8 @@ update_NIW_response_bias_incrementally <- function(
           decision_rule = decision_rule,
           noise_treatment = noise_treatment,
           lapse_treatment = lapse_treatment,
-          verbose = verbose)) 
-    
+          verbose = verbose))
+
     if (keep.update_history) {
       posterior %<>%
         mutate(observation.n = i)
@@ -730,22 +730,22 @@ update_bias_and_categorize_test <- function(
     test,
     cues = c("VOT", "f0_Mel"),
     control = list(
-      min.simulations = 5, 
-      max.simulations = 10, 
-      step.simulations = 1, 
+      min.simulations = 5,
+      max.simulations = 10,
+      step.simulations = 1,
       target_accuracy_se = .005),
     add_updates = NULL,
     verbose = FALSE
 ) {
-  u <- 
+  u <-
     lapply(
       X = as_list(1:control[["min.simulations"]]),
-      FUN = function(x) 
+      FUN = function(x)
         update_NIW_response_bias_incrementally(
           prior = prior,
           beta = beta_pi,
           # Reshuffle exposure on each run
-          exposure = exposure %>% sample_frac(1, replace = F), 
+          exposure = exposure %>% sample_frac(1, replace = F),
           exposure.category = "Item.Category",
           exposure.cues = cues,
           decision_rule = "proportional",
@@ -757,16 +757,16 @@ update_bias_and_categorize_test <- function(
         nest(posterior = everything()) %>%
         mutate(sim = x) %>%
         add_test_and_categorize(test)) %>%
-    reduce(bind_rows) 
-  
+    reduce(bind_rows)
+
   # If existing updates were provided add them to the ones just created before
   # checking whether one of the convergence criteria is reached.
   if (!is.null(add_updates))
     u %<>%
     mutate(sim = sim + n_distinct(add_updates$sim)) %>%
     bind_rows(add_updates)
-  
-  u.test <- 
+
+  u.test <-
     u %>%
     group_by(sim) %>%
     summarise(response.mean = mean(response)) %>%
@@ -777,21 +777,21 @@ update_bias_and_categorize_test <- function(
       max.additional_simulations = .env$control[["max.simulations"]] - min.additional_simulations,
       step.simulations = .env$control[["step.simulations"]],
       target_accuracy_se = .env$control[["target_accuracy_se"]],
-      lapse_rate = first(.env$prior$lapse_rate), 
+      lapse_rate = first(.env$prior$lapse_rate),
       response.mean.mean = mean(response.mean),
       response.mean.se = sd(response.mean) / sqrt(n_distinct(sim)))
-  
+
   if (verbose)
     u.test %>%
     print()
-  
-  
+
+
   # If max simulations not yet reached AND target_se not yet reached, run more
   # simulations.
   if (
-    control[["min.simulations"]] < control[["max.simulations"]] & 
+    control[["min.simulations"]] < control[["max.simulations"]] &
     (u.test %>% pull(response.mean.se) %>% { . > control[["target_accuracy_se"]]})) {
-    
+
     u <-
       update_bias_and_categorize_test(
         prior = prior,
@@ -807,8 +807,8 @@ update_bias_and_categorize_test <- function(
           step.simulations = control[["step.simulations"]],
           target_accuracy_se = control[["target_accuracy_se"]]),
         add_updates = u)
-    
-  } 
+
+  }
   return(u)
 }
 
@@ -867,29 +867,29 @@ make_quadratic_effects_of_cues_monotonic <- function(data){
   data %<>%
     as.matrix() %>%
     data.table()
-  
+
   data[, col_max := colnames(.SD)[max.col(.SD, ties.method = "first")]] # get column number that has the maximal value within each row
   data$max <- apply(data[,.SD, .SDcols = !c('col_max')], 1, max) # get the max value within each row
-  
-  data %<>% 
+
+  data %<>%
     as.data.frame() %>%
     rownames_to_column('id') %>%
     pivot_longer(
       cols = starts_with("V"),
       names_to = "col_name",
       values_to = "prob") %>%
-    # criteria to fix the quadratic effect: for each row, if 
-    #     1) the current value is smaller than the max value of the row, and 
-    #     2) the col_num of the current value is smaller (i.e., VOT is smaller) than the col_num of the max value, 
+    # criteria to fix the quadratic effect: for each row, if
+    #     1) the current value is smaller than the max value of the row, and
+    #     2) the col_num of the current value is smaller (i.e., VOT is smaller) than the col_num of the max value,
     # then replace the current value with the max value
     mutate(
-      need_to_fix = as.numeric(gsub("V", "", col_name)) < as.numeric(gsub("V", "",  col_max)), 
+      need_to_fix = as.numeric(gsub("V", "", col_name)) < as.numeric(gsub("V", "",  col_max)),
       prob.fixed = ifelse(need_to_fix, max, prob)) %>%
     select(id, col_name, prob.fixed) %>%
     pivot_wider(names_from = col_name, values_from = prob.fixed) %>%
     select(-id) %>%
     as.matrix()
-  
+
   return(data)
 }
 
@@ -901,30 +901,30 @@ demonstrate_representations_3D <- function(model, n, cue1_range, cue2_range, cue
   bivn <- list()
   prob <- list()
   ellipse_data <- list()
-  
+
   for (i in 1:length(model$category)) {
     mu <- model$mu[[i]]
     Sigma <- model$Sigma[[i]]
-    
+
     # calculate the density values (transpose the matrix generated by 'outer': x is the first cue, y is the 2nd cue)
     # and add the grid of the two cues (x, y) and density together into a list
-    z <- t(outer(x, y, FUN = bivariate_density, mu, Sigma)) 
+    z <- t(outer(x, y, FUN = bivariate_density, mu, Sigma))
     bivn[[i]] <- list(x, y, z)
     names(bivn[[i]]) <- c(cue_names, "density")
-    
+
     # add ellipse
     ellipse_data[[i]] <- mixtools::ellipse(mu, Sigma, alpha = .05, npoints = 250, newplot = F, draw = F)
     ellipse_data[[i]] <- cbind(as.data.frame(ellipse_data[[i]][,1]), as.data.frame(ellipse_data[[i]][,2]))
     colnames(ellipse_data[[i]]) <- cue_names
     ellipse_data[[i]]$z <- NULL
     ellipse_data[[i]]$density <- 0
-    
+
     prob[[i]] <- z
   }
-  
+
   # create categorization surface
   resp.prob <- prob[[1]] / (prob[[1]] + prob[[2]])
-  
+
   # fix the quadratic effects in the categorization function that can result from unequal variances?
   if (fix_quadratic_effects) {
     resp.prob <- make_quadratic_effects_of_cues_monotonic(resp.prob)
@@ -936,12 +936,12 @@ demonstrate_representations_3D <- function(model, n, cue1_range, cue2_range, cue
   resp.prob <- (1 - lambda) * resp.prob + lambda * pi
   df.resp <- list(x, y, resp.prob)
   names(df.resp) <- c(cue_names, "proportion_d")
-  
+
   color <- rep(0, length(bivn[[1]]$density))
-  
+
   output <- list(bivn[[1]], bivn[[2]], ellipse_data[[1]], ellipse_data[[2]], df.resp, color)
   names(output) <- c("d.bivn", "t.bivn", "d.ellipse", "t.ellipse", "df.resp", "color")
-  
+
   return(output)
 }
 
@@ -974,7 +974,7 @@ plot_3D.density <- function(d.bivn, t.bivn, d.ellipse, t.ellipse, color, width, 
       x = d.ellipse$VOT, y = d.ellipse$f0, z = t(d.ellipse$density),
       type="scatter3d", mode="markers",
       marker = list(size = 10), opacity = 0,
-      opacity = 1, color = colors.voicing[1], size = 0.01, showlegend = FALSE) %>% 
+      opacity = 1, color = colors.voicing[1], size = 0.01, showlegend = FALSE) %>%
     add_trace(
       x = d.ellipse$VOT, y = d.ellipse$f0, z = t(d.ellipse$density),
       type="scatter3d", mode="markers",
@@ -1047,10 +1047,10 @@ plot_3D.categorization.diff <- function(df.resp, width, height){
     layout(
       scene = list(
         # zooming in on the plot, values larger than 0
-        aspectratio = list(x = 1.2, y = 1.2, z = 1), 
+        aspectratio = list(x = 1.2, y = 1.2, z = 1),
         # perspective good for showing categorization curve
         camera = list(
-          eye = list(x = -0.5, y = -2.5, z = 0.5), 
+          eye = list(x = -0.5, y = -2.5, z = 0.5),
           up =  list(x = 0, y = 0, z = 1)),
         zaxis = list(title = "Diff. in posterior<br>log-odds of /d/", titlefont = list(size = 22), range = c(-5,10)),
         yaxis = list(title = "f0 (Mel)",titlefont = list(size = 22)),
@@ -1062,15 +1062,15 @@ prepare_3D.categorization_from_results <- function(data, cue1_range, cue2_range,
 
   x<-seq(cue1_range[1], cue1_range[2],length=n)  # generating the vector sequence for cue 1
   y<-seq(cue2_range[1], cue2_range[2],length=n)  # generating the vector sequence for cue 2
-  
+
   d.input = expand.grid(x, y)
   colnames(d.input) = c("VOT", "f0")
   temp2 = as.data.frame(d.input) %>% # create a grid of cue 1 and cue 2
     mutate(x = map2(VOT, f0, ~ c(.x, .y)))
-  
+
   output <- vector(mode = "list", length = length(conditions.AA))
   for (i in 1:length(conditions.AA)){
-    
+
     ##----------------
     #convert cue values based on the mu_inferred for the current parameter of prior_kappa.normalization
     if("Normalization" %in% levels(factor(data$model))) {
@@ -1083,26 +1083,26 @@ prepare_3D.categorization_from_results <- function(data, cue1_range, cue2_range,
         mutate(mu_inferred = d.AA.normalization.step0$mu_inferred[1],
                x = map2(x, mu_inferred, ~ .x - (.y - prior_marginal_VOT_f0_stats$x_mean[[1]])))
     }
-    
+
     ##----------------
     d.output.step1 <- data %>%
       crossing(temp2 %>% distinct(x)) %>%
       nest(x = c(x)) %>%
       add_categorization() %>%
       filter(Condition == conditions.AA[i] & category == "/d/")
-    
+
     ##----------------
     # For the bias model, get the average response predictions from multiple simulations
     if("Decision_making" %in% levels(factor(data$model))){
       d.output.step1 %<>%
-      group_by(!!! syms(setdiff(names(.), c("sim", "posterior", "response")))) %>% 
+      group_by(!!! syms(setdiff(names(.), c("sim", "posterior", "response")))) %>%
       summarise(
         response.n_sims = n_distinct(sim),
         response.se = sd(response) / sqrt(response.n_sims),
         response = mean(response)) %>%
       relocate(
-        !!! syms(setdiff(names(.), c("response", "response.se", "response.n_sims"))), 
-        response, response.se, response.n_sims) 
+        !!! syms(setdiff(names(.), c("response", "response.se", "response.n_sims"))),
+        response, response.se, response.n_sims)
     }
 
     d.output <- d.output.step1 %>%
@@ -1116,10 +1116,10 @@ prepare_3D.categorization_from_results <- function(data, cue1_range, cue2_range,
     df.resp <- list()
     df.resp$VOT <- x
     df.resp$f0 <- y
-    
+
     # create categorization surface
     resp.prob <- t(matrix(d.output$response, ncol=n))
-  
+
     # fix the quadratic effects in the categorization function that can result from unequal variances?
     if (fix_quadratic_effects) {
       resp.prob <- make_quadratic_effects_of_cues_monotonic(resp.prob)
@@ -1127,9 +1127,9 @@ prepare_3D.categorization_from_results <- function(data, cue1_range, cue2_range,
       resp.prob <- t(resp.prob)
     }
     df.resp$proportion_d <- resp.prob
-    
+
     output[[i]] = df.resp
   }
-  
+
   return(output)
 }

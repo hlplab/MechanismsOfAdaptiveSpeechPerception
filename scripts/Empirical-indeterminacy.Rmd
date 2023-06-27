@@ -135,6 +135,11 @@ RESET_MODELS = F        # switch on/off whether model optimization etc. is re-ru
 # Seed for random number generation
 if (SET_SEED) set.seed(42007)
 knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+
+# Figure and figure font sizing for results figures
+result.panel.size <- unit(2.5, "cm")
+result.base.size <- 8 
+convert_fontsize_to_textsize <- function(x) x * 5/14
 ```
 
 ```{r, child="section-0-TO-DO.Rmd", eval= if (INCLUDE_TODO) TRUE else FALSE}

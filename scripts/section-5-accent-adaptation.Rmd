@@ -60,7 +60,7 @@ m.ia.VOT_f0.AA <-
 ```
 
 ### Exposure phase
-Figure \@ref(fig:study-AA-exposure-test-plot)A shows the stimuli for the exposure and test phases of the experiment. In the L2-accented exposure condition, listeners hear word recordings containing L2-accented initial /d/ and /t/ (30 tokens per category). In the control condition with L1-accented exposure, listeners hear the same words but from an L1-accented talker.^[The use of L1-accented exposure, rather than L2-accented exposure without /d/, as control follows a typical design in accent adaptation studies [e.g., @bradlow-bent2008], rather than @xie2016jep. Xie and colleagues instead employed L2-accented exposure without /d/, using the same L2-accented talker as during test [see also @eisner2013]. For the present purpose, both types of control conditions lead to identical predictions (as long as the L2-accented control exposure successfully avoids conveying non-negligible amount of information about the categories considered during the test phase) since the current implementation of the three change models do not consider talker-switch costs.] For L1-accented exposure, the category likelihoods were set to match those observed in @chodroff-wilson2018, after C-CuRE normalization (i.e., the distributions shown in Figure \@ref(fig:demonstrate-normalization)B). This follows the same approach we took for the typical tokens in Case Study 1. For L2-accented exposure, /d/ and /t/ categories were created following the VOT and f0 statistics of Korean-accented US English reported in @schertz2015. The /d/ and /t/ categories in this L2 accent differ from L1-accented US English in both category means and variances. First, the VOTs of both stop categories are longer in the L2 accent, making the /d/s more similar to /t/s for native-English listeners who rely on VOT as a primary cue to voicing distinction. As a result, the recognition accuracy is expected to be lower for /d/ than for /t/ for the L1-accented exposure condition. Second, the L2-accented categories exhibit the same ordering along f0 as in L1-accented US English (lower f0 for /d/ than for /t/), but this difference along f0 is enhanced in Korean-accented US English. This makes syllable-initial stop voicing in Korean-accented US English a representative case of cue reweighting, a common difference between L2 and L1 accents that has received much attention in research on accent adaptation [e.g., @escudero2009; @kim2020; @schertz2016; see also @idemaru-holt2011; @idemaru-holt2020; @harmon2019]. 
+Figure \@ref(fig:AA-exposure-test-plot)A shows the stimuli for the exposure and test phases of the experiment. In the L2-accented exposure condition, listeners hear word recordings containing L2-accented initial /d/ and /t/ (30 tokens per category). In the control condition with L1-accented exposure, listeners hear the same words but from an L1-accented talker.^[The use of L1-accented exposure, rather than L2-accented exposure without /d/, as control follows a typical design in accent adaptation studies [e.g., @bradlow-bent2008], rather than @xie2016jep. Xie and colleagues instead employed L2-accented exposure without /d/, using the same L2-accented talker as during test [see also @eisner2013]. For the present purpose, both types of control conditions lead to identical predictions (as long as the L2-accented control exposure successfully avoids conveying non-negligible amount of information about the categories considered during the test phase) since the current implementation of the three change models do not consider talker-switch costs.] For L1-accented exposure, the category likelihoods were set to match those observed in @chodroff-wilson2018, after C-CuRE normalization (i.e., the distributions shown in Figure \@ref(fig:demonstrate-normalization)B). This follows the same approach we took for the typical tokens in Case Study 1. For L2-accented exposure, /d/ and /t/ categories were created following the VOT and f0 statistics of Korean-accented US English reported in @schertz2015. The /d/ and /t/ categories in this L2 accent differ from L1-accented US English in both category means and variances. First, the VOTs of both stop categories are longer in the L2 accent, making the /d/s more similar to /t/s for native-English listeners who rely on VOT as a primary cue to voicing distinction. As a result, the recognition accuracy is expected to be lower for /d/ than for /t/ for the L1-accented exposure condition. Second, the L2-accented categories exhibit the same ordering along f0 as in L1-accented US English (lower f0 for /d/ than for /t/), but this difference along f0 is enhanced in Korean-accented US English. This makes syllable-initial stop voicing in Korean-accented US English a representative case of cue reweighting, a common difference between L2 and L1 accents that has received much attention in research on accent adaptation [e.g., @escudero2009; @kim2020; @schertz2016; see also @idemaru-holt2011; @idemaru-holt2020; @harmon2019]. 
 
 ```{r define-AA-accent-category-distribution}
 # How separable the categories are in the L2 accent?
@@ -80,12 +80,13 @@ example_label = "Cue_reweighting"
 
 ```{r study-AA-exposure-functions}
 # Get acoustic locations that correspond to targeted response proportions.
-get_parameters_phonetic_contrast.AA <- function(ideal.observer,
-                                                category_dist_ratio1,
-                                                category_dist_ratio2,
-                                                shift_mean_1 = 0,
-                                                shift_mean_2 = 0) {
-
+get_parameters_phonetic_contrast.AA <- function(
+    ideal.observer,
+    category_dist_ratio1,
+    category_dist_ratio2,
+    shift_mean_1 = 0,
+    shift_mean_2 = 0
+) {
    # native categories
    mu_native_A <- ideal.observer %>% filter(category == "/d/") %>% pull(mu) %>% .[[1]]
    Sigma_native_A <- ideal.observer %>% filter(category == "/d/") %>% pull(Sigma) %>% .[[1]]
@@ -96,10 +97,10 @@ get_parameters_phonetic_contrast.AA <- function(ideal.observer,
    mu_nonnative_B <- mu_native_B
    Sigma_nonnative_B <- matrix(c(Sigma_native_B[1]*var.ratio, Sigma_native_B[2], Sigma_native_B[3], Sigma_native_B[4]), nrow=2)
 
-   # The larger the category_dist_ratio, the greater distance along that cue dimension (1 = VOT, 2 = f0) between the two categories in the L2 accent.
-   # If category_dist_ratio1 = category_dist_ratio2 = 0, then the two categories overlap entirely in the L2 accent.
-   # If category_dist_ratio1 = category_dist_ratio2 = 1, then /d/-/t/ will have the same distance as that in L1-accent along the primary cue dimension.
-
+   # The larger the category_dist_ratio, the greater distance along that cue dimension (1 = VOT, 2 = f0) 
+   # between the two categories in the L2 accent. If category_dist_ratio1 = category_dist_ratio2 = 0, 
+   # then the two categories overlap entirely in the L2 accent. If category_dist_ratio1 = category_dist_ratio2 = 1, 
+   # then /d/-/t/ will have the same distance as that in L1-accent along the primary cue dimension.
      if(example_label != "Contrast_collapse"){
        mu_nonnative_A <- c(mu_nonnative_B[1] * (1 + category_dist_ratio1 * (mu_native_A[1]- mu_native_B[1])/mu_native_B[1]),
                          mu_nonnative_B[2] * (1 + category_dist_ratio2 * (mu_native_A[1]- mu_native_B[1])/mu_native_B[1]))
@@ -227,11 +228,9 @@ colnames(population_var) = c("category", "cue", "prior_variance")
 ```
 
 ### Test phase
-During test, listeners from both exposure conditions hear the same recordings from the same L2-accented talker used in the L2-accented exposure condition. 60 test tokens are randomly sampled from the distribution of each L2-accented category, half from the /d/ category and half from the /t/ category (Figure \@ref(fig:study-AA-exposure-test-plot)B).
+During test, listeners from both exposure conditions hear the same recordings from the same L2-accented talker used in the L2-accented exposure condition. 60 test tokens are randomly sampled from the distribution of each L2-accented category, half from the /d/ category and half from the /t/ category (Figure \@ref(fig:AA-exposure-test-plot)B).
 
 ```{r study-AA-test-functions}
-
-# make the design of an test phase
 make_accent_adaptation_test_design = function(
   experimenter.ideal_observer,
   experimenter.variability_reduction = my_experimenter.variability_reduction,
@@ -306,28 +305,30 @@ d.AA.test <- make_accent_adaptation_test_design(
   experimenter.ideal_observer = m.io.VOT_f0.AA, shift_mean_1 = shift.cue1, shift_mean_2 = shift.cue2)
 ```
 
-(ref:study-AA-exposure-test-plot) **Panel A - Exposure:** Distribution of the stimuli used during the exposure phase of the accent adaptation experiment (`r n.exposure.token` tokens each of `r conditions.AA[1]` and `r conditions.AA[2]` `r paste(categories.AA, collapse = " and ")`, respectively). **Panel B - Test:**  Distribution of the stimuli used during the test phase of the accent adaptation experiment. The test tokens come from L2-accented speech (`r n.test.token` tokens per category) and are identical for the two exposure conditions. Ellipses show the 95% probability mass for the two categories in L2-accented exposure speech.
+(ref:AA-exposure-test-plot) **Panel A - Exposure:** Distribution of the stimuli used during the exposure phase of the accent adaptation experiment (`r n.exposure.token` tokens each of `r conditions.AA[1]` and `r conditions.AA[2]` `r paste(categories.AA, collapse = " and ")`, respectively). **Panel B - Test:**  Distribution of the stimuli used during the test phase of the accent adaptation experiment. The test tokens come from L2-accented speech (`r n.test.token` tokens per category) and are identical for the two exposure conditions. Ellipses show the 95% probability mass for the two categories in L2-accented exposure speech.
 
 ```{r plot-AA-exposure-test-functions}
-# Function to plot exposure and test data
-make_exposure_test_plot <- function(exposure.data, 
-                                    test.data,
-                                    categories = categories.AA){
+make_exposure_test_plot <- function(
+    exposure.data, 
+    test.data,
+    categories = categories.AA
+){
   p.AA.exposure <- 
     exposure.data %>%
     mutate(Condition = paste0("Exposure: ", Condition)) %>%
     ggplot(aes(x = VOT, y = f0_Mel, color = Item.Category)) +
-    geom_point(alpha = 0.5) +
-    geom_rug(data = . %>%
-                 group_by(Condition, Item.Category) %>%
-                 summarise(VOT = mean(VOT), f0_Mel = mean(f0_Mel)), show.legend = FALSE) +
-    scale_x_continuous(expression("VOT (ms)"), 
-                        expand = expansion(mult = .1, add = 0)) +
+    geom_point(alpha = 0.5, shape = shapes.category[1]) +
+    geom_rug(
+      data = . %>%
+        group_by(Condition, Item.Category) %>%
+        summarise(VOT = mean(VOT), f0_Mel = mean(f0_Mel)), show.legend = FALSE) +
+    scale_x_continuous(expression("VOT (ms)"), expand = expansion(mult = .1, add = 0)) +
     scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0), breaks=seq(0, 500, by = 100)) +
     coord_cartesian(ylim = c(0, 500)) +
     scale_color_manual("Category", breaks = categories, values = colors.category) +
     scale_fill_manual("Category", breaks = categories, values = colors.category) +
-    facet_grid(~ Condition)
+    facet_grid(~ Condition) +
+    ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height)
   
   limits <- get_plot_limits(p.AA.exposure)
   breaks <- get_plot_breaks(p.AA.exposure)
@@ -337,7 +338,7 @@ make_exposure_test_plot <- function(exposure.data,
     filter(Condition == "L2-accented") %>%
     mutate(SpeechLabel = "Test: L2-accented") %>%
     ggplot(aes(x = VOT, y = f0_Mel, label = as.numeric(factor(ItemID)))) +
-    geom_point(aes(color = Item.Intended_category), alpha = 0.5) +
+    geom_point(aes(color = Item.Intended_category), alpha = 0.5, shape = shapes.category[1]) +
     stat_ellipse(
       data = 
         exposure.data %>%
@@ -357,7 +358,8 @@ make_exposure_test_plot <- function(exposure.data,
     scale_color_manual("Category", values = colors.category) +
     scale_fill_manual("Category", values = colors.category, guide = "none") +
     coord_cartesian(xlim = c(limits$xmin, limits$xmax), ylim = c(limits$ymin, limits$ymax), expand = FALSE) +
-    facet_grid(~ SpeechLabel)
+    facet_grid(~ SpeechLabel) +
+    ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height)
 
   prow = plot_grid(
     p.AA.exposure + theme(legend.position="none"),
@@ -374,7 +376,7 @@ make_exposure_test_plot <- function(exposure.data,
 }
 ```
 
-```{r study-AA-exposure-test-plot, fig.width=base.width*3 + .5, fig.height=base.height + .5, fig.cap="(ref:study-AA-exposure-test-plot)", warning=FALSE}
+```{r AA-exposure-test-plot, fig.width=base.width*3+.5, fig.cap="(ref:AA-exposure-test-plot)", warning=FALSE}
 make_exposure_test_plot(exposure.data = d.AA.exposure, test.data = d.AA.test)
 ```
 
@@ -445,16 +447,17 @@ basic_AA_result_plot <- function(data) {
         geom = "uperrorbar",
         position = pos, width = 0.2),
       coord_cartesian(ylim = c(0, 1.1)),
-      scale_y_continuous(breaks = c(0, 0.25, 0.5, 0.75, 1)),
+      scale_y_continuous(breaks = c(0, 0.5, 1)),
       scale_color_manual("Category", values = colors.category, aesthetics = c("color", "fill")),
       scale_alpha_discrete(range = c(0.2, 1), guide = "none"),
       scale_x_discrete(labels= c("L1-accented", "L2-accented")),
       xlab("Exposure condition"),
       ylab("Categorization accuracy"),
-      myGplot.defaults(base_size = 14, set_theme = F),
-      theme(legend.position = "top", 
-            axis.text.x = element_text(angle = 22.5, hjust = 1),
-      panel.grid.major.x = element_blank()))
+      myGplot.defaults(base_size = result.base.size, set_theme = F),
+      theme(
+        legend.position = "top", 
+        axis.text.x = element_text(angle = 22.5, hjust = 1),
+        panel.grid.major.x = element_blank()))
 }
 ```
 
@@ -601,7 +604,6 @@ make_results_plot_representations <- function(data, data_best) {
       labeller = label_bquote(
         cols = {kappa[.(categories.AA[1])~","~0] == kappa[.(categories.AA[2])~","~0]} == .(as.character(prior_kappa)),
         rows = {nu[.(categories.AA[1])~","~0] == nu[.(categories.AA[2])~","~0]} == .(as.character(prior_nu)))) +   
-    myGplot.defaults(base_size = result.base.size, set_theme = F) + 
     ggh4x::force_panelsizes(cols = result.panel.size, rows = result.panel.size)
   
   p.results +
@@ -630,7 +632,7 @@ make_results_plot_representations(data = d.AA.representations, data_best = best_
 
 Figure \@ref(fig:AA-result-changes-in-representations) shows the predicted categorization accuracy after exposure to L1- or L2-accented speech, as a function of the strength of the prior beliefs for the category means and variances. First consider the top left panel, where both $\kappa_{c,0}$ and $\nu_{c,0}$ have very high values. This simulates a very slow learner with strong prior beliefs for both category means and variances, so that the small number of exposure tokens has minimal influence on subsequent perception of the L2-accented test tokens. Therefore, the performance seen in the L1- and L2-accented exposure conditions is more or less identical, reflecting how a listener would draw primarily on their long-term prior experience to categorize the test tokens.
 
-As $\kappa_{c,0}$ and $\nu_{c,0}$ get smaller (indicating weaker prior beliefs), the effects of exposure become more noticeable, and both of the signature results of experiments on accent adaptation begin to emerge. First, for L1-accented exposure, the accuracy is always predicted to be lower for /d/ than for /t/, indicating that /d/ is often misheard as /t/. Second, L2-accented exposure is predicted to improve recognition accuracy of /d/ compared to L1-accented exposure, and this improvement occurs without corresponding decreases in the recognition accuracy of /t/. Looking across the range of $\kappa_{c,0}$s and $\nu_{c,0}$s, we make two more observations. First, for the scenario studied here, faster learning of category means improves recognition accuracy. When listeners' beliefs about category covariances are held constant (i.e., looking within each row), smaller $\kappa_{c,0}$ values yield higher categorization accuracy. Second, faster updating of beliefs about the _(co)variance_ also leads to accuracy improvements, although these improvements are less pronounced. Both results follow from the way that the Korean-accented stimuli differ from the L1 accented stimuli: as shown in Figure \@ref(fig:study-AA-exposure-test-plot), the category means of Korean-accented /d/ and /t/ are shifted relative to the L1-accented stimuli. In comparison, differences in category (co)variances are relatively subtle between the two sets of stimuli. For the present exposure stimuli, adapting to the L2 accent thus primarily hinges on learning the new category means. Taken together, these results demonstrate how changes in representation can explain the types of results that are considered to be the signature of accent adaptation.
+As $\kappa_{c,0}$ and $\nu_{c,0}$ get smaller (indicating weaker prior beliefs), the effects of exposure become more noticeable, and both of the signature results of experiments on accent adaptation begin to emerge. First, for L1-accented exposure, the accuracy is always predicted to be lower for /d/ than for /t/, indicating that /d/ is often misheard as /t/. Second, L2-accented exposure is predicted to improve recognition accuracy of /d/ compared to L1-accented exposure, and this improvement occurs without corresponding decreases in the recognition accuracy of /t/. Looking across the range of $\kappa_{c,0}$s and $\nu_{c,0}$s, we make two more observations. First, for the scenario studied here, faster learning of category means improves recognition accuracy. When listeners' beliefs about category covariances are held constant (i.e., looking within each row), smaller $\kappa_{c,0}$ values yield higher categorization accuracy. Second, faster updating of beliefs about the _(co)variance_ also leads to accuracy improvements, although these improvements are less pronounced. Both results follow from the way that the Korean-accented stimuli differ from the L1 accented stimuli: as shown in Figure \@ref(fig:AA-exposure-test-plot), the category means of Korean-accented /d/ and /t/ are shifted relative to the L1-accented stimuli. In comparison, differences in category (co)variances are relatively subtle between the two sets of stimuli. For the present exposure stimuli, adapting to the L2 accent thus primarily hinges on learning the new category means. Taken together, these results demonstrate how changes in representation can explain the types of results that are considered to be the signature of accent adaptation.
 
 ### Changes in decision-making
 
@@ -850,8 +852,7 @@ find_best_model.bias.AA <- function() {
           method = "L-BFGS-B", 
           control = list(
             fnscale = 1,
-            factr = 10^5)
-          )
+            factr = 10^5))
       
      best_performing_parameters.bias.optimization$par <- c(0, exp(best_performing_parameters.bias.optimization$par[1]))
      
@@ -867,8 +868,7 @@ find_best_model.bias.AA <- function() {
       method = "L-BFGS-B", 
       control = list(
         fnscale = 1,
-        factr = 10^5)
-      )
+        factr = 10^5))
       
      best_performing_parameters.bias.optimization$par <- c(best_performing_parameters.bias.optimization$par[1], exp(best_performing_parameters.bias.optimization$par[2]))
     }
@@ -988,7 +988,6 @@ make_results_plot_decision_making <- function(data, data_best){
       labeller = label_bquote(
         cols = beta[pi] == .(beta_pi),
         rows = lambda == ~.(posterior.lapse_rate)))  +   
-    myGplot.defaults(base_size = result.base.size, set_theme = F) + 
     ggh4x::force_panelsizes(cols = result.panel.size, rows = result.panel.size)
 
   p.results +
@@ -1169,7 +1168,6 @@ make_results_plot_normalization <- function(data, data_best){
       . ~ prior_kappa.normalization,
       labeller = label_bquote(
         cols = ~kappa[0] == .(as.character(prior_kappa.normalization)))) +   
-    myGplot.defaults(base_size = result.base.size, set_theme = F) + 
     ggh4x::force_panelsizes(cols = result.panel.size, rows = result.panel.size)
   
   p.results +
@@ -1499,28 +1497,33 @@ d.AA.exposure.target.cases <- rbind(
   mutate(Case = factor(Case, levels = c("Cue reweighting", "Contrast reduction", "Contrast shift", "Contrast collapse")))
 
 # plot ellipses for actual exposure
-p.AA.exposure <- d.AA.exposure.target.cases %>%
-  mutate(Title = "Exposure distributions") %>%
+p.AA.exposure <- 
+  d.AA.exposure.target.cases %>%
+  mutate(Title = "Exposure\ndistributions") %>%
   filter(Condition == "L2-accented") %>%
   mutate(Group = factor(paste0(Condition, Item.Category))) %>%
   ggplot(aes(x = VOT, y = f0_Mel, alpha = Condition)) +
   stat_ellipse(aes(color = Group), level = .95, geom = "polygon") +
-  stat_ellipse(data = d.AA.exposure.target.cases %>%
-                 mutate(Title = "Exposure distributions") %>%
-                 filter(Condition == "L1-accented") %>%
-                 mutate(Group = factor(paste0(Condition, Item.Category))), aes(fill = Group), level = .95, geom = "polygon") +
-  scale_x_continuous(expression("VOT (ms)"), expand = expansion(mult = .1, add = 0)) +
-  scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0), breaks=seq(0, 500, by = 100)) +
+  stat_ellipse(
+    data = d.AA.exposure.target.cases %>%
+      mutate(Title = "Exposure\ndistributions") %>%
+      filter(Condition == "L1-accented") %>%
+      mutate(Group = factor(paste0(Condition, Item.Category))), 
+    aes(fill = Group), level = .95, geom = "polygon") +
+  scale_x_continuous(expression("VOT(ms)"), expand = expansion(mult = .1, add = 0)) +
+  scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0), 
+                     breaks=seq(0, 500, by = 100)) +
   scale_alpha_discrete(range = c(0.2, 0), guide = "none") +
   coord_cartesian(ylim = c(0, 500)) +
   scale_fill_manual("Category",  values = c(colors.category), guide = "none") +
   scale_color_manual("Category", values = c(colors.category), guide = "none") +
-  facet_grid(Case ~ Title, switch = "y") + theme(legend.position="top")  +   
+  facet_grid(Case ~ Title, switch = "y") + 
   myGplot.defaults(base_size = result.base.size, set_theme = F) + 
+  theme(legend.position = "top") +
   ggh4x::force_panelsizes(cols = result.panel.size, rows = result.panel.size)
 ```
 
-```{r AA-plot-results-additional-cases, fig.width=base.width*4 + .5, fig.height=base.height*4 + .5, fig.cap = "(ref:AA-plot-results-additional-cases)", warning=FALSE}
+```{r AA-plot-results-additional-cases, fig.width=base.width*2.5 + .5, fig.height=base.height*2.5 + .5, fig.cap = "(ref:AA-plot-results-additional-cases)", warning=FALSE}
 d.AA.results.best.cases <- 
   bind_rows(
   d.AA.results.cue_reweighting.best %>%
@@ -1531,53 +1534,65 @@ d.AA.results.best.cases <-
     mutate(Case = "Contrast collapse"),
   d.AA.results.contrast_shift.best %>%
     mutate(Case = "Contrast shift")) %>%
-  mutate(Case = factor(Case, levels = c("Cue reweighting","Contrast reduction", "Contrast shift", "Contrast collapse"))) %>%  
+  mutate(Case = factor(
+    Case, 
+    levels = c("Cue reweighting","Contrast reduction", "Contrast shift", "Contrast collapse"))) %>%  
   mutate(parameterization = case_when(
    ModelType == "representations" ~ paste0("kappa = ", prior_kappa, ", nu = ", prior_nu),
    ModelType == "decision-making" ~ paste0("lambda = ", posterior.lapse_rate, ", beta = ", beta_pi),
    ModelType == "normalization" ~ paste0("kappa = ", prior_kappa.normalization)))
 
-p.results.best.cases <- d.AA.results.best.cases %>%
+p.results.best.cases <- 
+  d.AA.results.best.cases %>%
   mutate(
-    ModelType = factor(paste0("Changes in ", ModelType), levels = c("Changes in representations", "Changes in decision-making", "Changes in normalization"))) %>%
+    ModelType = factor(paste0("Changes in\n", ModelType), levels = c("Changes in\nrepresentations", "Changes in\ndecision-making", "Changes in\nnormalization"))) %>%
   mutate(Label = interaction(ModelType, parameterization, sep = "\n")) %>%
   ggplot(aes(x = Condition, y = response, fill = Item.Intended_category, alpha = Condition)) +
-  stat_summary(fun = mean,
-                 geom="bar", position = pos,
-                 width = 0.6) +
-  stat_summary(aes(color = Item.Intended_category),
-                 fun.data = mean_cl_boot,
-                 geom = "uperrorbar",
-                 position = pos, width = 0.2) +
-  geom_text(inherit.aes = FALSE, data = . %>%
-                 group_by(Case, Condition, ModelType) %>%
-                 summarise(mAcc = round(mean(response), digits = 2)),
-            aes(label = mAcc, x = Condition, y = 1.05), size = geom_text.size) +
+  stat_summary(
+    fun = mean,
+    geom="bar", position = pos,
+    width = 0.6) +
+  stat_summary(
+    aes(color = Item.Intended_category),
+    fun.data = mean_cl_boot,
+    geom = "uperrorbar",
+    position = pos, width = 0.2) +
+  geom_text(
+    inherit.aes = FALSE, data = . %>%
+      group_by(Case, Condition, ModelType) %>%
+      summarise(mAcc = round(mean(response), digits = 2)),
+    aes(label = mAcc, x = Condition, y = 1.05), 
+    size = convert_fontsize_to_textsize(result.base.size)) +
   coord_cartesian(ylim = c(0, 1.1)) + 
-  scale_y_continuous(breaks = c(0, 0.25, 0.5, 0.75, 1)) +
-  scale_color_manual("Category", values = colors.category) +
-  scale_fill_manual("Category", values = colors.category) +
+  scale_x_discrete(labels = c("L1-\naccented", "L2-\naccented")) +
+  scale_y_continuous(breaks = c(0, 0.5, 1)) +
+  scale_color_manual("Category", values = colors.category, aesthetics = c("color", "fill")) +
   scale_alpha_discrete(range = c(0.2, 1)) +
-  xlab("Exposure condition") +
+  xlab(NULL) +
   ylab("Categorization accuracy") +
   facet_grid(Case ~ ModelType) +
-  theme(legend.position = "top", 
-        strip.text.y = element_blank(),
-        panel.grid.major.x = element_blank()) +   
   myGplot.defaults(base_size = result.base.size, set_theme = F) + 
+  theme(
+    legend.position = "top", 
+    # axis.text.x = element_text(angle = 22.5, hjust = 1), 
+    strip.text.y = element_blank(),
+    panel.grid.major.x = element_blank()) +   
   ggh4x::force_panelsizes(cols = result.panel.size, rows = result.panel.size)
 
 prow <- 
   plot_grid(
-    p.AA.exposure, 
+    p.AA.exposure + theme(legend.position="none"), 
     p.results.best.cases + theme(legend.position="none"), 
     labels = c('A)', 'B)'), 
+    align = "h",
+    axis = "bt",
     ncol = 2, 
-    rel_widths = c(1.2,3.3))
+    rel_widths = c(1.2, 3.3),
+    greedy = TRUE)
 
 # extract a legend that is laid out horizontally
 legend_prow <- get_legend(p.results.best.cases)
-plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.2, 1)) 
+plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.1, 1)) 
 ```
 
 ```{r AA-table-best-performing-parameterization}

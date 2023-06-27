@@ -221,10 +221,11 @@ Figure \@ref(fig:PR-exposure-test-plot) shows the stimuli for the exposure and t
 
 (ref:PR-exposure-test-plot) Distribution of the exposure and test of the perceptual recalibration experiment. **Panel A - Exposure:** `r n.exposure.token` tokens each of shifted and typical `r paste(categories.PR, collapse = " and ")`, respectively. Arrows indicate how the shifted tokens created by the experimenter differ from typical tokens of the same category (arrows originate from the mean of typical tokens and end at the mean of shifted tokens). As would be expected given the procedures researchers typically employ to generate stimuli for this type of experiment, the exposure distributions for `r paste(categories.PR, collapse = " and ")` in both conditions differ primarily along VOT but, notably, *also* differ along f0. **Panel B - Test (identical for both exposure groups):** Numbers indicate the item ID of the test tokens used in subsequent plots, with IDs in increasing order corresponding to `r paste(paste0(as.numeric(unique(d.PR.test$Item.Intended_proportion_category1)) * 100, "%"), collapse = ", ")` expected `r categories.PR[1]`-responses *prior to exposure* (e.g., in a test-only norming experiment). 
 
-```{r PR-exposure-test-plot, fig.width= base.width * 3 + 1, fig.height= base.height, fig.cap="(ref:PR-exposure-test-plot)"}
-p.PR.exposure <- d.PR.exposure %>%
+```{r PR-exposure-test-plot, fig.width= base.width*3+1, fig.cap="(ref:PR-exposure-test-plot)"}
+p.PR.exposure <- 
+  d.PR.exposure %>%
   ggplot(aes(x = VOT, y = f0_Mel, color = Item.Category)) +
-  geom_point(aes(shape = Item.Type), alpha = .9) +
+  geom_point(aes(shape = Item.Type), alpha = .5) +
   geom_segment(
     data = . %>%
       mutate(
@@ -246,7 +247,8 @@ p.PR.exposure <- d.PR.exposure %>%
   scale_y_continuous(expression("f0 (Mel)"), expand = expansion(mult = .1, add = 0),
                      breaks=seq(180, 300, by = 20)) +
   coord_cartesian(ylim = c(180, 300)) +
-  facet_grid(~ paste("Exposure:", Condition)) 
+  facet_grid(~ paste("Exposure:", Condition))  +
+  ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height)
 
 limits <- get_plot_limits(p.PR.exposure)
 breaks <- get_plot_breaks(p.PR.exposure)
@@ -265,7 +267,8 @@ p.PR.test <-
   coord_cartesian(ylim = c(180, 300)) +
   scale_shape_discrete("Item type") +
   scale_color_gradient("", low = colors.category[2], high = colors.category[1], guide = NULL) +
-  facet_grid(~ Condition)
+  facet_grid(~ Condition) +
+  ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height)
 
 plot_grid(
   plotlist = list(p.PR.exposure, p.PR.test),
@@ -424,10 +427,10 @@ p.PR.results <-
     labeller = label_bquote(
       cols = {kappa[.(categories.PR[1])~","~0] == kappa[.(categories.PR[2])~","~0]} == .(as.character(prior_kappa)), 
       rows = {nu[.(categories.PR[1])~","~0] == nu[.(categories.PR[2])~","~0]} == .(as.character(prior_nu)))) + # as.table = T doesn't seem to work
+  myGplot.defaults(base_size = result.base.size, set_theme = F) + 
   theme(legend.position = "top",
         panel.grid.major.x = element_blank(),
         panel.grid.minor.x = element_blank()) +
-  myGplot.defaults(base_size = result.base.size, set_theme = F) + 
   ggh4x::force_panelsizes(cols = result.panel.size, rows = result.panel.size)
 
 p.PR.results +
@@ -495,48 +498,48 @@ simulation.control <-
 if(SET_SEED) set.seed(42007)
 
 if (RESET_MODELS || !file.exists(get_path(paste0("../models/d.PR.results.bias.rds")))){
-  d.PR <- d.PR.exposure %>%
-  nest(data = -c(Condition, Subject)) %>%
-  crossing(
-    posterior.lapse_rate = c(.0005, .005, .05, .5, 1),
-    beta_pi = c(0, .01, .05, .1, .2, .8)) %>% 
-  crossing(
-    m.ia.VOT_f0.PR %>%
-      filter(prior_kappa == max(prior_kappa), prior_nu == max(prior_nu)) %>%
-      nest(prior = everything())) %>%
-  group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
-  group_modify(
-    ~ update_bias_and_categorize_test(
-      prior = .x$prior[[1]],
-      lapse_rate = .x$posterior.lapse_rate,
-      beta_pi = .x$beta_pi,
-      exposure = .x$data[[1]],
-      test = d.PR.test %>% mutate(Item.Intended_category = "/d/") %>% # here there is no intended category, but we would like to get the probability of /d/ response
-        filter(Condition == .x$Condition),
-      control = simulation.control), 
-    .keep = TRUE, verbose = T) %>%
-  mutate_at(vars(starts_with("prior_")), ~ factor(.x)) %>%
-  mutate_at(vars(starts_with("prior_")), fct_rev) %>%
-  ungroup() %>%
-  filter(category == categories.PR[1]) %>%
-  mutate(
-   posterior.lapse_bias1 = unlist(map(posterior, ~ .x %>% filter(category == categories.PR[1]) %>% pull(lapse_bias))),
-   posterior.lapse_bias2 = unlist(map(posterior, ~ .x %>% filter(category == categories.PR[2]) %>% pull(lapse_bias)))) %>%
-  ungroup() %>%
-  group_by(Condition, Subject, posterior.lapse_rate, beta_pi, observationID, x, category) %>%
-  summarise(
-    response.n_sims = n_distinct(sim),
-    response.se = sd(response) / sqrt(response.n_sims),
-    response = mean(response),
-    posterior.lapse_bias1.se = sd(posterior.lapse_bias1) / sqrt(response.n_sims),
-    posterior.lapse_bias2.se = sd(posterior.lapse_bias2) / sqrt(response.n_sims),
-    posterior.lapse_bias1 = mean(posterior.lapse_bias1),
-    posterior.lapse_bias2 = mean(posterior.lapse_bias2)
-  ) %>%
-  relocate(
-   !!! syms(setdiff(names(.), c("response", "response.se", "response.n_sims"))),
-   response, response.se, response.n_sims) %>%
-  ungroup()
+  d.PR <- 
+    d.PR.exposure %>%
+    nest(data = -c(Condition, Subject)) %>%
+    crossing(
+      posterior.lapse_rate = c(.0005, .005, .05, .5, 1),
+      beta_pi = c(0, .05, .1, .2, .8)) %>% 
+    crossing(
+      m.ia.VOT_f0.PR %>%
+        filter(prior_kappa == max(prior_kappa), prior_nu == max(prior_nu)) %>%
+        nest(prior = everything())) %>%
+    group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
+    group_modify(
+      ~ update_bias_and_categorize_test(
+        prior = .x$prior[[1]],
+        lapse_rate = .x$posterior.lapse_rate,
+        beta_pi = .x$beta_pi,
+        exposure = .x$data[[1]],
+        test = d.PR.test %>% mutate(Item.Intended_category = "/d/") %>% # here there is no intended category, but we would like to get the probability of /d/ response
+          filter(Condition == .x$Condition),
+        control = simulation.control), 
+      .keep = TRUE, verbose = T) %>%
+    mutate_at(vars(starts_with("prior_")), ~ factor(.x)) %>%
+    mutate_at(vars(starts_with("prior_")), fct_rev) %>%
+    ungroup() %>%
+    filter(category == categories.PR[1]) %>%
+    mutate(
+      posterior.lapse_bias1 = unlist(map(posterior, ~ .x %>% filter(category == categories.PR[1]) %>% pull(lapse_bias))),
+      posterior.lapse_bias2 = unlist(map(posterior, ~ .x %>% filter(category == categories.PR[2]) %>% pull(lapse_bias)))) %>%
+    ungroup() %>%
+    group_by(Condition, Subject, posterior.lapse_rate, beta_pi, observationID, x, category) %>%
+    summarise(
+      response.n_sims = n_distinct(sim),
+      response.se = sd(response) / sqrt(response.n_sims),
+      response = mean(response),
+      posterior.lapse_bias1.se = sd(posterior.lapse_bias1) / sqrt(response.n_sims),
+      posterior.lapse_bias2.se = sd(posterior.lapse_bias2) / sqrt(response.n_sims),
+      posterior.lapse_bias1 = mean(posterior.lapse_bias1),
+      posterior.lapse_bias2 = mean(posterior.lapse_bias2)) %>%
+    relocate(
+      !!! syms(setdiff(names(.), c("response", "response.se", "response.n_sims"))),
+      response, response.se, response.n_sims) %>%
+    ungroup()
   
   saveRDS(d.PR, get_path(paste0("../models/d.PR.results.bias.rds"))) # save results for bias because it takes a long time to run
 } else {
@@ -546,7 +549,8 @@ if (RESET_MODELS || !file.exists(get_path(paste0("../models/d.PR.results.bias.rd
 
 
 ```{r PR-result-changes-in-decision-making, fig.width= base.width * 5, fig.height= base.height * 5 +.5, fig.cap="(ref:PR-result-changes-in-decision-making)"}
-p.PR.results.bias <- p.PR.results %+% 
+p.PR.results.bias <- 
+  p.PR.results %+% 
   d.PR +
   geom_text(
     data = . %>%
@@ -571,7 +575,6 @@ p.PR.results.bias <- p.PR.results %+%
     labeller = label_bquote(
       cols = beta[pi] == .(beta_pi),
       rows = lambda == ~.(posterior.lapse_rate))) +
-  myGplot.defaults(base_size = result.base.size, set_theme = F) + 
   ggh4x::force_panelsizes(cols = result.panel.size, rows = result.panel.size)
 p.PR.results.bias
 ```
@@ -592,7 +595,8 @@ To illustrate the consequences of normalization, we vary the only parameter of o
 (ref:PR-test-normalization) Effects of changes in normalization on the perception of test locations, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure. Normalization based on exposure results in a shift in the perception of the test stimuli. The magnitude of that shift depends on $\kappa_0$, with larger shifts (more learning) for smaller $\kappa_0$ (see Equation \@ref(eq:normalization-change)). Color indicates the posterior probability of /d/ for each test token predicted by the categorization model after normalization (from red = 0 to blue = 1).
 
 ```{r PR-test-normalization, fig.width= base.width * 2, fig.height= base.height * (if (ANIMATE_FIGURES) 1 else 2) + (if (ANIMATE_FIGURES) 1 else 0), fig.cap="(ref:PR-test-normalization)", fig.show=if (ANIMATE_FIGURES) 'animate' else 'asis'}
-d.PR <- d.PR.exposure %>%
+d.PR <- 
+  d.PR.exposure %>%
   add_prior_and_normalize_test_tokens_based_on_exposure(data.test = d.PR.test, prior.normalization = prior_marginal_VOT_f0_stats, prior.categories = m.ia.VOT_f0.PR) %>%
   group_by(Condition, Subject, prior_kappa.normalization) %>%
   add_categorization_functions() %>%
@@ -620,6 +624,7 @@ if (ANIMATE_FIGURES) {
     # enter_fade() + exit_fade() +
     transition_states(prior_kappa.normalization) +
     ggtitle(label = expression(kappa[0]), subtitle = "{closest_state}") +
+    ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height) +
     theme(panel.grid.major = element_blank(),
           panel.grid.minor = element_blank())
   p.animation + geom_text(aes(color = Prior_proportion_category1), size = 3)
@@ -640,11 +645,13 @@ if (ANIMATE_FIGURES) {
       prior_kappa.normalization ~ Condition,
       labeller = label_bquote(
         rows = ~kappa[0] == .(as.character(prior_kappa.normalization)))) +
+    ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height) +
     theme(panel.grid.major = element_blank(),
           panel.grid.minor = element_blank())
 }
-  if (SAVE_ANIMATED_VIDEO) {
-    p.animation <- 
+
+if (SAVE_ANIMATED_VIDEO) {
+  p.animation <- 
     d.PR %>%
     mutate(VOT = map(x, ~ .x[1]) %>% unlist(), f0_Mel = map(x, ~ .x[2]) %>% unlist()) %>%
     group_by(Condition, Subject, prior_kappa.normalization) %>%
@@ -662,39 +669,39 @@ if (ANIMATE_FIGURES) {
     ggtitle(label = expression(kappa[0]), subtitle = "{closest_state}") +
     theme(panel.grid.major = element_blank(),
           panel.grid.minor = element_blank())
-    
-    anim_save(
-      "demonstrate-PR-test-normalization.webm", 
-      animation = animate(
-        p.animation + 
-          geom_text(aes(color = Prior_proportion_category1), size = 10) + 
-          theme(
-            plot.title = element_text(size = 20),
-            strip.text.x = element_text(size = 20),
-            axis.text.x = element_text(size = 20),
-            axis.title.x = element_text(size = 20),
-            axis.text.y = element_text(size = 20),
-            axis.title.y = element_text(size = 20),
-            legend.text = element_text(size = 20),
-            legend.title = element_text(size = 20)), 
-        renderer = av_renderer(), 
-        width = 1280, 
-        height = 720), 
-      path = '../figures/knitted/')
-  }
+  
+  anim_save(
+    "demonstrate-PR-test-normalization.webm", 
+    animation = animate(
+      p.animation + 
+        geom_text(aes(color = Prior_proportion_category1), size = 10) + 
+        theme(
+          plot.title = element_text(size = 20),
+          strip.text.x = element_text(size = 20),
+          axis.text.x = element_text(size = 20),
+          axis.title.x = element_text(size = 20),
+          axis.text.y = element_text(size = 20),
+          axis.title.y = element_text(size = 20),
+          legend.text = element_text(size = 20),
+          legend.title = element_text(size = 20)), 
+      renderer = av_renderer(), 
+      width = 1280, 
+      height = 720), 
+    path = '../figures/knitted/')
+}
 ```
 
 (ref:PR-result-changes-in-normalization) Predictions of a model that derives perceptual recalibration from changes in normalization. Predicted categorization responses are shown for the `r length(test_locations)` test locations after `r paste(categories.PR, collapse = "- and")`-shifted exposure, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure. Smaller $\kappa_0$ indicate faster learning. 
 
 ```{r PR-result-changes-in-normalization, fig.width= base.width * 5, fig.height= base.height + 1, fig.cap="(ref:PR-result-changes-in-normalization)"}
-p.PR.results.normalization <- p.PR.results %+%
+p.PR.results.normalization <- 
+  p.PR.results %+%
   (d.PR %>%
      filter(category == categories.PR[1])) +
   facet_grid(
     . ~ prior_kappa.normalization,
     labeller = label_bquote(
       cols = ~kappa[0] == .(as.character(prior_kappa.normalization)))) +
-  myGplot.defaults(base_size = result.base.size, set_theme = F) + 
   ggh4x::force_panelsizes(cols = result.panel.size, rows = result.panel.size)
 p.PR.results.normalization
 ```

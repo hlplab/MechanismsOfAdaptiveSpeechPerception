@@ -839,7 +839,8 @@ d.representations.asym_var <-
   ungroup()
 
 # plot predictions from the representations model
-p.asym_var.representations <- basic_AA_result_plot(d.representations.asym_var) +
+p.asym_var.representations <- 
+  basic_AA_result_plot(d.representations.asym_var) +
   geom_text(
       inherit.aes = FALSE,
       data = . %>%
@@ -853,13 +854,9 @@ p.asym_var.representations <- basic_AA_result_plot(d.representations.asym_var) +
         cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)),
         rows = {nu[.(categories.demo[1])~","~0] == nu[.(categories.demo[2])~","~0]} == .(as.character(prior_nu)))) +
   scale_x_discrete(labels= c("Condition-1", "Condition-2")) +
-  myGplot.defaults(base_size = 14, set_theme = F) +
-  theme(legend.position = "top",
-        axis.text.x = element_text(angle = 0, hjust = 0.5),
-      panel.grid.major.x = element_blank())
+  theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
 
 # get predictions from best-performing normalization model
-
 my_groups <- c("prior_kappa.normalization")
 
 d.normalization.asym_var <-
@@ -887,7 +884,10 @@ d.normalization.asym_var <-
 
 # plot predictions from the normalization model
 
-p.asym_var.normalization <- basic_AA_result_plot(d.normalization.asym_var %>% mutate(prior_kappa.normalization = round(as.numeric(as.character(prior_kappa.normalization))))) +
+p.asym_var.normalization <- 
+  basic_AA_result_plot(
+    d.normalization.asym_var %>%
+      mutate(prior_kappa.normalization = round(as.numeric(as.character(prior_kappa.normalization))))) +
   geom_text(
       inherit.aes = FALSE,
       data = . %>%
@@ -901,10 +901,7 @@ p.asym_var.normalization <- basic_AA_result_plot(d.normalization.asym_var %>% mu
       labeller = label_bquote(
         cols = ~kappa[0] == .(as.character(prior_kappa.normalization)))) +
   scale_x_discrete(labels= c("Condition-1", "Condition-2")) +
-  myGplot.defaults(base_size = 14, set_theme = F) +
-  theme(legend.position = "top",
-        axis.text.x = element_text(angle = 0, hjust = 0.5),
-      panel.grid.major.x = element_blank())
+  theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
 ```
 
 ```{r proposed-experiment-asymmetric-variance, fig.width=base.width*4 + 1, fig.height=base.height + 1, fig.cap="(ref:proposed-experiment-asymmetric-variance)", message=FALSE, warning=FALSE}
@@ -928,7 +925,8 @@ m.io.VOT.asym_var.dist <- left_join(m.io.VOT.asym_var.mu, m.io.VOT.asym_var.Sigm
 # Visualization
 VOT_range = c(-3,3) # if using standardized cues
 
-p.distribution.asym_var <- ggplot() +
+p.distribution.asym_var <- 
+  ggplot() +
   geom_line(
     data = m.io.VOT.asym_var.dist %>%
       distinct(Condition, likelihood1, likelihood2) %>%
@@ -943,7 +941,6 @@ p.distribution.asym_var <- ggplot() +
   scale_x_continuous("VOT (msec)") +
   scale_y_continuous("Density") +
   scale_color_manual("Category", values = colors.voicing) +
-  myGplot.defaults(base_size = 14, set_theme = F) +
   theme(legend.position = "top", panel.grid = element_blank())
 
 legend_prow <-
@@ -953,13 +950,14 @@ legend_prow <-
 
 prow <-
   plot_grid(
-    p.distribution.asym_var + theme(legend.position="none",
-                                    plot.margin = margin(r = -1, l = -1, unit = "cm")) + myGplot.defaults(base_size = 12, set_theme = F),
-    p.asym_var.representations + ylab("Predicted \ncategorization accuracy") + theme(legend.position="none") + myGplot.defaults(base_size = 12, set_theme = F),
-    p.asym_var.normalization + ylab("Predicted \ncategorization accuracy") + theme(legend.position="none") + myGplot.defaults(base_size = 12, set_theme = F),
+    p.distribution.asym_var + 
+      theme(legend.position="none", plot.margin = margin(r = -1, l = -1, unit = "cm")),
+    p.asym_var.representations + ylab("Predicted \ncategorization accuracy"),
+    p.asym_var.normalization + ylab("Predicted \ncategorization accuracy"),
     labels = c('A)', 'B)', 'C)'),
     align = "hv", axis = "btlr",
     ncol = 3, rel_widths = c(0.3, 0.35, 0.35))
+
 legend_prow <- legend_prow <-
   get_legend(
     p.distribution.asym_var +

@@ -138,9 +138,13 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 
 # Figure and figure font sizing for results figures
 result.panel.size <- unit(2.5, "cm")
-result.base.size <- 8 
+result.base.size <- 8
 phonetic.panel.width <- unit(3.5, "cm")
 phonetic.panel.height <- unit(3, "cm")
+duo.panel.width <- unit(5, "cm")
+duo.panel.height <- unit(5, "cm")
+duo.panel.key <- unit(0.2, 'cm')
+phonetic.base.size <- 9
 convert_fontsize_to_textsize <- function(x) x * 5/14
 ```
 

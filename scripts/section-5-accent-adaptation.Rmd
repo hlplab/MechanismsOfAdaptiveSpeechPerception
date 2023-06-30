@@ -46,8 +46,8 @@ m.io.VOT_f0.AA <-
   arrange(category)
 
 
-prior_kappa.plot = 4^(1:6) # specify what parameters to plot
-prior_nu.plot = 4^(1:6) 
+prior_kappa.plot = 4^(1:5) # specify what parameters to plot
+prior_nu.plot = 4^(1:5) 
  
 m.ia.VOT_f0.AA <-
   crossing(
@@ -328,6 +328,7 @@ make_exposure_test_plot <- function(
     scale_color_manual("Category", breaks = categories, values = colors.category) +
     scale_fill_manual("Category", breaks = categories, values = colors.category) +
     facet_grid(~ Condition) +
+    myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
     ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height)
   
   limits <- get_plot_limits(p.AA.exposure)
@@ -359,6 +360,7 @@ make_exposure_test_plot <- function(
     scale_fill_manual("Category", values = colors.category, guide = "none") +
     coord_cartesian(xlim = c(limits$xmin, limits$xmax), ylim = c(limits$ymin, limits$ymax), expand = FALSE) +
     facet_grid(~ SpeechLabel) +
+    myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
     ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height)
 
   prow = plot_grid(
@@ -626,8 +628,8 @@ make_results_plot_representations <- function(data, data_best) {
 }
 ```
 
-```{r AA-result-changes-in-representations, fig.width= base.width * 6, fig.height= base.height * 6 + 1, fig.cap="(ref:AA-result-changes-in-representations)", warning=FALSE}
-make_results_plot_representations(data = d.AA.representations, data_best = best_performing_parameters.representations)
+```{r AA-result-changes-in-representations, fig.width= base.width * 5, fig.height= base.height * 5 + 1, fig.cap="(ref:AA-result-changes-in-representations)", warning=FALSE}
+make_results_plot_representations(data = d.AA.representations %>% filter(prior_kappa %in% prior_kappa.plot & prior_nu %in% prior_nu.plot), data_best = best_performing_parameters.representations)
 ```
 
 Figure \@ref(fig:AA-result-changes-in-representations) shows the predicted categorization accuracy after exposure to L1- or L2-accented speech, as a function of the strength of the prior beliefs for the category means and variances. First consider the top left panel, where both $\kappa_{c,0}$ and $\nu_{c,0}$ have very high values. This simulates a very slow learner with strong prior beliefs for both category means and variances, so that the small number of exposure tokens has minimal influence on subsequent perception of the L2-accented test tokens. Therefore, the performance seen in the L1- and L2-accented exposure conditions is more or less identical, reflecting how a listener would draw primarily on their long-term prior experience to categorize the test tokens.
@@ -1146,7 +1148,7 @@ get_normalization_models_for_plot <- function(
   return(normalization.pred)
 }
 
-prior_kappa.normalization.plot <- c(1, 4, 16, 64, 256, 1024) # specify what parameters to plot
+prior_kappa.normalization.plot <- c(4, 16, 64, 256, 1024) # specify what parameters to plot
 best_performing_parameters.normalization <- find_best_model.normalization.AA()
 d.AA.normalization <- get_normalization_models_for_plot(prior_kappa.normalization = prior_kappa.normalization.plot)
 ```
@@ -1191,7 +1193,7 @@ make_results_plot_normalization <- function(data, data_best){
 ```
 
 ```{r AA-result-changes-in-normalization, fig.width= base.width * 5, fig.height= base.height + 1.75, fig.cap="(ref:AA-result-changes-in-normalization)", warning=FALSE}
-make_results_plot_normalization(d.AA.normalization, best_performing_parameters.normalization)
+make_results_plot_normalization(d.AA.normalization %>% filter(prior_kappa.normalization %in% prior_kappa.normalization.plot), best_performing_parameters.normalization)
 ```
 
 ## Summary

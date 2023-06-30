@@ -169,12 +169,16 @@ compare_models.AA <- function(
   
   p.output <-
     plot_grid(
-      p.accuracy1 + theme(legend.position="none"),
-      p.accuracy2 + theme(legend.position="none"),
-      p.accuracy3 + theme(legend.position="right"),
-      nrow = 1, rel_widths = c(1.1, 1.1, 1.3))
+      p.accuracy1 + myGplot.defaults(base_size = phonetic.base.size, set_theme = F) + 
+        theme(legend.position="none"),
+      p.accuracy2 + myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
+        theme(legend.position="none"),
+      p.accuracy3 + myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
+        theme(legend.position="none"),
+      nrow = 1, rel_widths = c(1.1, 1.1, 1.1))
   
-  ggsave(paste0('../figures/plotly/p.model_comparison_', example_label, '.png'), plot = p.output, width = 2*(base.width*3*1.2 + .5), height = 2*(base.height + .5), dpi = 300)
+   # ggsave(paste0('../figures/plotly/p.model_comparison_', example_label, '.png'), plot = p.output, width = 2*(base.width*3*1.2 + .5), height = 2*(base.height + .5), dpi = 300)
+   ggsave(paste0('../figures/plotly/p.model_comparison_', example_label, '.png'), plot = p.output, width = 18, height = 6, units = "cm", dpi = 300)
 }
 
 make_plot_compare_models.AA <- function(

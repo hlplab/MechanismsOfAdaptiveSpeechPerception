@@ -950,10 +950,13 @@ legend_prow <-
 
 prow <-
   plot_grid(
-    p.distribution.asym_var + 
+    p.distribution.asym_var + myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
+    ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height) +
       theme(legend.position="none", plot.margin = margin(r = -1, l = -1, unit = "cm")),
-    p.asym_var.representations + ylab("Predicted \ncategorization accuracy"),
-    p.asym_var.normalization + ylab("Predicted \ncategorization accuracy"),
+    p.asym_var.representations + ylab("Predicted \ncategorization accuracy") + myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
+    ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height),
+    p.asym_var.normalization + ylab("Predicted \ncategorization accuracy") + myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
+    ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height),
     labels = c('A)', 'B)', 'C)'),
     align = "hv", axis = "btlr",
     ncol = 3, rel_widths = c(0.3, 0.35, 0.35))

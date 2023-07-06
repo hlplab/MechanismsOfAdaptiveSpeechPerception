@@ -21,7 +21,9 @@ p <-
   ggplot(aes(x = VOT_centered, y = f0_Mel_centered)) +
   scale_x_continuous(expression("VOT (ms)"), breaks = c(10, 30, 50, 70)) +
   scale_y_continuous(expression("f0 (Mel)")) +
-  theme(legend.position = "top")
+  myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
+  ggh4x::force_panelsizes(cols = duo.panel.width, rows = duo.panel.height) +
+  theme(legend.key.height= duo.panel.key, legend.position = "top")
 
 p2 <-   
   p %+%
@@ -31,7 +33,7 @@ p2 <-
   aes(x = VOT, y = f0_Mel, fill = is_voiced * 100) +
   geom_tile() +
   scale_y_continuous(NULL, breaks = c(150, 180, 210, 240)) +
-  scale_fill_gradient2("Percent /d/-\nresponses", midpoint = 50, low = "red", high = "blue", guide = "colourbar", ) +
+  scale_fill_gradient2("Percent /d/-\nresponses", midpoint = 50, low = "red", high = "blue", guide = "colourbar") +
   guides(fill = guide_colorbar(title.position = "left", reverse = T))
 
 limits.chodroff <- get_plot_limits(p2)
@@ -53,7 +55,10 @@ p1 <-
     ylim = c(limits.chodroff$ymin, limits.chodroff$ymax),
     expand = F,
     ratio = (limits.chodroff$xmax - limits.chodroff$xmin) / (limits.chodroff$ymax - limits.chodroff$ymin)) +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+  theme(
+    legend.key.height= duo.panel.key,
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank())
 
 plot_grid(
   plotlist = list(p1, p2),
@@ -104,6 +109,7 @@ p <-
   scale_color_manual("Voiced", breaks = c("yes", "no"), values = colors.voicing) +
   facet_grid(. ~ poa) +
   guides(colour = guide_legend(override.aes = list(alpha = 1)), shape = guide_legend(override.aes = list(alpha = 1))) +
+  ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height) +
   theme(legend.position = "top")
 
 p1 <-
@@ -117,6 +123,7 @@ limits <- get_plot_limits(p1)
 p2 <-   
   p1 + theme(legend.position = "none", plot.margin = margin(t = -50)) +
   aes(x = VOT_centered, y = f0_Mel_centered) +
+  ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height) +
   coord_cartesian(xlim = c(limits$xmin, limits$xmax), ylim = c(limits$ymin, limits$ymax))
 
 plot_grid(
@@ -292,7 +299,7 @@ for (p in 1:length(pi)) {
 }
 ```
 
-```{r show-lapse-bias-demonstration-plots, fig.ncol = 2, out.width="49%", out.height="49%", fig.show='hold',fig.align='center', fig.cap="(ref:show-lapse-bias-demonstration-plots)", fig.subcap=c('$\\lambda$ = 0, $\\pi_{/d/}=.5$', '$\\lambda$ = .2,  $\\pi_{/d/}=.5$', '$\\lambda$ = .2, $\\pi_{/d/}=.1$', '$\\lambda$ = .2, $\\pi_{/d/}=.9$') }
+```{r show-lapse-bias-demonstration-plots, fig.ncol = 2, out.width="33%", out.height="49%", fig.show='hold',fig.align='left', fig.cap="(ref:show-lapse-bias-demonstration-plots)", fig.subcap=c('$\\lambda$ = 0, $\\pi_{/d/}=.5$', '$\\lambda$ = .2,  $\\pi_{/d/}=.5$', '$\\lambda$ = .2, $\\pi_{/d/}=.1$', '$\\lambda$ = .2, $\\pi_{/d/}=.9$') }
 filename = c()
 for (p in 1:length(lambda)) {
   filename[p] = file.path(get_path('../figures/plotly/'), paste0('p.3d.categorization.panel_lambda=',p,'.png'))
@@ -589,6 +596,7 @@ p <-
     . ~ prior_kappa,
     labeller = label_bquote(
       cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)))) +
+  ggh4x::force_panelsizes(cols = duo.panel.width, rows = duo.panel.height) +
   theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank()) 
 
 if (ANIMATE_FIGURES) {
@@ -657,6 +665,7 @@ p <- d.exposure %>%
     . ~ prior_kappa,
     labeller = label_bquote(
       cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)))) +
+  ggh4x::force_panelsizes(cols = duo.panel.width, rows = duo.panel.height) +
   theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank()) 
 
 if (ANIMATE_FIGURES) {
@@ -872,6 +881,7 @@ p <-
   scale_alpha_manual(name = expression(beta[pi]), values = c(.2, .5, .8)) +
   coord_cartesian(xlim = VOT_range + c(-15, 15)) +
   facet_wrap(~ use_logit, scales = "free_y") +
+  ggh4x::force_panelsizes(cols = duo.panel.width, rows = duo.panel.height) +
   theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "right", panel.grid = element_blank()) 
 
 

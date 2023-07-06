@@ -79,7 +79,8 @@ p20 <- replot_perceptual_recalibration_result(
   continuum.steps = 1:6,
   responses = c(.95, .78, .41, .14, .055, .045, .885, .695, .36, .095, .05, .02))
 
-p20 + theme(legend.position = "right")
+p20 + 
+  ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height) + theme(legend.position = "right")
 ```
 
 <!-- In a seminal study, Norris et al. [-@norris2003] exposed Dutch listeners to 20 words that contained an [f] (e.g., "witlo*f*"---chicory) and 20 words that contained an [s] (e.g., "naaldbo*s*"---pine forest), mixed with 160 fillers that did not contain either sound. Between participants, either all instances of [f] *or* all instances of [s] were phonetically manipulated so as to make them perceptually ambiguous between [f] and [s]. The other sound remained unchanged. A third, baseline, condition left both [f] and [s] unchanged. During a subsequent test phase, participants heard instances of an acoustic continuum ranging from clear [`r linguisticsdown::cond_cmpl("ɛ")`f] to clear [`r linguisticsdown::cond_cmpl("ɛ")`s], and responded whether they heard "ef" or "es".  -->
@@ -248,6 +249,7 @@ p.PR.exposure <-
                      breaks=seq(180, 300, by = 20)) +
   coord_cartesian(ylim = c(180, 300)) +
   facet_grid(~ paste("Exposure:", Condition))  +
+  myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
   ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height)
 
 limits <- get_plot_limits(p.PR.exposure)
@@ -268,6 +270,7 @@ p.PR.test <-
   scale_shape_discrete("Item type") +
   scale_color_gradient("", low = colors.category[2], high = colors.category[1], guide = NULL) +
   facet_grid(~ Condition) +
+  myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
   ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height)
 
 plot_grid(
@@ -474,6 +477,7 @@ plot_expected_categories_contour2D(
     labeller = label_bquote(
       cols = atop({kappa[0~","~ .(categories.PR[1])] == kappa[0~","~ .(categories.PR[2])]} == .(as.character(prior_kappa)), 
                   {nu[0~","~ .(categories.PR[1])] == nu[0~","~ .(categories.PR[2])]} == .(as.character(prior_nu))))) +
+  ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height) +
   theme(legend.position = "top", 
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -624,6 +628,7 @@ if (ANIMATE_FIGURES) {
     # enter_fade() + exit_fade() +
     transition_states(prior_kappa.normalization) +
     ggtitle(label = expression(kappa[0]), subtitle = "{closest_state}") +
+    myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
     ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height) +
     theme(panel.grid.major = element_blank(),
           panel.grid.minor = element_blank())
@@ -645,6 +650,7 @@ if (ANIMATE_FIGURES) {
       prior_kappa.normalization ~ Condition,
       labeller = label_bquote(
         rows = ~kappa[0] == .(as.character(prior_kappa.normalization)))) +
+    myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
     ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height) +
     theme(panel.grid.major = element_blank(),
           panel.grid.minor = element_blank())

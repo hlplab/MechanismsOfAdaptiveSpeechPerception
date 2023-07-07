@@ -122,12 +122,16 @@ p <-
   coord_cartesian(xlim = c(limits$xmin, limits$xmax), ylim = c(limits$ymin, limits$ymax), expand = FALSE) +
   facet_wrap(~ Condition, ncol = 1) +
   myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
-  ggh4x::force_panelsizes(cols = phonetic.panel.width*2, rows = phonetic.panel.height*2) +
+  ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height) +
   theme(legend.position = "none")
-ggsave(p, filename = "figures/presentation/AA-test-normalization-before.png", width = fig.width, height = fig.height)
+ggsave(p,
+       filename = "figures/presentation/AA-test-normalization-before.png",
+       width = fig.width, height = fig.height)
 ggsave(p %+%
          (test.data.normalization %>%
-            filter(state == "after")), filename = "figures/presentation/AA-test-normalization-after.png", width = fig.width, height = fig.height)
+            filter(state == "after")),
+       filename = "figures/presentation/AA-test-normalization-after.png",
+       width = fig.width, height = fig.height)
 ggsave(p %+%
          (test.data.normalization %>%
             filter(state == "after")) +
@@ -139,7 +143,8 @@ ggsave(p %+%
            mutate(Condition = paste("Test:", Condition)),
            mapping = aes(fill = Item.Category),
            level = .95, alpha = 0.3, geom = "polygon"),
-       filename = "figures/presentation/AA-test-normalization-after-ellipse.png", width = fig.width, height = fig.height)
+       filename = "figures/presentation/AA-test-normalization-after-ellipse.png",
+       width = fig.width, height = fig.height)
 ggsave(test.data.normalization %>%
             filter(state == "after") %>%
          ggplot(aes(x = VOT, y = f0_Mel, label = as.numeric(factor(ItemID)))) +
@@ -169,7 +174,8 @@ ggsave(test.data.normalization %>%
              mutate(Condition = paste("Test:", Condition)),
            mapping = aes(fill = Item.Category),
            level = .95, alpha = 0.3, geom = "polygon"),
-       filename = "figures/presentation/AA-test-normalization-after-categories.png", width = fig.width, height = fig.height)
+       filename = "figures/presentation/AA-test-normalization-after-categories.png",
+       width = fig.width, height = fig.height)
 animate(p %+% test.data.normalization + transition_states(states = state), renderer = gifski_renderer(file = "figures/presentation/AA-test-normalization.gif"))
 # animate(p, renderer = ffmpeg_renderer("figures/presentation/AA-test-normalization.mpeg"))
 
@@ -199,5 +205,19 @@ m <-
   mutate_at(vars(starts_with("prior_")), fct_rev) %>%
   ungroup()
 
-d.AA.exposure %>%
-  sample_frac(1, replace = F)
+p <-
+  m %>% filter(observationID == 120) %>%
+  select(-c(category, response, Item.Intended_category)) %>%
+  unnest(posterior) %>%
+  ggplot(aes(x = category, y = lapse_bias, fill = category)) +
+  geom_bar(stat = "identity") +
+  scale_x_discrete("Category") +
+  scale_y_continuous("Response bias") +
+  scale_color_manual("Category", breaks = categories, values = colors.category) +
+  scale_fill_manual("Category", breaks = categories, values = colors.category) +
+  facet_wrap(~ Condition, ncol = 1) +
+  myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
+  ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height) +
+  theme(legend.position = "none")
+ggsave(p, filename = "figures/presentation/AA-exposure-response-bias.png", width = fig.width, height = fig.height)
+

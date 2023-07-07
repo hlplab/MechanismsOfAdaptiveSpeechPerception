@@ -843,8 +843,7 @@ find_best_model.bias.AA <- function() {
   history.optimization_bias <<- tibble(.rows = 0)
     
   if (best_performing_parameters.bias.gridSearch$lapse_rate == 0){
-
-      # if the best-performing lapse rate from the grid search is 0, then only optimize over beta pi
+    # if the best-performing lapse rate from the grid search is 0, then only optimize over beta pi
     best_performing_parameters.bias.optimization <-
         optim(
           par = c(log(best_performing_parameters.bias.gridSearch$beta_pi)),
@@ -857,9 +856,7 @@ find_best_model.bias.AA <- function() {
             factr = 10^5))
       
      best_performing_parameters.bias.optimization$par <- c(0, exp(best_performing_parameters.bias.optimization$par[1]))
-     
     } else {
-
    best_performing_parameters.bias.optimization <-
     optim( 
       # if the best-performing lapse rate from the grid search is not 0, then optimize over both lapse rate and beta pi
@@ -906,7 +903,6 @@ best_performing_parameters.bias <- read_output_bias()$parameters
 
 
 ```{r function-AA-models-changes-in-decision-making, echo=FALSE, message=FALSE, warning=FALSE}
-
 get_decision_making_models_for_plot <- function(
     lapse_rate = lapse_rate,
     beta_pi = beta_pi,
@@ -950,7 +946,7 @@ get_decision_making_models_for_plot <- function(
 get_average_bias_results_across_simulations.byItem <- function(data){
     output <- 
     data %>%
-    group_by(!!! syms(setdiff(names(.), c("sim","posterior","response")))) %>%
+    group_by(!!! syms(setdiff(names(.), c("sim", "posterior", "response")))) %>%
     summarise(
       response.n_sims = n_distinct(sim),
       response.se = sd(response) / sqrt(response.n_sims),

@@ -113,7 +113,7 @@ get_locations_along_phonetic_contrast <- function(ideal_observer, target_probabi
   location_selected <- list()
   for (t in target_probabilities) {
    # For each location, get distance from the desired shift for that category
-    probability_of_category1_in_its_lexical_context_at_location <- abs(t - get_experimenter_posterior_of_category1(locations, ideal_observer))
+    probability_of_category1_in_its_lexical_context_at_location <- abs(t - get_experimenter_posterior_of_category1(x = locations, model = ideal_observer))
 
     location_selected[[as.character(t)]] <- locations[[which(probability_of_category1_in_its_lexical_context_at_location ==
                                                               min(probability_of_category1_in_its_lexical_context_at_location))]]
@@ -140,20 +140,20 @@ make_perceptual_recalibration_exposure_design = function(
   if (!quiet) message(
     paste0("Making exposure design with ", exposure.tokens.typical.n, " typical tokens and ", exposure.tokens.shifted.n, " shifted tokens. Experimenters are assumed to have a lapse rate of 0, and the category prior is assumed to reflect a lexical bias of ", exposure.category_prior_of_lexical_context, ". For now, typical tokens are taken to be always the mean of the category, and shifted tokens always fall exactly on the point of maximal ambiguity."))
  
-  location.shifted_category1 <- get_locations_along_phonetic_contrast(
-    experimenter.ideal_observer %>% mutate(prior = c(exposure.category_prior_of_lexical_context, 1 - exposure.category_prior_of_lexical_context)),
-    exposure.token_shift)
+  location.shifted_category1 <- 
+    get_locations_along_phonetic_contrast(
+     ideal_observer = experimenter.ideal_observer %>% mutate(prior = c(exposure.category_prior_of_lexical_context, 1 - exposure.category_prior_of_lexical_context)),
+     target_probabilities = exposure.token_shift)
   
   location.shifted_category2 <- get_locations_along_phonetic_contrast(
-    experimenter.ideal_observer %>% mutate(prior = c(1 - exposure.category_prior_of_lexical_context, exposure.category_prior_of_lexical_context)),
-    exposure.token_shift)
+    ideal_observer = experimenter.ideal_observer %>% mutate(prior = c(1 - exposure.category_prior_of_lexical_context, exposure.category_prior_of_lexical_context)),
+    target_probabilities = exposure.token_shift)
 
   # Create basic tibble
   tibble(
     Phase = "exposure",
     ItemID = as.character(1:(exposure.tokens.typical.n + exposure.tokens.shifted.n)),
-    Item.Type = factor(c(rep("typical", exposure.tokens.typical.n), rep("shifted", exposure.tokens.shifted.n)))
-  ) %>% 
+    Item.Type = factor(c(rep("typical", exposure.tokens.typical.n), rep("shifted", exposure.tokens.shifted.n)))) %>% 
     # Add all unique design combinations
     crossing(
       Item.Category = factor(experimenter.ideal_observer$category)) %>%

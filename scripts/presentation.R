@@ -191,15 +191,18 @@ m <-
     m.ia.VOT_f0.AA %>%
       filter(prior_kappa == max(prior_kappa), prior_nu == max(prior_nu)) %>%
       nest(prior = everything())) %>%
+  mutate(prior = map2(posterior.lapse_rate, prior, ~ .y %>% mutate(lapse_rate = .x))) %>%
   group_by(Condition, Subject, posterior.lapse_rate, beta_pi) %>%
   group_modify(
-    ~ update_bias_and_categorize_test(
+    ~ update_NIW_response_bias_incrementally(
       prior = .x$prior[[1]],
-      lapse_rate = .x$posterior.lapse_rate,
-      beta_pi = .x$beta_pi,
-      exposure = .x$data[[1]],
-      test = d.AA.test %>% filter(Condition == "L2-accented"),
-      control = list(min.simulations = 1, max.simulations = 1, step.simulations = 1, target_accuracy_se = 1)),
+      beta = .x$beta_pi,
+      exposure = .x$data[[1]] %>% sample_frac(1, replace = F),
+      exposure.category = "Item.Category",
+      exposure.cues = c("VOT", "f0_Mel"),
+      decision_rule = "proportional",
+      noise_treatment = "marginalize",
+      lapse_treatment = "marginalize", keep.exposure_data = T),
     .keep = TRUE, verbose = T) %>%
   mutate_at(vars(starts_with("prior_")), ~ factor(.x)) %>%
   mutate_at(vars(starts_with("prior_")), fct_rev) %>%

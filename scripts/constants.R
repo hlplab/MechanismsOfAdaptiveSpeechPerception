@@ -8,5 +8,5 @@ myGplot.defaults("paper")
 geom_text.size <- theme_get()$text$size * 5/14
 
 options(width = 200, digits = 2, OutDec = ".", tinytex.verbose = TRUE, dplyr.summarise.inform = FALSE)
-base.width = 2.15
-base.height = 2.15
+base.width = 2
+base.height = 2

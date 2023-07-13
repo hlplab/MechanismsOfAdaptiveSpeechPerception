@@ -75,6 +75,8 @@ my_plot_grid <- function(
     plotlist[[i]] <- plotlist[[i]] +
       theme(
         axis.text.y = element_text(angle = 90, hjust = .5),
+        legend.title = element_text(size = 9),
+        legend.text = element_text(size = 9),
         plot.title = element_blank(),
         plot.margin = margin(r = if (legend.position == "right") 0 else 8, t = if (legend.position == "top") 15 else 2))
     if ((legend.position %in% c("top", "right") & r == 1 & c == ncols) | (legend.position %in% c("left") & r == 1 & c == 1) | (legend.position %in% c("bottom") & r == nrows & c == ncols)) {
@@ -100,7 +102,7 @@ my_plot_grid <- function(
       y = .99,
       hjust = 0,
       vjust = 1,
-      size = 11,
+      size = 10,
       fontface = "bold",
       parse = T)
 
@@ -555,7 +557,11 @@ plot_VOT_NIW_belief_1D <- function(
     scale_fill_manual("Category", values = colors.voicing) +
     { if (is.null(prior)) scale_alpha_continuous("density", range = c(0,1), guide = "none") } +
     coord_cartesian(expand = FALSE) +
-    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+    theme(
+      legend.position = "right",
+      axis.text = element_text(size = 9),
+      panel.grid.major = element_blank(), 
+      panel.grid.minor = element_blank())
 }
 
 

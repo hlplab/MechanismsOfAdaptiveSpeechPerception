@@ -15,14 +15,14 @@ d.production_to_perception <-
 
 (ref:demonstrate-production-perception-link) Speech production realizes phonetic categories as distributions in a multi-dimensional acoustic or phonetic cue space. Implicit knowledge of these distributions is known to mediate listeners’ interpretation of speech inputs [for review, see @schertz-clare2020]. **Panel A:** voice onset time (VOT) and fundamental frequency (f0) of `r nrow(d.production_to_perception)` word-initial /d/ and /t/ from `r d.production_to_perception %>% droplevels() %>% pull(Talker) %>% nlevels()` male L1 speakers of US English [data from @chodroff-wilson2018]. VOT and f0 were centered relative to their overall mean (see SI \@ref(sec:SI-chodroff)). **Panel B:** responses to a 2AFC ("da" vs. "ta") categorization task by 10 L1 listeners of US English, depending on VOT and f0 [data from Experiment 1 in @burchill-jaeger2022].
 
-```{r demonstrate-production-perception-link, fig.width= base.width * 3, fig.height = base.height * 1 + 1, fig.cap="(ref:demonstrate-production-perception-link)"}
+```{r demonstrate-production-perception-link, fig.width= base.width * 2 + 1, fig.height = base.height * 1 + 1, fig.cap="(ref:demonstrate-production-perception-link)"}
 p <-
   d.production_to_perception %>%
   ggplot(aes(x = VOT_centered, y = f0_Mel_centered)) +
   scale_x_continuous(expression("VOT (ms)"), breaks = c(10, 30, 50, 70)) +
   scale_y_continuous(expression("f0 (Mel)")) +
   myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
-  ggh4x::force_panelsizes(cols = duo.panel.width, rows = duo.panel.height) +
+  ggh4x::force_panelsizes(cols = base.width, rows = base.height) +
   theme(legend.key.height= duo.panel.key, legend.position = "top")
 
 p2 <-   
@@ -60,11 +60,13 @@ p1 <-
     panel.grid.major = element_blank(), 
     panel.grid.minor = element_blank())
 
-plot_grid(
+p.duo <- plot_grid(
   plotlist = list(p1, p2),
   nrow = 1, labels = c("A)", "B)"),
   align = "hv",
   axis = "lrtb")
+p.duo
+ggsave(paste0('../figures/plotly/demonstrate-production-perception-link.png'), plot = p.duo, width = base.width * 2 + 1, height = base.height * 1 + 1, dpi = 300)
 ```
 
 We emphasize that ASP is not meant to be a new model of speech perception but rather a conceptual and computational framework that i) integrates the core insights shared by contemporary models of speech perception, ii) extends these models to specify how recent exposure can come to affect any of the three mechanistic levels, and iii) stays as simple and conceptually transparent as possible. Any of the components we present below can be exchanged and compared to alternatives: researchers might, for example, substitute a different approach to normalization or use exemplar models of category representations rather than the Bayesian model we employ in this study.
@@ -126,12 +128,15 @@ p2 <-
   ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height) +
   coord_cartesian(xlim = c(limits$xmin, limits$xmax), ylim = c(limits$ymin, limits$ymax))
 
-plot_grid(
+p1 <- plot_grid(
   plotlist = list(p1, p2),
   nrow = 2, labels = c("A)", "B)"),
   rel_widths = c(1,1),
   align = "hv",
   axis = "lrtb")
+p1
+
+ggsave(paste0('../figures/plotly/demonstrate-normalization.png'), plot = p1, width = phonetic.panel.width*3 + 1, height = phonetic.panel.height*2 + 3, dpi = 300)
 ```
 
 Beyond signal transformations and normalization, the stimulus observed by a listener is also affected by external/environmental or internal/perceptual noise (not shown in Figure \@ref(fig:demonstrate-normalization)). This means that even the same exact acoustic stimulus does not necessarily result in the same percept [@leonard2016;  @nearey-hogan1986, p. 148; @schuerman2022]. The integration of internal noise into models of speech perception has been shown to explain otherwise puzzling differences in the perception and recognition of different types of phonological contrasts [e.g., @feldman2009; @kronrod2016]. Although not critical for the present purpose, we incorporate perceptual noise into ASP also because it results in more human-like (less steep) categorization functions. This noise is held constant across all case studies presented below, set to the values obtained by Kronrod and colleagues in their study of the L1-US English listeners' perception of word initial stop voicing [-@kronrod2016, $\sigma^2_{noise, VOT}=80 msec^2$, $\sigma^2_{noise, spectral}=878 Mel^2$].^[Internal noise could affect processes at any level of Figure \@ref(fig:demonstrate-normalization), including the input to normalization, its output, or both. For normalization that is limited to linear transformations---such as centering (as in C-CuRE) and standardization--these possibilities are mathematically identical. In our case studies, we add internal noise prior to normalization, and do not add external noise (doing so would not affect the qualitative results). For an example of how to model external noise, see Burchill [-@burchill2023, Chapter 3].]  
@@ -434,14 +439,17 @@ In practice, researchers can estimate the $\mathrm{m}_{c,0}$s and the $\mathrm{S
 
 (ref:demonstrate-niw-prior-mu-sigma)  Illustrating the effects of $\kappa_{c,0}$ and $\nu_{c,0}$ on the uncertainty about the category means $\mu_c$ and variances $\Sigma_c$ for univariate /d/ and /t/ categories along VOT. The four priors have identical expected category means ($\mathbf{E}(\mu_{/d/}), \mathbf{E}(\mu_{/t/})$) and variances ($\mathbf{E}(\sigma_{/d/}), \mathbf{E}(\sigma_{/t/})$)---set to match the average of the C-CuRE normalized category means and covariance matrices obtained from the data in @chodroff-wilson2018, and indicated by black points. The four priors differ, however, in their uncertainty about the category means and variances and thus in the changes they predict to occur when exposed to input from an unfamiliar talker. The more uncertain a listener is about the category means and variances of an unfamiliar talker (smaller $\kappa_{c,0}$ and $\nu_{c,0}$), the quicker that listener will adjust their expectations based on the inputs observed from that talker (see Figures \@ref(fig:demonstrate-changes-in-representations) and \@ref(fig:demonstrate-changes-in-representations-b)). Density lines are drawn at $10^{-3}$ to $10^{-10}$ at powers of 10.
 
-```{r demonstrate-niw-prior-mu-sigma, fig.width = base.width * 4 + .5, fig.height= base.height + 1, fig.cap="(ref:demonstrate-niw-prior-mu-sigma)", warning=FALSE}
+```{r demonstrate-niw-prior-mu-sigma, fig.width = base.width * 4 + 1, fig.height= base.height + 1, fig.cap="(ref:demonstrate-niw-prior-mu-sigma)", warning=FALSE}
 plotlist = list(
   plot_VOT_NIW_belief_1D(m.ia.VOT %>% filter(prior_kappa == weak, prior_nu == weak, lambda == 0)),
   plot_VOT_NIW_belief_1D(m.ia.VOT %>% filter(prior_kappa == weak, prior_nu == strong, lambda == 0)),
   plot_VOT_NIW_belief_1D(m.ia.VOT %>% filter(prior_kappa == strong, prior_nu == weak, lambda == 0)),
   plot_VOT_NIW_belief_1D(m.ia.VOT %>% filter(prior_kappa == strong, prior_nu == strong, lambda == 0)))
 
-my_plot_grid(plotlist = plotlist, legend.position = "top")
+p1 <- my_plot_grid(plotlist = plotlist, legend.position = "top") 
+    ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height)
+p1
+ggsave(paste0('../figures/plotly/demonstrate-niw-prior-mu-sigma.png'), plot = p1, width = base.width*0.8*4 + 1, height = base.width*0.8 + 1.2, dpi = 300)
 ```
 
 \begin{figure}
@@ -558,7 +566,7 @@ d.exposure %<>%
       ~ get_categorization_function_from_NIW_ideal_adaptor(.x, noise_treatment = "marginalize")))
 ```
 
-```{r demonstrate-changes-in-representations, fig.width=base.width*2*1.5, fig.height=base.height + 1, fig.cap="(ref:demonstrate-changes-in-representations)", fig.show='animate'}
+```{r demonstrate-changes-in-representations, fig.width=base.width*2 + .5, fig.height=base.height +.5, fig.cap="(ref:demonstrate-changes-in-representations)", fig.show='animate'}
 p <- 
   d.exposure %>%
   ggplot(aes(x = !! sym(cue.demo))) +
@@ -587,7 +595,7 @@ p <-
     data = . %>%
       filter(!is.na(observation.category)),
     aes(x = !! sym(paste0("observation.", cue.demo)), color = observation.category),
-    size = 2) +
+    size = 0.3) +
   scale_x_continuous("VOT (msec)") +
   scale_y_continuous("Density") +
   scale_color_manual("Category", values = colors.voicing) +
@@ -596,7 +604,7 @@ p <-
     . ~ prior_kappa,
     labeller = label_bquote(
       cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)))) +
-  ggh4x::force_panelsizes(cols = duo.panel.width, rows = duo.panel.height) +
+  ggh4x::force_panelsizes(cols = base.width, rows = base.height) +
   theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank()) 
 
 if (ANIMATE_FIGURES) {
@@ -604,11 +612,15 @@ if (ANIMATE_FIGURES) {
   p.animation
 } else {
   d.plot <- d.exposure %>% filter(observation.n == max(observation.n))
-  p %+% d.plot +
+  p1 <- p %+% d.plot +
     geom_rug(
     data = d.exposure,
     aes(x = !! sym(paste0("observation.", cue.demo)), color = observation.category),
-    size = 2)
+    size = 0.3)
+  
+  ggsave(paste0('../figures/plotly/demonstrate-changes-in-representations.png'), plot = p1, width=base.width*2 + .5, height=base.height +.5, dpi = 300)
+  
+  p1
 }
 
 if (SAVE_ANIMATED_VIDEO) {
@@ -633,7 +645,7 @@ if (SAVE_ANIMATED_VIDEO) {
 
 (ref:demonstrate-changes-in-representations-b) Changes in expected categorization functions resulting from the changes in the expected category likelihoods in Figure \@ref(fig:demonstrate-changes-in-representations). `r if (!ANIMATE_FIGURES) "Shown are the results after updating. A video animation of the incremental updating process is available online at URL-PLACEHOLDER. "` Neither normalization, nor response biases changed as a function of the input.
 
-```{r demonstrate-changes-in-representations-b, fig.width=base.width*2*1.5, fig.height=base.height + 1, fig.cap="(ref:demonstrate-changes-in-representations-b)", warning=FALSE, message=FALSE, fig.show=if(ANIMATE_FIGURES) 'animate' else 'asis'}
+```{r demonstrate-changes-in-representations-b, fig.width=base.width*2 + .5, fig.height=base.height +.5, fig.cap="(ref:demonstrate-changes-in-representations-b)", warning=FALSE, message=FALSE, fig.show=if(ANIMATE_FIGURES) 'animate' else 'asis'}
 p <- d.exposure %>%
   ggplot(aes(x = !! sym(cue.demo))) +
   # categorization function
@@ -656,7 +668,7 @@ p <- d.exposure %>%
     data = . %>%
       filter(!is.na(observation.category)),
     aes(x = !! sym(paste0("observation.", cue.demo)), color = observation.category),
-    size = 2) +
+    size = 0.3) +
   scale_x_continuous("VOT (msec)") +
   scale_y_continuous("Posterior probability of /d/") +
   scale_color_manual("Category", values = colors.voicing) +
@@ -665,7 +677,7 @@ p <- d.exposure %>%
     . ~ prior_kappa,
     labeller = label_bquote(
       cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)))) +
-  ggh4x::force_panelsizes(cols = duo.panel.width, rows = duo.panel.height) +
+  ggh4x::force_panelsizes(cols = base.width, rows = base.height) +
   theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank()) 
 
 if (ANIMATE_FIGURES) {
@@ -675,11 +687,15 @@ if (ANIMATE_FIGURES) {
   p.animation
 } else {
   d.plot <- d.exposure %>% filter(observation.n == max(observation.n))
-  p %+% d.plot +
+  p1 <- p %+% d.plot +
     geom_rug(
     data = d.exposure,
     aes(x = !! sym(paste0("observation.", cue.demo)), color = observation.category),
-    size = 2)
+    size = 0.3)
+
+  ggsave(paste0('../figures/plotly/demonstrate-changes-in-representations-b.png'), plot = p1, width=base.width*2 + .5, height=base.height +.5, dpi = 300)
+  
+  p1
 }
 
 if (SAVE_ANIMATED_VIDEO) {
@@ -744,7 +760,7 @@ Critically, this strong constraint on changes in decision-making only follows if
 
 (ref:demonstrate-lapse-bias-change) Illustrating the effects of $\beta_{\pi}$ on changes in the categorization function (**Left:** posterior probability, **Right:** posterior log-odds). `r if (!ANIMATE_FIGURES) "Shown are the results after updating. A video animation of the incremental updating process is available online at URL-PLACEHOLDER."` The model has the same uncertain prior beliefs about category mean and variances as the model in Figure \@ref(fig:demonstrate-niw-prior-mu-sigma)D ($\kappa_{c,0} = \nu_{c,0}=0$). Neither normalization nor prior beliefs about the categories changes as a function of exposure. We set the lapse rate $\lambda = 0$, the prior lapse biases to uniform ($\pi_{c,0}=.5$). The input to this change model is identical to the input in Figures \@ref(fig:demonstrate-changes-in-representations) and \@ref(fig:demonstrate-changes-in-representations-b). In the left panel, orange arrows indicate changes in the category boundary (point of subjective equality) for $\beta_{\pi} = 1$. In the right panel, orange arrows indicate the distance between the posterior log-odds resulting from the two most extreme $\beta_{\pi}$s. This highlights the fact that changes to response biases have additive effects on the log-odds of `r categories.demo[1]` responses when $\lambda = 0$.  
 
-```{r demonstrate-lapse-bias-change, fig.cap="(ref:demonstrate-lapse-bias-change)", fig.height=base.height + .5, fig.show=if (ANIMATE_FIGURES) 'animate' else 'asis', fig.width=base.width*2.5 + 1.5, message=FALSE, warning=FALSE}
+```{r demonstrate-lapse-bias-change, fig.cap="(ref:demonstrate-lapse-bias-change)", fig.width=base.width*2 + .5, fig.height= base.height + .5, fig.show=if (ANIMATE_FIGURES) 'animate' else 'asis', message=FALSE, warning=FALSE}
 d.exposure <-
   d.exposure.demo %>%
   crossing(
@@ -803,7 +819,7 @@ p <-
     data = . %>%
       filter(!is.na(observation.category)),
     aes(x = !! sym(paste0("observation.", cue.demo)), color = observation.category),
-    size = 2) +
+    size = 0.3) +
   # labels
   geom_segment(
     data = . %>%
@@ -844,7 +860,8 @@ p <-
       y = ymax - y/2,
       label = ifelse(use_logit == "log-odds", round(y, ifelse(use_logit == "log-odds", 1, 2)), ""),
       hjust = ifelse(!! sym(cue.demo) == max(!! sym(cue.demo)), 0, 1)),
-    color = "orange", show.legend = F) +
+    color = "orange", size = 9/.pt,
+    show.legend = F) +
   geom_segment(
     data = . %>%
       filter(
@@ -881,8 +898,8 @@ p <-
   scale_alpha_manual(name = expression(beta[pi]), values = c(.2, .5, .8)) +
   coord_cartesian(xlim = VOT_range + c(-15, 15)) +
   facet_wrap(~ use_logit, scales = "free_y") +
-  ggh4x::force_panelsizes(cols = duo.panel.width, rows = duo.panel.height) +
-  theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "right", panel.grid = element_blank()) 
+  ggh4x::force_panelsizes(cols = base.width, rows = base.height) +
+  theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank()) 
 
 
 if (ANIMATE_FIGURES) {
@@ -900,7 +917,7 @@ if (ANIMATE_FIGURES) {
       levels = c("probability", "log-odds"))) %>% 
     filter(observation.n == max(observation.n))
   
-  p %+% d.plot +
+  p1 <- p %+% d.plot +
     geom_rug(
       data = d.exposure %>%
         mutate(use_logit = factor(
@@ -910,7 +927,11 @@ if (ANIMATE_FIGURES) {
             "probability"), 
           levels = c("probability", "log-odds"))),
       aes(x = !! sym(paste0("observation.", cue.demo)), color = observation.category),
-      size = 2)
+      size = 0.5)
+  
+  ggsave(paste0('../figures/plotly/demonstrate-lapse-bias-change.png'), plot = p1, width=base.width*2 + .5, height=base.height +.5, dpi = 300)
+  
+  p1
 }
 
 if (SAVE_ANIMATED_VIDEO) {
@@ -937,7 +958,7 @@ if (SAVE_ANIMATED_VIDEO) {
 
 (ref:demonstrate-lapse-bias-change-nonzero-lapse) Same as Figure \@ref(fig:demonstrate-lapse-bias-change) but for a lapse rate $\lambda=$ `r lambdas.demo[2]`. For such non-zero lapse rates, changes to the response bias have *non*-additive effects on the posterior log-odds. This means that, even in log-odds, changes in response biases can have effects that go beyond purely additive changes in the categorization functions ('shifts in category boundaries'). `r if (!ANIMATE_FIGURES) "Shown are the results after updating. A video animation of the incremental updating process is available online at URL-PLACEHOLDER."` 
 
-```{r demonstrate-lapse-bias-change-nonzero-lapse, fig.width=base.width*2.5 + 1.5, fig.height=base.height +.5, fig.cap="(ref:demonstrate-lapse-bias-change-nonzero-lapse)", fig.show=if (ANIMATE_FIGURES) 'animate' else 'asis', warning=FALSE, message=FALSE}
+```{r demonstrate-lapse-bias-change-nonzero-lapse, fig.width=base.width*2 + .5, fig.height=base.height +.5, fig.cap="(ref:demonstrate-lapse-bias-change-nonzero-lapse)", fig.show=if (ANIMATE_FIGURES) 'animate' else 'asis', warning=FALSE, message=FALSE}
 d.exposure <-
   d.exposure.demo %>%
   crossing(
@@ -987,7 +1008,7 @@ if (ANIMATE_FIGURES) {
       levels = c("probability", "log-odds"))) %>% 
     filter(observation.n == max(observation.n))
   
-  p %+% d.plot +
+  p1 <- p %+% d.plot +
     geom_rug(
       data = d.exposure %>%
         mutate(use_logit = factor(
@@ -997,7 +1018,11 @@ if (ANIMATE_FIGURES) {
             "probability"), 
           levels = c("probability", "log-odds"))),
       aes(x = !! sym(paste0("observation.", cue.demo)), color = observation.category),
-      size = 2)
+      size = 0.3)
+  
+  ggsave(paste0('../figures/plotly/demonstrate-lapse-bias-change-nonzero-lapse.png'), plot = p1, width=base.width*2 + .5, height=base.height +.5, dpi = 300)
+  
+  p1
 }
 
 if (SAVE_ANIMATED_VIDEO) {

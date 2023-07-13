@@ -137,15 +137,17 @@ if (SET_SEED) set.seed(42007)
 knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 
 # Figure and figure font sizing for results figures
-result.panel.size <- unit(2.5, "cm")
-result.base.size <- 8
-phonetic.panel.width <- unit(3.5, "cm")
-phonetic.panel.height <- unit(3, "cm")
-duo.panel.width <- unit(5, "cm")
-duo.panel.height <- unit(5, "cm")
-duo.panel.key <- unit(0.2, 'cm')
-phonetic.base.size <- 9
 convert_fontsize_to_textsize <- function(x) x * 5/14
+convert_cm_to_inch <- function(x) x / 2.54
+
+result.panel.size <- convert_cm_to_inch(2.5)
+result.base.size <- 8
+
+phonetic.panel.width <- convert_cm_to_inch(3.5)
+phonetic.panel.height <- convert_cm_to_inch(3)
+phonetic.base.size <- 9
+
+duo.panel.key <- unit(0.2, 'cm')
 ```
 
 ```{r, child="section-0-TO-DO.Rmd", eval= if (INCLUDE_TODO) TRUE else FALSE}
@@ -168,7 +170,7 @@ convert_fontsize_to_textsize <- function(x) x * 5/14
 ```{r, child="section-5-accent-adaptation.Rmd", eval=TRUE}
 ```
 
-```{r, child="section-6-general-discussion.Rmd", eval=TRUE}
+```{r, child="section-6-general-discussion.Rmd", eval=FALSE}
 ```
 
 \printbibliography
@@ -176,7 +178,7 @@ convert_fontsize_to_textsize <- function(x) x * 5/14
 
 \brefsection
 
-```{r, child="supplementary-information.Rmd", eval=TRUE}
+```{r, child="supplementary-information.Rmd", eval=FALSE}
 ```
 
 \printbibliography

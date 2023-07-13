@@ -378,8 +378,10 @@ make_exposure_test_plot <- function(
 }
 ```
 
-```{r AA-exposure-test-plot, fig.width=base.width*3+.5, fig.cap="(ref:AA-exposure-test-plot)", warning=FALSE}
-make_exposure_test_plot(exposure.data = d.AA.exposure, test.data = d.AA.test)
+```{r AA-exposure-test-plot, fig.width=phonetic.panel.width*3+1, fig.height = phonetic.panel.height + 1, fig.cap="(ref:AA-exposure-test-plot)", warning=FALSE}
+p1 <- make_exposure_test_plot(exposure.data = d.AA.exposure, test.data = d.AA.test)
+p1
+ggsave(paste0('../figures/plotly/AA-exposure-test-plot.png'), plot = p1, width = phonetic.panel.width*3 + 1, height = phonetic.panel.height + 1, dpi = 300)
 ```
 
 ```{r add-subjects-AA-exposure-test-data}
@@ -457,6 +459,7 @@ basic_AA_result_plot <- function(data) {
       ylab("Categorization accuracy"),
       myGplot.defaults(base_size = result.base.size, set_theme = F),
       theme(
+        legend.key.height= duo.panel.key,
         legend.position = "top", 
         axis.text.x = element_text(angle = 22.5, hjust = 1),
         panel.grid.major.x = element_blank()))
@@ -628,8 +631,10 @@ make_results_plot_representations <- function(data, data_best) {
 }
 ```
 
-```{r AA-result-changes-in-representations, fig.width= base.width * 5, fig.height= base.height * 5 + 1, fig.cap="(ref:AA-result-changes-in-representations)", warning=FALSE}
-make_results_plot_representations(data = d.AA.representations %>% filter(prior_kappa %in% prior_kappa.plot & prior_nu %in% prior_nu.plot), data_best = best_performing_parameters.representations)
+```{r AA-result-changes-in-representations, fig.width = result.panel.size*5 + 1, fig.height = result.panel.size*5 + 2, fig.cap="(ref:AA-result-changes-in-representations)", warning=FALSE}
+p1 <- make_results_plot_representations(data = d.AA.representations %>% filter(prior_kappa %in% prior_kappa.plot & prior_nu %in% prior_nu.plot), data_best = best_performing_parameters.representations)
+p1
+ggsave(paste0('../figures/plotly/AA-result-changes-in-representations.png'), plot = p1, width = result.panel.size*5 + 1, height = result.panel.size* 5 + 1.5, dpi = 300)
 ```
 
 Figure \@ref(fig:AA-result-changes-in-representations) shows the predicted categorization accuracy after exposure to L1- or L2-accented speech, as a function of the strength of the prior beliefs for the category means and variances. First consider the top left panel, where both $\kappa_{c,0}$ and $\nu_{c,0}$ have very high values. This simulates a very slow learner with strong prior beliefs for both category means and variances, so that the small number of exposure tokens has minimal influence on subsequent perception of the L2-accented test tokens. Therefore, the performance seen in the L1- and L2-accented exposure conditions is more or less identical, reflecting how a listener would draw primarily on their long-term prior experience to categorize the test tokens.
@@ -985,7 +990,7 @@ make_results_plot_decision_making <- function(data, data_best){
       posterior.lapse_rate ~ beta_pi,
       labeller = label_bquote(
         cols = beta[pi] == .(beta_pi),
-        rows = lambda == ~.(posterior.lapse_rate)))  +   
+        rows = lambda == ~.(posterior.lapse_rate))) +   
     ggh4x::force_panelsizes(cols = result.panel.size, rows = result.panel.size)
 
   p.results +
@@ -1010,8 +1015,10 @@ make_results_plot_decision_making <- function(data, data_best){
 }
 ```
 
-```{r AA-result-changes-in-decision-making, fig.width= base.width * 5, fig.height= base.height * 5 + 1, fig.cap="(ref:AA-result-changes-in-decision-making)", warning=FALSE}
-make_results_plot_decision_making(data = get_average_bias_results_across_simulations.byItem(d.AA.bias), data_best = best_performing_parameters.bias)
+```{r AA-result-changes-in-decision-making, fig.width = result.panel.size*5 + 1, fig.height = result.panel.size*5 + 2, fig.cap="(ref:AA-result-changes-in-decision-making)", warning=FALSE}
+p1 <- make_results_plot_decision_making(data = get_average_bias_results_across_simulations.byItem(d.AA.bias), data_best = best_performing_parameters.bias)
+p1
+ggsave(paste0('../figures/plotly/AA-result-changes-in-decision-making.png'), plot = p1, width = result.panel.size*5 + 1, height = result.panel.size* 5 + 1.5, dpi = 300)
 ```
 
 Figure \@ref(fig:AA-result-changes-in-decision-making) shows the effects of changes in decision-making as a function of the rate at which response biases change $\beta_{\pi}$ and the lapse rate $\lambda$, averaged across all simulations for each parameterization. As in Case Study 1, the figure shows the average across a minimum of 50 repeated simulations, each time randomizing the order of exposure. This was sufficient to achieve reproducible estimates even for the largest $\beta_{\pi}$s considered here (SEs of the mean accuracy after L2-accented exposure across repeated simulations were smaller than $0.002$, meaning that the 95% CI across the simulations spanned less than 1% in recognition accuracy). 
@@ -1188,8 +1195,10 @@ make_results_plot_normalization <- function(data, data_best){
 }
 ```
 
-```{r AA-result-changes-in-normalization, fig.width= base.width * 5, fig.height= base.height + 1.75, fig.cap="(ref:AA-result-changes-in-normalization)", warning=FALSE}
-make_results_plot_normalization(d.AA.normalization %>% filter(prior_kappa.normalization %in% prior_kappa.normalization.plot), best_performing_parameters.normalization)
+```{r AA-result-changes-in-normalization, fig.width= result.panel.size * 5 + 1, fig.height= result.panel.size + 1, fig.cap="(ref:AA-result-changes-in-normalization)", warning=FALSE}
+p1 <- make_results_plot_normalization(d.AA.normalization %>% filter(prior_kappa.normalization %in% prior_kappa.normalization.plot), best_performing_parameters.normalization)
+p1
+ggsave(paste0('../figures/plotly/AA-result-changes-in-normalization.png'), plot = p1, width = result.panel.size*5 + 0.8, height = result.panel.size + 1.2, dpi = 300)
 ```
 
 ## Summary
@@ -1521,7 +1530,7 @@ p.AA.exposure <-
   ggh4x::force_panelsizes(cols = result.panel.size, rows = result.panel.size)
 ```
 
-```{r AA-plot-results-additional-cases, fig.width=base.width*2.5 + .5, fig.height=base.height*2.5 + .5, fig.cap = "(ref:AA-plot-results-additional-cases)", warning=FALSE}
+```{r AA-plot-results-additional-cases, fig.width=result.panel.size*4+1, fig.height = result.panel.size*4 + 1.5, fig.cap = "(ref:AA-plot-results-additional-cases)", warning=FALSE}
 d.AA.results.best.cases <- 
   bind_rows(
   d.AA.results.cue_reweighting.best %>%
@@ -1579,18 +1588,24 @@ p.results.best.cases <-
 
 prow <- 
   plot_grid(
-    p.AA.exposure + theme(legend.position="none"), 
+    p.AA.exposure + theme(legend.position="none") + ggh4x::force_panelsizes(cols = result.panel.size, rows = result.panel.size), 
     p.results.best.cases + theme(legend.position="none"), 
     labels = c('A)', 'B)'), 
     align = "h",
     axis = "bt",
     ncol = 2, 
-    rel_widths = c(1.2, 3.3),
+    rel_widths = c(1.5, 3.3),
     greedy = TRUE)
 
 # extract a legend that is laid out horizontally
-legend_prow <- get_legend(p.results.best.cases)
-plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.1, 1)) 
+legend_prow <- get_legend(p.results.best.cases + 
+                            theme(legend.key.height= duo.panel.key,
+        legend.position = "top"))
+p1 <- plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.1, 1))
+
+p1
+
+ggsave(paste0('../figures/plotly/AA-plot-results-additional-cases.png'), plot = p1, width = result.panel.size*4+1, height = result.panel.size*4 + 1.5, dpi = 300)
 ```
 
 ```{r AA-table-best-performing-parameterization}

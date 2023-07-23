@@ -48,7 +48,7 @@ For example, an influential study by @kraljic-samuel2006 exposed participants to
 
 (ref:kraljic-samuel-2007-replotted) Categorization functions observed during the test phase of the perceptual recalibration experiment presented in Kraljic and Samuel (2006; replotted from Kraljic & Samuel, 2007, Figure 1). No error bars were provided in the original, and the original data are no longer available (Samuel, p.c.).
 
-```{r kraljic-samuel-2007-replotted, fig.width = base.width + 2.5, fig.height = base.height, fig.cap="(ref:kraljic-samuel-2007-replotted)"}
+```{r kraljic-samuel-2007-replotted, fig.width = phonetic.panel.width + 1.7, fig.height = phonetic.panel.height + 0.6, fig.cap="(ref:kraljic-samuel-2007-replotted)"}
 replot_perceptual_recalibration_result <- function(categories, continuum.steps, responses, continuum.label = NULL, conditions = paste0("/", categories, "/-shifted")) {
   crossing(
     Condition = conditions,
@@ -77,10 +77,13 @@ p10 <- replot_perceptual_recalibration_result(
 p20 <- replot_perceptual_recalibration_result(
   categories = c("d", "t"), 
   continuum.steps = 1:6,
-  responses = c(.95, .78, .41, .14, .055, .045, .885, .695, .36, .095, .05, .02))
-
-p20 + 
+  responses = c(.95, .78, .41, .14, .055, .045, .885, .695, .36, .095, .05, .02)) +
+  myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
   ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height) + theme(legend.position = "right")
+
+p20
+
+ggsave(paste0('../figures/plotly/kraljic-samuel-2007-replotted.png'), plot = p20, width = phonetic.panel.width + 1.7, height = phonetic.panel.height + .58, dpi = 300)
 ```
 
 <!-- In a seminal study, Norris et al. [-@norris2003] exposed Dutch listeners to 20 words that contained an [f] (e.g., "witlo*f*"---chicory) and 20 words that contained an [s] (e.g., "naaldbo*s*"---pine forest), mixed with 160 fillers that did not contain either sound. Between participants, either all instances of [f] *or* all instances of [s] were phonetically manipulated so as to make them perceptually ambiguous between [f] and [s]. The other sound remained unchanged. A third, baseline, condition left both [f] and [s] unchanged. During a subsequent test phase, participants heard instances of an acoustic continuum ranging from clear [`r linguisticsdown::cond_cmpl("ɛ")`f] to clear [`r linguisticsdown::cond_cmpl("ɛ")`s], and responded whether they heard "ef" or "es".  -->
@@ -222,7 +225,7 @@ Figure \@ref(fig:PR-exposure-test-plot) shows the stimuli for the exposure and t
 
 (ref:PR-exposure-test-plot) Distribution of the exposure and test of the perceptual recalibration experiment. **Panel A - Exposure:** `r n.exposure.token` tokens each of shifted and typical `r paste(categories.PR, collapse = " and ")`, respectively. Arrows indicate how the shifted tokens created by the experimenter differ from typical tokens of the same category (arrows originate from the mean of typical tokens and end at the mean of shifted tokens). As would be expected given the procedures researchers typically employ to generate stimuli for this type of experiment, the exposure distributions for `r paste(categories.PR, collapse = " and ")` in both conditions differ primarily along VOT but, notably, *also* differ along f0. **Panel B - Test (identical for both exposure groups):** Numbers indicate the item ID of the test tokens used in subsequent plots, with IDs in increasing order corresponding to `r paste(paste0(as.numeric(unique(d.PR.test$Item.Intended_proportion_category1)) * 100, "%"), collapse = ", ")` expected `r categories.PR[1]`-responses *prior to exposure* (e.g., in a test-only norming experiment). 
 
-```{r PR-exposure-test-plot, fig.width= base.width*3+1, fig.cap="(ref:PR-exposure-test-plot)"}
+```{r PR-exposure-test-plot, fig.width = phonetic.panel.width*3+1, fig.height = phonetic.panel.height + 1, fig.cap="(ref:PR-exposure-test-plot)"}
 p.PR.exposure <- 
   d.PR.exposure %>%
   ggplot(aes(x = VOT, y = f0_Mel, color = Item.Category)) +
@@ -250,7 +253,7 @@ p.PR.exposure <-
   coord_cartesian(ylim = c(180, 300)) +
   facet_grid(~ paste("Exposure:", Condition))  +
   myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
-  ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height)
+  ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height) + theme(legend.position = "top")
 
 limits <- get_plot_limits(p.PR.exposure)
 breaks <- get_plot_breaks(p.PR.exposure)
@@ -273,12 +276,21 @@ p.PR.test <-
   myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
   ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height)
 
-plot_grid(
-  plotlist = list(p.PR.exposure, p.PR.test),
-  align = "hv",
-  axis = "btlr",
-  labels = c("A)", "B)"),
-  rel_widths = c(2,1.1))
+prow = plot_grid(
+    p.PR.exposure + theme(legend.position="none"),
+    p.PR.test + theme(legend.position="none"),
+    labels = c('A)', 'B)'), nrow = 1, rel_widths = c(2.1,1.25))
+  
+legend_prow <- 
+    get_legend(
+      p.PR.exposure +
+        guides(color = guide_legend(title.position = "left", nrow = 1)))
+
+p1 <-  plot_grid(legend_prow, prow, ncol = 1, rel_heights = c(.1, 1))
+
+p1
+
+ggsave(paste0('../figures/plotly/PR-exposure-test-plot.png'), plot = p1, width = phonetic.panel.width*3 + 1.2, height = phonetic.panel.height + 1, dpi = 300)
 ```
 
 ```{r}
@@ -414,7 +426,7 @@ Figure \@ref(fig:PR-result-changes-in-representations) shows the predicted categ
 
 (ref:PR-result-changes-in-representations) Predictions of a learning model that derives perceptual recalibration as changes in category representations. Predicted categorization responses are shown for the `r length(test_locations)` test tokens after `r paste(categories.PR, collapse = "- and")`-shifted exposure, depending on the strength of the prior beliefs in categories means ($\kappa_{c,0}$) and covariances ($\nu_{c,0}$). Smaller $\kappa_{c,0}$ and $\nu_{c,0}$ indicate *faster* learning, weighting previous long-term experience less during the integration with the observations made during the exposure phase of the experiment (see Equation \@ref(eq:niw-updating)). The highlighted panel corresponds to the best-fitting $\kappa_{c,0}$ and $\nu_{c,0}$ observed in previous work within other types of paradigms [@kleinschmidt-jaeger2016cogsci; @kleinschmidt2020].
 
-```{r PR-result-changes-in-representations, fig.width= base.width * 5, fig.height= base.height * 5 +.5, fig.cap="(ref:PR-result-changes-in-representations)"}
+```{r PR-result-changes-in-representations, fig.width = result.panel.size*5 + 1, fig.height = result.panel.size* 5 + 1.5, fig.cap="(ref:PR-result-changes-in-representations)"}
 p.PR.results <-
   d.PR %>%
   filter(category == categories.PR[1]) %>%
@@ -436,7 +448,7 @@ p.PR.results <-
         panel.grid.minor.x = element_blank()) +
   ggh4x::force_panelsizes(cols = result.panel.size, rows = result.panel.size)
 
-p.PR.results +
+p1 <- p.PR.results +
   insert_layers(
     geom_rect(
       data = . %>%
@@ -448,6 +460,10 @@ p.PR.results +
       xmin = -Inf,xmax = Inf, ymin = -Inf,ymax = Inf)) +
   scale_fill_manual(breaks = c(T, F), values = c("gray20", "white")) +
   guides(fill = "none")
+
+p1
+
+ggsave(paste0('../figures/plotly/PR-result-changes-in-representations.png'), plot = p1, width = result.panel.size*5 + 1, height = result.panel.size* 5 + 1.5, dpi = 300)
 ```
 
 Figure \@ref(fig:PR-result-changes-in-representations) demonstrates that distributional learning can account for the typical result of perceptual recalibration experiments. Of note, the range of parameterizations that best fit human responses in a series of distributional learning experiments on /b/ and /p/ [gray panel in Figure \@ref(fig:PR-result-changes-in-representations), $\kappa_{/b/,0}=\kappa_{/p/,0}=160$ (95% CI: 75-780) and $\nu_{/b/,0}=\nu_{/p/,0}=510$ (95% CI: 160-1000), @kleinschmidt2020] also provides a good qualitative fit against the /d/-/t/ perceptual recalibration results by Kraljic and Samuel [-@kraljic-samuel2007]. 
@@ -458,10 +474,10 @@ Figure \@ref(fig:PR-result-changes-in-representations) further shows that bounda
 
 (ref:PR-result-changes-in-representations-categories) Expected category likelihoods (based on expected category mean and covariance matrices) after exposure, depending on the exposure condition and the strength of the prior beliefs in categories means ($\kappa_{c,0}$) and covariances ($\nu_{c,0}$). Only a illustrative subset of the $\kappa_{c,0}$ and $\nu_{c,0}$ values from Figure \@ref(fig:PR-result-changes-in-representations) are shown. Specifically, we compare scenarios with very slow changes in representations (first column), fast changes in beliefs about the category means (leading 'category shifts', second and last column), and fast changes in beliefs about the category covariances (leading to 'category expansions', 'category shrinkage', and/or 'category rotation', third and last column).
 
-```{r PR-result-changes-in-representations-categories, fig.width= base.width * 4, fig.height= base.height * 2 +.5, fig.cap="(ref:PR-result-changes-in-representations-categories)"}
+```{r PR-result-changes-in-representations-categories, fig.width = phonetic.panel.width*4 + 1.5, fig.height = phonetic.panel.height*2 + 2, fig.cap="(ref:PR-result-changes-in-representations-categories)"}
 levels <- c(.68, .95)
 
-plot_expected_categories_contour2D(
+p1 <- plot_expected_categories_contour2D(
   x = d.PR %>% 
     distinct(Condition, Subject, prior_kappa, prior_nu, posterior) %>%
     filter(prior_kappa %in% c(4, 1024), prior_nu %in% c(4, 1024)) %>%
@@ -477,11 +493,16 @@ plot_expected_categories_contour2D(
     labeller = label_bquote(
       cols = atop({kappa[0~","~ .(categories.PR[1])] == kappa[0~","~ .(categories.PR[2])]} == .(as.character(prior_kappa)), 
                   {nu[0~","~ .(categories.PR[1])] == nu[0~","~ .(categories.PR[2])]} == .(as.character(prior_nu))))) +
+   myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
   ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height) +
   theme(legend.position = "top", 
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.spacing = unit(1, "lines"))
+
+p1
+
+ggsave(paste0('../figures/plotly/PR-result-changes-in-representations-categories.png'), plot = p1, width = phonetic.panel.width*4 + 1.5, height = phonetic.panel.height*2 + 1.8, dpi = 300)
 ```
 
 Finally, Figure \@ref(fig:PR-result-changes-in-representations) shows that distributional learning not only predicts shifts in the category boundary but can also predict changes in the slope of those boundaries. This is evident, for example, in the top-right panel. Although such changes in slopes are often not discussed, they are present in many perceptual recalibration experiments [e.g., @drouin2016; @liu-jaeger2018; @liu-jaeger2019; @myers-mesite2014].
@@ -552,7 +573,7 @@ if (RESET_MODELS || !file.exists(get_path(paste0("../models/d.PR.results.bias.rd
 ```
 
 
-```{r PR-result-changes-in-decision-making, fig.width= base.width * 5, fig.height= base.height * 5 +.5, fig.cap="(ref:PR-result-changes-in-decision-making)"}
+```{r PR-result-changes-in-decision-making, fig.width = result.panel.size*5 + 1, fig.height = result.panel.size* 5 + 1.5, fig.cap="(ref:PR-result-changes-in-decision-making)"}
 p.PR.results.bias <- 
   p.PR.results %+% 
   d.PR +
@@ -580,7 +601,10 @@ p.PR.results.bias <-
       cols = beta[pi] == .(beta_pi),
       rows = lambda == ~.(posterior.lapse_rate))) +
   ggh4x::force_panelsizes(cols = result.panel.size, rows = result.panel.size)
+
 p.PR.results.bias
+
+ggsave(paste0('../figures/plotly/PR-result-changes-in-decision-making.png'), plot = p.PR.results.bias, width = result.panel.size*5 + 1, height = result.panel.size* 5 + 1.5, dpi = 300)
 ```
 
 Figure \@ref(fig:PR-result-changes-in-decision-making) shows the effects of changes in decision-making for lapse rates ranging from negligible lapse rates ($\lambda = .0005$, top row) to a scenario in which listeners always lapse ($\lambda = 1$). In the latter---rather implausible---edge case, listeners' responses only reflect response biases and are completely stimulus-independent (bottom row). For reference, lapse rates for perception experiments like the ones modeled here typically fall between 1-10% [e.g., @clayards2008 constrained lapse rates to be $<5$%; @kleinschmidt-jaeger2016cogsci report a best-fitting value of 5%].
@@ -634,7 +658,7 @@ if (ANIMATE_FIGURES) {
           panel.grid.minor = element_blank())
   p.animation + geom_text(aes(color = Prior_proportion_category1), size = 3)
 } else {
-  d.PR %>%
+  p1 <- d.PR %>%
     filter(prior_kappa.normalization %in% c(4, 64, 1024)) %>%
     mutate(VOT = map(x, ~ .x[1]) %>% unlist(), f0_Mel = map(x, ~ .x[2]) %>% unlist()) %>%
     group_by(Condition, Subject, prior_kappa.normalization) %>%
@@ -654,6 +678,11 @@ if (ANIMATE_FIGURES) {
     ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height) +
     theme(panel.grid.major = element_blank(),
           panel.grid.minor = element_blank())
+  
+  p1
+  
+  # ggsave(paste0('../figures/plotly/PR-test-normalization.png'), plot = p1, width = phonetic.panel.width*2 + 1.6, height = phonetic.panel.height*3 + 2.2, dpi = 300)
+  ggsave(paste0('../figures/plotly/PR-test-normalization.png'), plot = p1, width = phonetic.panel.width*2 + 0.85, height = phonetic.panel.height*3 + 1, dpi = 300)
 }
 
 if (SAVE_ANIMATED_VIDEO) {
@@ -699,7 +728,7 @@ if (SAVE_ANIMATED_VIDEO) {
 
 (ref:PR-result-changes-in-normalization) Predictions of a model that derives perceptual recalibration from changes in normalization. Predicted categorization responses are shown for the `r length(test_locations)` test locations after `r paste(categories.PR, collapse = "- and")`-shifted exposure, depending on the relative weighting of previous experience ($\kappa_0$) during the inference of the cue mean during exposure. Smaller $\kappa_0$ indicate faster learning. 
 
-```{r PR-result-changes-in-normalization, fig.width= base.width * 5, fig.height= base.height + 1, fig.cap="(ref:PR-result-changes-in-normalization)"}
+```{r PR-result-changes-in-normalization, fig.width= result.panel.size*5 + 0.8, fig.height = result.panel.size + 1.2, fig.cap="(ref:PR-result-changes-in-normalization)"}
 p.PR.results.normalization <- 
   p.PR.results %+%
   (d.PR %>%
@@ -710,6 +739,8 @@ p.PR.results.normalization <-
       cols = ~kappa[0] == .(as.character(prior_kappa.normalization)))) +
   ggh4x::force_panelsizes(cols = result.panel.size, rows = result.panel.size)
 p.PR.results.normalization
+
+ggsave(paste0('../figures/plotly/PR-result-changes-in-normalization.png'), plot = p.PR.results.normalization, width = result.panel.size*5 + 0.8, height = result.panel.size + 1.2, dpi = 300)
 ```
 
 ## Summary

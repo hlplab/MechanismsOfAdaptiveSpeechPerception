@@ -66,7 +66,7 @@ p.duo <- plot_grid(
   align = "hv",
   axis = "lrtb")
 p.duo
-ggsave(paste0('../figures/plotly/demonstrate-production-perception-link.png'), plot = p.duo, width = base.width * 2 + 1, height = base.height * 1 + 1, dpi = 300)
+ggsave(paste0('../figures/plotly/demonstrate-production-perception-link.png'), plot = p.duo, width = base.width * 2 + 1, height = base.height * 1 + 0.5, dpi = 300)
 ```
 
 We emphasize that ASP is not meant to be a new model of speech perception but rather a conceptual and computational framework that i) integrates the core insights shared by contemporary models of speech perception, ii) extends these models to specify how recent exposure can come to affect any of the three mechanistic levels, and iii) stays as simple and conceptually transparent as possible. Any of the components we present below can be exchanged and compared to alternatives: researchers might, for example, substitute a different approach to normalization or use exemplar models of category representations rather than the Bayesian model we employ in this study.
@@ -111,6 +111,7 @@ p <-
   scale_color_manual("Voiced", breaks = c("yes", "no"), values = colors.voicing) +
   facet_grid(. ~ poa) +
   guides(colour = guide_legend(override.aes = list(alpha = 1)), shape = guide_legend(override.aes = list(alpha = 1))) +
+  myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
   ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height) +
   theme(legend.position = "top")
 
@@ -125,8 +126,10 @@ limits <- get_plot_limits(p1)
 p2 <-   
   p1 + theme(legend.position = "none", plot.margin = margin(t = -50)) +
   aes(x = VOT_centered, y = f0_Mel_centered) +
+  myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
   ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height) +
-  coord_cartesian(xlim = c(limits$xmin, limits$xmax), ylim = c(limits$ymin, limits$ymax))
+  coord_cartesian(xlim = c(limits$xmin, limits$xmax), ylim = c(limits$ymin, limits$ymax)) +
+  theme(legend.position = "none")
 
 p1 <- plot_grid(
   plotlist = list(p1, p2),
@@ -136,7 +139,7 @@ p1 <- plot_grid(
   axis = "lrtb")
 p1
 
-ggsave(paste0('../figures/plotly/demonstrate-normalization.png'), plot = p1, width = phonetic.panel.width*3 + 1, height = phonetic.panel.height*2 + 3, dpi = 300)
+ggsave(paste0('../figures/plotly/demonstrate-normalization.png'), plot = p1, width = phonetic.panel.width*3+1, height = phonetic.panel.height*2 + 2.5, dpi = 300)
 ```
 
 Beyond signal transformations and normalization, the stimulus observed by a listener is also affected by external/environmental or internal/perceptual noise (not shown in Figure \@ref(fig:demonstrate-normalization)). This means that even the same exact acoustic stimulus does not necessarily result in the same percept [@leonard2016;  @nearey-hogan1986, p. 148; @schuerman2022]. The integration of internal noise into models of speech perception has been shown to explain otherwise puzzling differences in the perception and recognition of different types of phonological contrasts [e.g., @feldman2009; @kronrod2016]. Although not critical for the present purpose, we incorporate perceptual noise into ASP also because it results in more human-like (less steep) categorization functions. This noise is held constant across all case studies presented below, set to the values obtained by Kronrod and colleagues in their study of the L1-US English listeners' perception of word initial stop voicing [-@kronrod2016, $\sigma^2_{noise, VOT}=80 msec^2$, $\sigma^2_{noise, spectral}=878 Mel^2$].^[Internal noise could affect processes at any level of Figure \@ref(fig:demonstrate-normalization), including the input to normalization, its output, or both. For normalization that is limited to linear transformations---such as centering (as in C-CuRE) and standardization--these possibilities are mathematically identical. In our case studies, we add internal noise prior to normalization, and do not add external noise (doing so would not affect the qualitative results). For an example of how to model external noise, see Burchill [-@burchill2023, Chapter 3].]  
@@ -566,7 +569,7 @@ d.exposure %<>%
       ~ get_categorization_function_from_NIW_ideal_adaptor(.x, noise_treatment = "marginalize")))
 ```
 
-```{r demonstrate-changes-in-representations, fig.width=base.width*2 + .5, fig.height=base.height +.5, fig.cap="(ref:demonstrate-changes-in-representations)", fig.show='animate'}
+```{r demonstrate-changes-in-representations, fig.width=base.width*2 + .2, fig.height=base.height +.5, fig.cap="(ref:demonstrate-changes-in-representations)", fig.show='animate'}
 p <- 
   d.exposure %>%
   ggplot(aes(x = !! sym(cue.demo))) +
@@ -618,7 +621,7 @@ if (ANIMATE_FIGURES) {
     aes(x = !! sym(paste0("observation.", cue.demo)), color = observation.category),
     size = 0.3)
   
-  ggsave(paste0('../figures/plotly/demonstrate-changes-in-representations.png'), plot = p1, width=base.width*2 + .5, height=base.height +.5, dpi = 300)
+  ggsave(paste0('../figures/plotly/demonstrate-changes-in-representations.png'), plot = p1, width=base.width*2 + .2, height=base.height +.5, dpi = 300)
   
   p1
 }
@@ -645,7 +648,7 @@ if (SAVE_ANIMATED_VIDEO) {
 
 (ref:demonstrate-changes-in-representations-b) Changes in expected categorization functions resulting from the changes in the expected category likelihoods in Figure \@ref(fig:demonstrate-changes-in-representations). `r if (!ANIMATE_FIGURES) "Shown are the results after updating. A video animation of the incremental updating process is available online at URL-PLACEHOLDER. "` Neither normalization, nor response biases changed as a function of the input.
 
-```{r demonstrate-changes-in-representations-b, fig.width=base.width*2 + .5, fig.height=base.height +.5, fig.cap="(ref:demonstrate-changes-in-representations-b)", warning=FALSE, message=FALSE, fig.show=if(ANIMATE_FIGURES) 'animate' else 'asis'}
+```{r demonstrate-changes-in-representations-b, fig.width=base.width*2 + .2, fig.height=base.height +.5, fig.cap="(ref:demonstrate-changes-in-representations-b)", warning=FALSE, message=FALSE, fig.show=if(ANIMATE_FIGURES) 'animate' else 'asis'}
 p <- d.exposure %>%
   ggplot(aes(x = !! sym(cue.demo))) +
   # categorization function
@@ -673,8 +676,11 @@ p <- d.exposure %>%
   scale_y_continuous("Posterior probability of /d/") +
   scale_color_manual("Category", values = colors.voicing) +
   scale_alpha_manual(name = expression(nu[0~",c"]), values = c(.4, .8)) +
-  facet_grid(
-    . ~ prior_kappa,
+  # facet_grid(
+  #   . ~ prior_kappa,
+  #   labeller = label_bquote(
+  #     cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)))) +
+  facet_wrap(~ prior_kappa,
     labeller = label_bquote(
       cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)))) +
   ggh4x::force_panelsizes(cols = base.width, rows = base.height) +
@@ -693,7 +699,7 @@ if (ANIMATE_FIGURES) {
     aes(x = !! sym(paste0("observation.", cue.demo)), color = observation.category),
     size = 0.3)
 
-  ggsave(paste0('../figures/plotly/demonstrate-changes-in-representations-b.png'), plot = p1, width=base.width*2 + .5, height=base.height +.5, dpi = 300)
+  ggsave(paste0('../figures/plotly/demonstrate-changes-in-representations-b.png'), plot = p1, width=base.width*2 + .2, height=base.height +.5, dpi = 300)
   
   p1
 }

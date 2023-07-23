@@ -681,7 +681,6 @@ if (ANIMATE_FIGURES) {
   
   p1
   
-  # ggsave(paste0('../figures/plotly/PR-test-normalization.png'), plot = p1, width = phonetic.panel.width*2 + 1.6, height = phonetic.panel.height*3 + 2.2, dpi = 300)
   ggsave(paste0('../figures/plotly/PR-test-normalization.png'), plot = p1, width = phonetic.panel.width*2 + 0.85, height = phonetic.panel.height*3 + 1, dpi = 300)
 }
 

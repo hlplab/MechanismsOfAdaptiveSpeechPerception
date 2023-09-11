@@ -449,10 +449,13 @@ plotlist = list(
   plot_VOT_NIW_belief_1D(m.ia.VOT %>% filter(prior_kappa == strong, prior_nu == weak, lambda == 0)),
   plot_VOT_NIW_belief_1D(m.ia.VOT %>% filter(prior_kappa == strong, prior_nu == strong, lambda == 0)))
 
-p1 <- my_plot_grid(plotlist = plotlist, legend.position = "top") 
+p1 <- my_plot_grid(plotlist = plotlist, legend.position = "top") +
     ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height)
-p1
-ggsave(paste0('../figures/plotly/demonstrate-niw-prior-mu-sigma.png'), plot = p1, width = base.width*0.8*4 + 1, height = base.width*0.8 + 1.2, dpi = 300)
+plot(p1)
+ggsave(
+  paste0('../figures/plotly/demonstrate-niw-prior-mu-sigma.png'), 
+  plot = p1, 
+  width = base.width*0.8*4 + 1, height = base.width*0.8 + 1.2, dpi = 300)
 ```
 
 \begin{figure}

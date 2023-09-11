@@ -76,7 +76,7 @@ header-includes:
  - \subsectionfont{\color{black}}
  - \subsubsectionfont{\color{black}}
  - \usepackage{setspace}\doublespacing
- - \usepackage{subfig}
+ - \usepackage[labelformat=simple]{subcaption}
  - \usepackage{hyperref}
 
 documentclass     : "apa6"
@@ -95,6 +95,7 @@ always_allow_html: true
 
 
 \setcounter{secnumdepth}{5}
+\renewcommand{\thesubfigure}{\textbf{\Alph{subfigure})}}
 
 ```{r functions-general, include=FALSE, message=FALSE}
 get_path <- function(filename) return(paste0("", filename))

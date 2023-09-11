@@ -366,7 +366,7 @@ make_exposure_test_plot <- function(
   prow = plot_grid(
     p.AA.exposure + theme(legend.position="none"),
     p.AA.test + theme(legend.position="none"),
-    labels = c('A)', 'B)'), nrow = 1, rel_widths = c(2,1.1))
+    labels = c('A)', 'B)'), nrow = 1, rel_widths = c(2.1,1.25))
   
   legend_prow <- 
     get_legend(
@@ -381,7 +381,7 @@ make_exposure_test_plot <- function(
 ```{r AA-exposure-test-plot, fig.width=phonetic.panel.width*3+1, fig.height = phonetic.panel.height + 1, fig.cap="(ref:AA-exposure-test-plot)", warning=FALSE}
 p1 <- make_exposure_test_plot(exposure.data = d.AA.exposure, test.data = d.AA.test)
 p1
-ggsave(paste0('../figures/plotly/AA-exposure-test-plot.png'), plot = p1, width = phonetic.panel.width*3 + 1, height = phonetic.panel.height + 1, dpi = 300)
+ggsave(paste0('../figures/plotly/AA-exposure-test-plot.png'), plot = p1, width = phonetic.panel.width*3 + 1.2, height = phonetic.panel.height + 1, dpi = 300)
 ```
 
 ```{r add-subjects-AA-exposure-test-data}
@@ -1195,7 +1195,7 @@ make_results_plot_normalization <- function(data, data_best){
 }
 ```
 
-```{r AA-result-changes-in-normalization, fig.width= result.panel.size * 5 + 1, fig.height= result.panel.size + 1, fig.cap="(ref:AA-result-changes-in-normalization)", warning=FALSE}
+```{r AA-result-changes-in-normalization, fig.width= result.panel.size * 5 + 1, fig.height= result.panel.size + 1.2, fig.cap="(ref:AA-result-changes-in-normalization)", warning=FALSE}
 p1 <- make_results_plot_normalization(d.AA.normalization %>% filter(prior_kappa.normalization %in% prior_kappa.normalization.plot), best_performing_parameters.normalization)
 p1
 ggsave(paste0('../figures/plotly/AA-result-changes-in-normalization.png'), plot = p1, width = result.panel.size*5 + 0.8, height = result.panel.size + 1.2, dpi = 300)

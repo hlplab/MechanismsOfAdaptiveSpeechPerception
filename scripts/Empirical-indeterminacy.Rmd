@@ -78,6 +78,8 @@ header-includes:
  - \usepackage{setspace}\doublespacing
  - \usepackage[labelformat=simple]{subcaption}
  - \usepackage{hyperref}
+ 
+
 
 documentclass     : "apa6"
 classoption       : "man"
@@ -144,9 +146,9 @@ convert_cm_to_inch <- function(x) x / 2.54
 result.panel.size <- convert_cm_to_inch(2.5)
 result.base.size <- 8
 
-phonetic.panel.width <- convert_cm_to_inch(3.5)
-phonetic.panel.height <- convert_cm_to_inch(3)
-phonetic.base.size <- 9
+phonetic.panel.width <- convert_cm_to_inch(2.625)
+phonetic.panel.height <- convert_cm_to_inch(2.25)
+phonetic.base.size <- 7.5
 
 duo.panel.key <- unit(0.2, 'cm')
 ```
@@ -171,7 +173,7 @@ duo.panel.key <- unit(0.2, 'cm')
 ```{r, child="section-5-accent-adaptation.Rmd", eval=TRUE}
 ```
 
-```{r, child="section-6-general-discussion.Rmd", eval=FALSE}
+```{r, child="section-6-general-discussion.Rmd", eval=TRUE}
 ```
 
 \printbibliography

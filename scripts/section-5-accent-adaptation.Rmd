@@ -1126,7 +1126,8 @@ get_normalization_models_for_plot <- function(
     prior_kappa.normalization = prior_kappa.normalization
 ){
   if (RESET_MODELS || !file.exists(get_path(paste0("../models/d.AA.results.normalization_", example_label,".rds")))){
-     normalization.pred <- d.AA.exposure %>%
+     normalization.pred <- 
+       d.AA.exposure %>%
        nest(data = -c(Condition, Subject)) %>%
        crossing(
           prior_kappa.normalization = prior_kappa.normalization,

@@ -607,7 +607,7 @@ p <-
   scale_color_manual("Category", values = colors.voicing) +
   scale_alpha_manual(name = expression(nu[0~",c"]), values = c(.4, .8)) +
   facet_grid(
-    . ~ prior_kappa,
+    prior_nu ~ prior_kappa,
     labeller = label_bquote(
       cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)))) +
   ggh4x::force_panelsizes(cols = base.width, rows = base.height) +
@@ -652,7 +652,8 @@ if (SAVE_ANIMATED_VIDEO) {
 (ref:demonstrate-changes-in-representations-b) Changes in expected categorization functions resulting from the changes in the expected category likelihoods in Figure \@ref(fig:demonstrate-changes-in-representations). `r if (!ANIMATE_FIGURES) "Shown are the results after updating. A video animation of the incremental updating process is available online at URL-PLACEHOLDER. "` Neither normalization, nor response biases changed as a function of the input.
 
 ```{r demonstrate-changes-in-representations-b, fig.width=base.width*2 + .2, fig.height=base.height +.5, fig.cap="(ref:demonstrate-changes-in-representations-b)", warning=FALSE, message=FALSE, fig.show=if(ANIMATE_FIGURES) 'animate' else 'asis'}
-p <- d.exposure %>%
+p <- 
+  d.exposure %>%
   ggplot(aes(x = !! sym(cue.demo))) +
   # categorization function
   geom_line(
@@ -679,11 +680,7 @@ p <- d.exposure %>%
   scale_y_continuous("Posterior probability of /d/") +
   scale_color_manual("Category", values = colors.voicing) +
   scale_alpha_manual(name = expression(nu[0~",c"]), values = c(.4, .8)) +
-  # facet_grid(
-  #   . ~ prior_kappa,
-  #   labeller = label_bquote(
-  #     cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)))) +
-  facet_wrap(~ prior_kappa,
+  facet_grid(prior_nu ~ prior_kappa,
     labeller = label_bquote(
       cols = {kappa[.(categories.demo[1])~","~0] == kappa[.(categories.demo[2])~","~0]} == .(as.character(prior_kappa)))) +
   ggh4x::force_panelsizes(cols = base.width, rows = base.height) +

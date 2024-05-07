@@ -357,10 +357,10 @@ Next, we use ASP to illustrate the extent to which changes in representations, r
     \node[right=of n] (n_description) {{\em number of observations for category from unfamiliar talker}} ;
 % Change model for covariance
     \node[latent, right=of sigma_n, yshift=-.75cm] (s_0) {${\rm S}_{c,0}$} ; %
-    \node[right=of s_0] (sigma_0_description) {{\em prior beliefs about category covariance matrix} (up to $\frac{j}{2}(k^2+k)$ DF)} ;
+    \node[right=of s_0] (sigma_0_description) {{\em prior beliefs about category covariance matrix} (up to $\frac{jk!}{2!(k-2)!}$ DF)} ;
     \node[latent, below=of s_0, yshift=.5cm] (nu_0) {$\nu_{c,0}$} ; %
     \node[right=of nu_0] (nu_0_description) {{\em strength of prior belief about category covariance} (up to $j$ DF)} ;
-    \node[obs, right=of sigma_n, yshift=.75cm] (sbar) {${\rm S}_c$} ; %
+    \node[obs, right=of sigma_n, yshift=.75cm] (sbar) {${\rm SS}_c$} ; %
     \node[right=of sbar] (sbar_description) {{\em category sums of squares observed from unfamiliar talker}} ;
 % edges
     \edge {x_prime} {multi} ; %

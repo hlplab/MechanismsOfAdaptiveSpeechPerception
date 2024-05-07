@@ -228,7 +228,7 @@ p.means +
 This section contains additional details about the change models.
 
 ## Changes in category representations {#sec:SI-models-changes-in-representations}
-The updating of the four $\mathcal{NW^{-1}}$ parameters after $N$ observations of a category $c$ from the talker is described by the equations in \@ref(eq:niw-updating-parameters), and is deterministic [for details and derivation, see @murphy2012, p. 134]. $\kappa_c$ and $\nu_c$ simply increase by 1 with each observation, capturing the fact that each observation adds additional information about the talker's category mean and covariances. $\mathrm{m}_{c,N}$ is a weighted combination of its prior value $\mathrm{m}_{c,0}$ and the category mean of the $N$ observations $\bar{x}$---following the same logic that we applied to the inference of the overall cue mean in Equation \@ref(eq:normalization-change). Similarly, $\mathrm{S}_{c,N}$ is a weighted combination of its prior value $\mathrm{S}_{c,0}$ and the category variability of the $N$ observations,^[$\mathrm{S}_c \triangleq \Sigma_{i=1}^N x_{c,i} x_{c,i}^T$ is the uncentered sum of squares matrix of the $N$ observations [@murphy2012].] plus an additional term that captures the uncertainty about the category mean. Figure \ref{fig:model-belief-updating} visualizes the belief-updating process in Equation \@ref(eq:niw-updating-parameters) as a graphical model.
+The updating of the four $\mathcal{NW^{-1}}$ parameters after $N$ observations of a category $c$ from the talker is described by the equations in \@ref(eq:niw-updating-parameters), and is deterministic [for details and derivation, see @murphy2012, p. 134]. $\kappa_c$ and $\nu_c$ simply increase by 1 with each observation, capturing the fact that each observation adds additional information about the talker's category mean and covariances. $\mathrm{m}_{c,N}$ is a weighted combination of its prior value $\mathrm{m}_{c,0}$ and the category mean of the $N$ observations $\bar{x}$---following the same logic that we applied to the inference of the overall cue mean in Equation \@ref(eq:normalization-change). Similarly, $\mathrm{S}_{c,N}$ is a weighted combination of its prior value $\mathrm{S}_{c,0}$ and the category variability of the $N$ observations,^[$\mathrm{SS}_c \triangleq \Sigma_{i=1}^N x_{c,i} x_{c,i}^T$ is the uncentered sum of squares matrix of the $N$ observations [@murphy2012].] plus an additional term that captures the uncertainty about the category mean. Figure \ref{fig:model-belief-updating} visualizes the belief-updating process in Equation \@ref(eq:niw-updating-parameters) as a graphical model.
 
 \begin{equation}\label{eq:niw-updating-parameters}
 \begin{split}
@@ -236,7 +236,7 @@ The updating of the four $\mathcal{NW^{-1}}$ parameters after $N$ observations o
 \kappa_{c,N} & = \kappa_{c,0} + N_c \\
 \nu_{c,N} & = \nu_{c,0} + N_c \\
 \mathrm{S}_{c,N} & = \mathrm{S}_{c,0} + \mathrm{S}_{\bar{x}_c} + \frac{\kappa_{c,0} N_c}{\kappa_{c,0} + N_c}\left( \bar{x}_c-\mathrm{m}_{c,0} \right) \left( \bar{x}_c-\mathrm{m}_{c,0} \right)^T \\
- & = \mathrm{S}_{c,0} + \mathrm{S}_c + \kappa_{c,0} \mathrm{m}_{c,0} \mathrm{m}_{c,0}^T - \kappa_{c,N} \mathrm{m}_{c,N} \mathrm{m}_{c,N}^T
+ & = \mathrm{S}_{c,0} + \mathrm{SS}_c + \kappa_{c,0} \mathrm{m}_{c,0} \mathrm{m}_{c,0}^T - \kappa_{c,N} \mathrm{m}_{c,N} \mathrm{m}_{c,N}^T
 \end{split}
 \end{equation}
 
@@ -796,7 +796,7 @@ best_performing_parameters.normalization.asym_var$par <- exp(best_performing_par
 ```
 
 
-```{r plot-test-results-asym-var, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE}
 max_kappa_nu = 10000
 prior_kappa.plot = c(best_performing_parameters.representations.asym_var$par[1], max_kappa_nu) # select the best-performing parameterization for the representational model and the slowest representations updating parameterization for the normalization model
 prior_nu.plot = c(best_performing_parameters.representations.asym_var$par[2], max_kappa_nu)
@@ -805,15 +805,21 @@ m.ia.VOT.asym_var <-
   crossing(
     prior_kappa = prior_kappa.plot,
     prior_nu = prior_nu.plot,
-    lambda = lambdas.demo) %>%
-  mutate(
-    posterior = map2(
-      prior_kappa,
-      prior_nu,
-      ~ lift_MVG_ideal_observer_to_NIW_ideal_adaptor(x = m.io.VOT.asym_var, kappa = .x, nu = .y))) %>%
+    lambda = lambdas.demo,
+    Condition = c("Condition-1", "Condition-2")) %>%
+  left_join(m.io.VOT.asym_var) %>%
+  nest(io = -c(starts_with("prior_"), lambda, Condition)) %>%
+  group_by(prior_kappa, prior_nu, lambda, Condition) %>%
+  transmute(
+    posterior = 
+      pmap(
+        .l = list(prior_kappa, prior_nu, io),
+        .f = ~ lift_MVG_ideal_observer_to_NIW_ideal_adaptor(x = ..3, kappa = ..1, nu = ..2))) %>%
   unnest(posterior)  %>%
   mutate(lapse_rate = lambda)
+```
 
+```{r plot-test-results-asym-var}
 # get predictions from best-performing representational model
 my_groups <- c("prior_kappa", "prior_nu")
 

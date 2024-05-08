@@ -78,8 +78,6 @@ header-includes:
  - \usepackage{setspace}\doublespacing
  - \usepackage[labelformat=simple]{subcaption}
  - \usepackage{hyperref}
- 
-
 
 documentclass     : "apa6"
 classoption       : "man"
@@ -94,7 +92,6 @@ output:
     extra_dependencies: "subfig" 
 always_allow_html: true
 ---
-
 
 \setcounter{secnumdepth}{5}
 \renewcommand{\thesubfigure}{\textbf{\Alph{subfigure})}}
@@ -181,7 +178,7 @@ duo.panel.key <- unit(0.2, 'cm')
 
 \brefsection
 
-```{r, child="supplementary-information.Rmd", eval=FALSE}
+```{r, child="supplementary-information.Rmd", eval=TRUE}
 ```
 
 \printbibliography

@@ -218,7 +218,7 @@
 \usepackage[]{biblatex}
 \addbibresource{latex-stuff/library.bib}
 \addbibresource{latex-stuff/r-references.bib}
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\usepackage{bookmark}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
@@ -231,7 +231,7 @@
 
 \title{What we do (not) know about the mechanisms underlying adaptive speech perception: A computational framework and review}
 \author{Xin Xie\textsuperscript{1,2}, T. Florian Jaeger\textsuperscript{2,3}, \& Chigusa Kurumada\textsuperscript{2}}
-\date{September 11, 2023}
+\date{May 07, 2024}
 
 
 \shorttitle{Exposure effects in speech perception}
@@ -262,8 +262,7 @@ Speech from unfamiliar talkers can be difficult to comprehend initially. These d
 
 \setcounter{page}{1}
 
-\hypertarget{introduction}{%
-\section{Introduction}\label{introduction}}
+\section{Introduction}\label{introduction}
 
 How human listeners are able to infer meaning from speech is a central question in cognitive and neurosciences. The computational complexity of spoken language understanding becomes most apparent when a talker's pronunciations---and thus the mapping of acoustic input to linguistic categories and meaning---strongly deviate from listeners' expectations. This might occur, for example, when listening to a talker with an unfamiliar regional or non-native accent, or a patient with apraxia or dysarthria. The same fundamental challenge is, however, present even during seemingly effortless comprehension. Even among talkers who share similar language backgrounds, the mapping between the acoustic input and linguistic categories can vary substantially between talkers due to both physiology (e.g., vocal tract size and shape) and socio-cultural factors (e.g., social identity and language background). As a consequence, one talker's pronunciation of, say, the sound category /s/ (as in \emph{sip}) can be acoustically more similar to another talker's production of \(/\ipatext{ʃ}/\) \autocite[as in \emph{ship},][]{newman2001}. How we manage to understand each other despite such cross-talker differences has remained one of the perennial puzzles in research on speech perception \autocite[where it is known as part of the infamous \emph{lack of invariance} problem,][]{liberman1967}.
 
@@ -286,8 +285,7 @@ We find that, contrary to common assumptions, the signature findings of both par
 
 Finally, we discuss how computationally-guided behavioral and neuroimaging research can advance future work. We show that the empirical indeterminacy of many existing findings is due to the level of analysis employed in most research on adaptive speech perception. We propose new standards of experimental design and data analysis that will more effectively distinguish between competing hypotheses about the relative engagement of different mechanisms. But first some background.
 
-\hypertarget{the-state-of-the-fields}{%
-\subsection{The state of the field(s)}\label{the-state-of-the-fields}}
+\subsection{The state of the field(s)}\label{the-state-of-the-fields}
 
 Research over the past decades has identified adaptive changes in speech perception to be a key component in listeners' ability to overcome cross-talker differences. Although speech perception can initially be slower and/or less accurate when listeners encounter an unfamiliar talker with unexpected pronunciations, these processing difficulties tend to reduce with exposure \autocites[e.g.,][]{bradlow-bent2008,nygaard1994,Perrachione2016,sidaras2009,wade2007,weil2001a,xie2021jep}. Remarkably, substantial improvements---such as reduced processing times or increased accuracy of recognition---can occur within minutes or less \autocite{clarke-garrett2004,munro-derwing1995,xie2018jasa}. Even a context as brief as a single utterance can be sufficient to change perception and segmentation of ambiguous speech, blurring the distinction between processing and adaptation \autocites[e.g., categorizing a Dutch ambiguous /m?t/ embedded in an utterance with fast or slow speech as either ``mat'' or ``maat'',][]{bosker2017}[see also][]{kluender1988,newman-sawusch1996,sawusch-newman2000,sjerps2011}. Yet, adaptive changes after only a few words of exposure can sometimes last for days, if not longer \autocites{eisner-mcqueen2006,samuel2021,xie2018lcn}[see also][]{goldinger1996}.
 
@@ -308,8 +306,7 @@ In behavioral research, however, changes in response biases continue to be rarel
 
 In summary, behavioral and neuroimaging research has identified multiple potential candidates for the mechanisms underlying adaptive speech perception. However, contrastive comparisons of competing hypotheses about these mechanisms---and the computations they imply---remain lacking. As a result, we often do not know whether the results of a specific paradigm clearly support one mechanism over another, or whether the results of different paradigms all point to the same (combination of) mechanisms. The computational framework of adaptive speech perception (ASP) we present next provides a way for future work to address these questions.
 
-\hypertarget{sec:framework}{%
-\section{Modeling adaptive changes in speech perception}\label{sec:framework}}
+\section{Modeling adaptive changes in speech perception}\label{sec:framework}
 
 ASP shares with all major contemporary theories of speech perception the assumption that listeners have implicit representations of the mapping between phonetic cues and linguistic categories, and that these representations encompass (in one form or other) knowledge of the distribution of cues that correspond to a linguistic category. This assumption is motivated by observations made as early as \textcite{abramson1973voice} or \textcite{nearey-hogan1986}, and illustrated in Figure \ref{fig:demonstrate-production-perception-link}: listeners' categorization responses for two phonetic categories (/d/ and /t/ in Figure \ref{fig:demonstrate-production-perception-link}B) can be predicted by considering the phonetic properties of the input \emph{relative to the distribution of phonetic cues} that listeners have previously experienced (Figure \ref{fig:demonstrate-production-perception-link}A). Recent introductions to, and discussions of, this perspective are provided in \textcite{bent-baeseberk2021}, \textcite{kurumada-roettger2021}, \textcite{quam-creel2021}, and \textcite{schertz-clare2020}.
 
@@ -337,8 +334,7 @@ Figure \ref{fig:overview-change} provides an overview of how ASP can be used to 
 \end{center}
 \end{figure}
 
-\hypertarget{the-categorization-model}{%
-\subsection{The categorization model}\label{the-categorization-model}}
+\subsection{The categorization model}\label{the-categorization-model}
 
 For the present purpose, we can think of the mapping from acoustic inputs to categorization responses as involving at least the three processes illustrated in Figure \ref{fig:model-perceptual-decision-making}. By presenting these processes as three different steps, we do not mean to imply that they are discrete, information encapsulated processes: ASP is agnostic as to whether and how the three mechanisms may interact with, or provide feedback to, each other during processing. We also emphasize that each of the three processes might in turn consist of several components that we abstract over here \autocite[e.g., multiple different levels of normalization, cf.~discussion in][]{barreda2020}.
 
@@ -349,8 +345,7 @@ For the present purpose, we can think of the mapping from acoustic inputs to cat
 \end{center}
 \end{figure}
 
-\hypertarget{sec:normalization}{%
-\subsubsection{`Pre-linguistic' auditory processes: signal transformations and normalization}\label{sec:normalization}}
+\subsubsection{`Pre-linguistic' auditory processes: signal transformations and normalization}\label{sec:normalization}
 
 The first step in our categorization model maps the acoustic input onto perceptual features. These perceptual features are the outcome of low-level signal transformations and normalization processes. Experiments on the perception of stimulus similarity suggest that the human brain represents frequency information logarithmically \autocite{greenwood1961}. This is captured by, for example, the Mel \autocite{stevens1937}, Bark \autocite{zwicker1961}, and ERB \autocite{moore-glasberg1983} transformations. Such logarithm-transformed spectral cues have been found to provide a better fit against human categorization responses than features based on raw frequencies \autocite{hoffmanbion-escudero2007,kleinschmidt2019,richter2017}. The case studies we present below model perception for a phonological contrast that depends on both temporal and spectral cues. For the spectral cue, we use Mel-transformed frequencies.
 
@@ -371,8 +366,7 @@ The case studies we present below employ a general model of normalization that c
 
 Beyond signal transformations and normalization, the stimulus observed by a listener is also affected by external/environmental or internal/perceptual noise (not shown in Figure \ref{fig:demonstrate-normalization}). This means that even the same exact acoustic stimulus does not necessarily result in the same percept \autocites{leonard2016}[p.~148]{nearey-hogan1986}{schuerman2022}. The integration of internal noise into models of speech perception has been shown to explain otherwise puzzling differences in the perception and recognition of different types of phonological contrasts \autocites[e.g.,][]{feldman2009,kronrod2016}. Although not critical for the present purpose, we incorporate perceptual noise into ASP also because it results in more human-like (less steep) categorization functions. This noise is held constant across all case studies presented below, set to the values obtained by Kronrod and colleagues in their study of the L1-US English listeners' perception of word initial stop voicing \autocite*[\(\sigma^2_{noise, VOT}=80 msec^2\), \(\sigma^2_{noise, spectral}=878 Mel^2\)]{kronrod2016}.\footnote{Internal noise could affect processes at any level of Figure \ref{fig:demonstrate-normalization}, including the input to normalization, its output, or both. For normalization that is limited to linear transformations---such as centering (as in C-CuRE) and standardization--these possibilities are mathematically identical. In our case studies, we add internal noise prior to normalization, and do not add external noise (doing so would not affect the qualitative results). For an example of how to model external noise, see Burchill \autocite*[Chapter 3]{burchill2023}.}
 
-\hypertarget{sec:representations}{%
-\subsubsection{Category representations: from perceptual features to linguistic categories}\label{sec:representations}}
+\subsubsection{Category representations: from perceptual features to linguistic categories}\label{sec:representations}
 
 The output of normalization is the input to the mapping onto linguistic categories. All major theories of speech perception agree that this involves implicit knowledge of the distributional realization of linguistic categories---i.e., the distribution of acoustic or phonetic cues that are observed across instances of the category. In analytic models, this mapping is typically described by the \emph{category likelihood} that is learned from previous inputs \autocites[e.g., in the neighborhood activation model,][]{luce-pisoni1998}[shortlist B,][]{norris-mcqueen2008}[and other Bayesian inference models,][]{clayards2008,feldman2009,kleinschmidt-jaeger2015}. In exemplar models and related theories, the same mapping is achieved by storing previously experienced inputs as exemplars \autocites[e.g.,][]{johnson2006,pierrehumbert2001,wedel2006} or episodic traces \autocite{goldinger1996} that subsequent inputs are compared to during recognition \autocite[e.g., by means of \(k\)-nearest neighbor algorithms,][]{fix-hodges1989}. In connectionist and deep neural network models, the same probabilistic mapping is achieved through latent structure in the network that is learned from previous input \autocite{mcclelland-elman1986,magnuson2020}. Although the specific nature of these representations continues to be a matter of debate, all of these theories share the assumption that there is a probabilistic mapping between perceptual cues and linguistic categories \autocite[see also][ on the close computational relation between exemplar and Bayesian inference models]{shi2010} and that perception involves implicit knowledge of this probabilistic mapping.
 
@@ -382,15 +376,14 @@ Here we employ an analytic characterization of category likelihoods. Specificall
 
 \begin{figure}
 
-{\centering \subfloat[Distributions for /b/ and /p/\label{fig:show-representations-plots-1}]{\includegraphics[width=0.33\linewidth,height=0.49\textheight]{../figures/plotly//p.3d.density.panel_1} }\subfloat[Distributions for /d/ and /t/\label{fig:show-representations-plots-2}]{\includegraphics[width=0.33\linewidth,height=0.49\textheight]{../figures/plotly//p.3d.density.panel_2} }\subfloat[Distributions for /g/ and /k/\label{fig:show-representations-plots-3}]{\includegraphics[width=0.33\linewidth,height=0.49\textheight]{../figures/plotly//p.3d.density.panel_3} }\newline\subfloat[Categorization for /b/-/p/\label{fig:show-representations-plots-4}]{\includegraphics[width=0.33\linewidth,height=0.49\textheight]{../figures/plotly//p.3d.categorization.panel_1} }\subfloat[Categorization for /d/-/t/\label{fig:show-representations-plots-5}]{\includegraphics[width=0.33\linewidth,height=0.49\textheight]{../figures/plotly//p.3d.categorization.panel_2} }\subfloat[Categorization for /g/-/k/\label{fig:show-representations-plots-6}]{\includegraphics[width=0.33\linewidth,height=0.49\textheight]{../figures/plotly//p.3d.categorization.panel_3} }
+{\centering \subfloat[Distributions for /b/ and /p/\label{fig:show-representations-plots-1}]{\includegraphics[width=0.33\linewidth,height=0.49\textheight]{../figures/plotly//p.3d.density.panel_1} }\subfloat[Distributions for /d/ and /t/\label{fig:show-representations-plots-2}]{\includegraphics[width=0.33\linewidth,height=0.49\textheight]{../figures/plotly//p.3d.density.panel_2} }\subfloat[Distributions for /g/ and /k/\label{fig:show-representations-plots-3}]{\includegraphics[width=0.33\linewidth,height=0.49\textheight]{../figures/plotly//p.3d.density.panel_3} }\newline\subfloat[Categorization for /b/-/p/\label{fig:show-representations-plots-4}]{\includegraphics[width=0.33\linewidth,height=0.49\textheight]{../figures/plotly//p.3d.categorization.panel_1} }\subfloat[Categorization for /d/-/t/\label{fig:show-representations-plots-5}]{\includegraphics[width=0.33\linewidth,height=0.49\textheight]{../figures/plotly//p.3d.categorization.panel_2} }\subfloat[Categorization for /g/-/k/\label{fig:show-representations-plots-6}]{\includegraphics[width=0.33\linewidth,height=0.49\textheight]{../figures/plotly//p.3d.categorization.panel_3} }\newline
 
 }
 
 \caption{Illustrating listeners' implicit category representations. \textbf{Top row:} Bivariate Gaussian category likelihoods learned from (fit to) the by-talker normalized cue distributions in Figure \ref{fig:demonstrate-normalization}B. Ellipses show 95\% probability mass. \textbf{Bottom row:} Categorization functions that would result from these category likelihoods prior to taking into account other effects on decision-making (see Figure \ref{fig:show-lapse-bias-demonstration-plots} in the next section).}\label{fig:show-representations-plots}
 \end{figure}
 
-\hypertarget{post-perceptual-decision-making-incorporating-priors-response-biases-and-attentional-lapses}{%
-\subsubsection{Post-perceptual decision-making: incorporating priors, response biases, and attentional lapses}\label{post-perceptual-decision-making-incorporating-priors-response-biases-and-attentional-lapses}}
+\subsubsection{Post-perceptual decision-making: incorporating priors, response biases, and attentional lapses}\label{post-perceptual-decision-making-incorporating-priors-response-biases-and-attentional-lapses}
 
 The third and final step in our categorization model takes the output of the second step and derives a decision/recognition.\footnote{This step can be split further into \emph{recognition} of the category and post-recognition processes that affect the behavioral \emph{response}. For the present purpose, we group these processes together. Similarly, some models of perceptual decision-making distinguish between \emph{decision thresholds} (the amount of evidence necessary before a decision is being made) and \emph{decision biases} \autocites[stimulus-independent effects on the activation or probability of a response option,][]{clarkedavidson2008,venezia2012}. For the present purpose, these two have essentially identical effects.} This includes the integration of information about the prior probability of a category \(c\) in the current context, \(p(c | context)\), including well-documented effects of, e.g., phonotactic, prosodic, lexical/semantic, visual and sentential/discourse contexts \autocite[for a great concise review, see][]{winn2018}. In Bayesian ideal observer models, this integration takes place according to Bayes theorem, yielding an estimate of each category's posterior probability \autocites[e.g.,][]{luce-pisoni1998,norris-mcqueen2008}. Alternative computational approaches can introduce additional degrees of freedom, for example, by allowing non-optimal weighting of priors and category likelihoods. As our goal here is to arrive at the simplest possible model, we follow the approach taken in ideal observers:
 
@@ -415,7 +408,7 @@ In Figure \ref{fig:model-perceptual-decision-making}, the fact that response bia
 
 \begin{figure}
 
-\subfloat[$\lambda$ = 0, $\pi_{/d/}=.5$\label{fig:show-lapse-bias-demonstration-plots-1}]{\includegraphics[width=0.33\linewidth,height=0.49\textheight]{../figures/plotly//p.3d.categorization.panel_lambda=1} }\subfloat[$\lambda$ = .2,  $\pi_{/d/}=.5$\label{fig:show-lapse-bias-demonstration-plots-2}]{\includegraphics[width=0.33\linewidth,height=0.49\textheight]{../figures/plotly//p.3d.categorization.panel_lambda=2} }\newline\subfloat[$\lambda$ = .2, $\pi_{/d/}=.1$\label{fig:show-lapse-bias-demonstration-plots-3}]{\includegraphics[width=0.33\linewidth,height=0.49\textheight]{../figures/plotly//p.3d.categorization.panel_pi=1} }\subfloat[$\lambda$ = .2, $\pi_{/d/}=.9$\label{fig:show-lapse-bias-demonstration-plots-4}]{\includegraphics[width=0.33\linewidth,height=0.49\textheight]{../figures/plotly//p.3d.categorization.panel_pi=2} }\hfill{}
+\subfloat[$\lambda$ = 0, $\pi_{/d/}=.5$\label{fig:show-lapse-bias-demonstration-plots-1}]{\includegraphics[width=0.33\linewidth,height=0.49\textheight]{../figures/plotly//p.3d.categorization.panel_lambda=1} }\subfloat[$\lambda$ = .2,  $\pi_{/d/}=.5$\label{fig:show-lapse-bias-demonstration-plots-2}]{\includegraphics[width=0.33\linewidth,height=0.49\textheight]{../figures/plotly//p.3d.categorization.panel_lambda=2} }\newline\subfloat[$\lambda$ = .2, $\pi_{/d/}=.1$\label{fig:show-lapse-bias-demonstration-plots-3}]{\includegraphics[width=0.33\linewidth,height=0.49\textheight]{../figures/plotly//p.3d.categorization.panel_pi=1} }\subfloat[$\lambda$ = .2, $\pi_{/d/}=.9$\label{fig:show-lapse-bias-demonstration-plots-4}]{\includegraphics[width=0.33\linewidth,height=0.49\textheight]{../figures/plotly//p.3d.categorization.panel_pi=2} }\newline\hfill{}
 
 \caption{Illustrating the effects of \(\lambda\) and \(\pi_c\) on the posterior probability of /d/, using the two bivariate Gaussian categories of /d/ and /t/ shown in Figure \ref{fig:show-representations-plots}b. The colored planes indicate the ceiling and flooring levels of posterior probability of /d/. Panel a) here is identical to Panel e) in Figure \ref{fig:show-representations-plots}，with \(\lambda\) = 0 and \(\pi_{/d/}=.5\). \textbf{Top panel:} Differences in lapse rate \(\lambda\) for a uniform bias of \(\pi_{/d/}=.5\). As the lapse rate increases, the ceiling and flooring responses at the end points change while the categorization slope remains the same. \textbf{Bottom panel:} Differences in bias \(\pi_{/d/}\) when the lapse rate \(\lambda\) = .2. As the bias towards /d/ changes from 0.1 to 0.9, the categorization surface shifts upwards and to the right, resulting in more /d/ responses across the phonetic space.}\label{fig:show-lapse-bias-demonstration-plots}
 \end{figure}
@@ -424,15 +417,13 @@ The final part of ASP's categorization model is the decision rule that takes the
 
 This completes the description of the categorization model in Figure \ref{fig:model-perceptual-decision-making}. For any parameterization of \(\lambda\), \(\pi_c\), \(\mu_c\), \(\Sigma_c\), and \(\mu\), this model takes acoustic stimuli as input and returns predictions about the expected response distribution (e.g., 30\% /d/-responses and 70\% /t/-responses). In practice, all but one of these parameters (the lapse rate \(\lambda\)) can either be independently estimated from phonetically annotated databases (\(\mu_c\), \(\Sigma_c\), and \(\mu\)) or assumed to have certain values (e.g., uniform response biases \(\pi_c\)), leaving a single parameter that must be estimated from perceptual data.
 
-\hypertarget{sec:change-models}{%
-\subsection{The change models (`adaptation'/`learning')}\label{sec:change-models}}
+\subsection{The change models (`adaptation'/`learning')}\label{sec:change-models}
 
 Next, we extend this model to capture \emph{changes} at any of the three mechanistic levels. That is, we specify \emph{change models} that describe how \(\pi_c\), \(\mu_c\), \(\Sigma_c\), and \(\mu\) can change with exposure. It is these change models that make it possible to use ASP to derive predictions for human responses following exposure---for example, during the test phase of an experiment on perceptual recalibration or accent adaptation (see Figure \ref{fig:overview-change}). Each of the three change models introduces at least one new parameter. These parameter determine the speed of adaptation (similar to learning rates), and must be estimated from perceptual data.
 
 As anticipated in the introduction, the three change models differ in their computational and representational parsimony---i.e., in the number of parameters that listeners (and researchers) need to infer as well as the amount of information that listeners are assumed to keep in memory.
 
-\hypertarget{sec:change-normalization}{%
-\subsubsection{\texorpdfstring{Modeling \emph{changes} in normalization}{Modeling changes in normalization}}\label{sec:change-normalization}}
+\subsubsection{\texorpdfstring{Modeling \emph{changes} in normalization}{Modeling changes in normalization}}\label{sec:change-normalization}
 
 \begin{figure}
 \centering
@@ -472,8 +463,7 @@ Figure \ref{fig:graphical-model-changes-normalization} expresses Equation \eqref
 
 One important characteristic of normalization that we will return to in the general discussion is that it applies to cues \emph{regardless of the category an observation is inferred to originate from}. On the one hand, this makes normalization potentially very efficient, by considering \emph{all} available information about a cue, rather than just observations of a specific category \autocite{apfelbaum-mcmurray2015}. On the other hand, this limits what types of changes in the mapping from cues to categories normalization can account for.
 
-\hypertarget{sec:ideal-adaptor}{%
-\subsubsection{\texorpdfstring{Modeling \emph{changes} in category representations}{Modeling changes in category representations}}\label{sec:ideal-adaptor}}
+\subsubsection{\texorpdfstring{Modeling \emph{changes} in category representations}{Modeling changes in category representations}}\label{sec:ideal-adaptor}
 
 Just like normalization requires inference of \emph{overall} cue statistics (e.g., the overall mean of a cue), learning of category representations requires inferences of \emph{category-specific} cue statistics (e.g., the category mean and covariance). Changes in representations can thus be understood as the process of inferring the talker's category likelihood function, the distribution of phonetic cues conditional on the category. A theory of this inference process---the ideal adaptor---is introduced in \textcite{kleinschmidt-jaeger2015}. Bayesian belief-updating models based on the ideal adaptor framework have been shown to provide a good qualitative and quantitative fit against human responses in experiments on perceptual recalibration \autocites{kleinschmidt-jaeger2011,kleinschmidt-jaeger2012}[for closely related models, see][]{xie2021cognition}, selective adaptation \autocite{kleinschmidt-jaeger2016pbr}, unsupervised or semi-supervised distributional learning \autocites[e.g.,][]{kim2020,kleinschmidt-jaeger2016cogsci,theodore-monto2019}[for closely related model, see][]{bejjanki2011,clayards2008}, and accent adaptation \autocites{hitczenko-feldman2016}[for a closely related model, see][]{tan2021}. In a MEG experiment, \textcite{sohoglu-davis2016} found that their predictive coding implementation of Bayesian belief-updating provided a good qualitative fit against changes in activation in the superior temporal gyrus following exposure to degraded speech \autocite[see also][]{davis-sohoglu2020}. To date, however, an explicit comparison with alternative types of change models---like normalization or changes in decision-making---continues to be lacking.
 
@@ -520,10 +510,10 @@ In practice, researchers can estimate the \(\mathrm{m}_{c,0}\)s and the \(\mathr
     \node[right=of n] (n_description) {{\em number of observations for category from unfamiliar talker}} ;
     % Change model for covariance
     \node[latent, right=of sigma_n, yshift=-.75cm] (s_0) {${\rm S}_{c,0}$} ; %
-    \node[right=of s_0] (sigma_0_description) {{\em prior beliefs about category covariance matrix} (up to $\frac{j}{2}(k^2+k)$ DF)} ;
+    \node[right=of s_0] (sigma_0_description) {{\em prior beliefs about category covariance matrix} (up to $\frac{jk!}{2!(k-2)!}$ DF)} ;
     \node[latent, below=of s_0, yshift=.5cm] (nu_0) {$\nu_{c,0}$} ; %
     \node[right=of nu_0] (nu_0_description) {{\em strength of prior belief about category covariance} (up to $j$ DF)} ;
-    \node[obs, right=of sigma_n, yshift=.75cm] (sbar) {${\rm S}_c$} ; %
+    \node[obs, right=of sigma_n, yshift=.75cm] (sbar) {${\rm SS}_c$} ; %
     \node[right=of sbar] (sbar_description) {{\em category sums of squares observed from unfamiliar talker}} ;
     % edges
     \edge {x_in} {x_prime} ; %
@@ -568,8 +558,7 @@ As listeners observe additional information from the unfamiliar talker, they upd
 
 Unlike normalization, changes in category representations can capture \emph{category-specific} changes in cue distributions. As we lay out in more detail in the general discussion, this makes representational changes less parsimonious than normalization but also more expressive: there are ways in which talkers might differ from each other that can be better captured by changes in representations than by normalization (which of these two change mechanisms better describes \emph{listeners'} abilities is, however, an open question).
 
-\hypertarget{sec:change-bias}{%
-\subsubsection{\texorpdfstring{Modeling \emph{changes} in decision-making}{Modeling changes in decision-making}}\label{sec:change-bias}}
+\subsubsection{\texorpdfstring{Modeling \emph{changes} in decision-making}{Modeling changes in decision-making}}\label{sec:change-bias}
 
 Finally, we specify a linking hypothesis for changes in response biases. To the best of our knowledge, this problem has not previously been formalized for speech perception. The change model we propose is general and can be applied to changes in decision-making beyond speech perception.
 
@@ -628,8 +617,7 @@ Critically, this strong constraint on changes in decision-making only follows if
 \caption{Same as Figure \ref{fig:demonstrate-lapse-bias-change} but for a lapse rate \(\lambda=\) 0.05. For such non-zero lapse rates, changes to the response bias have \emph{non}-additive effects on the posterior log-odds. This means that, even in log-odds, changes in response biases can have effects that go beyond purely additive changes in the categorization functions (`shifts in category boundaries'). Shown are the results after updating. A video animation of the incremental updating process is available online at URL-PLACEHOLDER}\label{fig:demonstrate-lapse-bias-change-nonzero-lapse}
 \end{figure}
 
-\hypertarget{sec:parsimony}{%
-\subsection{Relative parsimony of the three change mechanisms}\label{sec:parsimony}}
+\subsection{Relative parsimony of the three change mechanisms}\label{sec:parsimony}
 
 We close this section with a brief note on the relative parsimony of the three change mechanisms. Throughout this article, we refer to changes in category representations as less parsimonious (but more flexible) than normalization and changes in decision-making. We submit that this claim holds across a wide range of change model implementations, \emph{as long as one compares like with like}.
 
@@ -638,8 +626,7 @@ This is perhaps most intuitive for representational parsimony---the amount of in
 Similar considerations hold for the computational parsimony of the three change models, i.e., their degrees of freedom (see Figures \ref{fig:graphical-model-changes-normalization}, \ref{fig:graphical-model-changes-representations}, and \ref{fig:graphical-model-changes-decision-making}). For example, in the change model for normalization we assumed a single \(\kappa_0\) (1 DF) and in for changes in representations a single \(\kappa_{c,0}\) (\(j\) DFs). This assumes that normalization and changes in category means proceed equally quickly for all cues. It is, however, also possible that the rate of normalization differs across cues or types of cues (e.g., spectral vs.~durational cues) e.g., because listeners expect different cues to vary in volatility. In ASP, this would mean that we introduce up to \(k\) separate \(\kappa_{0}\)s for each of the \(k\) different cues. Critically, a parallel extension is possible for the representational change model, introducing up to \(jk\) different \(\kappa_{c,0}\)s. That is, it is possible to design change models for normalization that are less parsimonious than a change model for category representations. But as long as we compare like with like, representational changes will require inference of more parameters than normalization, making the former computationally less parsimonious than the latter.
 For additional considerations about parsimony, we refer readers to the SI (\ref{sec:sufficiency}).
 
-\hypertarget{next-in-this-theater-overview-of-case-studies}{%
-\section{Next in this theater: overview of case studies}\label{next-in-this-theater-overview-of-case-studies}}
+\section{Next in this theater: overview of case studies}\label{next-in-this-theater-overview-of-case-studies}
 
 Next, we present two case studies that illustrate the predictions of the three change models for two types of paradigms that have been particularly influential: perceptual recalibration (Case Study 1) and accent adaptation (Case Study 2). Figure \ref{fig:ASP-predictions} summarizes how we will use ASP in these two case studies to derive predictions about listeners' behavior.
 
@@ -658,8 +645,7 @@ Beyond this specific question, we use the two case studies to (i) illustrate how
 
 The two case studies build on each other, each introducing new insights. Experiments on perceptual recalibration often use comparatively simple stimulus designs, intended to elicit simple boundary shifts along a uni-dimensional perceptual continuum. And while the specific tasks employed during exposure and test can vary across studies, the general stimulus design is remarkably similar across experiments. This allows us to use Case Study 1 to introduce many of the relevant concepts while keeping the paradigm comparatively simple. Case Study 2 then introduces additional complexities that come with modeling \emph{natural} accents, which can deviate from listeners' expectations in heterogeneous ways across multiple acoustic-phonetic dimensions. This additional complexity has caused researchers to question whether the same mechanisms that underlie perceptual recalibration also underlie adaptation to natural accents \autocites[see recent reviews,][]{baeseberk2018,bent-baeseberk2021,zheng-samuel2020}. Case Study 2 sheds new light on this question by asking whether even simple changes in decision-making or normalization can suffice to explain accent adaptation. Additionally, Case Study 2 allows us to illustrate an important consideration for future work: while all three change mechanisms predict that exposure should facilitate---or at least not hinder---subsequent processing of the same accent, the exact effects of exposure are predicted to depend on the specific accent properties and how they relate to listeners' prior expectations. In the general discussion, we elaborate on this point and how future work can draw on it.
 
-\hypertarget{sec:PR}{%
-\section{Case Study 1: perceptual recalibration}\label{sec:PR}}
+\section{Case Study 1: perceptual recalibration}\label{sec:PR}
 
 In a typical perceptual recalibration experiment, participants are randomly assigned to one of two exposure groups that subsequently perform the same test. During exposure, participants hear stimuli that contain a critical phonetic contrast \autocite[e.g., syllable-intial /d/ vs.~/t/, as in \emph{croco\emph{d}ile} or \emph{cafe\emph{t}eria},][]{kraljic-samuel2006}, mixed with many fillers that do not contain that phonetic contrast. Between participants, critical exposure stimuli are manipulated with the goal to shift the category boundary along the phonetic contrast into different directions. This is achieved by exposing listeners to \emph{typical} pronunciations from one category and pronunciations of the other category that are acoustically \emph{shifted} towards the point of maximal perceptual ambiguity between the two categories. Which of the two categories is shifted is manipulated between the two exposure groups. To ensure that the shifted stimuli are still recognized as instances of the intended category, exposure stimuli are typically lexically or visually \emph{labeled} (e.g., hearing the shifted sound /?dt/ embedded in the lexical context of ``croco\_ile'' would label the shifted sound as a /d/). In a subsequent test phase, both groups of participants then categorize the same test stimuli along an artificially generated acoustic continuum between the two categories. The goal of this test phase is to estimate participants' categorization function for the critical phonetic contrast, and so test stimuli are \emph{unlabeled}. This is achieved by presenting the manipulated continuum in the contexts of a lexical minimal pair (e.g., \emph{dip}-\emph{tip}) or a nonce-word pair (e.g., \emph{idi}-\emph{iti}).
 
@@ -680,17 +666,22 @@ Perceptual recalibration continues to be one of the most frequently used paradig
 
 While the signature boundary shift observed in perceptual recalibration experiments is often considered the consequence of representational changes, it is also possible that this finding is compatible with explanations in terms of either of the two alternative change mechanisms. We use ASP to assess this possibility. Specifically, we predict changes in categorization following the type of exposure employed in experiments on perceptual recalibration, while switching on and off the three different change models of ASP.
 
-\hypertarget{data}{%
-\subsection{Data}\label{data}}
+\subsection{Data}\label{data}
 
 Most published experiments on perceptual recalibration do \emph{not} measure and report the acoustic properties of their stimuli. We therefore simulate an example experiment on perceptual recalibration to shifted /d/ and /t/, following the same stimulus creation and selection procedure employed in experiments on perceptual recalibration \autocite[e.g.,][]{kraljic-samuel2006}.\footnote{A reviewer pointed out that perceptual recalibration to shifted /d/ or /t/ does not appear to be talker-specific (for L1-US English listeners): listeners that are exposed to one talker with shifted /d/ or /t/ generalize perceptual recalibration to test tokens from a different talker \autocite[unlike for shifted /s/ or /\ipatext{ʃ}/, e.g.,][]{kraljic-samuel2007}. We consider questions about talker-specificity to be orthogonal to the questions discussed here: any of the three mechanisms integrated in ASP can be talker-specific or talker-independent, or talker-specificity can depend on the type of phonetic contrast or the type of cue (for further discussion, see SI \ref{sec:cautionary-note}).} The details of our stimulus generation approach are described in the SI (\ref{sec:SI-PR}), and do not affect the general results presented below. They are merely meant to provide a sufficiently concrete example. Readers can revisit any of the assumptions we made by downloading the \href{https://osf.io/q7gjp/}{R markdown document that this article is generated from}.
 
-\hypertarget{exposure-phase}{%
-\subsubsection{Exposure phase}\label{exposure-phase}}
+\subsubsection{Exposure phase}\label{exposure-phase}
 
 Figure \ref{fig:PR-exposure-test-plot} shows the stimuli for the exposure and test phases of the experiment. During /d/-shifted exposure, listeners hear \texttt{20} lexically-labeled word recordings containing /d/ shifted towards /t/ and \texttt{20} lexically-labeled word recordings containing typical /t/, mixed in with word and non-word fillers for a total of 200 recordings. As is typical for perceptual recalibration experiments, these fillers are assumed not to contain any information about the VOT distributions of /d/ and /t/, and thus do not affect listeners' beliefs about those distributions. During /t/-shifted exposure, participants hear lexically-labeled \texttt{20} word recordings containing /t/ shifted toward /d/ and \texttt{20} lexically-labeled word recordings containing typical /d/. Shifted recordings are selected to be perceptually half-way between /d/ and /t/.
 
 
+
+\color{orange}
+
+\begin{verbatim}## Warning in get_plot_component(plot, "guide-box"): Multiple components found; returning the first one. To return all, use `return_all = TRUE`.
+\end{verbatim}
+
+\color{black}
 
 \begin{figure}
 
@@ -701,13 +692,11 @@ Figure \ref{fig:PR-exposure-test-plot} shows the stimuli for the exposure and te
 \caption{Distribution of the exposure and test of the perceptual recalibration experiment. \textbf{Panel A - Exposure:} 20 tokens each of shifted and typical /d/ and /t/, respectively. Arrows indicate how the shifted tokens created by the experimenter differ from typical tokens of the same category (arrows originate from the mean of typical tokens and end at the mean of shifted tokens). As would be expected given the procedures researchers typically employ to generate stimuli for this type of experiment, the exposure distributions for /d/ and /t/ in both conditions differ primarily along VOT but, notably, \emph{also} differ along f0. \textbf{Panel B - Test (identical for both exposure groups):} Numbers indicate the item ID of the test tokens used in subsequent plots, with IDs in increasing order corresponding to 85\%, 65\%, 55\%, 45\%, 35\%, 15\% expected /d/-responses \emph{prior to exposure} (e.g., in a test-only norming experiment).}\label{fig:PR-exposure-test-plot}
 \end{figure}
 
-\hypertarget{test-phase}{%
-\subsubsection{Test phase}\label{test-phase}}
+\subsubsection{Test phase}\label{test-phase}
 
 The test phase consists of the six stimuli shown in Figure \ref{fig:PR-exposure-test-plot}B, chosen to yield 15\%, 35\%, 45\%, 55\%, 65\%, 85\% expected /d/-responses in a norming experiment without any prior exposure to the talker's speech. This closely resembles the test stimulus placement typical for perceptual recalibration experiments, which tend to examine tokens at the two ends of the continuum as well as those placed near the category boundary.
 
-\hypertarget{results}{%
-\subsection{Results}\label{results}}
+\subsection{Results}\label{results}
 
 Next, we use ASP to illustrate the extent to which changes in representations, response biases, or normalization can explain the typical behavioral signature of perceptual recalibration experiments: a shift in the category boundary in the same direction as the shifted tokens during exposure (optionally accompanied by a change in the slope of the categorization functions). The goal of these computational demonstrations is to illustrate the general type of pattern that the three different hypotheses can account for. Since the results of our computational demonstrations refer to the different change models introduced in Section \ref{sec:framework}, we summarize the complete ASP model in Figure \ref{fig:graphical-model-all}.
 
@@ -759,10 +748,10 @@ Next, we use ASP to illustrate the extent to which changes in representations, r
     \node[right=of n] (n_description) {{\em number of observations for category from unfamiliar talker}} ;
 % Change model for covariance
     \node[latent, right=of sigma_n, yshift=-.75cm] (s_0) {${\rm S}_{c,0}$} ; %
-    \node[right=of s_0] (sigma_0_description) {{\em prior beliefs about category covariance matrix} (up to $\frac{j}{2}(k^2+k)$ DF)} ;
+    \node[right=of s_0] (sigma_0_description) {{\em prior beliefs about category covariance matrix} (up to $\frac{jk!}{2!(k-2)!}$ DF)} ;
     \node[latent, below=of s_0, yshift=.5cm] (nu_0) {$\nu_{c,0}$} ; %
     \node[right=of nu_0] (nu_0_description) {{\em strength of prior belief about category covariance} (up to $j$ DF)} ;
-    \node[obs, right=of sigma_n, yshift=.75cm] (sbar) {${\rm S}_c$} ; %
+    \node[obs, right=of sigma_n, yshift=.75cm] (sbar) {${\rm SS}_c$} ; %
     \node[right=of sbar] (sbar_description) {{\em category sums of squares observed from unfamiliar talker}} ;
 % edges
     \edge {x_prime} {multi} ; %
@@ -807,8 +796,7 @@ All three change models start from the same prior state. Specifically, we assume
 
 Finally, we note that our simulations predict categorization at the \emph{beginning} of the test phase, prior to repeated testing. This should be kept in mind when comparing our results against previous work, including the results of \textcite{kraljic-samuel2007} in Figure \ref{fig:kraljic-samuel-2007-replotted}. As is typical for experiments on perceptual recalibration, participants in Kraljic and Samuel's experiment heard the same six test tokens many times. In their visualizations and analyses, Kraljic and Samuel averaged participants' responses across these repetitions. While this approach continues to be the norm, it is now known to underestimate the true boundary shift, as repeated testing \emph{reduces} the effects of exposure \autocites{mitterer2011-perceptual-recalibration,liu-jaeger2018,liu-jaeger2019,scharenborg-janse2013,zheng-samuel2023}[for early discussion, see][p.~11]{norris2003}.
 
-\hypertarget{changes-in-representations}{%
-\subsubsection{Changes in representations}\label{changes-in-representations}}
+\subsubsection{Changes in representations}\label{changes-in-representations}
 
 We begin by modeling exposure-driven changes in the mapping from VOT and f0 to the /d/ and /t/ categories. This is arguably the mechanism that is most commonly assumed to underlie the boundary shift observed in perceptual recalibration experiments. Specifically, we use the \(\mathcal{NW}^{-1}\) ideal adaptor model described in Section \ref{sec:ideal-adaptor} while varying the \(\kappa_{c,0}\) and \(\nu_{c,0}\) parameters. We set the other two parameters of the \(\mathcal{NW}^{-1}\) ideal adaptor (\(\mathrm{m}\) and \(\mathrm{S}\)) so that they match the expected mean and covariance of the data in \textcite{chodroff-wilson2018} (as we did in Section \ref{sec:ideal-adaptor}). Normalization and response biases did not change based on exposure (\(\kappa_0 = \infty\); \(\beta_{\pi}=0\)), and attentional lapses were assumed to be zero (\(\lambda = 0\)).
 
@@ -842,8 +830,7 @@ Figure \ref{fig:PR-result-changes-in-representations} further shows that boundar
 
 Finally, Figure \ref{fig:PR-result-changes-in-representations} shows that distributional learning not only predicts shifts in the category boundary but can also predict changes in the slope of those boundaries. This is evident, for example, in the top-right panel. Although such changes in slopes are often not discussed, they are present in many perceptual recalibration experiments \autocites[e.g.,][]{drouin2016,liu-jaeger2018,liu-jaeger2019,myers-mesite2014}.
 
-\hypertarget{changes-in-decision-making}{%
-\subsubsection{Changes in decision-making}\label{changes-in-decision-making}}
+\subsubsection{Changes in decision-making}\label{changes-in-decision-making}
 
 Next, we model the effects of changes in decision-making. Such changes have rarely been considered as an explanation for boundary shifts \autocite[but see][]{clarkedavidson2008}. In addition to varying the rate at which response biases change \(\beta_{\pi}\), we also vary the lapse rate parameter \(\lambda\). Normalization and representations did not change based on exposure (\(\kappa_0 = \kappa_{c,0} = \nu_{c,0} = \infty\)). Since the change model for decision-making is sensitive to the order of exposure stimuli (see Section \ref{sec:change-bias}), each panel of Figure \ref{fig:PR-result-changes-in-decision-making} averages over 50 simulations, each randomizing the order of exposure. We confirmed that this number of simulations was sufficient to achieve reproducible estimates for the range of \(\beta_{\pi}\)s considered here (the order-sensitivity of the change model increases for faster change rates, i.e., larger \(\beta_{\pi}\)).
 
@@ -866,8 +853,7 @@ Figure \ref{fig:PR-result-changes-in-decision-making} also shows that changes in
 
 Furthermore, Figure \ref{fig:PR-result-changes-in-decision-making} illustrates the effects of lapse rates (\(\lambda\)). The higher the lapse rate, the more strongly response biases, rather than stimulus-dependent aspects, determine the overall response pattern. This also means that it is important to keep lapse rates in mind when analyzing behavioral data. Consider, for example, a scenario in which listeners' lapse rates differ after /d/-shifted and /t/-shifted exposure---e.g., because one exposure condition resulted in a more difficult or less engaging task, or in less plausible stimuli. Compare, say, the blue line for \(\beta_{\pi} = .05\), \(\lambda = .005\) against the red line for \(\beta_{\pi} = .05\), \(\lambda = .5\). Analyses that fail to take into account the difference in lapse rates would wrongly conclude that the category representations have changed since the slopes of the categorization functions resulting from the two exposure conditions seem to differ.
 
-\hypertarget{changes-in-normalization}{%
-\subsubsection{Changes in normalization}\label{changes-in-normalization}}
+\subsubsection{Changes in normalization}\label{changes-in-normalization}
 
 Finally, we compare a model that normalizes test tokens based on the phonetic inputs experienced during exposure against a model that continues to apply normalization based on previous long-term experience. Essentially, the model that changes normalization based on the exposure tokens subtracts the cue means experienced during exposure---which varies based on the exposure condition---from that of each of the test tokens. We implement this by adjusting the cue values of the test tokens by the difference between the prior mean of cues based on previously experienced input (estimated in the SI, \ref{sec:SI-chodroff}) and the mean of cues experienced during exposure. All other parameters have the same setting as in the previous sections, except that no changes in representations or response biases are considered.
 
@@ -886,15 +872,13 @@ To illustrate the consequences of normalization, we vary the only parameter of o
 \caption{Predictions of a model that derives perceptual recalibration from changes in normalization. Predicted categorization responses are shown for the 6 test locations after /d/- and/t/-shifted exposure, depending on the relative weighting of previous experience (\(\kappa_0\)) during the inference of the cue mean during exposure. Smaller \(\kappa_0\) indicate faster learning.}\label{fig:PR-result-changes-in-normalization}
 \end{figure}
 
-\hypertarget{summary}{%
-\subsection{Summary}\label{summary}}
+\subsection{Summary}\label{summary}
 
 We applied the three change models developed in Section \ref{sec:framework} to a (simulated) perceptual recalibration experiment. We found that all three change models can qualitatively predict the type of boundary shift characteristic of such experiments. To us, and we imagine to many other researchers, this finding is surprising. On the one hand, all three change models were designed to explain adaptive speech perception. As such, it is not surprising that all three models predict changes in the `right' direction, compared to the absence of an adaptive response---i.e., that all models change the categorization function in ways that are meant to accommodate the acoustic properties of the exposure stimuli. On the other hand, the three change mechanisms assume very different cognitive architectures, and each of the three change models is subject to different computational limitations. Specifically, the two simpler change models for normalization and decision-making involve fewer degrees of freedom, and have access to less information, compared to the change model for category representations. Recall, for example, that normalization affects cue values regardless of category membership, or that changes in decision-making can only predict additive changes in the log-odds of categorization responses (when listeners have lapse rates of 0 or 1).
 
 Given these differences between the models, it seemed plausible that the simpler models would have insufficient functional flexibility to account for the types of boundary shifts associated with perceptual recalibration. Case Study 1 suggests that this is not the case. At least at the level of analysis that is typically applied in these experiments, the signature result of perceptual recalibration experiments therefore does \emph{not} constitute decisive evidence for changes in representations. Rather, boundary shifts could result from any of the three types of change mechanisms. This does not, of course, mean that perceptual recalibration experiments are \emph{necessarily} uninformative about the mechanisms underlying adaptive speech perception. To anticipate the general discussion, if adequate approaches to data analysis are chosen, it is possible to distinguish between the three different change mechanisms (and even combinations of them). Before we discuss what would be required to achieve this goal, we present the second case study using another common experimental paradigm.
 
-\hypertarget{sec:AA}{%
-\section{Case Study 2: accent adaptation}\label{sec:AA}}
+\section{Case Study 2: accent adaptation}\label{sec:AA}
 
 The second paradigm we consider focuses on \emph{naturally} accented speech---e.g., dialectal \autocite{smith2014}, varietal \autocite{shaw2018}, or second language (L2) accents \autocite{bradlow-bent2008,eisner2013,sidaras2009,weil2001a}. Typically, exposure to an unfamiliar accent is compared to a control condition in which listeners are exposed to a familiar accent, most often the `standard' variety of listeners' first language (L1). Following exposure, listeners in either group are tested on the unfamiliar accent. In an influential study, \textcite{bradlow-bent2008} had listeners transcribe a total of 160 sentences of either Mandarin-accented US English or L1-accented US English, distributed over two sessions on two separate days. In a subsequent test phase, both groups transcribed Mandarin-accented sentences. Participants who were first exposed to Mandarin-accented US English were significantly more accurate during test (over 90\% accuracy compared to about 80\%). This finding has since been replicated and extended \autocite[for review, see][]{baeseberk2020}. We now know that substantially shorter exposure can lead to similarly large improvements in accuracy \autocite[e.g., 80 sentences in a single session, about 2-5 minutes of speech,][]{xie2021jep}, that these can persist over hours and days \autocite{witteman2015,xie2018lcn}, and that accent adaptation can sometimes generalize across talkers of the same or similar accents \autocites[e.g.,][]{baeseberk2013,tzeng2016,xie2021jep}.
 
@@ -904,18 +888,15 @@ Compared to perceptual recalibration paradigms, experiments on accent adaptation
 
 For Case Study 2, we construct a hypothetical experiment that closely follows this type of design. For the sake of continuity, we focus on the same syllable-initial /d/-/t/ contrast used in Case Study 1. Specifically, we qualitatively simulate exposure to Korean-accented L2 English, which tends to weight the two cues to /d/-/t/ considered here (VOT and f0) differently than L1-US English. Like in Case Study 1, we analyze the data following the conventions of the field. For Case Study 2, this means that we assess how exposure affects L1 listeners' subsequent categorization accuracy for L2-accented test tokens. As in Case Study 1, we ask whether any of the three change mechanisms can qualitatively explain the signature results found in \textcite{xie2016jep} and other similar work. As in any experiment on accent adaptation, the results of our simulated experiment are expected to depend on the acoustic-phonetic characteristics of both the L1 and the L2 accents. In the discussion of Case Study 2, we thus consider other common differences between L1 and L2 accents, and show how these accent properties are expected to affect the three different change models.
 
-\hypertarget{data-1}{%
-\subsection{Data}\label{data-1}}
+\subsection{Data}\label{data-1}
 
 The stimulus generation procedure is described in detail in the SI (\ref{sec:SI-AA}).
 
-\hypertarget{exposure-phase-1}{%
-\subsubsection{Exposure phase}\label{exposure-phase-1}}
+\subsubsection{Exposure phase}\label{exposure-phase-1}
 
 Figure \ref{fig:AA-exposure-test-plot}A shows the stimuli for the exposure and test phases of the experiment. In the L2-accented exposure condition, listeners hear word recordings containing L2-accented initial /d/ and /t/ (30 tokens per category). In the control condition with L1-accented exposure, listeners hear the same words but from an L1-accented talker.\footnote{The use of L1-accented exposure, rather than L2-accented exposure without /d/, as control follows a typical design in accent adaptation studies \autocite[e.g.,][]{bradlow-bent2008}, rather than \textcite{xie2016jep}. Xie and colleagues instead employed L2-accented exposure without /d/, using the same L2-accented talker as during test \autocite[see also][]{eisner2013}. For the present purpose, both types of control conditions lead to identical predictions (as long as the L2-accented control exposure successfully avoids conveying non-negligible amount of information about the categories considered during the test phase) since the current implementation of the three change models do not consider talker-switch costs.} For L1-accented exposure, the category likelihoods were set to match those observed in \textcite{chodroff-wilson2018}, after C-CuRE normalization (i.e., the distributions shown in Figure \ref{fig:demonstrate-normalization}B). This follows the same approach we took for the typical tokens in Case Study 1. For L2-accented exposure, /d/ and /t/ categories were created following the VOT and f0 statistics of Korean-accented US English reported in \textcite{schertz2015}. The /d/ and /t/ categories in this L2 accent differ from L1-accented US English in both category means and variances. First, the VOTs of both stop categories are longer in the L2 accent, making the /d/s more similar to /t/s for native-English listeners who rely on VOT as a primary cue to voicing distinction. As a result, the recognition accuracy is expected to be lower for /d/ than for /t/ for the L1-accented exposure condition. Second, the L2-accented categories exhibit the same ordering along f0 as in L1-accented US English (lower f0 for /d/ than for /t/), but this difference along f0 is enhanced in Korean-accented US English. This makes syllable-initial stop voicing in Korean-accented US English a representative case of cue reweighting, a common difference between L2 and L1 accents that has received much attention in research on accent adaptation \autocites[e.g.,][]{escudero2009,kim2020,schertz2016}[see also][]{idemaru-holt2011,idemaru-holt2020,harmon2019}.
 
-\hypertarget{test-phase-1}{%
-\subsubsection{Test phase}\label{test-phase-1}}
+\subsubsection{Test phase}\label{test-phase-1}
 
 During test, listeners from both exposure conditions hear the same recordings from the same L2-accented talker used in the L2-accented exposure condition. 60 test tokens are randomly sampled from the distribution of each L2-accented category, half from the /d/ category and half from the /t/ category (Figure \ref{fig:AA-exposure-test-plot}B).
 
@@ -930,11 +911,10 @@ During test, listeners from both exposure conditions hear the same recordings fr
 \caption{\textbf{Panel A - Exposure:} Distribution of the stimuli used during the exposure phase of the accent adaptation experiment (30 tokens each of L1-accented and L2-accented /d/ and /t/, respectively). \textbf{Panel B - Test:} Distribution of the stimuli used during the test phase of the accent adaptation experiment. The test tokens come from L2-accented speech (60 tokens per category) and are identical for the two exposure conditions. Ellipses show the 95\% probability mass for the two categories in L2-accented exposure speech.}\label{fig:AA-exposure-test-plot}
 \end{figure}
 
-\hypertarget{results-1}{%
-\subsection{Results}\label{results-1}}
+\subsection{Results}\label{results-1}
 
 \begin{table}
-
+\centering
 \caption{\label{tab:AA-table-models-parameter-setting}Parameter range considered for each change model}
 \centering
 \begin{tabular}[t]{lll}
@@ -958,8 +938,7 @@ Paralleling Case Study 1, we predict L1 listeners' response behavior under each 
 
 As in Case Study 1, we first model changes in representations, and then compare them against changes in decision-making and normalization. We consider a wider range of parameterizations than in Case Study 1, because the models with the highest accuracy for L2-accented exposure (henceforth, the best-performing parameterization) in some cases fell outside the parameter ranges considered in Case Study 1. These best-performing parameterizations were determined by bounded quasi-Newton optimization of the recognition accuracy during test after L2-accented exposure \autocite[implemented in function \texttt{optim()} in R]{byrd1995}, and are indicated in all result plots we present below. Table \ref{tab:AA-table-models-parameter-setting} summarizes the parameter ranges considered by the optimization algorithm \autocite[\(\nu_{c,0}\) must be larger than the number of cues \(k\) + 1,][p.~134]{murphy2012}.\footnote{\label{fn:optimization} For changes in decision-making, bounded quasi-Newton optimization and other optimization algorithms (implemented in \texttt{optim()}) struggled to reliably determine the best-performing parameterizations. We thus initially performed a grid search over a large range of the parameter space (defined by \(\beta_{\pi}\) and \(\lambda\)), and then started the optimization process from the best-performing parameterization in that grid.} We emphasize that we use the term ``best-performing'' to refer to the parameterization that achieves the highest recognition accuracy for L2-accented test tokens, rather than the best fit against human responses in a perception experiment. In the general discussion, we describe how the same approach can be used to fit change models to the results of perception experiments.
 
-\hypertarget{changes-in-representations-1}{%
-\subsubsection{Changes in representations}\label{changes-in-representations-1}}
+\subsubsection{Changes in representations}\label{changes-in-representations-1}
 
 
 
@@ -976,8 +955,7 @@ Figure \ref{fig:AA-result-changes-in-representations} shows the predicted catego
 
 As \(\kappa_{c,0}\) and \(\nu_{c,0}\) get smaller (indicating weaker prior beliefs), the effects of exposure become more noticeable, and both of the signature results of experiments on accent adaptation begin to emerge. First, for L1-accented exposure, the accuracy is always predicted to be lower for /d/ than for /t/, indicating that /d/ is often misheard as /t/. Second, L2-accented exposure is predicted to improve recognition accuracy of /d/ compared to L1-accented exposure, and this improvement occurs without corresponding decreases in the recognition accuracy of /t/. Looking across the range of \(\kappa_{c,0}\)s and \(\nu_{c,0}\)s, we make two more observations. First, for the scenario studied here, faster learning of category means improves recognition accuracy. When listeners' beliefs about category covariances are held constant (i.e., looking within each row), smaller \(\kappa_{c,0}\) values yield higher categorization accuracy. Second, faster updating of beliefs about the \emph{(co)variance} also leads to accuracy improvements, although these improvements are less pronounced. Both results follow from the way that the Korean-accented stimuli differ from the L1 accented stimuli: as shown in Figure \ref{fig:AA-exposure-test-plot}, the category means of Korean-accented /d/ and /t/ are shifted relative to the L1-accented stimuli. In comparison, differences in category (co)variances are relatively subtle between the two sets of stimuli. For the present exposure stimuli, adapting to the L2 accent thus primarily hinges on learning the new category means. Taken together, these results demonstrate how changes in representation can explain the types of results that are considered to be the signature of accent adaptation.
 
-\hypertarget{changes-in-decision-making-1}{%
-\subsubsection{Changes in decision-making}\label{changes-in-decision-making-1}}
+\subsubsection{Changes in decision-making}\label{changes-in-decision-making-1}
 
 
 
@@ -996,8 +974,7 @@ For L1-accented exposure, we again see that /d/ test tokens are categorized subs
 
 Importantly, Figure \ref{fig:AA-result-changes-in-decision-making} shows that changes in response biases do not necessarily result in the type of zero-sum trade-off that is sometimes attributed to them---accuracy increasing by some degree for one category while decreasing by the same degree for the other category. Rather, L2-accented exposure can predict improvements in the \emph{overall} recognition accuracy across both categories (e.g., top right panel). Zero-sum trade-offs are only expected under the highly implausible assumptions that responses are entirely independent of stimulus properties (bottom row of Figure \ref{fig:AA-result-changes-in-decision-making}). Indeed, for the specific L1-L2 accent combination considered here, the largest improvements observed for changes in decision-making are similar in magnitude to those observed for the representational change model, despite the fact that the former change model is computationally simpler.
 
-\hypertarget{changes-in-normalization-1}{%
-\subsubsection{Changes in normalization}\label{changes-in-normalization-1}}
+\subsubsection{Changes in normalization}\label{changes-in-normalization-1}
 
 Finally, we compare models that normalize test tokens based on the phonetic input experienced during exposure against models that continue to apply normalization based on prior long-term L1 experience. Figure \ref{fig:AA-result-changes-in-normalization} shows the predicted categorization accuracy following changes in normalization in the L1- and L2-accented exposure conditions. We again obtain both of the signature results of experiments on accent adaptation. For L1-accented exposure, we continue to see that /d/ test tokens are categorized substantially less accurately than /t/ test tokens. For L2-accented exposure, recognition accuracy is improved for /d/ test tokens without any decrease in the recognition accuracy for /t/. That is, like the other two change models, normalization can predict \emph{overall} improvements in recognition accuracy after L2-accented exposure. Indeed, for the specific L1-L2 accent combination considered here, the computationally simple model for changes in normalization yields improvements similar to those predicted by changes in category representations.
 
@@ -1012,8 +989,7 @@ Finally, we compare models that normalize test tokens based on the phonetic inpu
 \caption{Predictions of a model that derives accent adaptation from changes in normalization. Predicted categorization accuracies for the L2-accented test tokens after L1-accented or L2-accented exposure, depending on the relative weighting of previous experience (\(\kappa_0\)) during the inference of the cue mean during exposure. The highlighted panel is the one closest to the best-performing parameterization (\(\kappa_0 = 1\); overall accuracy \(=0.92\)).}\label{fig:AA-result-changes-in-normalization}
 \end{figure}
 
-\hypertarget{summary-1}{%
-\subsection{Summary}\label{summary-1}}
+\subsection{Summary}\label{summary-1}
 
 Paralleling Case Study 1 on perceptual recalibration, we find that any of the three change mechanisms can qualitatively explain the signature results for accent adaptation---at least for the hypothetical L2 accent considered here. Although this L2 accent differs from L1 listeners' prior expectations in complex ways---specifically, the relative weighting of VOT and f0---even computationally simple, non-representational change mechanisms (normalization and decision-making) predict improved recognition accuracy after L2-accented exposure. For example, contrary to common assumptions, changes in decision-making can lead to \emph{overall} improvements in recognition accuracy, not just zero-sum trade-offs. This supports the conclusion of Case Study 1: at the level of analysis that is commonly applied in previous work (and thus in our case studies), experiments on accent adaptation do not necessarily rule out any of the three mechanisms.
 
@@ -1033,10 +1009,10 @@ Fortunately for research on adaptive speech perception, it is not always the cas
 \end{figure}
 
 \begin{table}
-
+\centering
 \caption{\label{tab:AA-table-best-performing-parameterization}Best-performing parameterizations across different accent scenarios. Recall that best-performing here refers to the parameterization that achieves the highest accuracy on L2-accented test tokens, rather than best quantitative fit against human data (which we do not have).}
 \centering
-\resizebox{\linewidth}{!}{
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{
 \begin{tabular}[t]{llll}
 \toprule
 L2 accent scenario & Changes in representations & Changes in decision-making & Changes in normalization\\
@@ -1059,8 +1035,7 @@ Second, the four scenarios in Figure \ref{fig:AA-plot-results-additional-cases}A
 
 The scenarios considered here only cover a subset of the L2 accent properties that exist in the world. They suffice, however, to illustrate a general challenge: different types of cross-talker differences---including L2 accents---pose different types of challenges to listeners (this is further reflected in the fact that the best-performing parameterizations for the same mechanism vary across the different accent scenarios, cf.~Table \ref{tab:AA-table-best-performing-parameterization}). It follows that, depending on the specific accent properties, listeners can benefit from different engagement of the three mechanisms \autocite[and different rates of adaptation, see discussion of the flexibility-stability trade-off in][pp.~180-182]{kleinschmidt-jaeger2015}. This means that differences between accents can be a natural testbed for distinguishing between hypotheses about the change mechanisms affording adaptive speech perception. In the general discussion, we explore how such tests can be accomplished.
 
-\hypertarget{sec:general-discussion}{%
-\section{General discussion}\label{sec:general-discussion}}
+\section{General discussion}\label{sec:general-discussion}
 
 The two case studies we have presented together provide two important insights. First, the signature results from two influential lines of research---often taken to lend support to changes in category representations---are actually compatible with representationally and computationally more parsimonious change mechanisms (pre-linguistic signal normalization and changes in post-perceptual decision-making). Additional case studies not reported here suggest that this finding is likely to generalize at least partly to other types of exposure-test paradigms, such as distributional learning paradigms over a single phonetic cue \autocite{clayards2008,kleinschmidt-jaeger2016cogsci} and dimension-based statistical learning paradigms that manipulate the relative informativity of cues \autocite{idemaru-holt2011,idemaru-holt2020}.\footnote{There are, however, important differences in the extent to which different research traditions have already implemented the recommendations we make below. For example, some lines of research tend to interpret findings relative to the distribution of phonetic cues in the speech input \autocites[e.g., studies on distributional learning,][]{bejjanki2011,clayards2008,kleinschmidt-jaeger2016pbr,malone2021}[studies on dimension-based statistical learning,][]{idemaru-holt2020,schertz2015}[for review, see][]{schertz-clare2020}, whereas this remains the exception in other lines of research \autocites[but see, e.g.,][]{hitczenko-feldman2016}[ for accent adaptation]{tan2021}{drouin2016}[ for perceptual recalibration]{theodore-monto2019}. See also SI (\ref{sec:sufficiency}).}
 
@@ -1068,8 +1043,7 @@ As already mentioned, this does not mean that normalization, representation, and
 
 Key to these recommendations is the second insight derived from our case studies: as we illustrated at the end of Case Study 2, each of the three mechanisms is subject to different computational limitations, and thus yields different predictions depending on the specific acoustic-phonetic properties of the exposure and test stimuli. Below we discuss how future experiments can be designed and analyzed so as to maximize researchers' ability to detect the differences in the predictions of the different change models, and to determine the relative engagement of each mechanism. Central to our recommendations is the use of ASP or similar frameworks to inform experiment design and analysis through simulations and quantitative model comparisons. First, however, we discuss \emph{why} we believe that computational simulations and model comparisons will be critical to advancing the field.
 
-\hypertarget{beyond-sufficiency-tests}{%
-\subsection{Beyond sufficiency tests}\label{beyond-sufficiency-tests}}
+\subsection{Beyond sufficiency tests}\label{beyond-sufficiency-tests}
 
 For our two case studies, we considered each of the three change models of the ASP framework \emph{separately}. This served two purposes. The first was presentational: by presenting the predictions of each model while the other two change models were `switched off', we hope to have provided readers with clearer intuitions about the inner workings of each model. The second purpose was the test of \emph{(in)sufficiency} of each change mechanism in explaining the signature results from the two paradigms. We asked whether each of the mechanisms alone is sufficient to predict adaptive changes of speech perception. Ultimately, however, research on adaptive speech perception will have to go beyond such sufficiency tests. With a phenomenon as complex as human speech perception, it is most plausible that multiple mechanisms, from early perception to decision-making, \emph{jointly} contribute to the observed adaptive behavior.
 
@@ -1079,13 +1053,11 @@ Existing findings thus strongly suggest that no single change mechanisms can exp
 
 Most existing paradigms and analysis approaches employed in studies on adaptive speech perception are not well-suited to address these questions. This problem is most obvious for the behavioral paradigms we have discussed in our case studies: if an analysis approach cannot distinguish between three mechanisms \emph{even if one assumes that only one of these mechanisms is at work}, that approach cannot possibly determine the relative engagement of multiple mechanisms. However, neuroimaging studies are not exempt from this problem. While they might determine the involvement of multiple brain regions, they often leave open what types of computations are performed in each. It is not known, for example, whether subcortical areas involved in auditory processing are necessarily restricted to normalization or whether these areas can take category identity into consideration \autocite[e.g., through documented feedback projections from cortical areas,][]{Erb2013}. Similarly, it is an open question whether differential activation of early cortical areas indicates changes in category representations or normalization \autocite[e.g., the involvement of Heschl's gyrus in adaptive speech perception,][]{sjerps2019}, and whether differential activation in frontal areas reflect changes in decision-making \autocite[as seems to be assumed in, e.g.,][]{myers-mesite2014} or rather the cumulative upstream effect of distributed changes in representations. Observations like these about the current state of the field motivate the recommendations we present next.
 
-\hypertarget{sec:methodological-advances}{%
-\subsection{Methodological advances to facilitate more informative model comparisons}\label{sec:methodological-advances}}
+\subsection{Methodological advances to facilitate more informative model comparisons}\label{sec:methodological-advances}
 
 We offer five concrete recommendations as to how future research on speech perception can benefit from computationally-guided experiment design and data analysis methods. In addition, we emphasize here that improved standards of data annotation and sharing will be critical in supporting this endeavor, and to the field en large. Although listeners' responses are known to depend on the acoustic-phonetic properties of the speech input, studies on adaptive speech perception rarely provide annotations of those properties. We cannot hope to understand speech perception without moving beyond this status quo (for concrete suggestions, see SI \ref{sec:DataSharing}).
 
-\hypertarget{recommendation-1-prediction-based-on-sufficiently-constraining-theories-instead-of-only-informal-reasoning}{%
-\subsubsection{\texorpdfstring{Recommendation 1: \emph{Pre}diction based on sufficiently constraining theories instead of (only) informal reasoning}{Recommendation 1: Prediction based on sufficiently constraining theories instead of (only) informal reasoning}}\label{recommendation-1-prediction-based-on-sufficiently-constraining-theories-instead-of-only-informal-reasoning}}
+\subsubsection{\texorpdfstring{Recommendation 1: \emph{Pre}diction based on sufficiently constraining theories instead of (only) informal reasoning}{Recommendation 1: Prediction based on sufficiently constraining theories instead of (only) informal reasoning}}\label{recommendation-1-prediction-based-on-sufficiently-constraining-theories-instead-of-only-informal-reasoning}
 
 Our first recommendation is, as we have aimed to do here, to develop and employ strong theories and models, following Platt's call for a strong inference approach to scientific inquiry \autocite{platt1964}. The majority of published research on adaptive speech perception---including some of our own work---continues to employ informally formulated, under-specified hypotheses. This leaves too much room for \emph{ad-hoc} or \emph{post-hoc} reasoning, with all the downsides that have been discussed in the context of the replicability crisis and elsewhere \autocites[e.g.,][]{guest-martin2021,starns2019,vasishth2021,yarkoni2022}. Even for research explicitly framed in terms of more or less clearly specified theories like ``distributional learning'' or ``exemplar theory'', reliance on informal reasoning alone is both risky and likely to miss insights that can be gained if computational frameworks are employed.
 
@@ -1097,8 +1069,7 @@ Based on examples like these, we submit that computational models are not only u
 
 To sum up, experimental psychologists and neuroscientists stand to benefit from increased familiarity with the computational models that are directly relevant to their research (just as computational researchers benefit from familiarity with experimental paradigms and methods). Fully specified computational models of normalization and changes in representations have now been available for more than a decade, and yet continue to be frequently ignored in the discussion of experimental results. An increasing number of these models is now freely available in the form of R libraries \autocites[e.g., for normalization: \texttt{phonTools},][]{barreda2015}[for changes in category representations: \texttt{beliefupdatr} and its extension \texttt{MVBeliefUpdatr},][]{kleinschmidt-jaeger2015}. The OSF repository for this article (\url{https://osf.io/q7gjp/}) contributes to these efforts. Our ASP code integrates models of all three change mechanisms in R. The three change models of ASP implement competing---but mutually compatible---hypotheses about how exposure (1b) is integrated with prior experience (1a). The categorization model (updated based on the exposure input) determines how these changes are expected to affect listeners' responses to test items (2). These resources can help researchers derive predictions prior to conducting an experiment, based on the acoustic-phonetic properties of the planned exposure and test stimuli (Recommendation 4), and to compare the fit of different combinations of change models to listeners' behavior once data collection has been completed (Recommendations 2 and 3).
 
-\hypertarget{recommendation-2-analyses-that-link-the-acoustic-phonetic-properties-of-stimuli-and-participants-responses}{%
-\subsubsection{Recommendation 2: Analyses that link the acoustic-phonetic properties of stimuli and participants' responses}\label{recommendation-2-analyses-that-link-the-acoustic-phonetic-properties-of-stimuli-and-participants-responses}}
+\subsubsection{Recommendation 2: Analyses that link the acoustic-phonetic properties of stimuli and participants' responses}\label{recommendation-2-analyses-that-link-the-acoustic-phonetic-properties-of-stimuli-and-participants-responses}
 
 
 
@@ -1121,8 +1092,7 @@ Critically, differences such as those shown in Figure \ref{fig:show-model-catego
 
 Alternatively, standard approaches to data analysis can be used to investigate changes in the mapping from acoustic-phonetic properties to participants' responses \autocite[for an excellent review, see][]{schertz-clare2020}. This includes regression models as long as they employ appropriate linking functions \autocites[e.g., logistic or multinomial regression for categorization,][]{jaeger2008,winter-wieling2016}. This approach is now increasingly common, taking advantage of stimulus-level variability within and across conditions to test hypotheses \autocites[e.g.,][]{clayards2018,idemaru-holt2020,schertz2015}. Regression analyses can further be expanded into psychometric models \autocite{wichmann-hill2001} by adding lapse rates and response biases \autocites[e.g.,][]{clayards2008,kleinschmidt2020}, and can be fit in standard statistics software \autocite[e.g., \texttt{brms},][]{burkner2017}. Optionally, such regression analyses can be enriched with predictive ASP simulations of the type we have employed in our case studies. Such simulations are computationally less demanding than \emph{fitting} ASP models to perception experiments, and can help guide the interpretation of results \autocites[for examples of approaches that mix predictive simulation with standard data analysis, see][]{bejjanki2011,clayards2008,hitczenko-feldman2016,tan2021,theodore-monto2019,xie2021cognition}[see also discussion in][]{bent-baeseberk2021}. To fully take advantage of the types of analyses we have discussed here, it will, however, be important to plan experiments with these analyses in mind. This leads to our next recommendation.
 
-\hypertarget{recommendation-3-targeted-sampling-of-the-stimulus-space}{%
-\subsubsection{Recommendation 3: Targeted sampling of the stimulus space}\label{recommendation-3-targeted-sampling-of-the-stimulus-space}}
+\subsubsection{Recommendation 3: Targeted sampling of the stimulus space}\label{recommendation-3-targeted-sampling-of-the-stimulus-space}
 
 Our third recommendation is to obtain data that better characterize incremental changes in categorization functions that occur with exposure. Simply put, the more data an experiment yields on how different types of exposure change the shape and location of the categorization function, the easier it is to determine the relative engagement of the different change mechanisms. Each change model is subject to different computational limitations, and these limitations affect what types of changes in categorization functions the different change models can account for (see, e.g., Figure \ref{fig:show-model-categorization-3D-plots-best-performing} in the previous section).
 
@@ -1142,8 +1112,7 @@ Finally, researchers can benefit from selecting test stimuli to be maximally inf
 
 Similarly, the standard approach to selecting test stimuli in experiments on accent adaptation is likely to `waste' statistical power. When test tokens are selected randomly from a database of L2-accented recordings, they are likely to cluster closely around the L2-accented category means. While this approach can be argued to maintain ecological validity, it makes it less likely that the experiment will distinguish between competing hypotheses: any change model that can predict general improvements in accuracy will also tend to correctly predict the categorization for stimuli close to the category means, making these types of stimuli relatively uninformative about the underlying mechanisms. Future experiments might instead employ more targeted selection of test stimuli by sampling test stimuli from regions of the acoustic-phonetic space for which the different change models make maximally distinct predictions \autocite[for initial efforts, see][]{burchill-jaeger2022}.\footnote{The optimal choice of stimuli depends on the specific goals of the experiment. For example, stimuli locations that are optimal for estimating the categorization function after one exposure condition, are not necessarily optimal for estimating the categorization function in another exposure condition, and neither choice might be optimal if the goal is to detect \emph{differences} between the two conditions or \emph{differences} between the different change models. Predictive (power) simulations can help determine the optimal stimulus locations and repetitions, for any of these goals (Recommendation 4).} While such targeted sampling is most easily achieved for paradigms that employ (re)synthesized or otherwise manipulated stimuli \autocites[for examples, see][]{bejjanki2011,burchill-jaeger2022,idemaru-holt2020}, it can also be used in combination with naturally accented stimuli \autocite[see][]{chodroff-wilson2020}.
 
-\hypertarget{recommendation-4-predictive-power-analyses-prior-to-conducting-experiments}{%
-\subsubsection{Recommendation 4: Predictive power analyses prior to conducting experiments}\label{recommendation-4-predictive-power-analyses-prior-to-conducting-experiments}}
+\subsubsection{Recommendation 4: Predictive power analyses prior to conducting experiments}\label{recommendation-4-predictive-power-analyses-prior-to-conducting-experiments}
 
 ASP can be used to estimate expected effect sizes and statistical power \emph{before} conducting an experiment. Unlike commonly used power estimates, which \emph{assume} effect sizes \autocite[e.g., ``moderate'' effects,][]{zheng-samuel2020}, predictive power-analyses of the type we envision are based on effect sizes that are derived from the acoustic properties of the very exposure and test stimuli used in the given experiment. This makes power simulations considerably more informative.
 
@@ -1153,8 +1122,7 @@ However, the parameterization of the different models is typically not known to 
 
 If researchers wish to know which exposure or test stimuli would increase the predicted difference between hypotheses, this further requires comparison of different stimulus selections. Comparable approaches exist for simpler computational problems and have been used extensively in psychometric research \autocites[incl.~online stimulus selection during the experiment, depending on subject-specific performance, e.g.,][]{vul2011,prins2013}. We believe that this is an area of research with considerable potential.
 
-\hypertarget{recommendation-5-integration-with-neural-models-of-speech-perception}{%
-\subsubsection{Recommendation 5: Integration with neural models of speech perception}\label{recommendation-5-integration-with-neural-models-of-speech-perception}}
+\subsubsection{Recommendation 5: Integration with neural models of speech perception}\label{recommendation-5-integration-with-neural-models-of-speech-perception}
 
 Our final recommendation is to further integrate ASP with neural models of speech perception. ASP as put forward here is a model that makes behavioral predictions. Similarly fully specified models of the neural computations underlying adaptive speech perception are a bigger challenge and remain lacking \autocites[but see][]{sohoglu-davis2016,sohoglu-davis2020}[for discussion, see][]{guediche2014}. In the introduction, we outlined that models like ASP can support neuroimaging research by making more concrete---and thus more testable---the types of computations that are hypothesized to take place in different brain regions or networks. At the same time, future neuroimaging research can further constrain the hypothesis space, and inform frameworks like ASP. One notable step towards integrating computational models of speech adaptation with evidence from neuroimaging is presented in \textcite{sohoglu-davis2016}. Sohoglu and Davis describe the possible neural implementations of both a categorization model and a change model for category representations \autocite[see also][]{sohoglu-davis2020}. The categorization model involves two interacting areas. One is the frontal areas associated with decision-making. These areas encode the relative evidence for the different categories, p(category \textbar{} cues, context), which eventually is used to decide that a category has been `recognized'. The other is the superior temporal gyrus that encodes predictions about phonetic inputs. These predictions are a function of the mapping from categories to cues, p(category \textbar{} cues), weighted by the relative expectations for the categories coded in the frontal areas, p(category \textbar{} context). The difference between these predictions and the observed phonetic inputs results in a prediction error that is used to update the activation of categories in frontal decision-making areas, changing p(category \textbar{} cues, context). This part of Sohogulu and Davis' model---initially validated by experiments in \textcite{sohoglu2014}---thus can be seen as implementing ASP's categorization model (without normalization). \textcite{sohoglu-davis2016} further propose that changes in category representations reflect changes in predictive coding in the superior temporal gyrus \autocites[see also][]{blank2016,wang2021}. Exactly how these changes come about remains open, constituting a question of importance for future research.
 
@@ -1168,8 +1136,7 @@ The synergy between behavioral, computational, and neural studies may uncover ne
 
 Finally, another promising avenue is to pair temporally-sensitive techniques with imaging methods with good spatial resolution. For instance, recent electrocorticography studies have provided some direct evidence for prelinguistic cue-level normalization within the middle and posterior STG areas \autocites{johnson-sjerps2021,tang2017}[see also][]{sjerps2019}, although it remains an open question how normalization supports the kind of adaptive changes as observed in perceptual recalibration or accent adaptation. Studies employing a combination of EEG and MEG have also been used to tease apart the role of signal properties and prior expectations in regulating perceptual learning of degraded speech: although both properties seem to affect activation of the same region in STG, they operate over different timescales \autocite{sohoglu-davis2016,sohoglu-davis2020}. Temporally-sensitive methods are also helpful in distinguishing between distinct mechanisms that may underlie adaptive speech perception. Using P200 as an index for acoustic-phonetic processing, \textcite{romero2015} found that the extraction of spectral information and other acoustic features was more difficult for foreign-accented speech than for native speech. Critically, this difference in acoustic-phonetic mapping did not attenuate within a single exposure session, compared to faster improvements in lexical-semantic processing, as indexed by N400. To the extent that the P200 and N400 reflect acoustic-phonetic vs.~post-lexical processes, respectively, these results are compatible with the possibility that neural changes associated with decision-making criteria \autocites[driven by the prediction error experienced during lexical processing, cf.][]{delaney2019,kuperberg2016} occur faster than those responsible for acoustic-phonetic remapping.
 
-\hypertarget{conclusion}{%
-\subsection{Conclusion}\label{conclusion}}
+\subsection{Conclusion}\label{conclusion}
 
 We have introduced a theoretical and computational framework for adaptive speech perception (ASP). ASP formalizes three distinct mechanisms of speech perception (`categorization') and adaptive speech perception (`learning'), ranging from low-level auditory (normalization), to linguistic (category representations), and cognitive processes (decision-making). In the present paper, we have presented specific categorization and change models that aimed to be general-purpose, capturing the most common assumptions shared among theories of speech perception. By writing this article in R markdown, we hope to have made it easier for other researchers to revisit any of the assumptions we made, e.g., by substituting alternative models of normalization, category representations, and decision-making. Finally, the simulations in our case studies explored what can (and cannot) be concluded from previous work about the three mechanisms, and how future research can develop behavioral and neuroimaging studies that shed light on the relative engagement of these mechanisms.
 
@@ -1177,6 +1144,460 @@ We have introduced a theoretical and computational framework for adaptive speech
 \erefsection
 
 \brefsection
+
+\newpage
+\setcounter{page}{1}
+\renewcommand{\thesection}{\S \arabic{section}}
+\renewcommand{\theHsection}{sisection. \arabic{section}}
+
+\section*{\texorpdfstring{Supplementary information for \emph{Xie, Jaeger, \& Kurumada (2022). What we do (not) know about the mechanisms underlying adaptive speech perception}}{Supplementary information for Xie, Jaeger, \& Kurumada (2022). What we do (not) know about the mechanisms underlying adaptive speech perception}}\label{supplementary-information-for-xie-jaeger-kurumada-2022.-what-we-do-not-know-about-the-mechanisms-underlying-adaptive-speech-perception}
+\addcontentsline{toc}{section}{Supplementary information for \emph{Xie, Jaeger, \& Kurumada (2022). What we do (not) know about the mechanisms underlying adaptive speech perception}}
+
+Both the main text and these supplementary information (SI) are derived from the same R markdown document available via OSF at \url{https://osf.io/q7gjp/}. \textbf{The PDFs for both the main text and the SI are best viewed using Acrobat Reader.} Some links and animations might not work in other PDF viewers.
+
+\setcounter{section}{0}
+\setcounter{footnote}{0}
+\setcounter{figure}{0}
+\setcounter{table}{0}
+\setcounter{equation}{0}
+\renewcommand{\thefootnote}{S\arabic{footnote}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\theequation}{S\arabic{equation}}
+
+\section{Required software}\label{sec:SI-software}
+
+The document was compiled using \texttt{knitr} \autocite{xie2021} in RStudio with R:
+
+\begin{verbatim}
+##                _                           
+## platform       aarch64-apple-darwin20      
+## arch           aarch64                     
+## os             darwin20                    
+## system         aarch64, darwin20           
+## status                                     
+## major          4                           
+## minor          3.2                         
+## year           2023                        
+## month          10                          
+## day            31                          
+## svn rev        85441                       
+## language       R                           
+## version.string R version 4.3.2 (2023-10-31)
+## nickname       Eye Holes
+\end{verbatim}
+
+We used the following R packages to create this document: R \autocite[Version 4.3.2;][]{R-base} and the R-packages \emph{assertthat} \autocite[Version 0.2.1;][]{R-assertthat}, \emph{cowplot} \autocite[Version 1.1.3;][]{R-cowplot}, \emph{curl} \autocite[Version 5.2.1;][]{R-curl}, \emph{data.table} \autocite[Version 1.15.4;][]{R-data.table}, \emph{devtools} \autocite[Version 2.4.5;][]{R-devtools}, \emph{diptest} \autocite[Version 0.77.1;][]{R-diptest}, \emph{dplyr} \autocite[Version 1.1.4;][]{R-dplyr}, \emph{forcats} \autocite[Version 1.0.0;][]{R-forcats}, \emph{gganimate} \autocite[Version 1.0.9;][]{R-gganimate}, \emph{ggh4x} \autocite[Version 0.2.8;][]{R-ggh4x}, \emph{ggplot2} \autocite[Version 3.5.1;][]{R-ggplot2}, \emph{kableExtra} \autocite[Version 1.4.0;][]{R-kableExtra}, \emph{LaplacesDemon} \autocite[Version 16.1.6;][]{R-LaplacesDemon}, \emph{latexdiffr} \autocite[Version 0.2.0;][]{R-latexdiffr}, \emph{linguisticsdown} \autocite[Version 1.2.0;][]{R-linguisticsdown}, \emph{lme4} \autocite[Version 1.1.35.3;][]{R-lme4}, \emph{lubridate} \autocite[Version 1.9.3;][]{R-lubridate}, \emph{magrittr} \autocite[Version 2.0.3;][]{R-magrittr}, \emph{Matrix} \autocite[Version 1.6.5;][]{R-Matrix}, \emph{mixtools} \autocite[Version 2.0.0;][]{R-mixtools}, \emph{modelr} \autocite[Version 0.1.11;][]{R-modelr}, \emph{NMOF} \autocite[Version 2.8.0;][]{R-NMOF}, \emph{papaja} \autocite[Version 0.1.1.9,001;][]{R-papaja}, \emph{phonR} \autocite[Version 1.0.7;][]{R-phonR}, \emph{plotly} \autocite[Version 4.10.4;][]{R-plotly}, \emph{processx} \autocite[Version 3.8.4;][]{R-processx}, \emph{purrr} \autocite[Version 1.0.2;][]{R-purrr}, \emph{readr} \autocite[Version 2.1.5;][]{R-readr}, \emph{remotes} \autocite[Version 2.5.0;][]{R-remotes}, \emph{rlang} \autocite[Version 1.1.3;][]{R-rlang}, \emph{stringr} \autocite[Version 1.5.1;][]{R-stringr}, \emph{tibble} \autocite[Version 3.2.1;][]{R-tibble}, \emph{tidyr} \autocite[Version 1.3.1;][]{R-tidyr}, \emph{tidyverse} \autocite[Version 2.0.0;][]{R-tidyverse}, \emph{tinylabels} \autocite[Version 0.2.4;][]{R-tinylabels}, \emph{tufte} \autocite[Version 0.13;][]{R-tufte}, and \emph{usethis} \autocite[Version 2.2.3;][]{R-usethis}. If opened in RStudio, the top of the R markdown document should alert you to any libraries you will need to download, if you have not already installed them. This includes the \texttt{MVBeliefUpdatr} library that supports working with multivariate Gaussian ideal observers and adaptors (see also Dave Kleinschmidt's \texttt{beliefupdatr} library that this library is based on). The full session information is provided at the end of this document.
+
+The 3D figures require the \href{https://github.com/plotly/orca\#installation}{\texttt{orca} commandline tool}. It is recommended that you use ``Method 4'' to install the standalone binaries. Some of the R libraries evoked in the R markdown code might require additional freely available non-R software (e.g., the R library \texttt{sf} requires non-R \emph{gdal}). For line-by-line execution of this document, this is all you should need. If installation of any R library fails, follow the prompts in the error message.
+
+If you want to knit the document into a PDF file, you will some additional packages. First, make sure that your version of the R package \texttt{tinytex} is up-to-date. Then run \texttt{tinytex::install\_tinytex()} to install latex on your computer and/or link it to R. As of 12/20/2022, it was also necessary to use \texttt{tinytex::tlmgr\_install('biber')} to install \texttt{biber}, though that step might become unnecessary in the future. Pandoc version 2.19.2 was tested. If you do not have at least that version then update RStudio, which will also install the newest version of pandoc (you can check by running \texttt{rmarkdown::pandoc\_version()}). Finally, you might need to download the IPA font \href{https://software.sil.org/doulos/download/}{SIL Doulos}, which is required for the IPA symbols in the paper.
+
+\section{\texorpdfstring{A database of natural productions of word-initial stop voicing in L1 US English \autocite{chodroff-wilson2018}}{A database of natural productions of word-initial stop voicing in L1 US English {[}@chodroff-wilson2018{]}}}\label{sec:SI-chodroff}
+
+All case studies presented in the main text are based on a phonetically annotated database of word-initial stop voicing in L1 US English \autocite{chodroff-wilson2018}. Chodroff and Wilson (2018, p.~3) describe the database:
+
+\begin{quote}
+The data was extracted from an audited subset of the Mixer 6 corpus (Brandschain et al.~2010, Brandschain
+et al.~2013; Chodroff et al.~2016) containing approximately 45 minutes of read speech from 180 native AE
+speakers (102 female). Transcripts were aligned to the corresponding WAV files with the Penn Forced Aligner
+(Yuan and Liberman 2008), and all word-initial prevocalic stop consonants were further processed with
+AutoVOT (Keshet et al.~2014). AutoVOT automatically identifies the stop release and following vowel onset
+within a user-specified window of analysis. Further details about the talkers, read sentences, and boundary
+alignments can be found in Chodroff and Wilson (2017).³
+\end{quote}
+
+\begin{quote}
+COG, positive VOT, and onset f0 in the following vowel were measured for each stop. COG was calculated
+from a smoothed spectrum over the initial portion of the release burst. Each spectrum was computed by averaging
+FFTs from seven consecutive 3 ms windows, with the first window centered on the burst transient and
+a window shift of 1 ms (Hanson and Stevens 2003; Flemming 2007; Chodroff and Wilson 2014). Positive VOT
+was defined as the duration from stop release to the onset of periodicity in the vowel; this was automatically
+extracted from the AutoVOT boundaries or from manually-corrected boundaries when available. The
+f0 value was the first one measured by Praat (Boersma and Weenink 2016) within 50 ms after the following
+vowel onset.
+\end{quote}
+
+Following advice from Eleanor Chodroff, we removed tokens with f0 measurements of above 350 Hz, as those were implausible and likely reflected a measurement error (pitch doubling). We further subset the data talkers for which all three cues (VOT, COG, and f0) were available for at least 25 observations each per stop category. This was done because we detected that the f0 of a good number of talkers exhibited evidence of bimodality. To remove talkers with bimodal f0 measures, we applied a test of multimodality \autocite[the dip test, as implemented in the library \texttt{diptest} in \texttt{R},][]{R-diptest}. Restricting our data set to talkers with at least 25 observations each per stop category allowed us to more reliably identify bimodal f0 distributions. Talkers for which the null of unimodality was rejected (\(p<\) 0.1) for the raw f0 or Mel-transformed f0 of \emph{any} stop category were excluded.\footnote{We thank Eleanor Chodroff for help with this issue. Her inspection of some example tokens revealed that both creaky voice and pitch halving contributed to the bimodal pattern. Pitch halving refers to cases in which the f0 detection algorithm wrongly infers the f0 to be half of its true value. One reason for such estimation mistakes can be when the true f0 falls outside the range considered by the algorithm (here: 75-500 Hz, regardless of talker gender, Eleanor Chodroff, p.c.).}
+
+This left 40,459 observations from 104 different talkers and 98 words. These are the data that we used to derive plausible estimate of the overall and category-specific VOT and Mel distributions that underlie the case studies presented in the main text. Figure \ref{fig:chodroff-stop-VOT-f0ST} shows the individual tokens and fitted bivariate Gaussian category likelihood of three randomly selected talkers from this data set prior to C-CuRE normalization. Figure \ref{fig:chodroff-stop-VOT-f0ST-mu} further illustrates the degree of cross-talker variability by plotting all talkers' category means relative to the category likelihood across all talkers prior to normalization.
+
+
+
+\begin{figure}
+
+{\centering \includegraphics{../figures/knitted/chodroff-stop-VOT-f0ST-1} 
+
+}
+
+\caption{Unormalized VOT and f0 of word-initial stop consonants in L1 US English from 3 random talkers from the database \autocite{chodroff-wilson2018}. Transparent points show individual tokens, which cover a range of different phonotactic, lexical, and utterance contexts. Solid points show talker-specific means over these tokens, connected by a gray line. Ellipses show the 95\% probability mass boundary for the talker-specific bivariate Gaussian category likelihoods.}\label{fig:chodroff-stop-VOT-f0ST}
+\end{figure}
+
+
+
+\begin{figure}
+
+{\centering \includegraphics{../figures/knitted/chodroff-stop-VOT-f0ST-mu-1} 
+
+}
+
+\caption{By-talker means of VOT and f0 for all six stop consonants and all 104 talkers in the database \autocite{chodroff-wilson2018} for which all phonetic cues were available. Ellipses show the 95\% probability mass for talker-independent bivariate Gaussian categories if the data from all talkers are pooled independent of talker identity.}\label{fig:chodroff-stop-VOT-f0ST-mu}
+\end{figure}
+
+\subsection{Applying C-CuRE}\label{sec:SI-applying-C-CuRE}
+
+We follow \textcite{mcmurray-jongman2011} and use linear regression to remove the effects of talker from each observation in the database. In extending normalization accounts to our present goals, we encountered three decision points that we have not previously seen discussed:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  C-CuRE removes the \emph{overall} cue mean from each observation's cue value. Based on this, it would seem most appropriate to include all six stop categories in the estimation of the cue means. However, the experiments we model in the main text involve only two of the categories (/d/ and /t/). We thus decided to only include tokens of /d/ and /t/ in the estimation of cue means. This decision was made because C-CuRE is intended to correct observed cue values for listeners' expectations \emph{for the current context}. Put differently, we assume that listeners expect that the sound will be a /d/ or a /t/ since these are the only two response options provided to participants. This assumption affects some of our results (but not as much as it would if we studied /b/-/p/ or /g/-/k/ since the mean cue values for /d/s and /t/s are closer to the mean cue values across all six categories).
+\item
+  C-CuRE is meant to correct for effects of both talkers and \emph{phonological} contexts. However, in the \textcite{chodroff-wilson2018} data /d/ and /t/ occur across different phonological contexts, so that inclusion of phonological contexts as a predictor in the regression model would indirectly capture information about category identity. We thus limited the data further to 9 pairs of /d/- and /t/-items that had identical vowels following the stop consonant (e.g, \emph{\emph{d}ied} and \emph{\emph{t}ime}). While this does not completely remove the effects of phonological context, it both reduces the variability in cue values associated with phonological contexts (thus providing a more accurate estimate of the expected outcome of normalization) and \emph{balances} the effect of phonological context (de-confounding it from category identity).
+\item
+  Finally, the original data from \textcite{chodroff-wilson2018} contained nearly three times as many /d/s as /t/s, and this asymmetry was retained after the data cleaning procedures described above. While this particular imbalance is probably not reflective of natural speech, natural speech will often exhibit \emph{some} form of asymmetry in the relative frequencies of categories. This raises the question of whether listeners somehow correct for these asymmetries when normalizing the speech input for an experiment for which there all categories can be expected to be equally frequent. Following similar considerations as in Point 1 above, we assume this to be the case. We thus randomly subsampled equal numbers of tokens for each /d/ and /t/ from all talkers. This number was determined by the number of tokens of the less frequent category for each talker. For instance, if a talker produced 40 /d/s and 20 /t/s, then 20 /d/ and 20 /t/ observations were randomly pulled from the data.
+\end{enumerate}
+
+For experimenters, the issues described here will arise whenever the distribution of categories and/or phonological contexts differ between prior exposure and the exposure in the experiment, or between exposure and test in the experiment: the estimated mean will then reflect expectations that do not veridically reflect the statistics of the current input. In previous evaluations of C-CuRE this was never the case, since those evaluations made a number of unrealistic assumptions: the data previously used to test C-CuRE typically were balanced across combinations of (1) categories, (2) phonological contexts, and (3) talkers, and (4) were so equally for both C-CuRE was `fit' on and the data that it was tested on \autocites[see, e.g.,][]{mcmurray-jongman2011}[for a critique and demonstration that these assumptions can affect the conclusions to be drawn about the plausibility of different normalization approaches, see][]{barreda-nearey2018}. For the present study, we investigate how listeners might transfer and adapt expectations based on previous long-term exposure to novel input from an unfamiliar talker. We therefore used subsamples that were well-balanced between /d/ and /t/ tokens in terms of their frequency and phonological contexts---a pattern matched to those employed during the exposure and test in typical experiments. We note, however, that none of our core results seem to depend on the assumptions we make here. We obtained qualitatively identical results for all critical comparisons in previous simulations that did not subsample the data to be balanced with regard to /d/ and /t/ or their phonological contexts.
+
+The three issues raised above also raise questions about C-CuRE that go beyond practical concerns for experimenters. For any of the three decisions we described above, it is an empirical question whether listeners do something similar. Put differently, there are complexities in applying approaches like C-CuRE to scenarios that are likely to occur in everyday speech perception that need to be investigated in future research.
+
+For example, our third assumption essentially means that normalization is sensitive to which category tokens are inferred to originate from (unlike any normalization accounts we know of), and this can result in some counter-intuitive predictions. Consider a scenario, in which a listener hears 100 typical /d/ tokens that match the listener's prior expectations for /d/. As formulated in \textcite{mcmurray-jongman2011}, C-CuRE would predict that the listener's estimate for the cue mean will move towards the category mean of /d/ (since normalization is assumed to be insensitive to which category tokens originate from).\footnote{Intriguingly, this would predict that the listener will categorize fewer tokens along the prototypical /d/ to /t/ continuum as /d/---in line with findings that repeated exposure to prototypical tokens of a category leads to selective adaptation \autocites[e.g.,][]{samuel1986,samuel2021,vroomen2007}[for discussion, see also][]{kleinschmidt-jaeger2016pbr}.} Alternatively, if normalization \emph{is} sensitive to which category a token is inferred to originate from, then the listener's estimate of the cue mean is predicted to not change much at all (since all tokens were expected given that they were a /d/). Which of these two rather different conceptualizations of normalization is empirically more adequate is, to the best of our knowledge, unknown.
+
+Decisions 1-3 left a total of 5632 observations (2816 each for /d/ and /t/). To avoid over-fitting to individual talkers, we use linear mixed-effects regression rather than ordinary linear regression. This `shrinks' talker-specific estimates of the cue means towards the overall (population-level) mean, and does so more when less data is available for the particular talker. Separate regressions were use to predict VOT and f0 (Mel). Both regressions used the formula:
+
+\begin{equation}\label{eq:c-cure-regression}
+\begin{split}
+cue \sim 1 + (1 | Talker)
+\end{split}
+\end{equation}
+
+Rather than to just use the residuals of these regressions, we only subtracted the random effects (BLUPs) from each observation. This removes the talker-specific effects from each token (as intended by C-CuRE) but leaves observations in the original cue space (rather than residual VOTs centered around 0), thus achieving talker normalization without loss in interpretability. The R code for the steps described here is found in R markdown document for the main text, at the end of Section \ref{sec:framework}. Figures \ref{fig:chodroff-stop-VOT-f0ST-normalized} and \ref{fig:chodroff-stop-VOT-f0ST-mu-normalized} replot Figures \ref{fig:chodroff-stop-VOT-f0ST} and \ref{fig:chodroff-stop-VOT-f0ST-mu} after C-CuRE normalization has been applied to the data.
+
+
+
+\begin{figure}
+
+{\centering \includegraphics{../figures/knitted/chodroff-stop-VOT-f0ST-normalized-1} 
+
+}
+
+\caption{Same as Figure \ref{fig:chodroff-stop-VOT-f0ST} but for normalized VOT and f0. Normalization does not affect the relative placement of tokens within the talker's space but it does affect the absolute placement. This is also evident in Figure \ref{fig:chodroff-stop-VOT-f0ST-mu-normalized}}\label{fig:chodroff-stop-VOT-f0ST-normalized}
+\end{figure}
+
+
+
+\begin{figure}
+
+{\centering \includegraphics{../figures/knitted/chodroff-stop-VOT-f0ST-mu-normalized-1} 
+
+}
+
+\caption{Same as Figure \ref{fig:chodroff-stop-VOT-f0ST-mu} but for normalized VOT and f0---both for the means and for the 95\% ellipse.}\label{fig:chodroff-stop-VOT-f0ST-mu-normalized}
+\end{figure}
+
+\section{Additional details about the change models}\label{sec:SI-models}
+
+This section contains additional details about the change models.
+
+\subsection{Changes in category representations}\label{sec:SI-models-changes-in-representations}
+
+The updating of the four \(\mathcal{NW^{-1}}\) parameters after \(N\) observations of a category \(c\) from the talker is described by the equations in \eqref{eq:niw-updating-parameters}, and is deterministic \autocite[for details and derivation, see][p.~134]{murphy2012}. \(\kappa_c\) and \(\nu_c\) simply increase by 1 with each observation, capturing the fact that each observation adds additional information about the talker's category mean and covariances. \(\mathrm{m}_{c,N}\) is a weighted combination of its prior value \(\mathrm{m}_{c,0}\) and the category mean of the \(N\) observations \(\bar{x}\)---following the same logic that we applied to the inference of the overall cue mean in Equation \eqref{eq:normalization-change}. Similarly, \(\mathrm{S}_{c,N}\) is a weighted combination of its prior value \(\mathrm{S}_{c,0}\) and the category variability of the \(N\) observations,\footnote{\(\mathrm{SS}_c \triangleq \Sigma_{i=1}^N x_{c,i} x_{c,i}^T\) is the uncentered sum of squares matrix of the \(N\) observations \autocite{murphy2012}.} plus an additional term that captures the uncertainty about the category mean. Figure \ref{fig:model-belief-updating} visualizes the belief-updating process in Equation \eqref{eq:niw-updating-parameters} as a graphical model.
+
+\begin{equation}\label{eq:niw-updating-parameters}
+\begin{split}
+\mathrm{m}_{c,N} & = \frac{\kappa_{c,0} \mathrm{m}_{c,0} + N_c \bar{x}}{\kappa_{c,N}} = \frac{\kappa_{c,0}}{\kappa_{c,0} + N_c} \mathrm{m}_{c,0} + \frac{N_c}{\kappa_{c,0} + N_c}\bar{x}_c \\
+\kappa_{c,N} & = \kappa_{c,0} + N_c \\
+\nu_{c,N} & = \nu_{c,0} + N_c \\
+\mathrm{S}_{c,N} & = \mathrm{S}_{c,0} + \mathrm{S}_{\bar{x}_c} + \frac{\kappa_{c,0} N_c}{\kappa_{c,0} + N_c}\left( \bar{x}_c-\mathrm{m}_{c,0} \right) \left( \bar{x}_c-\mathrm{m}_{c,0} \right)^T \\
+ & = \mathrm{S}_{c,0} + \mathrm{SS}_c + \kappa_{c,0} \mathrm{m}_{c,0} \mathrm{m}_{c,0}^T - \kappa_{c,N} \mathrm{m}_{c,N} \mathrm{m}_{c,N}^T
+\end{split}
+\end{equation}
+
+\begin{figure}
+  \centering
+  \tikz{ %
+    % exposure
+    \node[obs] (cue) {$x_N$} ; %
+    \factor[above=of cue] {cuedist} {left:$\mathcal{N}$} {} {}; %
+    \node[obs, right=of cuedist] (category) {$c_N$} ; %
+    % category parameters
+    \node[det, above=of cuedist] (mu) {$\mu_c$} ; %
+    \node[det, right=of mu] (Sigma) {$\Sigma_c$} ; %
+    \factor[above=of mu] {mudist} {left:$\mathcal{N}$} {} {}; %
+    \factor[above=of Sigma] {Sigmadist} {left:$\mathcal{W}^{-1}$} {} {}; %
+    % hyperparameters
+    \node[det, above=of mudist] (kappa) {$\kappa_{c,N}$} ; %
+    \node[det, left=of kappa] (m) {$\mathrm{m}_{c,N}$} ; %
+    \node[det, above=of Sigmadist] (S) {$\mathrm{S}_{c,N}$} ; %
+    \node[det, right=of S] (nu) {$\nu_{c,N}$} ; %
+    % prior
+    \factor[above=1 of m] {update_m} {} {} {}; %
+    \factor[above=1.05 of kappa] {update_kappa} {} {} {}; %
+    \factor[above=.9 of S] {update_S} {} {} {}; %
+    \factor[above=1 of nu] {update_nu} {right:update (Equation \ref{eq:niw-updating-parameters}) } {} {}; %
+    \node[det, above=of update_m] (prior_m) {$\mathrm{m}_{c,0}$} ; %
+    \node[latent, above=5 of update_kappa] (prior_kappa) {$\kappa_{0}$} ; %
+    \node[latent, above=5 of update_nu] (prior_nu) {$\nu_{0}$} ; %
+    \node[det, above=of update_S] (prior_S) {$\mathrm{S}_{c,0}$} ; %
+    % external phonetic database
+    \node[obs, above=of prior_m] (expected_mu) {$\mathbf{E}(\mu_{c})$} ; %
+    \node[obs, above=of prior_S] (expected_Sigma) {$\mathbf{E}(\Sigma_{c})$} ; %
+    % extra nodes to allow connection from cues to updating
+    \node[const, left=1.2 of update_m] (update_extra1) {} ; %
+    \node[const, left=3 of cue] (update_extra2) {} ; %
+    \node[const, right=1 of update_nu] (update_extra3) {} ; %
+    % plates
+    \plate[inner sep=0.24cm, xshift=-0.06cm, yshift=0.12cm] {plate2} {(mu) (Sigma) (mudist) (Sigmadist) (kappa) (m) (nu) (S) (prior_m) (prior_S) (expected_mu) (expected_Sigma) (update_extra3) } {$\forall c \in categories $}; %
+    \plate[inner sep=0.12cm, xshift=-0.06cm, yshift=0.06cm] {plate1} {(cue) (category) (cuedist) (mu) (Sigma) (mudist) (Sigmadist) (kappa) (m) (nu) (S)} {$\forall n \in exposure\ observation$}; %
+    \edge {cuedist} {cue} ; %
+    \edge {category} {cuedist} ; %
+    \edge {mu, Sigma} {cuedist} ; %
+    \edge {Sigma} {mudist} ; %
+    \edge {kappa,m} {mudist} ; %
+    \edge {nu,S} {Sigmadist} ; %
+    \edge {mudist} {mu} ; %
+    \edge {Sigmadist} {Sigma} ; %
+    % updating
+    \edge {prior_kappa} {update_kappa} ; %
+    \edge {prior_nu} {update_nu} ; %
+    \edge {prior_kappa, prior_m} {update_m} ; %
+    \edge {prior_kappa, prior_m, prior_S} {update_S} ; %
+    \edge {update_kappa} {kappa} ; %
+    \edge {update_nu} {nu} ; %
+    \edge {update_m} {m} ; %
+    \edge {update_S} {S} ; %
+    \edge[-] {cue} {update_extra2} ; %
+    \edge[-] {update_extra1} {update_extra2} ; %
+    \edge {update_extra1} {update_m} ; %
+    \edge[-] {update_m} {update_kappa} ; %
+    \edge[-] {update_kappa} {update_S} ; %
+    \edge[-] {update_S} {update_nu} ; %
+    % link to phonetic database
+    \edge {expected_mu} {prior_m} ;
+    \edge {expected_Sigma} {prior_S} ;
+    \edge {prior_nu} {prior_S} ;
+  }
+  \caption{$\mathcal{NW}^{-1}$ Bayesian belief-updating model, as employed here. We set $\mathrm{m}_{c,0} = \mathbf{E}(\mu_c)$ and $\mathrm{S}_{c,0}=\mathbf{E}(\Sigma_c)$, where $\mathbf{E}(\mu_c)$ and $\mathbf{E}(\Sigma_c)$ are observable from phonetically annotated databases. We further assume that all categories share a common $\kappa_{c,0}$ and $\nu_{c,0}$, shown as $\kappa_{0}$ and $\nu_{0}$. These $\kappa_{0}$ and $\nu_{0}$ are the only two degrees of freedom in this highly simplified model of distributional learning (in the manuscript, we keep the $c$ subscript to avoid confusion with the parameter for changes in normalization in Equation \ref{eq:normalization-change}). All other variables are either observable (filled gray circles) or fully determined by other variables.}\label{fig:model-belief-updating}
+\end{figure}
+
+The \(\kappa_{c}\)s and \(\nu_{c}\)s are also sometimes called ``pseudocounts'' because they have a rather intuitive interpretation: the value of these parameters can be seen as describing the number of observations of this category that the listener assumes to have observed from the talker. For example, a listener with \(\kappa_{c,0} = 100\) updates her beliefs about an unfamiliar talker's category mean as if she has already seen 100 observations of that category from the talker \emph{prior to having received any input from that talker}. After 900 observations of that category from the unfamiliar talker, this listener's belief about the talker's category mean would be a weighted mixture, made up to 10\% by the prior \(\mathrm{m}_{c,0}\) and to 90\% of the mean of the 900 observed category instances \(\bar{x}_c\).\footnote{The extent to which listeners transfer prior expectations to an unfamiliar talker or context (i.e., the values of \(\kappa_{c,0}\) and \(\nu_{c,0}\)) is expected to differ across phonological contrasts \autocite[see discussion in][]{kleinschmidt-jaeger2015}.}
+
+\subsubsection{\texorpdfstring{Setting the \(m_{c,0}\) and \(S_{c,0}\) parameters}{Setting the m\_\{c,0\} and S\_\{c,0\} parameters}}\label{setting-the-m_c0-and-s_c0-parameters}
+
+It is possible to treat \(m_{c,0}\) and \(S_{c,0}\) as free parameters of the Normal-Inverse-Wishart belief-updating model, and to infer them from participants' responses in perceptual experiments \autocite{kleinschmidt-jaeger2016cogsci}. This makes it possible to compare whether estimates of these parameters that are purely based on \emph{listeners'} behavior correspond to distributions of category means \(\mu_c\) and category covariances \(\Sigma_c\) that match those observed in the input that listeners have received throughout their lives---i.e., the joint distribution of \(\mu_c\) and \(\Sigma_c\) observed in phonetically annotated databases that are are representative of the input listeners have previously received. If such a match is indeed observed, this would lend support to the hypothesis that listeners learn and store knowledge about the statistics of cue-to-category mappings in the input \autocites[for initial tests of this type, and further discussion, see][]{kleinschmidt-jaeger2016cogsci,tan2022}.
+
+However, it is also possible to instead set \(\mathrm{m}_{c,0}\) and \(\mathrm{S}_{c,0}\) based on phonetically annotated data. This fixes all \(J\) DFs for \(\mathrm{m}_{c,0}\) and \(\frac{J}{2}(K^2+K)\) DFs for \(\mathrm{S}_{c,0}\) prior to predicting listeners' behavior but \emph{assumes} (rather than tests) that listeners learn and store knowledge about the statistics of cue-to-category mappings in the input. This latter approach is the one that we took in our case studies. The core idea is to select \(\mathrm{m}_{c,0}\) and \(\mathrm{S}_{c,0}\) so that they yield a prior joint distribution of \(\mu_c\) and \(\Sigma_c\) that match those observed in a sufficiently large phonetic database that can reasonably assumed to approximate the type of input an average participant has received throughout their life.
+
+For the present purpose, we simplify this estimation problem further by setting \(\mathrm{m}_{c,0}\) and \(\mathrm{S}_{c,0}\) so that the expected values of the \emph{marginal} distributions of \(\mu_c\) and \(\Sigma_c\) match the maximum likelihood estimates of the category mean and covariance matrix, respectively, in the phonetic database \autocite{chodroff-wilson2018}. This means that we set \(\mathrm{m_{c,0}}\) to the empirical mean (i.e., maximum likelihood estimate) of the category's cue distribution, \(\bar{x}_c\), estimated from the phonetic database. Since the Normal-Inverse-Wishart belief-updating model describes the prior distribution of the category mean \(\mu_c\) as a Normal distribution with mean \(\mathrm{m}_{c,0}\) and covariance matrix \(\frac{1}{\kappa_{c,0}}\Sigma_c\), this yields an expected prior category mean \(\mathbf{E}(\mu_c) = \mathrm{m_{c,0}} = \bar{x}_c\).
+
+The prior distribution of the category covariance matrix \(\Sigma_c\) is described by the Inverse-Wishart distribution with scale parameter \(\mathrm{S_{c,0}}\) and degree of freedom \(\nu_{c,0}\). For our case studies, we thus again set \(\mathrm{S_{c,0}}\), such that the expected prior category covariance matrix matches the empirical covariance matrix \(\frac{\bar{S}_c}{N}\) (i.e., the empirical sum of squares matrix divided by the number of observations) estimated from the phonetic database \emph{given \(\nu_{c,0}\)}. This yields \(\mathrm{S_{c,0}} = \mathbf{E}(\Sigma_c)(\nu_{c,0}-D-1)\) = \(\bar{S}_c(\nu_{c,0}-D-1)\), where \(D\) is the dimensionality of input \autocite[i.e., the number of phonetic cues considered, cf.][p.~134-5]{murphy2012}.
+
+We note that the approach employed in our case studies does not take into account that category means and covariance matrices can be correlated. In that case, the expected values of the marginal distributions of \(\mu_c\) and \(\Sigma_c\) will not be identical to the expected value of the joint distribution of \(\mu_c\) and \(\Sigma_c\).\footnote{This might also reveal that some of the assumptions of the Normal-Inverse-Wishart belief-updating model are problematic, either for researchers or for listeners.} For future work, it would thus be more appropriate to estimate the \emph{joint} distribution of \(\mu_c\) and \(\Sigma_c\) from phonetic data, and to find the values for \(\mathrm{m}_{c,0}\) and \(\mathrm{S}_{c,0}\) that best approximate this distribution (e.g., through moment-matching). For the present purpose, however, this change is not expected to qualitatively affect the conclusions reached in our case studies.
+
+\subsection{Changes in decision-making}\label{sec:SI-models-changes-in-decision-making}
+
+Here, we model the prediction error as the surprisal experienced when observing the category label, \(I(c_{observed})\). This surprisal is a log-inverse function of the posterior probability of the category label given the beliefs held by the listener prior to observing the category label.
+
+\begin{equation}\label{eq:bias-updating}
+\begin{split}
+\mathrm{logit}(\pi_{c_{observed},N}) & = \mathrm{logit}(\pi_{c_{observed},N-1}) + \beta_{\pi} I(c_{observed}) \\
+                          & = \mathrm{logit}(\pi_{c_{observed},N-1}) - \beta_{\pi} \log_2 p_{N-1}(c_{observed}) \\
+\end{split}
+\end{equation}
+
+The same amount that is added to the bias of the observed (labeled) category is subtracted from the response biases for all other categories (uniformly distributed across those categories).
+Like the representational change model, the change model for response biases is sensitive to the mismatch between listeners' expectations based on the input and labeling information provided by the context. Unlike the representational change model, however, the change model for response biases uses the new observations to update response biases rather than beliefs about category likelihoods. As such, the change for response biases does not \emph{directly} change the mapping from stimulus properties to categorization responses. The change model for response biases can, however, affect this mapping indirectly. This means that even simple changes in response biases can change listeners' categorization function in complex ways.
+
+We also briefly considered another simple change model for decision-making but never implemented it since it could not possibly explain the findings we present in Sections \ref{sec:PR} and \ref{sec:AA}. This alternative model holds that listeners aim to infer the relative probability of each category based on recent input, and that response biases reflect these estimates. For example, listeners might enter an experiment with expectations about the relative probability of each category based on their relative frequency in previously experienced input, and then update their expectations based on the relative frequency of the categories within the experiment \autocites[similar to belief-updating models of syntactic adaptation,][]{fine-jaeger2013,jaeger2019,prasad2021}. However, such a model could not possibly explain exposure effects in, for example, a typical perceptual recalibration experiment since the relative frequency of the two categories does not differ between exposure conditions.
+
+\subsubsection{\texorpdfstring{(Non)-additivity of changes as a function of \(\lambda\)}{(Non)-additivity of changes as a function of \textbackslash lambda}}\label{sec:consequences-of-lambda}
+
+In Figures \ref{fig:demonstrate-lapse-bias-change} and \ref{fig:demonstrate-lapse-bias-change-nonzero-lapse} in the main text, we demonstrate that the (non)-additivity of changes in decision-making depends on \(\lambda\). Specifically, changes are additive in the log-odds of the posterior probability of categories if and only if \(\lambda \in \{0, 1\}\). To see how this limitation arises, consider how the \emph{log-odds} of a category---e.g., /d/---in Equation \eqref{eq:posterior-probability-lapse} depend on the response biases \(\pi_c\) when \(\lambda=0\):
+
+\begin{equation}\label{eq:change-bias}
+\begin{split}
+p(/d/ | input) & = (1-\lambda) \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/}}{\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}} + \lambda \frac{\pi_{/d/}}{\Sigma_i \pi_{c_i}} \\
+ & = (1-\lambda) \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/}}{\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}} + \lambda \pi_{/d/} \\
+ & = \frac{(1-\lambda) \mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/} + \lambda \pi_{/d/} \Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}}{\Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}} \Rightarrow \\
+\log \frac{p(/d/ | input)}{p(/t/ | input)}  & = \log \frac{(1-\lambda) \mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) \pi_{/d/} + \lambda \pi_{/d/} \Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}}{(1-\lambda) \mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right) \pi_{/t/} + \lambda \pi_{/t/} \Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}} \\
+ & = \log \frac{(1-\lambda) \mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right) + \lambda \Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}}{(1-\lambda) \mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right)  + \lambda  \Sigma_i \mathcal{N}\!\left( input | \mu_{c_i}, \Sigma_{c_i}\right) \pi_{c_i}} + \log\frac{\pi_{/d/}}{\pi_{/t/}} \\
+\end{split}
+\end{equation}
+
+When \(\lambda=1\), this simplifies to:
+
+\begin{equation}
+\begin{split}
+\log \frac{p(/d/ | input)}{p(/t/ | input)} & = \log\frac{\pi_{/d/}}{\pi_{/t/}}
+\end{split}
+\end{equation}
+
+And for \(\lambda=0\):
+
+\begin{equation}
+\begin{split}
+\log \frac{p(/d/ | input)}{p(/t/ | input)} & = \log \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right)}{\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right)} + \log\frac{\pi_{/d/}}{\pi_{/t/}}
+\end{split}
+\end{equation}
+
+Either way, a change in responses (\(\pi\)) will result in a change in predicted categorization behavior that is independent of the \(input\), leading to changes in the log-odds of categorization responses that are constant across the acoustic-phonetic space.
+
+Even when \(\lambda \not\in \{0,1\}\), equation \eqref{eq:change-bias} suggests that the type of changes in posterior log-odds that can be explained through changes in decision-making are constrained. For example, when the two categories exhibit equal variance (so that \(\log \frac{\mathcal{N}\!\left( input | \mu_{/d/}, \Sigma_{/d/} \right)}{\mathcal{N}\!\left( input | \mu_{/t/}, \Sigma_{/t/} \right)}\) describes a line), changes in decision-biases are predicted to lead to changes in categorization that are most extreme between the two category means and converge against two different constants `outside' of the two category means (see Figure \ref{fig:lapse-rate-consequences}). The shape of the predicted changes further gains in complexity if the variances of the two categories differ (Figure \ref{fig:lapse-rate-consequences-unequal}). Further study of this constraint and similar limitations of the other changes models is needed to characterize the range of adaptive behaviors each model can predict (see Recommendation 5 in the general discussion).
+
+
+
+\begin{figure}
+
+{\centering \includegraphics{../figures/knitted/lapse-rate-consequences-1} 
+
+}
+
+\caption{Predicted difference in posterior log-odds of /d/ as a function of the lapse rate (\(\lambda\)), prior response bias for /d/ (\(\pi_{/d/}\)) and the change in that response bias after exposure (\(\Delta_{\pi_{/d/}}\)). For this example, only VOT is considered. The mean of /d/ and /t/ were set to that observed in Chodroff \& Wilson (2018) and the variance was held equal across the two categories (at the average of the variances observed in Chodroff \& Wilson, 2018).}\label{fig:lapse-rate-consequences}
+\end{figure}
+
+
+
+\begin{figure}
+
+{\centering \includegraphics{../figures/knitted/lapse-rate-consequences-unequal-1} 
+
+}
+
+\caption{Same as in Figure \ref{fig:lapse-rate-consequences} but while setting the variances of the two categories to the unequal values observed in Chodroff \& Wilson (2018).}\label{fig:lapse-rate-consequences-unequal}
+\end{figure}
+
+\section{Creating the stimuli for the (simulated) perceptual recalibration paradigm}\label{sec:SI-PR}
+
+As also mentioned in the main text, many studies on perceptual recalibration do not report the acoustic properties of the exposure and test stimuli,\footnote{Some studies provide aggregate information \autocites[e.g.,][]{kraljic-samuel2006,kraljic-samuel2007} and very few provide detailed information and visualization \autocite[e.g.,][]{drouin2016}.} and analyses that relate the acoustic properties of exposure and test stimuli to participants' responses during test remain the exception. In our experience, it is also not uncommon that original recordings are no longer available or only partially available (see one of our recommendations in the general discussions). Phonetic annotations that aid the extraction of acoustic information about these recordings are available for only a very small number of studies.\footnote{Some notable exceptions for research on US English include the labs of Drs. Babel (UBC), Myer (UConn), and Theodore (UConn). In an ongoing project at Rochester, we have collected a database of phonetically annotated perceptual recalibration experiments on L1 US English /s/-/\ipatext{ʃ}/ that links stimulus recordings, phonetic annotations, and over 20 phonetic extracted phonetic cues to categorization responses from several thousand participants across a dozen experiments from multiple labs. Researchers interested in the database can contact any of the authors.} For that reason, we use simulated data in our case study on perceptual recalibration. Our stimulus generation procedure aims to capture the qualitative properties of the most common approaches to stimulus selection in perceptual recalibration experiments.
+
+\subsection{Exposure}\label{exposure}
+
+As described in the main text, the exposure phase of a typical perceptual recalibration experiment employs both typical stimuli and stimuli that are manipulated to be perceptually ambiguous between the two categories. In practice, researchers determine this point of perceptual ambiguity by first generating a continuum from the recording of the typical sound (e.g., \emph{crocodile}) to a recording in which that sound is replaced with the opposite sound (\emph{crocotile}). Procedures to create these continua range from simple blending of the two recordings---mixing the two recordings weighted by different amplitudes (from 100\% \emph{crocodile} and 0\% \emph{crocotile} to 0\% ``crocodile'' and 100\% \emph{crocotile})---to more careful phonetic manipulations (e.g., inserting addition silence to create longer VOTs) or the use of speech synthesis \autocite[for an insightful critique of the frequently used blending procedure, see][]{theodore-cummings2021}. The former is the by far more common approach. The perceptually most ambiguous point along the resulting continua is then determined either by the experimenter(s) or in a separate norming experiment, with the former approach being far more common. In short, perceptual recalibration experiments do neither carefully select the tokens within each category based on phonetic properties, nor is there any form of counter-balancing of the average phonetic or perceptual shifts across the two bias conditions.
+
+For the sake of generality, we simulate the general outcome of any of these procedures by imaging an experimenter (or participants) listening to stimuli along a continuum ranging from typical /d/ to typical /t/. We simulate the experimenter with the same perceptual model we assume for general L1-listeners (see Section \ref{sec:framework}). We assume that the experimenter, who can listen arbitrarily often to any of the stimuli, will make her final decision as to which stimuli should be selected for the shifted tokens without attentional lapses (\(\lambda=0)\). We further assume that experimenter's response bias is affected by the lexical context. Specifically, we set \(\pi_{intended~category} =\) \(p(intended~category | lexical~context) =\) 0.7. This captures the fact that even the experimenter's perception is somewhat affected by the lexical context. Figure \ref{fig:PR-exposure-test-plot}A shows the phonetic properties of an instance of stimuli generated in this way.
+
+\subsection{Test}\label{test}
+
+For the test phase, we followed a similar procedure. We used the same continuum from a typical /d/ to a typical /t/, and then selected six stimuli along that continuum that would be expected to yield 15\%, 35\%, 45\%, 55\%, 65\%, 85\% /d/-responses in a norming experiment without any prior exposure to the talker's speech. Since the test tokens present the phonetic contrast in a non-biasing context (e.g., /\ipatext{ɪ}\_\ipatext{ɪ}/), we set the effect of lexical context to \(p(category | lexical\ context) = .5\). The resulting test tokens shown in Figure \ref{fig:PR-exposure-test-plot}B closely resemble the placement of test stimuli expected in experiments on perceptual recalibration \autocites[e.g.,][]{norris2003,kraljic-samuel2005,kraljic-samuel2006}: as is typical for such experiments, test tokens are placed primarily where they are expected to be perceptually most ambiguous prior to exposure (i.e., close to the prior category boundary), with one additional test token towards each end of the continuum (typically somewhere between 10-25\% and 75-90\%, respectively). Our approach further assumes that the exposure and test stimuli are carefully chosen to have phonological contexts that allow generalization from exposure to test, as differences in the types of phonological context between exposure and test can reduce or even completely block perceptual recalibration \autocite{eisner2013,mitterer2013}. For example, the original study that we model our procedure on mostly used exposure stimuli in which /d/ or /t/ occurred word-medially at the onset of a syllable, between two vowels \autocite[e.g., \emph{crocodile}, \emph{academic}, etc., see Table 1 in][]{kraljic-samuel2006} or at least between two sonorants (e.g., \emph{legendary}, \emph{secondary}). In the test stimuli, the /d/-/t/ contrast occurred in a similar position (either /a\_a/ or /\ipatext{ɪ}\_\ipatext{ɪ}/).
+
+\section{Creating the stimuli for the (simulated) accent adaptation paradigm}\label{sec:SI-AA}
+
+As is the case for experiments on perceptual recalibration, the majority of studies on accent adaptation do not report the acoustic properties of the exposure and test stimuli, or present analyses that relate those properties to participants' responses.\footnote{Notable exceptions include, for example, the labs of Drs. Chodroff (UZurich), Kartushina (UOslo) and Schertz (UToronto). In past work, we have analyzed to what extent the results of experiments on accent adaptation (including differences between experiments) can be explained by the specific phonetic properties of the stimuli \autocites[e.g.,][]{tan2021,xie2017,xie2021jep}. These studies find that the results of experiments on accent adaptation can strongly depend on the choice of stimuli. On the one hand, this should not be surprising. But it is often not considered in the interpretation of seemingly unexpected results.} The stimulus generation procedure described below mimics a scenario that has been reported in previous work \autocite[e.g.,][]{schertz2015}.
+
+\subsection{Exposure}\label{exposure-1}
+
+We simulate a scenario where the /t/ category remains unchanged between the L1- and L2-accents while the /d/ category is altered in the L2 accent. In the specific simulations presented in the main text, the cue weighting was changed so that the primary cue for L1 listeners (VOT) becomes the secondary cue in the L2-accented speech. This was achieved by adjusting the category mean of /d/ so that its distance from the category mean of /t/ is reduced along VOT but increased along f0, while preserving the relative ordering (i.e., the category mean of /d/ has smaller f0 and VOT than that of /t/). Additionally, we assume no difference in category covariance between the L1 and the L2 accents. This was done to focus our analysis on the influence of relative locations of the two categories between L1 and L2, keeping the effects of category dispersion constant. We note, however, that L1 and L2 categories also often differ both the location (category means) \emph{and} their dispersion \autocites[category variance-covariance, e.g.,][]{schertz2015,xie-jaeger2020}. The code in this R markdown document can be straightforwardly extended to simulate such cases as well.
+
+\subsection{Test}\label{test-1}
+
+For the test phase, we randomly sample 60 tokens per category from the L2-accented categories. This procedure matches the approach typically taken by studies on accent adaptation: researchers record L2-accented speakers' productions of the target categories without making specific selection based on acoustic-phonetic features.
+
+\section{Finding the best-performing parameterizations for Case Study 2}\label{sec:SI-grid-search}
+
+Figure \ref{fig:optimization-results} summarizes the search history of the parameter optimization conducted in Case Study 2, for each of the three change models. The goal of this optimization was to determine the parameters that maximized recognition accuracy (during test) after L2-accented exposure.
+
+As mentioned in footnote \ref{fn:optimization} of the main text, optimization of the change model for decision-making additionally required a grid search. The results of this grid search, as well as the grid searches for the additional accent scenarios mentioned in the summary section of Case Study 2, are summarized in Figure \ref{fig:show-3d-grid-search}. The results of this grid search suggest two insights: (1) the marginal accuracy of the change model for decision-making---i.e., the expected accuracy when averaging over all possible exposure orders---is optimized for \(\lambda = 0\), and (2) accuracy is a concave function of \(\beta_{\pi}\) when \(\lambda = 0\). We emphasize that these points hold for optimizing accuracy, not fit against human behavior. For example, if listeners exhibit attentional lapses, best fits against human behavior might be achieved for \(\lambda \neq 0\).
+
+
+
+\color{orange}
+
+\begin{verbatim}## Warning in get_plot_component(plot, "guide-box"): Multiple components found; returning the first one. To return all, use `return_all = TRUE`.
+\end{verbatim}
+
+\color{black}
+
+\begin{figure}
+
+{\centering \includegraphics{../figures/knitted/optimization-results-1} 
+
+}
+
+\caption{Parameter space explored by the search for the best-performing parameterizations of the three different change models in Case Study 2.}\label{fig:optimization-results}
+\end{figure}
+
+
+
+\begin{figure}
+
+{\centering \subfloat[Cue reweighting\label{fig:show-3d-grid-search-1}]{\includegraphics[width=0.49\linewidth]{../figures/plotly/p.3d.bias.model_gridSearch_Cue_reweighting} }\subfloat[Contrast reduction\label{fig:show-3d-grid-search-2}]{\includegraphics[width=0.49\linewidth]{../figures/plotly/p.3d.bias.model_gridSearch_Contrast_reduction} }\newline\subfloat[Contrast shift\label{fig:show-3d-grid-search-3}]{\includegraphics[width=0.49\linewidth]{../figures/plotly/p.3d.bias.model_gridSearch_Contrast_shift} }\subfloat[Contrast collapse\label{fig:show-3d-grid-search-4}]{\includegraphics[width=0.49\linewidth]{../figures/plotly/p.3d.bias.model_gridSearch_Contrast_collapse} }\newline
+
+}
+
+\caption{Results of the grid search over the parameters for the change model for decision-making (\(\beta_{\pi}\) and \(\lambda\)) for each of the four accent scenarios explored in Case Study 2.}\label{fig:show-3d-grid-search}
+\end{figure}
+
+\section{\texorpdfstring{Computational limitations of change models afford qualitative tests of their \emph{sufficiency}}{Computational limitations of change models afford qualitative tests of their sufficiency}}\label{sec:sufficiency}
+
+The three change models---as well as the three general hypotheses that they aim to implement---differ in their computational assumptions. Given these assumptions, it is possible to conduct experiments that can decisively test the \emph{(in)sufficiency} of any of the three mechanisms. Indeed, though not necessarily framed as such, some previous findings already speak to the (in)sufficiency of the three mechanisms. Here we summarize some of those key findings, and describe possible extensions to them. We emphasize, however, that---as we outlined in the general discussion---we do not believe that such (in)sufficiency tests are themselves sufficient to advance research on adaptive speech perception.
+
+\subsection{Normalization vs.~changes in category representations}\label{normalization-vs.-changes-in-category-representations}
+
+While both the normalization and the representational change model assume that listeners are sensitive to changes in the usage of phonetic cues, only the latter tracks those differences separately for each category (e.g., /d/ vs /t/). This makes normalization more parsimonious than representational changes for both researchers and listeners: for the normalization model, the number of parameters that researchers need to determine (e.g., fit from the behavioral data of perception experiments), and the number of estimates that listeners need to infer and store from the speech input does not increase with the number of categories \autocite[for related discussion, see also][]{apfelbaum-mcmurray2015}. For example, for the C-CuRE-based normalization model employed in our case studies, researchers need to determine only one parameter (\(\kappa_0\)) and listeners are assumed to infer and store only the \emph{overall} means of all cues (\(K\) values for \(K\) cues). In contrast, the representational change model employed in our case studies requires researchers to determine two parameters \emph{per category}, and listeners are assumed to infer and store the cue means and covariance matrices of \emph{each category} (\(JK + \frac{J}{2}(K^2+K)\) values for \(K\) cues and \(J\) categories).\footnote{Even if C-CuRE normalization, which only centers cues, is made more comparable to the representational change model by extending normalization to include cue standardization \autocite[also known as z-scoring, as used in, e.g., Lobanov normalization,][]{lobanov1971}, this would introduce just one additional parameter for researchers (the equivalent for \(\kappa_0\) but for the estimation of the cue variances), and listeners would be assumed to learn and store \(2K\) values for \(K\) cues.}
+
+While the parsimony of normalization offers a computational advantage in terms of efficiency, it also comes with limitations. We discuss three such limitations that future work can exploit to evaluate the sufficiency of this mechanism. First, normalization accounts predict that the effects of exposure on subsequent perception do not depend on the category membership inferred by listeners. For example, for C-CuRE, only the overall cue mean of the input can affect subsequent perception, regardless of whether the lexical context labels the input as one category or another.\footnote{To be precise, some normalization accounts allow the category identities of \emph{surrounding} segments of speech to affect the normalization of cues on the target segment. This is, for example, how C-CuRE normalizes for effects of surrounding phonetic context \autocite{mcmurray-jongman2011}.} Although not originally discussed in the context of normalization, there is evidence that challenges this prediction. In their seminal study on perceptual recalibration, \textcite{norris2003} exposed participants to /f/- or /s/-biased inputs using the same general design that we discussed for Case Study 1. As is now typical for perceptual recalibration experiments, participants were exposed either to words with typical /f/ and words with atypical (shifted) /s/ or to words with typical /s/ and words with atypical (shifted) /f/. This resulted in the signature perceptual recalibration effect.
+
+Of relevance to the present discussion, one of several control experiments conducted by Norris and colleagues exposed participants either to words with typical /f/ and \emph{non}-words with atypical (shifted) /s/, or to words with typical /s/ and \emph{non}-words with atypical (shifted) /f/. The atypical /f/ and /s/ sounds in these control conditions were acoustically identical to those in the experimental conditions, and the non-word contexts in the control conditions matched the word contexts in terms of the phonetic context surrounding the critical /f/ and /s/ sounds (specifically, in terms of lexical stress and the vowel immediately /f/ or /s/). In short, the two control conditions differed from the experimental conditions almost exclusively in whether the atypical inputs were lexically labeled to be of a particular category. Unlike the experimental conditions, however, the control conditions did \emph{not} elicit the signature boundary shift \autocite[Experiment 2]{norris2003}. Perceptual recalibration thus seems to depend on the category that the shifted atypical tokens are attributed to \autocite[p.~227]{norris2003}---contrary to what would be expected if adaptive speech perception was solely achieved through cue normalization.\footnote{There might be a way to repair this apparent deficiency of normalization accounts that is compatible with the central idea behind C-CuRE. If the inferred category of a token is included in the contextual factors used to remove expectations from the observed cues, then the findings of \textcite{norris2003} can be accounted for (since the category label is unknown when the token is embedded in a non-word context). Specifically, normalization would have to remove from each cue expectations due to the token's inferred category and then add those expectations back in prior to interpreting the cue (e.g., following the same approach we employed throughout this study with regard to talkers; see \ref{sec:SI-applying-C-CuRE}). This modification to C-CuRE would entail that top-down feedback from category representations can affect the interpretation of cues (though one might argue that C-CuRE already makes the same assumption with regard to \emph{surrounding} phonological and lexical context)---an assumption compatible with neuro-anatomical evidence of feedback connections from cortical to subcortical areas involved in auditory processing but potentially in conflict with some theories and findings \autocites[e.g.,][]{norris2000a,norris-mcqueen2008}. This revision of C-CuRE would make it increasingly similar to, but still slightly more parsimonious than, representational change models (since the revised C-CuRE would assume \emph{independent} effects of talkers and categories). We are not aware that this change to C-CuRE has been discussed in the literature.}
+
+A second computational limitation of normalization accounts is specific to accounts that only correct for differences in the overall mean of cues but not differences in cue variability (like C-CuRE). In a ground-breaking study that was targeted at a separate question, \textcite{clayards2008} exposed participants to distributions of synthesized /b/ and /p/ tokens (as in, e..g, \emph{beach}-\emph{peach} continuum). Between participants, the VOT of these tokens had been manipulated to either form wide or narrow VOT distributions for both /b/ and /p/. The VOT means of /b/ and /p/ were identical in both conditions. Since acoustic cues are encoded relative to the cue mean only in C-CuRE and similar normalization accounts, these accounts thus do \emph{not} predict any differences in the effects of these exposure conditions. Clayards and colleagues, however, found that participants in the wide variance condition exhibited shallower categorization functions along the VOT continuum \autocite[conceptually replicated in][]{nixon2016}---as predicted by representational change models \autocites[see][]{clayards2008,kleinschmidt-jaeger2015,theodore-monto2019}. Future research should test whether this finding replicates for more natural-sounding (rather than resynthesized, robotic-sounding) stimuli and in situations where task demands more closely resemble those of everyday speech perception (less repetition, more lexical heterogeneity, words presented in sentential contexts rather than in isolation, etc.). If such replications are obtained, this would argue that normalization would at least have to include standardization or similar corrections for the variability of cues \autocites[as proposed in][]{johnson2020,lobanov1971,monahan-idsardi2010}.
+
+A third limitation of normalization accounts that can be productively explored in future research is the lack of category specificity. Consider for example, a possible extension of the study by Clayards and colleagues. In the study by \textcite{clayards2008}, both /b/ and /p/ either had narrow variance along VOT (SD = 8 msecs) or wide variance (SD = 14 msecs). This confounds the category-specific variance with the overall variance of the cues along VOT. It is, however, possible to manipulate the variance of the two categories while keeping both the means of the two categories (and thus the overall cue mean) and the overall cue variance constant. Figure \ref{fig:proposed-experiment-asymmetric-variance} depicts two exposure conditions that achieve this, along with recognition accuracies predicted by the normalization model and the representational change model.\footnote{The specific predictions for the representational change model shown here assume that listeners have equally strong prior beliefs about the variance of both of the two categories (i.e., one \(nu_{0,c}\) for both categories). This is what we assumed in our case studies---which aimed to show that even simplified versions of each change model can explain a wide range of findings in the literature---but it is not an inalienable assumption for representational change models \autocite[for discussion, see also][]{kleinschmidt-jaeger2015}. The general prediction of representational change models that listeners are sensitive to the category-specific variance should hold even if this assumption is removed. How easy to detect this predicted difference is, however, expected to depend on this assumption.} This demonstrates how researchers might use the lack of category-specificity to disentangle normalization and representational change accounts. Other possible manipulations in this vein could include category-specific changes in the \emph{co}variance of cues. Basically, any manipulation that leaves the \emph{overall} cue mean and variance unaffected while predicting differences in the categorization function under the representational change model can test whether the human listeners exhibit more flexibility than expected by normalization accounts. We note, however, that any such test should take into account that listeners can have strong prior beliefs based on the speech input they have received previously, and that this might include strong prior beliefs about \emph{how} the realization of categories varies across talkers \autocite{kleinschmidt-jaeger2015}. If the manipulations employed by researchers strongly violate those expectations, this needs to be carefully considered in the derivation of predictions.
+
+
+
+\color{orange}
+
+\begin{verbatim}## Warning: Using lapse_treatment == 'marginalize' can result in updating by *fractions* of observations, which might not be wellformed.
+\end{verbatim}
+
+\color{black}\color{orange}
+
+\begin{verbatim}## Warning: Using lapse_treatment == 'marginalize' can result in updating by *fractions* of observations, which might not be wellformed.
+\end{verbatim}
+
+\color{black}\color{orange}
+
+\begin{verbatim}## Warning: Using alpha for a discrete variable is not advised.
+## Using alpha for a discrete variable is not advised.
+\end{verbatim}\color{black}
+
+\begin{figure}
+
+{\centering \includegraphics{../figures/knitted/proposed-experiment-asymmetric-variance-1} 
+
+}
+
+\caption{A possible way to contrast normalization and representational change accounts. \textbf{Panel A:} two exposure conditions with identical overall means and variances along VOT, but different category-specific variances. \textbf{Panels B and C:} the predictions of the best-performing representational and normalization change models. For this purpose, the normalization model was extended to both center and standardize the cues.}\label{fig:proposed-experiment-asymmetric-variance}
+\end{figure}
+
+\subsection{Changes in decision-making vs.~changes in category representations}\label{changes-in-decision-making-vs.-changes-in-category-representations}
+
+In Section \ref{sec:framework}, we showed that the limitations of change models for decision-making are less well understood than sometimes assumed. One recommendation for future research is thus to further explore the mathematical limitations of decision-making change models. Designs that limit attentional lapses to basically zero \autocites[e.g., by employing more engaging tasks, as in gamified paradigms,][]{wade-holt2005,lim-holt2011} would emphasize the computational limitations of decision-making change models. In such scenarios, changes in response biases can only explain changes that are additive in the posterior log-odds of categories (Section \ref{sec:change-bias}). That is, changes in response biases cannot account for changes in the \emph{slope} of categorization functions. Future studies should use exposure conditions for which such changes are predicted by representational or normalization models to test whether changes in response biases are sufficient to explain adaptive speech perception. Since it can be difficult to detect changes in categorization slopes---especially without making strong linearity assumptions, we suspect that this question is better explored by manipulating the relative reliability of two cues (see also Figure \ref{fig:show-model-categorization-3D-plots-best-performing}). Such manipulations are routinely used in a paradigm known as ``dimension-based statistical learning'' \autocite{idemaru-holt2011,lehet-holt2020,liu-holt2015}. With recent trends towards analyses that more transparently link phonetic cues to changes in participants' responses \autocites{idemaru-holt2020}[see also Section \ref{sec:methodological-advances}]{schertz-clare2020}, this field of study is in a good position to test the sufficiency of changes in decision-making accounts. An ongoing project from one of our labs uses ASP-like simulations in combination with experimental designs that are intended to directly address this question \autocite{burchill-jaeger2022}.
+
+Conversely, there are ways to assess whether representational changes alone are sufficient to explain all forms of adaptive speech perception. For example, if auditory input that arguably carries no information about category statistics affects subsequent speech perception, this provides evidence that changes in representations alone cannot explain all aspects of adaptive speech perception. Perhaps one of the most convincing demonstrations of this type comes from the findings of auditory enhancement effects, wherein non-speech stimuli (e.g., pure tones) can systematically alter the perception of subsequently played speech stimuli \autocites{chodroff-wilson2020,holt2001,holt2005,holt2006,huang-holt2011}[for review, see also][]{weatherholtz-jaeger2016}. While these demonstrations might be challenged for lack of ecological validity (potentially inviting meta-reasoning about experimenters' intentions that is unlikely to be present during everyday speech perception), it is unclear how representational changes---or, for that matter, changes in response biases---can explain such findings. At the very least then, these findings suggest that normalization \emph{can} be involved in adaptive speech perception.
+
+In sum, by focusing on the computational assumptions of the different change models, it is possible to conduct behavioral experiments that can decisively determine whether either of the two more parsimonious change models is \emph{sufficient} to explain adaptive speech perception, or whether changes in representations are necessary to explain adaptive speech perception.
+
+\subsection{A cautionary note}\label{sec:cautionary-note}
+
+We close this section with a cautionary note, and an example to illustrate it. As researchers, we are often guided by intuitions about what findings are or are not compatible with a given mechanism. While such intuitions can be helpful, they can also be misleading; sometimes what seems intuitive and what does not is simply a function of familiarity. Based on our own experiences while writing this manuscript, which included many moments when our initial intuitions misled us, we urge researchers to take advantage of the frameworks like ASP to guide their intuitions.
+
+For example, one reviewer pointed out that adaptation to some phonetic contrasts appears to be talker-specific while adaptation to other contrasts does not. \textcite{kraljic-samuel2007} found that perceptual recalibration to /s/ and /\ipatext{ʃ}/ was to some extent talker-specific, whereas perceptual recalibration to /d/ and /t/ was not. To the reviewer, this finding was readily explained in terms of representational changes but posed a potential challenge to accounts of perceptual recalibration in terms of normalization or changes in decision-making. We surmise that the reviewer is not alone in this intuition. We note, however, that such intuitions are sometimes rooted in familiarity rather than evidence: as we noted in the introduction to Case Study 1, perceptual recalibration is often \emph{assumed} to result from changes in category representations, without comparing this hypothesis to the alternatives of normalization and/or changes in decision-making \autocite[for related discussion, see also][]{zheng-samuel2020}.
+
+Indeed, there is no obvious reason why the talker-specificity of changes in decision-making could not be contrast-specific in the same way as the reviewer suggested for changes in category representations. In the language of ASP, this would mean that listeners learn and store talker-specific decision biases \(\pi_c\)s for some contrast types (like /s/ and /\ipatext{ʃ}/) but adapt the \(\pi_c\)s for other contrast types (like /d/ and /t/) talker-independently, for example, over a moving time window. These potential elaborations on ASP closely parallel---and are no less parsimonious than---those that are necessary for an explanation of Kraljic and Samuel's finding in terms of representational changes: listeners might learn and store talker-specific category means and covariances for some contrasts, but learn and store talker-independent category means and covariances for other contrast.
+
+Similarly, if the finding by Kraljic and Samuel is caused by the types of cues involved in the two contrasts, rather than the contrasts themselves, then normalization provides just as good an explanation of the finding as changes in category representations. Spectral cues like those that are important for distinguishing between /s/ and /\ipatext{ʃ}/ often vary substantially across talkers but are stable within talkers \autocite[e.g.,][]{heald-nusbaum2015}. This makes them the perfect target for talker-specific adaptation \autocite[see][]{kleinschmidt-jaeger2015}. In contrast, durational cues like the primary cue to /d/ vs.~/t/ in L1-US English (VOT) often vary substantially with speech rate and thus even \emph{within} talker. For such cues, talker-specific normalization is expected to provide substantially less benefit. In ASP, this means that listeners might learn talker-specific cue means for some cue types (e.g., spectral cues) but not others (e.g., durational cues).
+
+In short, differences in the talker-specificity of contrast (or cue) types are an intriguing finding, but this finding does not distinguish between the three mechanisms. One benefit of approaching this question through ASP is that we are forced to be more specific about exactly how a pattern of results would be accounted for. This specificity often allows us to derive additional predictions that would otherwise go unnoticed. Note, for example, that an explanation in terms of normalization predicts that talker-specificity depends on the cues, and should just generalize across different contrasts that employ the same cue. In contrast, explanations in terms of changes in decision-making or category representations do not make this prediction. To the best of our knowledge, this prediction has not been tested.
+
+\section{Advanced standards of data annotation and sharing}\label{sec:DataSharing}
+
+As we mentioned under Recommendation 1, predicting adaptive changes of recognition requires estimates of the acoustic-phonetic properties of both input listeners have received prior to the experiment and the input they receive during the experiment. The former can be obtained from sufficiently large phonetically annotated databases that capture the type of speech input a typical participant in the experiment is likely to have received throughout their life. Fortunately, large and phonetically annotated databases can offer good estimates of the speech input of listeners receive. Such databases are now available for an increasing number of phonetic contrasts and languages \autocites[e.g.,][]{chodroff-wilson2018,clopper-pisoni2006,hillenbrand1995,newman2001,theodore2009}[among many others]{xie-jaeger2020}.
+
+One caveat is that many of these databases either only contain a subset of the speech varieties that an average listener of a language has plausibly been exposed to or contain very little data for each variety. In particular, databases that contain both a large number of talkers and a large number of tokens per talker continue to be the exception. Researchers thus need to carefully consider these implications when employing databases. In some cases, researchers might find that the best way forward is to collect phonetically annotated data that meets the specific requirements for their study \autocites[see][]{mcmurray-jongman2011,persson-jaeger2023,xie2021cognition,tan2021}. An alternative option is to eschew phonetically annotated data in favor of computational methods that work from the raw signal or some automatically obtained transformation of the raw data \autocite[e.g., mel-frequency cepstral coefficients,][]{Mermelstein1976}. Such models have been developed for automatic speech recognition and have been employed to model human language acquisition \autocite{dupoux2018,feldman2013}. More recently, they have also been applied to address questions about the effects of recent exposure \autocite{richter2017}. The ASP framework can, at least in theory, be combined with such models.
+
+The second set of estimates---the acoustic-phonetic properties of the stimuli---require researchers to phonetically annotate the stimuli in their perception experiments. Such annotations entail a substantial but manageable effort: perception experiments typically employ a small number of speech stimuli that are repeated across participants. A typical perceptual recalibration experiment would require the annotation of fewer than 100 isolated word recordings. A large study on accent adaptation like Bradlow and Bent's (2008) Experiment 2 would require the annotation of about 1000 sentences. As a reference point, studies on phonetic production regularly annotate datasets many times larger. Researchers' efforts will be supported by clear standards for reproducibility and software developments that aid phonetic annotation and data sharing \autocites[e.g.,][]{cassidy-schmidt2017,picoral2021,roettger2019,winkelmann2017}. If annotations are not reported and shared---and ideally even if they are---then all audio recordings should be shared in an open and accessible way (e.g., OSF). This will require perception researchers to use human subject protocols that give them the consent to distribute stimulus recordings for the purpose of scientific inquiry. In other words, perception and production researchers should make concerted efforts to link listeners' knowledge of productions and inferences they make during perception.
 
 \printbibliography
 \erefsection

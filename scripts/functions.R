@@ -413,11 +413,11 @@ add_test_tokens <- function(data, data.test) {
     nest(x = c(x))
 }
 
-add_categorization_functions <- function(data, logit = F) {
+add_categorization_functions <- function(data) {
   data %>%
     mutate(
-      prior.categorization = map(prior, ~ get_categorization_function_from_NIW_ideal_adaptor(.x, logit = logit)),
-      posterior.categorization = map(posterior, ~ get_categorization_function_from_NIW_ideal_adaptor(.x, logit = logit)))
+      prior.categorization = map(prior, ~ get_categorization_function_from_NIW_ideal_adaptor(.x)),
+      posterior.categorization = map(posterior, ~ get_categorization_function_from_NIW_ideal_adaptor(.x)))
 }
 
 add_categorization <- function(data) {
@@ -484,7 +484,8 @@ plot_VOT_NIW_belief_1D <- function(
   ylim = NULL,
   resolution = VOT_resolution
 ) {
-  mu_sigma <- belief %>%
+  mu_sigma <-
+    belief %>%
     mutate(
       mu = get_expected_mu_from_m(m),
       sigma = get_expected_Sigma_from_S(S, nu))
@@ -560,7 +561,7 @@ plot_VOT_NIW_belief_1D <- function(
     theme(
       legend.position = "right",
       axis.text = element_text(size = 9),
-      panel.grid.major = element_blank(), 
+      panel.grid.major = element_blank(),
       panel.grid.minor = element_blank())
 }
 

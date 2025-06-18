@@ -477,13 +477,14 @@ Figure \@ref(fig:PR-result-changes-in-representations) further shows that bounda
 ```{r PR-result-changes-in-representations-categories, fig.width = phonetic.panel.width*4 + 1.5, fig.height = phonetic.panel.height*2 + 2, fig.cap="(ref:PR-result-changes-in-representations-categories)"}
 levels <- c(.68, .95)
 
-p1 <- plot_expected_categories_contour2D(
-  x = d.PR %>% 
-    distinct(Condition, Subject, prior_kappa, prior_nu, posterior) %>%
-    filter(prior_kappa %in% c(4, 1024), prior_nu %in% c(4, 1024)) %>%
-    unnest(posterior), 
-  levels = levels, 
-  facet_rows_by = prior_nu, facet_cols_by = prior_kappa) +
+p1 <- 
+  plot_expected_categories_contour2D(
+    x = 
+      d.PR %>% 
+      distinct(Condition, Subject, prior_kappa, prior_nu, posterior) %>%
+      filter(prior_kappa %in% c(4, 1024), prior_nu %in% c(4, 1024)) %>%
+      unnest(posterior), 
+    levels = levels) +
   scale_x_continuous("VOT (msec)") +
   scale_y_continuous("f0 (Mel)") +
   scale_fill_manual("Category", breaks = categories.PR, values = colors.category) +
@@ -493,7 +494,7 @@ p1 <- plot_expected_categories_contour2D(
     labeller = label_bquote(
       cols = atop({kappa[0~","~ .(categories.PR[1])] == kappa[0~","~ .(categories.PR[2])]} == .(as.character(prior_kappa)), 
                   {nu[0~","~ .(categories.PR[1])] == nu[0~","~ .(categories.PR[2])]} == .(as.character(prior_nu))))) +
-   myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
+  myGplot.defaults(base_size = phonetic.base.size, set_theme = F) +
   ggh4x::force_panelsizes(cols = phonetic.panel.width, rows = phonetic.panel.height) +
   theme(legend.position = "top", 
         panel.grid.major = element_blank(),

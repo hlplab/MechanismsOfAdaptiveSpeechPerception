@@ -796,22 +796,22 @@ d.exposure <-
 
 d.exposure %<>%
   mutate(
-    posterior.categorization_function = map2(
-      posterior,
-      use_logit,
-      ~ get_categorization_function_from_NIW_ideal_adaptor(.x, logit = .y, noise_treatment = "marginalize"))) %>%
+    posterior.categorization_function = 
+      map(
+        posterior,
+        ~ get_categorization_function_from_NIW_ideal_adaptor(.x, noise_treatment = "marginalize"))) %>%
   select(-c(posterior))
 
 p <-
   d.exposure %>%
-  mutate(use_logit = factor(ifelse(use_logit, "log-odds", "probability"), levels = c("probability", "log-odds"))) %>%
+  # mutate(use_logit = factor(ifelse(use_logit, "log-odds", "probability"), levels = c("probability", "log-odds"))) %>%
   ggplot(aes(x = !! sym(cue.demo))) +
   # categorization function
   geom_line(
     data = . %>%
       distinct(beta, use_logit, posterior.categorization_function, observation.n) %>%
       crossing(!! sym(cue.demo) := seq(VOT_range[1], VOT_range[2])) %>%
-      mutate(y = map2(posterior.categorization_function, !! sym(cue.demo), .f = mycall) %>% unlist()),
+      mutate(y = pmap_dbl(.l = list(posterior.categorization_function, !! sym(cue.demo), use_logit), .f = ~ mycall(..1, list(..2, logit = ..3)))),
     aes(y = y, alpha = factor(beta), group = paste(beta, observation.n, use_logit)), color = "black") +
   # background rug
   geom_rug(
@@ -830,12 +830,10 @@ p <-
   geom_segment(
     data = . %>%
       distinct(beta, use_logit, posterior.categorization_function, observation.n) %>%
-      filter(
-        beta %in% range(beta),
-        use_logit == "log-odds") %>%
+      filter(use_logit, beta %in% range(beta)) %>%
       crossing(!! sym(cue.demo) := seq(VOT_range[1], VOT_range[2])) %>%
       filter(!! sym(cue.demo) %in% range(!! sym(cue.demo)))%>%
-      mutate(y = map2(posterior.categorization_function, !! sym(cue.demo), .f = mycall) %>% unlist()) %>%
+      mutate(y = pmap_dbl(.l = list(posterior.categorization_function, !! sym(cue.demo), use_logit), .f = ~ mycall(..1, list(..2, logit = ..3)))) %>%
       group_by(use_logit, observation.n, !! sym(cue.demo)) %>%
       arrange(beta) %>%
       summarise(
@@ -855,7 +853,7 @@ p <-
       filter(
         beta %in% range(beta),
         !! sym(cue.demo) %in% range(!! sym(cue.demo)))%>%
-      mutate(y = map2(posterior.categorization_function, !! sym(cue.demo), .f = mycall) %>% unlist()) %>%
+      mutate(y = pmap_dbl(.l = list(posterior.categorization_function, !! sym(cue.demo), use_logit), .f = ~ mycall(..1, list(..2, logit = ..3)))) %>%
       group_by(use_logit, observation.n, !! sym(cue.demo)) %>%
       arrange(beta) %>%
       summarise(
@@ -864,18 +862,16 @@ p <-
     aes(
       x = ifelse(!! sym(cue.demo) == max(!! sym(cue.demo)), !! sym(cue.demo) +6, !! sym(cue.demo) -6),
       y = ymax - y/2,
-      label = ifelse(use_logit == "log-odds", round(y, ifelse(use_logit == "log-odds", 1, 2)), ""),
+      label = ifelse(use_logit, round(y, 1), ""),
       hjust = ifelse(!! sym(cue.demo) == max(!! sym(cue.demo)), 0, 1)),
     color = "orange", size = 9/.pt,
     show.legend = F) +
   geom_segment(
     data = . %>%
-      filter(
-        use_logit == "probability",
-        beta == median(beta)) %>%
+      filter(!use_logit, beta == median(beta)) %>%
       droplevels() %>%
       crossing(!! sym(cue.demo) := seq(VOT_range[1], VOT_range[2])) %>%
-      mutate(y = map2(posterior.categorization_function, !! sym(cue.demo), .f = mycall) %>% unlist()) %>%
+      mutate(y = pmap_dbl(.l = list(posterior.categorization_function, !! sym(cue.demo), use_logit), .f = ~ mycall(..1, list(..2, logit = ..3)))) %>%
       group_by(observation.n) %>%
       filter(abs(y - .5) == min(abs(y - .5))) %>%
       distinct(use_logit, observation.n, !! sym(cue.demo)),
@@ -883,12 +879,10 @@ p <-
     x = VOT_range[1], y = .5, yend = .5, color = "orange") +
   geom_segment(
     data = . %>%
-      filter(
-        use_logit == "probability",
-        beta == median(beta)) %>%
+      filter(!use_logit, beta == median(beta)) %>%
       droplevels() %>%
       crossing(!! sym(cue.demo) := seq(VOT_range[1], VOT_range[2])) %>%
-      mutate(y = map2(posterior.categorization_function, !! sym(cue.demo), .f = mycall) %>% unlist()) %>%
+      mutate(y = pmap_dbl(.l = list(posterior.categorization_function, !! sym(cue.demo), use_logit), .f = ~ mycall(..1, list(..2, logit = ..3)))) %>%
       mutate(yend = min(y)) %>%
       group_by(observation.n) %>%
       filter(abs(y - .5) == min(abs(y - .5))) %>%
@@ -903,7 +897,7 @@ p <-
   scale_color_manual("Category", values = colors.voicing) +
   scale_alpha_manual(name = expression(beta[pi]), values = c(.2, .5, .8)) +
   coord_cartesian(xlim = VOT_range + c(-15, 15)) +
-  facet_wrap(~ use_logit, scales = "free_y") +
+  facet_wrap(~ factor(ifelse(use_logit, "log-odds", "probability"), levels = c("probability", "log-odds")), scales = "free_y") +
   ggh4x::force_panelsizes(cols = base.width, rows = base.height) +
   theme(plot.margin = margin(t = 5, r = 0, b = 0, l = 20, unit = "pt"), legend.position = "top", panel.grid = element_blank()) 
 
@@ -914,24 +908,12 @@ if (ANIMATE_FIGURES) {
   p.animation
 } else {
   d.plot <- 
-    d.exposure %>%
-    mutate(use_logit = factor(
-      ifelse(
-        use_logit, 
-        "log-odds", 
-        "probability"), 
-      levels = c("probability", "log-odds"))) %>% 
+    d.exposure %>% 
     filter(observation.n == max(observation.n))
   
   p1 <- p %+% d.plot +
     geom_rug(
-      data = d.exposure %>%
-        mutate(use_logit = factor(
-          ifelse(
-            use_logit, 
-            "log-odds", 
-            "probability"), 
-          levels = c("probability", "log-odds"))),
+      data = d.exposure,
       aes(x = !! sym(paste0("observation.", cue.demo)), color = observation.category),
       size = 0.5)
   
@@ -991,38 +973,22 @@ d.exposure <-
   select(-data)
 
 d.exposure %<>%
-  mutate(
-    posterior.categorization_function = map2(
-      posterior,
-      use_logit,
-      ~ get_categorization_function_from_NIW_ideal_adaptor(.x, logit = .y, noise_treatment = "marginalize"))) %>%
+  mutate(posterior.categorization_function = map(posterior, ~ get_categorization_function_from_NIW_ideal_adaptor(.x, noise_treatment = "marginalize"))) %>%
   select(-posterior)
 
-p <- 
-  p %+%
-  (d.exposure %>%
-  mutate(use_logit = factor(ifelse(use_logit, "log-odds", "probability"), levels = c("probability", "log-odds"))))
+p <- p %+% d.exposure
 
 if (ANIMATE_FIGURES) {
   p.animation <- p + transition_states(observation.n, state_length = .5, transition_length = .5)
   p.animation
 } else {
   d.plot <- 
-    d.exposure %>%
-    mutate(use_logit = factor(
-      ifelse(use_logit, "log-odds", "probability"), 
-      levels = c("probability", "log-odds"))) %>% 
+    d.exposure %>% 
     filter(observation.n == max(observation.n))
   
   p1 <- p %+% d.plot +
     geom_rug(
-      data = d.exposure %>%
-        mutate(use_logit = factor(
-          ifelse(
-            use_logit, 
-            "log-odds", 
-            "probability"), 
-          levels = c("probability", "log-odds"))),
+      data = d.exposure,
       aes(x = !! sym(paste0("observation.", cue.demo)), color = observation.category),
       size = 0.3)
   
